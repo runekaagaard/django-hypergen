@@ -8,6 +8,7 @@ from collections import OrderedDict
 from functools import wraps, partial
 from copy import deepcopy
 from types import GeneratorType
+from django.urls.base import reverse_lazy
 
 ### Python 2+3 compatibility ###
 
@@ -36,7 +37,6 @@ UPDATE = 1
 
 
 def hypergen(func, *args, **kwargs):
-    flask_app = kwargs.pop("flask_app", None)
     kwargs = deepcopy(kwargs)
     auto_id = kwargs.pop("auto_id", False)
     target_id = kwargs.pop("target_id", False)
@@ -49,7 +49,6 @@ def hypergen(func, *args, **kwargs):
         state.auto_id = auto_id
         state.liveview = kwargs.pop("liveview", False)
         state.callback_output = kwargs.pop("callback_output", None)
-        state.flask_app = flask_app
         func(*args, **kwargs)
         html = "".join(str(x()) if callable(x) else str(x) for x in state.html)
     finally:
@@ -60,7 +59,6 @@ def hypergen(func, *args, **kwargs):
         state.auto_id = False
         state.liveview = False
         state.callback_output = None
-        state.flask_app = None
 
     if as_deltas:
         return [[UPDATE, target_id, html]]
@@ -189,8 +187,13 @@ def raw(*children, **kwargs):
 
 
 ### Django helpers ###
-def callback(f):
-    return f
+def callback(func):
+    func.hypergen_callback_url = reverse_lazy(
+        "freedom:callback", args=[".".join((func.__module__, func.__name__))])
+
+    func.hypergen_is_callback = True
+
+    return func
 
 
 def liveview(request, func, *args, **kwargs):
@@ -210,56 +213,6 @@ def liveview(request, func, *args, **kwargs):
         return html
     else:
         return HttpResponse(html)
-
-
-### Flask helpers ###
-
-
-def flask_liveview_hypergen(func, *args, **kwargs):
-    from flask import request
-    return hypergen(
-        func,
-        *args,
-        as_deltas=request.is_xhr,
-        auto_id=True,
-        id_prefix=request.get_json()["id_prefix"] if request.is_xhr else "",
-        liveview=True,
-        **kwargs)
-
-
-def flask_liveview_callback_route(app, path, *args, **kwargs):
-    from flask import request, jsonify
-
-    def _(f):
-        @app.route(path, methods=["POST"], *args, **kwargs)
-        @wraps(f)
-        def __():
-            with app.app_context():
-                data = f(*request.get_json()["args"])
-                if data is None and __.callback_output is not None:
-                    data = __.callback_output()
-                return jsonify(data)
-
-        __.hypergen_callback_url = path
-        return __
-
-    return _
-
-
-def flask_liveview_autoroute_callbacks(app, prefix, *args, **kwargs):
-    from flask import request, jsonify
-    setattr(app, "hypergen_autoroutes", {"prefix": prefix, "routes": {}})
-    route = "{}<func_name>/".format(prefix)
-
-    @app.route(route, methods=["POST", "GET"], *args, **kwargs)
-    def router(func_name):
-        func = app.hypergen_autoroutes["routes"][func_name]
-        with app.app_context():
-            data = func(*request.get_json()["args"])
-            if data is None and func.callback_output is not None:
-                data = func.callback_output()
-
-            return jsonify(data)
 
 
 ### Misc ###
@@ -330,6 +283,9 @@ def encoder(this, o):
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
         return str(o)
+    elif hasattr(o, "__weakref__"):
+        # Lazy strings and urls.
+        return str(o)
     else:
         raise TypeError(repr(o) + " is not JSON serializable")
 
@@ -349,14 +305,6 @@ def _callback(args, this, debounce=0):
     args = args[1:]
     if state.callback_output is not None:
         func.callback_output = state.callback_output
-
-    # state.flask_app.hypergen_autoroutes["routes"][func_to_string(
-    #     func)] = func
-    # func.hypergen_callback_url = "{}{}/".format(
-    #     state.flask_app.hypergen_autoroutes["prefix"],
-    #     func_to_string(func))
-    func.hypergen_callback_url = "/freedom/callback/{}.{}/".format(
-        func.__module__, func.__name__)
 
     return "H.cb({})".format(
         t(

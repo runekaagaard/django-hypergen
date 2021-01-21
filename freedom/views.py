@@ -5,11 +5,14 @@ from django.utils.module_loading import import_string
 from django.views.decorators.csrf import csrf_exempt
 
 
-@csrf_exempt  # FTODO Remove. Add perms.
-def callback(request, func):
+@csrf_exempt  # TODO Remove. Add perms. Security.
+def callback(request, path):
+
     in_ = json.loads(request.body)
-    func = import_string(func)
+    func = import_string(path)
+    assert func.hypergen_is_callback is True
     out = func(*in_["args"])
+
     if func.callback_output is not None:
         out = func.callback_output()
 
