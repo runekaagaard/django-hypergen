@@ -1,0 +1,17 @@
+{
+  "name": "freedom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "freedom.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "freedom": "^0.6.36",
+    "jquery": "^1.12.4",
+    "morphdom": "^2.6.1"
+  }
+}

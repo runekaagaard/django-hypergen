@@ -1,8 +1,41 @@
-"use strict"
-// We are aiming for IE6 support here, hence the oldschool js.
+import $ from "jquery";
+import morphdom from 'morphdom'
+import './freedom'
 
+export const morph = function(id, html) {
+  morphdom(
+    document.getElementById(id),
+    "<div>" + html + "</div>",
+    {childrenOnly: true}
+  )
+}
 
-var H = (function() {
+export const notify = function(message, {type="error", sticky=false}={}) {
+  console.log("notifying", message, type, sticky)
+}
+
+const load = function(actions) {
+  for (let [module, funcs, kwargs, ...args] of actions) {
+    let func = require(module)
+    if (!!funcs) {
+      for (let name of funcs) {
+        func = func[name]
+      }
+    }
+    func(...args, kwargs)
+  }
+}
+
+// Debugging.
+$(() => {
+  load([
+    ["./freedom", ["morph"], {}, "content", "<div>HEJ</div>"],
+    ["./freedom", ["notify"], {type: "warning"}, "Oh nooooh"]
+  ])
+})
+
+// Stub solution.
+window.H = (function() {
   // Shims
   if (typeof Array.isArray === 'undefined') {
     Array.isArray = function(obj) {
@@ -104,3 +137,5 @@ var H = (function() {
     i: 0,
   }
 })()
+
+
