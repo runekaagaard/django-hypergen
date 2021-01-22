@@ -43,22 +43,18 @@ def hypergen(func, *args, **kwargs):
     as_deltas = kwargs.pop("as_deltas", False)
     try:
         state.html = []
-        state.cache_client = kwargs.pop("cache_client", None)
         state.id_counter = base65_counter() if auto_id else None
         state.id_prefix = kwargs.pop("id_prefix", "")
         state.auto_id = auto_id
         state.liveview = kwargs.pop("liveview", False)
-        state.callback_output = kwargs.pop("callback_output", None)
         func(*args, **kwargs)
         html = "".join(str(x()) if callable(x) else str(x) for x in state.html)
     finally:
         state.html = []
-        state.cache_client = None
         state.id_counter = None
         state.id_prefix = ""
         state.auto_id = False
         state.liveview = False
-        state.callback_output = None
 
     if as_deltas:
         return [[UPDATE, target_id, html]]
@@ -205,7 +201,8 @@ def liveview(request, func, *args, **kwargs):
         *args,
         as_deltas=as_deltas,
         auto_id=True,
-        id_prefix=request.get_json()["id_prefix"] if request.is_ajax() else "",
+        id_prefix=json.loads(request.body)["id_prefix"]
+        if request.is_ajax() else "",
         liveview=True,
         **kwargs)
 
@@ -303,9 +300,6 @@ def _callback(args, this, debounce=0):
     assert callable(func), ("First callback argument must be a callable, got "
                             "{}.".format(repr(func)))
     args = args[1:]
-    if state.callback_output is not None:
-        func.callback_output = state.callback_output
-
     return "H.cb({})".format(
         t(
             encoder.unquote(
