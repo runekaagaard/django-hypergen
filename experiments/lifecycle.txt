@@ -41,9 +41,9 @@ Python -> Js serialization.
 
 ## 2 Clientside commands ##
 [
-    ["./freedom", "setState", "content-id", STATE],
-    ["./freedom", "morph", "content-id", HTML],
-    ["./freedom", "notify", ["hurra"], {}]
+    ["./freedom", "setState", ["content-id", STATE], {}],
+    ["./freedom", "morph", ["content-id", HTML], {}],
+    ["./freedom", "notify", ["hurra"], {}],
 ]
 
 ## 3 Commands run on client
