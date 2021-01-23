@@ -1,4 +1,4 @@
-## -2 Callbacks ##
+## -2 Callbacks exists ##
 @callback
 def foo(w):
     # Do stuff here.
@@ -30,7 +30,7 @@ STATE = {
     obj_id2: ["myapp.mymodule.myfunc", [["_", "element_value", "el-id1"], {2: 4, 3: 6}], {zop: 9}]
 }
 
-## 1 HTML ##
+## 1 HTML is rendered ##
 HTML = <div id="content-id">
     <input value="bar" onhover="H.e(H.s.obj_id1)" />
     <button onclick="H.e(H.s.obj_id2)">baz</button>
@@ -48,8 +48,8 @@ Python -> Js serialization.
 
 ## 3 Commands run on client
 
+- State is set
 - HTML is updated
-- Events are listened to
 - Notifications are viewed
 
 ## 4 Event is triggered
