@@ -24,19 +24,25 @@ def my_template():
     y = {2: 4, 3: 6}
     button("baz", onclick=myfunc(x, y))
 
+## 0.5 State is collected ##
+STATE = {
+    obj_id1: ["myapp.mymodule.foo", [91], {}],
+    obj_id2: ["myapp.mymodule.myfunc", [["_", "element_value", "el-id1"], {2: 4, 3: 6}], {zop: 9}]
+}
+
 ## 1 HTML ##
 HTML = <div id="content-id">
-    <input id="el-id1" value="bar" />
-    <button id="el-id2">baz</button>
+    <input value="bar" onhover="H.e(H.s.obj_id1)" />
+    <button onclick="H.e(H.s.obj_id2)">baz</button>
 </div>
+
+## 1.5 Liveview is done ##
+Python -> Js serialization.
 
 ## 2 Clientside commands ##
 [
+    ["./freedom", "setState", "content-id", STATE],
     ["./freedom", "morph", "content-id", HTML],
-    ["./freedom", "addEventListeners", [
-        ["onhover", "el-id1", "myapp.mymodule.foo", [91], {}],
-        ["onclick", "el-id2", "myapp.mymodule.myfunc", [["_", "element_value", "el-id1"], {2: 4, 3: 6}], {zop: 9}],
-    ],
     ["./freedom", "notify", ["hurra"], {}]
 ]
 
@@ -47,6 +53,8 @@ HTML = <div id="content-id">
 - Notifications are viewed
 
 ## 4 Event is triggered
+
+Python -> Js serialization.
 
 ## 5 Serverside commands
 [
