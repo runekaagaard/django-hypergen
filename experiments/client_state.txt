@@ -1,0 +1,58 @@
+## -2 Callbacks ##
+@callback
+def foo(w):
+    # Do stuff here.
+    return hypergen(my_template, "content")
+    
+@callback
+def myfunc(x, y, zop=91):
+    # Do stuff here.
+    return hypergen(my_template, "content")
+
+## -1 View is reached
+def base_template(content_template):
+    doctype()
+    with body(), div(id_="content"):
+        content_template()
+
+def my_view(request):
+    hypergen(request, base_template, my_template)
+
+## 0 Template ##
+def my_template():
+    x = input_(value="bar", onhover=(foo, 91))
+    y = {2: 4, 3: 6}
+    button("baz", onclick=myfunc(x, y))
+
+## 1 HTML ##
+HTML = <div id="content-id">
+    <input id="el-id1" value="bar" />
+    <button id="el-id2">baz</button>
+</div>
+
+## 2 Clientside commands ##
+[
+    ["./freedom", "morph", "content-id", HTML],
+    ["./freedom", "addEventListeners", [
+        ["onhover", "el-id1", "myapp.mymodule.foo", [91], {}],
+        ["onclick", "el-id2", "myapp.mymodule.myfunc", [["_", "element_value", "el-id1"], {2: 4, 3: 6}], {zop: 9}],
+    ],
+    ["./freedom", "notify", ["hurra"], {}]
+]
+
+## 3 Commands run on client
+
+- HTML is updated
+- Events are listened to
+- Notifications are viewed
+
+## 4 Event is triggered
+
+## 5 Serverside commands
+[
+    ["myapp.mymodule.foo", ["baz", {2: 4, 3: 6}], {zop: 9}],
+]
+
+## 6 Callback is called
+
+The world changes. Goto 0

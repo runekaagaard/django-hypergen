@@ -27,12 +27,12 @@ const load = function(actions) {
 }
 
 // Debugging.
-$(() => {
-  load([
-    ["./freedom", ["morph"], {}, "content", "<div>HEJ</div>"],
-    ["./freedom", ["notify"], {type: "warning"}, "Oh nooooh"]
-  ])
-})
+/* $(() => {
+ *   load([
+ *     ["./freedom", ["morph"], {}, "content", "<div>HEJ</div>"],
+ *     ["./freedom", ["notify"], {type: "warning"}, "Oh nooooh"]
+ *   ])
+ * }) */
 
 // Stub solution.
 window.H = (function() {
