@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 freedom/static/freedom/node_modules/
+.dumbjump
+.python-project
