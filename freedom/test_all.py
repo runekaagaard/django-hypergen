@@ -1,4 +1,18 @@
-from freedom.core import context
+from django.test.client import RequestFactory
+from freedom.core import context, context_middleware
+
+
+class User(object):
+    pk = 1
+    id = 1
+
+
+class Request(object):
+    user = User()
+
+
+class HttpResponse(object):
+    pass
 
 
 def test_context():
@@ -19,3 +33,14 @@ def test_context():
 
         assert ctx["i"] == 1
         assert "foo" not in ctx
+
+
+def test_context_middleware():
+    def view(request):
+        with context() as ctx:
+            assert ctx["user"].pk == 1
+            assert ctx["request"].user.pk == 1
+        return HttpResponse()
+
+    get_response = lambda request: view(request)
+    context_middleware(get_response)(Request())
