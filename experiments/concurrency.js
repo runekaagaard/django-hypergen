@@ -8,11 +8,10 @@ timers:
 execution_groups:
   whenever:
   blockable:
+    blocks_for: [save]
   save:
-    blocks: [blockable, save]
     block_message: "Please wait until data is saved on the server"
     clears_before_block: [blockable]
   serial:
-    blocks: [save]
-    clears_before_block: [save]
+    sync: true
 
