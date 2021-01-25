@@ -1,5 +1,8 @@
 import $ from "jquery";
+window.jQuery = $
+
 import morphdom from 'morphdom'
+
 import './freedom'
 
 export const morph = function(id, html) {
@@ -10,29 +13,26 @@ export const morph = function(id, html) {
   )
 }
 
-export const notify = function(message, {type="error", sticky=false}={}) {
-  console.log("notifying", message, type, sticky)
-}
-
-const load = function(actions) {
-  for (let [module, funcs, kwargs, ...args] of actions) {
-    let func = require(module)
+const applyCommands = function(commands) {
+  for (let [module, funcs, args, ...rst] of commands) {
+    let func
+    try {
+      func = require(module)
+    } catch(e) {
+      if (window[module] !== undefined) {
+        func = window[module]
+      } else {
+        throw "Unknown module or window propery:" + module
+      }
+    }
     if (!!funcs) {
       for (let name of funcs) {
         func = func[name]
       }
     }
-    func(...args, kwargs)
+    func(...args)
   }
 }
-
-// Debugging.
-/* $(() => {
- *   load([
- *     ["./freedom", ["morph"], {}, "content", "<div>HEJ</div>"],
- *     ["./freedom", ["notify"], {type: "warning"}, "Oh nooooh"]
- *   ])
- * }) */
 
 // Stub solution.
 window.H = (function() {
@@ -108,25 +108,9 @@ window.H = (function() {
       },
       success: function(data) {
         console.log("RESPONSE", data)
-        console.log("")
         if (data === null) return
-        for (var i=0; i<data.length; i++) {
-          var
-            item = data[i],
-            cmd = item[0],
-            target_id = item[1],
-            html = item[2]
-          if (cmd === UPDATE) {
-            morphdom(
-              document.getElementById(target_id),
-              "<div>" + html + "</div>",
-              {childrenOnly: true}
-            )
-          } else {
-            throw("Unknown command: " + cmd)
-          }
-        }
-      }
+        applyCommands(data)
+      },
     })
   }
   cb.i = 0

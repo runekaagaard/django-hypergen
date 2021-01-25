@@ -57,7 +57,9 @@ def hypergen(func, *args, **kwargs):
         state.liveview = False
 
     if as_deltas:
-        return [[UPDATE, target_id, html]]
+        return [
+            ["./freedom", ["morph"], [target_id, html]],
+        ]
     else:
         return html
 
