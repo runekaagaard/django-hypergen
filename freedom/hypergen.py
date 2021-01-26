@@ -3660,30 +3660,41 @@ template.c = template_con
 template.d = template_dec
 
 
+### Textarea TODO MOVE UP APPLY TO TEMPLATE FROM _hypergen.py ###
+def _js_cb_textarea(attrs):
+    attrs["js_cb"] = attrs.get("js_cb", "H.cbs.t")
+
+
 def textarea_sta(*children, **attrs):
-    return element_start("textarea", children, **attrs)
+    _js_cb_textarea(attrs)
+    return control_element_start("textarea", children, **attrs)
 
 
-def textarea_end(*children, **kwargs):
-    return element_end("textarea", children, **kwargs)
+def textarea_end(*children, **attrs):
+    _js_cb_textarea(attrs)
+    return element_end("textarea", children, **attrs)
 
 
-def textarea_ret(*children, **kwargs):
-    return element_ret("textarea", children, **kwargs)
+def textarea_ret(*children, **attrs):
+    _js_cb_textarea(attrs)
+    return control_element_start("textarea", children, **attrs)
 
 
 @contextmanager
 def textarea_con(*children, **attrs):
-    for x in element_con("textarea", children, **attrs):
+    _js_cb_textarea(attrs)
+    for x in control_element_con("textarea", children, **attrs):
         yield x
 
 
 def textarea_dec(*children, **attrs):
-    return element_dec("textarea", children, **attrs)
+    _js_cb_textarea(attrs)
+    return control_element_dec("textarea", children, **attrs)
 
 
 def textarea(*children, **attrs):
-    return element("textarea", children, **attrs)
+    _js_cb_textarea(attrs)
+    return control_element("textarea", children, **attrs)
 
 
 textarea.s = textarea_sta

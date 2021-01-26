@@ -58,7 +58,7 @@ window.H = (function() {
     return parseFloat($("#" + id).val())
   }}
   cbs.s = function(id) { return function() {
-    return "" + $("#" + id).val()
+    return "" + $("#" + id).val().trim()
   }}
   cbs.c = function(id) { return function() {
     return document.getElementById(id).checked
@@ -67,6 +67,9 @@ window.H = (function() {
     var v = $("#" + id).val()
     var v1 = parseInt(v)
     return !isNaN(v1) ? v1 : v
+  }}
+  cbs.t = function(id) { return function() {
+    return "" + $("#" + id).val().trim()
   }}
 
   function parseArgs(args, data) {
