@@ -99,3 +99,7 @@ def wrap3(dfunc):
             return __
 
     return _
+
+
+def insert(source_str, insert_str, pos):
+    return ''.join((source_str[:pos], insert_str, source_str[pos:]))

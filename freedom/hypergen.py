@@ -8,7 +8,10 @@ from collections import OrderedDict
 from functools import wraps, partial
 from copy import deepcopy
 from types import GeneratorType
+
 from django.urls.base import reverse_lazy
+
+from freedom.utils import insert
 
 ### Python 2+3 compatibility ###
 
@@ -39,14 +42,19 @@ UPDATE = 1
 def hypergen(func, *args, **kwargs):
     kwargs = deepcopy(kwargs)
     auto_id = kwargs.pop("auto_id", False)
-    target_id = kwargs.pop("target_id", False)
     as_deltas = kwargs.pop("as_deltas", False)
     try:
         state.html = []
         state.id_counter = base65_counter() if auto_id else None
         state.id_prefix = kwargs.pop("id_prefix", "")
         state.auto_id = auto_id
-        state.liveview = kwargs.pop("liveview", False)
+        liveview = state.liveview = kwargs.pop("liveview", False)
+
+        # Key/value store sent to the frontend.
+        state.kv = {}
+        state.target_id = kwargs.pop("target_id", "__main__")
+        target_id = state.target_id
+        kv = state.kv
         func(*args, **kwargs)
         html = "".join(str(x()) if callable(x) else str(x) for x in state.html)
     finally:
@@ -55,13 +63,22 @@ def hypergen(func, *args, **kwargs):
         state.id_prefix = ""
         state.auto_id = False
         state.liveview = False
+        state.kv = {}
+        state.target_id = None
 
     if as_deltas:
         return [
+            ["./freedom", ["setState"], [target_id, kv]],
             ["./freedom", ["morph"], [target_id, html]],
         ]
     else:
-        return html
+        if liveview:
+            s = '<script>window.hypergen_state = {}</script>'.format(
+                json.dumps(kv))
+            pos = html.find("<script src")
+            return insert(html, s, pos)
+        else:
+            return html
 
 
 hypergen(lambda: None)
@@ -297,16 +314,28 @@ def func_to_string(func):
     return ".".join((func.__module__, func.__name__))
 
 
+NON_SCALARS = set((list, dict, tuple))
+
+
 def _callback(args, this, debounce=0):
     func = args[0]
     assert callable(func), ("First callback argument must be a callable, got "
                             "{}.".format(repr(func)))
     args = args[1:]
+
+    args2 = []
+    for arg in args:
+        if type(arg) in NON_SCALARS:
+            state.kv[id(arg)] = arg
+            args2.append("H.s['{}'][{}]".format(state.target_id, id(arg)))
+        else:
+            args2.append(arg)
+
     return "H.cb({})".format(
         t(
             encoder.unquote(
                 json.dumps(
-                    [func.hypergen_callback_url] + list(args),
+                    [func.hypergen_callback_url] + list(args2),
                     default=partial(encoder, this),
                     separators=(',', ':')))))
 
@@ -318,7 +347,7 @@ def control_element_start(tag,
                           void=False,
                           sep="",
                           add_to=None,
-                          js_cb="s",
+                          js_cb="H.cbs.s",
                           **attrs):
     assert "add_to" not in attrs
     if state.auto_id and "id_" not in attrs:
@@ -329,7 +358,7 @@ def control_element_start(tag,
 
     meta = {}
     if state.liveview is True:
-        meta["this"] = "H.cbs.{}('{}')".format(js_cb, attrs["id_"])
+        meta["this"] = "{}('{}')".format(js_cb, attrs["id_"])
     if into is not None:
         into.meta = meta
     for k, v in items(attrs):
@@ -395,14 +424,19 @@ def control_element_ret(tag,
 
 ### Input ###
 
-INPUT_TYPES = dict(checkbox="c", month="i", number="i", range="f", week="i")
+INPUT_TYPES = dict(
+    checkbox="H.cbs.c",
+    month="H.cbs.i",
+    number="H.cbs.i",
+    range="H.cbs.f",
+    week="H.cbs.i")
 
 
 def input_(**attrs):
     return control_element(
         "input", [],
         void=True,
-        js_cb=INPUT_TYPES.get(attrs.get("type_", "text"), "s"),
+        js_cb=INPUT_TYPES.get(attrs.get("type_", "text"), "H.cbs.s"),
         **attrs)
 
 
@@ -418,13 +452,13 @@ input_.r = input_ret
 def _js_cb_select(attrs):
     type_ = attrs.pop("js_cb", None)
     if type_ is str:
-        attrs["js_cb"] = "s"
+        attrs["js_cb"] = "H.cbs.s"
     elif type_ is int:
-        attrs["js_cb"] = "i"
+        attrs["js_cb"] = "H.cbs.i"
     elif type_ is float:
-        attrs["js_cb"] = "f"
+        attrs["js_cb"] = "H.cbs.f"
     elif type_ is None:
-        attrs["js_cb"] = "g"
+        attrs["js_cb"] = "H.cbs.g"
     else:
         raise Exception(
             "Bad coercion, {}. Only str, unicode, int and float are"

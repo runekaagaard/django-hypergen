@@ -13,6 +13,11 @@ export const morph = function(id, html) {
   )
 }
 
+export const setState = function(id, newState) {
+  H.s[id] = newState
+  console.log("Setting new state at", id, H.state)
+}
+
 const applyCommands = function(commands) {
   for (let [module, funcs, args, ...rst] of commands) {
     let func
@@ -82,7 +87,6 @@ window.H = (function() {
   var cb = function() {
     H.i++
     var
-      UPDATE = 1,
       url = arguments[0],
       args = [],
       data = [],
@@ -119,6 +123,7 @@ window.H = (function() {
     cb: cb,
     cbs: cbs,
     i: 0,
+    s: window.hypergen_state || {},
   }
 })()
 
