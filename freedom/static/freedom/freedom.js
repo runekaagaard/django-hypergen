@@ -13,9 +13,14 @@ export const morph = function(id, html) {
   )
 }
 
-export const setState = function(id, newState) {
-  H.s[id] = newState
-  console.log("Setting new state at", id, H.state)
+export const setEventHandlerCache = function(id, newCache) {
+  H.e[id] = newCache
+  console.log("Setting new state at", id, H.e)
+}
+
+export const updateAppState = function(id, newState) {
+  H.a = Object.assign(H.a, newState)
+  console.log("Updating app state", newState)
 }
 
 const applyCommands = function(commands) {
@@ -38,6 +43,7 @@ const applyCommands = function(commands) {
     func(...args)
   }
 }
+window.applyCommands = applyCommands
 
 // Stub solution.
 window.H = (function() {
@@ -107,6 +113,7 @@ window.H = (function() {
       data: JSON.stringify({
         args: data,
         id_prefix: idPrefix,
+        appState: H.a,
       }),
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
@@ -126,7 +133,10 @@ window.H = (function() {
     cb: cb,
     cbs: cbs,
     i: 0,
-    s: window.hypergen_state || {},
+    // eventHandlerCache
+    e: {},
+    // appState 
+    a: {}
   }
 })()
 

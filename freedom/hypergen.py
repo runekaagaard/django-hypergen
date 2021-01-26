@@ -10,8 +10,10 @@ from copy import deepcopy
 from types import GeneratorType
 
 from django.urls.base import reverse_lazy
+from django.http.response import HttpResponse
 
 from freedom.utils import insert
+from freedom.core import context
 
 ### Python 2+3 compatibility ###
 
@@ -37,38 +39,18 @@ state = local()
 UPDATE = 1
 
 ### Control ###
-
-
-def hypergen(func, *args, **kwargs):
-    kwargs = deepcopy(kwargs)
-    auto_id = kwargs.pop("auto_id", False)
-    as_deltas = kwargs.pop("as_deltas", False)
-    try:
-        state.html = []
-        state.id_counter = base65_counter() if auto_id else None
-        state.id_prefix = kwargs.pop("id_prefix", "")
-        state.auto_id = auto_id
-        liveview = state.liveview = kwargs.pop("liveview", False)
-
-        # Key/value store sent to the frontend.
-        state.kv = {}
-        state.target_id = kwargs.pop("target_id", "__main__")
-        target_id = state.target_id
-        kv = state.kv
-        func(*args, **kwargs)
-        html = "".join(str(x()) if callable(x) else str(x) for x in state.html)
-    finally:
-        state.html = []
-        state.id_counter = None
-        state.id_prefix = ""
-        state.auto_id = False
-        state.liveview = False
-        state.kv = {}
-        state.target_id = None
-
-    if as_deltas:
+"""
+if as_deltas:
         return [
-            ["./freedom", ["setState"], [target_id, kv]],
+            ["./freedom", ["updateAppState"], [{
+                2: 4,
+                1: 3
+            }]],
+            ["./freedom", ["updateAppState"], [{
+                2: 999,
+                3: 3
+            }]],
+            ["./freedom", ["setEventHandlerCache"], [target_id, kv]],
             ["./freedom", ["morph"], [target_id, html]],
         ]
     else:
@@ -80,8 +62,76 @@ def hypergen(func, *args, **kwargs):
         else:
             return html
 
+"""
 
-hypergen(lambda: None)
+
+def hypergen(func, *args, **kwargs):
+    kwargs = deepcopy(kwargs)
+    auto_id = kwargs.pop("auto_id", True)
+    try:
+        ctx = context()
+        request = ctx["request"]
+        if "request" in ctx:  # TODO
+            state.html = []
+            state.liveview = True
+            state.id_counter = base65_counter() if auto_id else None
+            state.id_prefix = kwargs.pop("id_prefix",
+                                         (json.loads(request.body)["id_prefix"]
+                                          if request.is_ajax() else ""))
+            state.auto_id = auto_id
+            # Key/value store sent to the frontend.
+            state.kv = {}
+            state.target_id = kwargs.pop("target_id", "__main__")
+            state.commands = []
+            func(*args, **kwargs)
+            html = "".join(
+                str(x()) if callable(x) else str(x) for x in state.html)
+            if state.kv:
+                state.commands.append([
+                    "./freedom", ["setEventHandlerCache"],
+                    [state.target_id, state.kv]
+                ])
+            if not ctx["request"].is_ajax():
+                s = '<script>window.applyCommands({})</script>'.format(
+                    json.dumps(state.commands))
+                pos = html.find("</head")
+                html = insert(html, s, pos)
+                return HttpResponse(html)
+            else:
+                state.commands.append(
+                    ["./freedom", ["morph"], [state.target_id, html]])
+                return state.commands
+
+    finally:
+        state.html = []
+        state.id_counter = None
+        state.id_prefix = ""
+        state.auto_id = False
+        state.liveview = False
+        state.kv = {}
+        state.target_id = None
+        state.commands = []
+
+    return html
+
+
+# hypergen(lambda: None)
+
+
+class LiveviewHttpResponse(HttpResponse):
+    def __init__(self, commands):
+        pass
+
+
+def liveview(request, func, *args, **kwargs):
+    html = hypergen(
+        func,
+        *args,
+        auto_id=True,
+        id_prefix=json.loads(request.body)["id_prefix"]
+        if request.is_ajax() else "",
+        liveview=True,
+        **kwargs)
 
 
 class SkipException(Exception):
@@ -211,26 +261,6 @@ def callback(func):
     return func
 
 
-def liveview(request, func, *args, **kwargs):
-    from django.http.response import HttpResponse
-    as_deltas = kwargs.pop("as_deltas", False)
-
-    html = hypergen(
-        func,
-        *args,
-        as_deltas=as_deltas,
-        auto_id=True,
-        id_prefix=json.loads(request.body)["id_prefix"]
-        if request.is_ajax() else "",
-        liveview=True,
-        **kwargs)
-
-    if as_deltas:
-        return html
-    else:
-        return HttpResponse(html)
-
-
 ### Misc ###
 
 
@@ -327,7 +357,7 @@ def _callback(args, this, debounce=0):
     for arg in args:
         if type(arg) in NON_SCALARS:
             state.kv[id(arg)] = arg
-            args2.append("H.s['{}'][{}]".format(state.target_id, id(arg)))
+            args2.append("H.e['{}'][{}]".format(state.target_id, id(arg)))
         else:
             args2.append(arg)
 
