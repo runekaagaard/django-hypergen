@@ -38,33 +38,8 @@ else:
 state = local()
 UPDATE = 1
 
+
 ### Control ###
-"""
-if as_deltas:
-        return [
-            ["./freedom", ["updateAppState"], [{
-                2: 4,
-                1: 3
-            }]],
-            ["./freedom", ["updateAppState"], [{
-                2: 999,
-                3: 3
-            }]],
-            ["./freedom", ["setEventHandlerCache"], [target_id, kv]],
-            ["./freedom", ["morph"], [target_id, html]],
-        ]
-    else:
-        if liveview:
-            s = '<script>window.hypergen_state = {}</script>'.format(
-                json.dumps(kv))
-            pos = html.find("<script src")
-            return insert(html, s, pos)
-        else:
-            return html
-
-"""
-
-
 def hypergen(func, *args, **kwargs):
     kwargs = deepcopy(kwargs)
     auto_id = kwargs.pop("auto_id", True)
@@ -377,11 +352,11 @@ def control_element_start(tag,
                           add_to=None,
                           js_cb="H.cbs.s",
                           **attrs):
+    # TODO: Clean up this function. Only auto-id things with event handlers.
     assert "add_to" not in attrs
     if state.auto_id and "id_" not in attrs:
-        attrs["id_"] = next(state.id_counter)
-    if "id_" in attrs:
-        attrs["id_"] = state.id_prefix + attrs["id_"]
+        attrs["id_"] = state.id_prefix + next(state.id_counter)
+
     attrs = _element_start_1(tag, attrs, into)
 
     meta = {}

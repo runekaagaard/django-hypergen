@@ -11,7 +11,7 @@ def callback(request, path):
     in_ = json.loads(request.body)
     func = import_string(path)
     assert func.hypergen_is_callback is True
-    out = func(request, *in_["args"])
+    out = func(*in_["args"])
 
     return HttpResponse(
         json.dumps(out), status=200, content_type='application/json')
