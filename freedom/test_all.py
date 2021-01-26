@@ -1,5 +1,5 @@
 from django.test.client import RequestFactory
-from freedom.core import context, context_middleware
+from freedom.core import _init_context, context, context_middleware, ContextMiddleware
 
 
 class User(object):
@@ -16,6 +16,12 @@ class HttpResponse(object):
 
 
 def test_context():
+    context.replace(request=Request(), user=User())
+    assert context.request.user.id == 1
+    assert "request" in context
+
+
+def test_context_cm():
     def inc(ctx):
         ctx["i"] = ctx.get("i", 0) + 1
         return ctx
@@ -44,3 +50,9 @@ def test_context_middleware():
 
     get_response = lambda request: view(request)
     context_middleware(get_response)(Request())
+
+
+def test_context_middleware_old():
+    middleware = ContextMiddleware()
+    middleware.process_request(Request())
+    assert context.request.user.pk == 1

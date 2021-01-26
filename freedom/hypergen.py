@@ -69,15 +69,13 @@ def hypergen(func, *args, **kwargs):
     kwargs = deepcopy(kwargs)
     auto_id = kwargs.pop("auto_id", True)
     try:
-        ctx = context()
-        request = ctx["request"]
-        if "request" in ctx:  # TODO
+        if "request" in context:  # TODO
             state.html = []
             state.liveview = True
             state.id_counter = base65_counter() if auto_id else None
-            state.id_prefix = kwargs.pop("id_prefix",
-                                         (json.loads(request.body)["id_prefix"]
-                                          if request.is_ajax() else ""))
+            state.id_prefix = kwargs.pop(
+                "id_prefix", (json.loads(context.request.body)["id_prefix"]
+                              if context.request.is_ajax() else ""))
             state.auto_id = auto_id
             # Key/value store sent to the frontend.
             state.kv = {}
@@ -91,7 +89,7 @@ def hypergen(func, *args, **kwargs):
                     "./freedom", ["setEventHandlerCache"],
                     [state.target_id, state.kv]
                 ])
-            if not ctx["request"].is_ajax():
+            if not context.request.is_ajax():
                 s = '<script>window.applyCommands({})</script>'.format(
                     json.dumps(state.commands))
                 pos = html.find("</head")

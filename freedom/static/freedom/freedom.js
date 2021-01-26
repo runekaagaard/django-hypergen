@@ -18,11 +18,6 @@ export const setEventHandlerCache = function(id, newCache) {
   console.log("Setting new state at", id, H.e)
 }
 
-export const updateAppState = function(id, newState) {
-  H.a = Object.assign(H.a, newState)
-  console.log("Updating app state", newState)
-}
-
 const applyCommands = function(commands) {
   for (let [module, funcs, args, ...rst] of commands) {
     let func
@@ -113,7 +108,6 @@ window.H = (function() {
       data: JSON.stringify({
         args: data,
         id_prefix: idPrefix,
-        appState: H.a,
       }),
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
@@ -135,8 +129,6 @@ window.H = (function() {
     i: 0,
     // eventHandlerCache
     e: {},
-    // appState 
-    a: {}
   }
 })()
 
