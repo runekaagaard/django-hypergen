@@ -19,6 +19,9 @@ def open_tag(tag, **kwargs):
     return s + ">"
 
 
+DELETED = None
+
+
 class div(ContextDecorator):
     def __init__(self, s, **kwargs):
         global i
@@ -27,20 +30,24 @@ class div(ContextDecorator):
         self.s = s
         self.kwargs = kwargs
         if not issubclass(type(s), ContextDecorator):
-            self.html = open_tag("div", **kwargs) + s + "</div>"
+            self.html = lambda: open_tag("div", **kwargs) + s + "</div>"
         else:
-            html[s.i] = "__DELETED__"
-            self.html = open_tag("div", **kwargs) + s.html + "</div>"
+            html[s.i] = DELETED
+            self.html = lambda: open_tag("div", **kwargs) + (s.html() if callable(s.html) else s.html) + "</div>"
 
         html.append(self.html)
         super(div, self).__init__()
 
     def __enter__(self):
+        global i
+        i += 1
         html.append(open_tag("div", **self.kwargs) + self.s)
-        html[self.i] = "__DELETED__"
+        html[self.i] = DELETED
         return self
 
     def __exit__(self, *exc):
+        global i
+        i += 1
         html.append("</div>")
         return False
 
@@ -56,7 +63,8 @@ def function(s):
 
 function("a-a")
 print "+++++++++++++++++"
-print "\n".join(html).strip()
+print "\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip()
 print "-----------------"
 
 # ------------------------------------------------- #
@@ -68,7 +76,8 @@ with div("B", id_="bid", class_="b-cls"):
     div("inner B", id_="inneridb")
 
 print "+++++++++++++++++"
-print "\n".join(html).strip()
+print "\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip()
 print "-----------------"
 
 # ------------------------------------------------- #
@@ -79,7 +88,8 @@ i = -1
 div("C", id_="cid", class_="c-cls")
 
 print "+++++++++++++++++"
-print "\n".join(html).strip()
+print "\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip()
 print "-----------------"
 
 # ------------------------------------------------- #
@@ -88,7 +98,9 @@ html = []
 i = -1
 
 div(div(div("D", id_="did1"), id_="did2"), id_="did3")
+div(div(div("D", id_="did1"), id_="did2"), id_="did3")
 
 print "+++++++++++++++++"
-print "\n".join(html).strip()
+print "\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip()
 print "-----------------"
