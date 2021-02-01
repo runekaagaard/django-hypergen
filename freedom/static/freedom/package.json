@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "freedom": "^0.6.36",
-    "jquery": "^1.12.4",
+    "jquery": "^3.5.1",
     "morphdom": "^2.6.1"
   }
 }

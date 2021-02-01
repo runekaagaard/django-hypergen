@@ -1,2 +1,5 @@
 pyrsistent
 pytest
+
+beautifulsoup4==4.9.3
+pyperclip==1.8.1
