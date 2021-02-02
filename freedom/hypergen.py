@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
 
-import string, sys, json, datetime
+import string, sys, datetime
 from threading import local
 from contextlib import contextmanager
 from collections import OrderedDict
@@ -12,6 +12,7 @@ from types import GeneratorType
 from django.urls.base import reverse_lazy
 from django.http.response import HttpResponse
 
+import freedom
 from freedom.utils import insert
 from freedom.core import context
 
@@ -49,7 +50,7 @@ def hypergen(func, *args, **kwargs):
             state.liveview = True
             state.id_counter = base65_counter() if auto_id else None
             state.id_prefix = kwargs.pop(
-                "id_prefix", (json.loads(context.request.body)["id_prefix"]
+                "id_prefix", (freedom.loads(context.request.body)["id_prefix"]
                               if context.request.is_ajax() else ""))
             state.auto_id = auto_id
             # Key/value store sent to the frontend.
@@ -66,7 +67,7 @@ def hypergen(func, *args, **kwargs):
                 ])
             if not context.request.is_ajax():
                 s = '<script>window.applyCommands({})</script>'.format(
-                    json.dumps(state.commands))
+                    freedom.dumps(state.commands))
                 pos = html.find("</head")
                 html = insert(html, s, pos)
                 return HttpResponse(html)
@@ -101,7 +102,7 @@ def liveview(request, func, *args, **kwargs):
         func,
         *args,
         auto_id=True,
-        id_prefix=json.loads(request.body)["id_prefix"]
+        id_prefix=freedom.loads(request.body)["id_prefix"]
         if request.is_ajax() else "",
         liveview=True,
         **kwargs)
@@ -288,33 +289,8 @@ def base65_counter():
 
 
 ### Form elements and liveview ###
-
-
 class THIS(object):
     pass
-
-
-def encoder(this, o):
-    if o is THIS:
-        return encoder.quote(this)
-    elif type(o) is Blob:
-        return encoder.quote(o.meta["this"])
-    elif isinstance(o, datetime.datetime):
-        assert False, "TODO"
-        return str(o)
-    elif hasattr(o, "__weakref__"):
-        # Lazy strings and urls.
-        return str(o)
-    else:
-        raise TypeError(repr(o) + " is not JSON serializable")
-
-
-encoder.quote = lambda x: "H_" + x + "_H"
-encoder.unquote = lambda x: x.replace('"H_', "").replace('_H"', "")[1:-1]
-
-
-def func_to_string(func):
-    return ".".join((func.__module__, func.__name__))
 
 
 NON_SCALARS = set((list, dict, tuple))
@@ -330,17 +306,18 @@ def _callback(args, this, debounce=0):
     for arg in args:
         if type(arg) in NON_SCALARS:
             state.kv[id(arg)] = arg
-            args2.append("H.e['{}'][{}]".format(state.target_id, id(arg)))
+            args2.append(
+                freedom.quote("H.e['{}'][{}]".format(state.target_id, id(
+                    arg))))
         else:
             args2.append(arg)
 
     return "H.cb({})".format(
-        t(
-            encoder.unquote(
-                json.dumps(
-                    [func.hypergen_callback_url] + list(args2),
-                    default=partial(encoder, this),
-                    separators=(',', ':')))))
+        freedom.dumps(
+            [func.hypergen_callback_url] + list(args2),
+            unquote=True,
+            escape=True,
+            this=this))
 
 
 def control_element_start(tag,
@@ -362,6 +339,8 @@ def control_element_start(tag,
     meta = {}
     if state.liveview is True:
         meta["this"] = "{}('{}')".format(js_cb, attrs["id_"])
+        meta["id"] = attrs["id_"]
+        meta["js_cb"] = js_cb
     if into is not None:
         into.meta = meta
     for k, v in items(attrs):

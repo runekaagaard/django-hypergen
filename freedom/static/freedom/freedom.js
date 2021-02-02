@@ -11,7 +11,7 @@ export const morph = function(id, html) {
     "<div>" + html + "</div>",
     {childrenOnly: true}
   )
-}
+}                     
 
 export const setEventHandlerCache = function(id, newCache) {
   H.e[id] = newCache
@@ -79,9 +79,18 @@ window.H = (function() {
       if (typeof x === "function") {
         data.push(x())  
       } else if (Array.isArray(x)) {
-        var tmp = []
-        parseArgs(x, tmp)
-        data.push(tmp)
+        if (x.length === 3 && x[0] === "_") {
+          if(x[1] === "element_value") {
+            let cb_name = x[2].cb_name
+            data.push(cbs[cb_name](x[2].id)())
+          } else {
+            throw "Unknown custom data"
+          }
+        } else {
+          var tmp = []
+          parseArgs(x, tmp)
+          data.push(tmp)
+        }
       } else {
         data.push(x)
       }
