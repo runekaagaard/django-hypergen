@@ -1,12 +1,19 @@
+# coding=utf-8
+import datetime, json, sys
 from functools import partial
-import datetime, json
+
+if sys.version_info.major > 2:
+    pass
+else:
+    str = unicode
 
 default_app_config = 'freedom.apps.Freedom'
 
 
 def encoder(this, o):
-    from freedom.hypergen import THIS, Blob
+    from freedom.hypergen import THIS, Blob, base_element
 
+    print type(o), repr(o)
     if o is THIS:
         return quote(this)
     elif type(o) is Blob:
@@ -17,6 +24,17 @@ def encoder(this, o):
                 "id": o.meta["id"],
                 "cb_name": o.meta["js_cb"].replace("H.cbs.",
                                                    ""),  # TODO: Generalize.
+            }
+        ]
+        # return quote(o.meta["this"])
+    elif issubclass(type(o), base_element):
+        print "-------------------------", o.attrs
+        return [
+            "_",
+            "element_value",
+            {
+                "id": o.attrs["id_"],
+                "cb_name": o.js_cb.replace("H.cbs.", ""),  # TODO: Generalize.
             }
         ]
         # return quote(o.meta["this"])

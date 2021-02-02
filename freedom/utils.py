@@ -1,4 +1,5 @@
 from functools import wraps, update_wrapper
+from contextlib import contextmanager
 
 
 def wrap2(f):
@@ -103,3 +104,15 @@ def wrap3(dfunc):
 
 def insert(source_str, insert_str, pos):
     return ''.join((source_str[:pos], insert_str, source_str[pos:]))
+
+
+class SkipException(Exception):
+    pass
+
+
+@contextmanager
+def skippable():
+    try:
+        yield
+    except SkipException:
+        pass

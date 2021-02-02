@@ -91,37 +91,6 @@ def hypergen(func, *args, **kwargs):
     return html
 
 
-# hypergen(lambda: None)
-
-
-class LiveviewHttpResponse(HttpResponse):
-    def __init__(self, commands):
-        pass
-
-
-def liveview(request, func, *args, **kwargs):
-    html = hypergen(
-        func,
-        *args,
-        auto_id=True,
-        id_prefix=freedom.loads(request.body)["id_prefix"]
-        if request.is_ajax() else "",
-        liveview=True,
-        **kwargs)
-
-
-class SkipException(Exception):
-    pass
-
-
-@contextmanager
-def skippable():
-    try:
-        yield
-    except SkipException:
-        pass
-
-
 ### Building HTML, internal API ###
 
 
@@ -151,25 +120,95 @@ def _element_start_3(children, into, void, sep):
     write(*children, into=into, sep=sep)
 
 
-def element_start(*args, **kwargs):
-    return control_element_start(*args, **kwargs)
+def element_start(tag,
+                  children,
+                  lazy=False,
+                  into=None,
+                  void=False,
+                  sep="",
+                  add_to=None,
+                  js_cb="H.cbs.s",
+                  **attrs):
+    # TODO: Clean up this function. Only auto-id things with event handlers.
+    assert "add_to" not in attrs
+    if state.auto_id and "id_" not in attrs:
+        attrs["id_"] = state.id_prefix + next(state.id_counter)
+
+    attrs = _element_start_1(tag, attrs, into)
+
+    meta = {}
+    if state.liveview is True:
+        meta["this"] = "{}('{}')".format(js_cb, attrs["id_"])
+        meta["id"] = attrs["id_"]
+        meta["js_cb"] = js_cb
+    if into is not None:
+        into.meta = meta
+    for k, v in items(attrs):
+        if state.liveview is True and k.startswith("on") and type(v) in (
+                list, tuple):
+            tmp1 = v
+            tmp2 = lambda: _callback(tmp1, meta["this"])
+            raw(" ", k, '="', into=into)
+            raw(tmp2 if lazy else tmp2(), into=into)
+            raw('"', into=into)
+        else:
+            _element_start_2(k, v, into)
+
+    _element_start_3(children, into, void, sep)
+
+    blob = Blob(into, meta)
+    if add_to is not None:
+        add_to.append(blob)
+    return blob
+
+
+def element(tag,
+            children,
+            lazy=False,
+            into=None,
+            void=False,
+            sep="",
+            add_to=None,
+            **attrs):
+    blob = element_start(
+        tag,
+        children,
+        lazy=lazy,
+        into=into,
+        void=void,
+        sep="",
+        add_to=add_to,
+        **attrs)
+    element_end(tag, [], into=into, void=void)
+    return blob
+
+
+def element_ret(tag,
+                children,
+                lazy=False,
+                into=None,
+                void=False,
+                sep="",
+                add_to=None,
+                **attrs):
+    into = Blob()
+    element(
+        tag,
+        children,
+        lazy=lazy,
+        into=into,
+        void=void,
+        sep="",
+        add_to=add_to,
+        **attrs)
+
+    return into
 
 
 def element_end(tag, children, into=None, sep="", void=False):
     if void is False:
         write(*children, into=into, sep=sep)
         raw(("</", t(tag), ">"), into=into)
-
-
-def element(tag, children, into=None, sep="", void=False, **attrs):
-    element_start(tag, children, into=into, sep=sep, void=void, **attrs)
-    element_end(tag, [], into=into, void=void)
-
-
-def element_ret(tag, children, sep="", void=False, **attrs):
-    into = Blob()
-    element(tag, children, into=into, sep=sep, void=void, **attrs)
-    return into
 
 
 def element_con(tag, children, into=None, sep="", void=False, **attrs):
@@ -302,6 +341,7 @@ class THIS(object):
 
 
 NON_SCALARS = set((list, dict, tuple))
+DELETED = ""
 
 
 def _callback(args, this, debounce=0):
@@ -328,109 +368,48 @@ def _callback(args, this, debounce=0):
             this=this))
 
 
-def control_element_start(tag,
-                          children,
-                          lazy=False,
-                          into=None,
-                          void=False,
-                          sep="",
-                          add_to=None,
-                          js_cb="H.cbs.s",
-                          **attrs):
-    # TODO: Clean up this function. Only auto-id things with event handlers.
-    assert "add_to" not in attrs
-    if state.auto_id and "id_" not in attrs:
-        attrs["id_"] = state.id_prefix + next(state.id_counter)
+class base_element(ContextDecorator):
+    js_cb = "H.cbs.s"
+    void = False
 
-    attrs = _element_start_1(tag, attrs, into)
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if issubclass(type(child), base_element):
+                state.html[child.i] = DELETED
 
-    meta = {}
-    if state.liveview is True:
-        meta["this"] = "{}('{}')".format(js_cb, attrs["id_"])
-        meta["id"] = attrs["id_"]
-        meta["js_cb"] = js_cb
-    if into is not None:
-        into.meta = meta
-    for k, v in items(attrs):
-        if state.liveview is True and k.startswith("on") and type(v) in (
-                list, tuple):
-            tmp1 = v
-            tmp2 = lambda: _callback(tmp1, meta["this"])
-            raw(" ", k, '="', into=into)
-            raw(tmp2 if lazy else tmp2(), into=into)
-            raw('"', into=into)
-        else:
-            _element_start_2(k, v, into)
+        state.html.append(
+            lambda: element_ret(self.tag, children, js_cb=self.js_cb, void=self.void, **attrs))
+        super(base_element, self).__init__()
 
-    _element_start_3(children, into, void, sep)
+    def __enter__(self):
+        element_start(
+            self.tag,
+            self.children,
+            js_cb=self.js_cb,
+            void=self.void,
+            this=self,
+            **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-    blob = Blob(into, meta)
-    if add_to is not None:
-        add_to.append(blob)
-    return blob
+    def __exit__(self, *exc):
+        return element_end(self.tag, [])
 
+    def __str__(self):
 
-def control_element(tag,
-                    children,
-                    lazy=False,
-                    into=None,
-                    void=False,
-                    sep="",
-                    add_to=None,
-                    **attrs):
-    blob = control_element_start(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-    element_end(tag, [], into=into, void=void)
-    return blob
+        blob = element_ret(
+            self.tag,
+            self.children,
+            js_cb=self.js_cb,
+            void=self.void,
+            **self.attrs)
+        return "".join(blob.html)
 
-
-def control_element_ret(tag,
-                        children,
-                        lazy=False,
-                        into=None,
-                        void=False,
-                        sep="",
-                        add_to=None,
-                        **attrs):
-    into = Blob()
-    control_element_start(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-    return into
-
-
-def control_element_ret2(tag,
-                         children,
-                         lazy=False,
-                         into=None,
-                         void=False,
-                         sep="",
-                         add_to=None,
-                         **attrs):
-    into = Blob()
-    control_element(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-    return into
+    def __unicode__(self):
+        return self.__str__()
 
 
 ### Input ###
@@ -443,120 +422,40 @@ INPUT_TYPES = dict(
     week="H.cbs.i")
 
 
-def input_(**attrs):
-    return control_element(
-        "input", [],
-        void=True,
-        js_cb=INPUT_TYPES.get(attrs.get("type_", "text"), "H.cbs.s"),
-        **attrs)
+class input_(base_element):
+    tag = "input"
+    void = True
+
+    def __init__(self, *children, **attrs):
+        self.js_cb = INPUT_TYPES.get(attrs.get("type_", "text"), "H.cbs.s")
+        super(input_, self).__init__(*children, **attrs)
+
+    void = True
 
 
-def input_ret(**attrs):
-    return control_element_ret("input", [], **attrs)
-
-
-input_.r = input_ret
+input_.r = input_
 
 ### Select ###
 
 
-def _js_cb_select(attrs):
-    type_ = attrs.pop("js_cb", None)
-    if type_ is str:
-        attrs["js_cb"] = "H.cbs.s"
-    elif type_ is int:
-        attrs["js_cb"] = "H.cbs.i"
-    elif type_ is float:
-        attrs["js_cb"] = "H.cbs.f"
-    elif type_ is None:
-        attrs["js_cb"] = "H.cbs.g"
-    else:
-        raise Exception(
-            "Bad coercion, {}. Only str, unicode, int and float are"
-            " supported")
+class select(base_element):
+    tag = "select"
 
 
-def select_sta(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element_start("select", children, **attrs)
-
-
-def select_end(*children, **kwargs):
-    return element_end("select", children, **kwargs)
-
-
-def select_ret(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element_ret("select", children, **attrs)
-
-
-@contextmanager
-def select_con(*children, **attrs):
-    _js_cb_select(attrs)
-    for x in control_element_con("select", children, **attrs):
-        yield x
-
-
-def select_dec(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element_dec("select", children, **attrs)
-
-
-def select(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element("select", children, **attrs)
-
-
-select.s = select_sta
-select.e = select_end
-select.r = select_ret
-select.c = select_con
-select.d = select_dec
-
+select.r = select
+select.c = select
+select.d = select
 
 ### Textarea ###
-def _js_cb_textarea(attrs):
-    attrs["js_cb"] = attrs.get("js_cb", "H.cbs.t")
 
 
-def textarea_sta(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return control_element_start("textarea", children, **attrs)
+class textarea(base_element):
+    tag = "textarea"
 
 
-def textarea_end(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return element_end("textarea", children, **attrs)
-
-
-def textarea_ret(*children, **attrs):
-    _js_cb_textarea(attrs)
-    # TODO FIX!
-    return control_element_ret2("textarea", children, **attrs)
-
-
-@contextmanager
-def textarea_con(*children, **attrs):
-    _js_cb_textarea(attrs)
-    for x in control_element_con("textarea", children, **attrs):
-        yield x
-
-
-def textarea_dec(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return control_element_dec("textarea", children, **attrs)
-
-
-def textarea(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return control_element("textarea", children, **attrs)
-
-
-textarea.s = textarea_sta
-textarea.e = textarea_end
-textarea.r = textarea_ret
-textarea.c = textarea_con
-textarea.d = textarea_dec
+textarea.r = textarea
+textarea.c = textarea
+textarea.d = textarea
 
 ### Special tags ###
 
@@ -566,36 +465,10 @@ def doctype(type_="html"):
 
 
 ### TEMPLATE-ELEMENT ###
-DELETED = ""
 
 
-class div(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is div:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("div", children, **attrs))
-        super(div, self).__init__()
-
-    def __enter__(self):
-        element_start("div", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("div", [])
-
-    def __str__(self):
-
-        blob = element_ret("div", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class div(base_element):
+    tag = "div"
 
 
 div.r = div

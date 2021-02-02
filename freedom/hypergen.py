@@ -91,37 +91,6 @@ def hypergen(func, *args, **kwargs):
     return html
 
 
-# hypergen(lambda: None)
-
-
-class LiveviewHttpResponse(HttpResponse):
-    def __init__(self, commands):
-        pass
-
-
-def liveview(request, func, *args, **kwargs):
-    html = hypergen(
-        func,
-        *args,
-        auto_id=True,
-        id_prefix=freedom.loads(request.body)["id_prefix"]
-        if request.is_ajax() else "",
-        liveview=True,
-        **kwargs)
-
-
-class SkipException(Exception):
-    pass
-
-
-@contextmanager
-def skippable():
-    try:
-        yield
-    except SkipException:
-        pass
-
-
 ### Building HTML, internal API ###
 
 
@@ -151,25 +120,95 @@ def _element_start_3(children, into, void, sep):
     write(*children, into=into, sep=sep)
 
 
-def element_start(*args, **kwargs):
-    return control_element_start(*args, **kwargs)
+def element_start(tag,
+                  children,
+                  lazy=False,
+                  into=None,
+                  void=False,
+                  sep="",
+                  add_to=None,
+                  js_cb="H.cbs.s",
+                  **attrs):
+    # TODO: Clean up this function. Only auto-id things with event handlers.
+    assert "add_to" not in attrs
+    if state.auto_id and "id_" not in attrs:
+        attrs["id_"] = state.id_prefix + next(state.id_counter)
+
+    attrs = _element_start_1(tag, attrs, into)
+
+    meta = {}
+    if state.liveview is True:
+        meta["this"] = "{}('{}')".format(js_cb, attrs["id_"])
+        meta["id"] = attrs["id_"]
+        meta["js_cb"] = js_cb
+    if into is not None:
+        into.meta = meta
+    for k, v in items(attrs):
+        if state.liveview is True and k.startswith("on") and type(v) in (
+                list, tuple):
+            tmp1 = v
+            tmp2 = lambda: _callback(tmp1, meta["this"])
+            raw(" ", k, '="', into=into)
+            raw(tmp2 if lazy else tmp2(), into=into)
+            raw('"', into=into)
+        else:
+            _element_start_2(k, v, into)
+
+    _element_start_3(children, into, void, sep)
+
+    blob = Blob(into, meta)
+    if add_to is not None:
+        add_to.append(blob)
+    return blob
+
+
+def element(tag,
+            children,
+            lazy=False,
+            into=None,
+            void=False,
+            sep="",
+            add_to=None,
+            **attrs):
+    blob = element_start(
+        tag,
+        children,
+        lazy=lazy,
+        into=into,
+        void=void,
+        sep="",
+        add_to=add_to,
+        **attrs)
+    element_end(tag, [], into=into, void=void)
+    return blob
+
+
+def element_ret(tag,
+                children,
+                lazy=False,
+                into=None,
+                void=False,
+                sep="",
+                add_to=None,
+                **attrs):
+    into = Blob()
+    element(
+        tag,
+        children,
+        lazy=lazy,
+        into=into,
+        void=void,
+        sep="",
+        add_to=add_to,
+        **attrs)
+
+    return into
 
 
 def element_end(tag, children, into=None, sep="", void=False):
     if void is False:
         write(*children, into=into, sep=sep)
         raw(("</", t(tag), ">"), into=into)
-
-
-def element(tag, children, into=None, sep="", void=False, **attrs):
-    element_start(tag, children, into=into, sep=sep, void=void, **attrs)
-    element_end(tag, [], into=into, void=void)
-
-
-def element_ret(tag, children, sep="", void=False, **attrs):
-    into = Blob()
-    element(tag, children, into=into, sep=sep, void=void, **attrs)
-    return into
 
 
 def element_con(tag, children, into=None, sep="", void=False, **attrs):
@@ -302,6 +341,7 @@ class THIS(object):
 
 
 NON_SCALARS = set((list, dict, tuple))
+DELETED = ""
 
 
 def _callback(args, this, debounce=0):
@@ -317,7 +357,9 @@ def _callback(args, this, debounce=0):
             args2.append(
                 freedom.quote("H.e['{}'][{}]".format(state.target_id, id(
                     arg))))
+            print "AAAA", repr(arg)
         else:
+            print "BBB", repr(arg)
             args2.append(arg)
 
     return "H.cb({})".format(
@@ -328,109 +370,47 @@ def _callback(args, this, debounce=0):
             this=this))
 
 
-def control_element_start(tag,
-                          children,
-                          lazy=False,
-                          into=None,
-                          void=False,
-                          sep="",
-                          add_to=None,
-                          js_cb="H.cbs.s",
-                          **attrs):
-    # TODO: Clean up this function. Only auto-id things with event handlers.
-    assert "add_to" not in attrs
-    if state.auto_id and "id_" not in attrs:
-        attrs["id_"] = state.id_prefix + next(state.id_counter)
+class base_element(ContextDecorator):
+    js_cb = "H.cbs.s"
+    void = False
 
-    attrs = _element_start_1(tag, attrs, into)
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if issubclass(type(child), base_element):
+                state.html[child.i] = DELETED
 
-    meta = {}
-    if state.liveview is True:
-        meta["this"] = "{}('{}')".format(js_cb, attrs["id_"])
-        meta["id"] = attrs["id_"]
-        meta["js_cb"] = js_cb
-    if into is not None:
-        into.meta = meta
-    for k, v in items(attrs):
-        if state.liveview is True and k.startswith("on") and type(v) in (
-                list, tuple):
-            tmp1 = v
-            tmp2 = lambda: _callback(tmp1, meta["this"])
-            raw(" ", k, '="', into=into)
-            raw(tmp2 if lazy else tmp2(), into=into)
-            raw('"', into=into)
-        else:
-            _element_start_2(k, v, into)
+        state.html.append(
+            lambda: element_ret(self.tag, children, js_cb=self.js_cb, void=self.void, **attrs))
+        super(base_element, self).__init__()
 
-    _element_start_3(children, into, void, sep)
+    def __enter__(self):
+        element_start(
+            self.tag,
+            self.children,
+            js_cb=self.js_cb,
+            void=self.void,
+            **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-    blob = Blob(into, meta)
-    if add_to is not None:
-        add_to.append(blob)
-    return blob
+    def __exit__(self, *exc):
+        return element_end(self.tag, [])
 
+    def __str__(self):
 
-def control_element(tag,
-                    children,
-                    lazy=False,
-                    into=None,
-                    void=False,
-                    sep="",
-                    add_to=None,
-                    **attrs):
-    blob = control_element_start(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-    element_end(tag, [], into=into, void=void)
-    return blob
+        blob = element_ret(
+            self.tag,
+            self.children,
+            js_cb=self.js_cb,
+            void=self.void,
+            **self.attrs)
+        return "".join(blob.html)
 
-
-def control_element_ret(tag,
-                        children,
-                        lazy=False,
-                        into=None,
-                        void=False,
-                        sep="",
-                        add_to=None,
-                        **attrs):
-    into = Blob()
-    control_element_start(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-    return into
-
-
-def control_element_ret2(tag,
-                         children,
-                         lazy=False,
-                         into=None,
-                         void=False,
-                         sep="",
-                         add_to=None,
-                         **attrs):
-    into = Blob()
-    control_element(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-    return into
+    def __unicode__(self):
+        return self.__str__()
 
 
 ### Input ###
@@ -443,120 +423,40 @@ INPUT_TYPES = dict(
     week="H.cbs.i")
 
 
-def input_(**attrs):
-    return control_element(
-        "input", [],
-        void=True,
-        js_cb=INPUT_TYPES.get(attrs.get("type_", "text"), "H.cbs.s"),
-        **attrs)
+class input_(base_element):
+    tag = "input"
+    void = True
+
+    def __init__(self, *children, **attrs):
+        self.js_cb = INPUT_TYPES.get(attrs.get("type_", "text"), "H.cbs.s")
+        super(input_, self).__init__(*children, **attrs)
+
+    void = True
 
 
-def input_ret(**attrs):
-    return control_element_ret("input", [], **attrs)
-
-
-input_.r = input_ret
+input_.r = input_
 
 ### Select ###
 
 
-def _js_cb_select(attrs):
-    type_ = attrs.pop("js_cb", None)
-    if type_ is str:
-        attrs["js_cb"] = "H.cbs.s"
-    elif type_ is int:
-        attrs["js_cb"] = "H.cbs.i"
-    elif type_ is float:
-        attrs["js_cb"] = "H.cbs.f"
-    elif type_ is None:
-        attrs["js_cb"] = "H.cbs.g"
-    else:
-        raise Exception(
-            "Bad coercion, {}. Only str, unicode, int and float are"
-            " supported")
+class select(base_element):
+    tag = "select"
 
 
-def select_sta(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element_start("select", children, **attrs)
-
-
-def select_end(*children, **kwargs):
-    return element_end("select", children, **kwargs)
-
-
-def select_ret(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element_ret("select", children, **attrs)
-
-
-@contextmanager
-def select_con(*children, **attrs):
-    _js_cb_select(attrs)
-    for x in control_element_con("select", children, **attrs):
-        yield x
-
-
-def select_dec(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element_dec("select", children, **attrs)
-
-
-def select(*children, **attrs):
-    _js_cb_select(attrs)
-    return control_element("select", children, **attrs)
-
-
-select.s = select_sta
-select.e = select_end
-select.r = select_ret
-select.c = select_con
-select.d = select_dec
-
+select.r = select
+select.c = select
+select.d = select
 
 ### Textarea ###
-def _js_cb_textarea(attrs):
-    attrs["js_cb"] = attrs.get("js_cb", "H.cbs.t")
 
 
-def textarea_sta(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return control_element_start("textarea", children, **attrs)
+class textarea(base_element):
+    tag = "textarea"
 
 
-def textarea_end(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return element_end("textarea", children, **attrs)
-
-
-def textarea_ret(*children, **attrs):
-    _js_cb_textarea(attrs)
-    # TODO FIX!
-    return control_element_ret2("textarea", children, **attrs)
-
-
-@contextmanager
-def textarea_con(*children, **attrs):
-    _js_cb_textarea(attrs)
-    for x in control_element_con("textarea", children, **attrs):
-        yield x
-
-
-def textarea_dec(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return control_element_dec("textarea", children, **attrs)
-
-
-def textarea(*children, **attrs):
-    _js_cb_textarea(attrs)
-    return control_element("textarea", children, **attrs)
-
-
-textarea.s = textarea_sta
-textarea.e = textarea_end
-textarea.r = textarea_ret
-textarea.c = textarea_con
-textarea.d = textarea_dec
+textarea.r = textarea
+textarea.c = textarea
+textarea.d = textarea
 
 ### Special tags ###
 
@@ -566,36 +466,10 @@ def doctype(type_="html"):
 
 
 ### TEMPLATE-ELEMENT ###
-DELETED = ""
 
 
-class div(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is div:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("div", children, **attrs))
-        super(div, self).__init__()
-
-    def __enter__(self):
-        element_start("div", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("div", [])
-
-    def __str__(self):
-
-        blob = element_ret("div", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class div(base_element):
+    tag = "div"
 
 
 div.r = div
@@ -617,36 +491,10 @@ link.r = link_ret
 ### TEMPLATE-VOID-ELEMENT ###
 
 
-DELETED = ""
 
 
-class a(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is a:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("a", children, **attrs))
-        super(a, self).__init__()
-
-    def __enter__(self):
-        element_start("a", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("a", [])
-
-    def __str__(self):
-
-        blob = element_ret("a", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class a(base_element):
+    tag = "a"
 
 
 a.r = a
@@ -655,36 +503,10 @@ a.d = a
 
 
 
-DELETED = ""
 
 
-class abbr(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is abbr:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("abbr", children, **attrs))
-        super(abbr, self).__init__()
-
-    def __enter__(self):
-        element_start("abbr", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("abbr", [])
-
-    def __str__(self):
-
-        blob = element_ret("abbr", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class abbr(base_element):
+    tag = "abbr"
 
 
 abbr.r = abbr
@@ -693,36 +515,10 @@ abbr.d = abbr
 
 
 
-DELETED = ""
 
 
-class acronym(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is acronym:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("acronym", children, **attrs))
-        super(acronym, self).__init__()
-
-    def __enter__(self):
-        element_start("acronym", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("acronym", [])
-
-    def __str__(self):
-
-        blob = element_ret("acronym", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class acronym(base_element):
+    tag = "acronym"
 
 
 acronym.r = acronym
@@ -731,36 +527,10 @@ acronym.d = acronym
 
 
 
-DELETED = ""
 
 
-class address(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is address:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("address", children, **attrs))
-        super(address, self).__init__()
-
-    def __enter__(self):
-        element_start("address", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("address", [])
-
-    def __str__(self):
-
-        blob = element_ret("address", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class address(base_element):
+    tag = "address"
 
 
 address.r = address
@@ -769,36 +539,10 @@ address.d = address
 
 
 
-DELETED = ""
 
 
-class applet(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is applet:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("applet", children, **attrs))
-        super(applet, self).__init__()
-
-    def __enter__(self):
-        element_start("applet", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("applet", [])
-
-    def __str__(self):
-
-        blob = element_ret("applet", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class applet(base_element):
+    tag = "applet"
 
 
 applet.r = applet
@@ -807,36 +551,10 @@ applet.d = applet
 
 
 
-DELETED = ""
 
 
-class article(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is article:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("article", children, **attrs))
-        super(article, self).__init__()
-
-    def __enter__(self):
-        element_start("article", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("article", [])
-
-    def __str__(self):
-
-        blob = element_ret("article", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class article(base_element):
+    tag = "article"
 
 
 article.r = article
@@ -845,36 +563,10 @@ article.d = article
 
 
 
-DELETED = ""
 
 
-class aside(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is aside:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("aside", children, **attrs))
-        super(aside, self).__init__()
-
-    def __enter__(self):
-        element_start("aside", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("aside", [])
-
-    def __str__(self):
-
-        blob = element_ret("aside", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class aside(base_element):
+    tag = "aside"
 
 
 aside.r = aside
@@ -883,36 +575,10 @@ aside.d = aside
 
 
 
-DELETED = ""
 
 
-class audio(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is audio:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("audio", children, **attrs))
-        super(audio, self).__init__()
-
-    def __enter__(self):
-        element_start("audio", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("audio", [])
-
-    def __str__(self):
-
-        blob = element_ret("audio", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class audio(base_element):
+    tag = "audio"
 
 
 audio.r = audio
@@ -921,36 +587,10 @@ audio.d = audio
 
 
 
-DELETED = ""
 
 
-class b(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is b:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("b", children, **attrs))
-        super(b, self).__init__()
-
-    def __enter__(self):
-        element_start("b", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("b", [])
-
-    def __str__(self):
-
-        blob = element_ret("b", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class b(base_element):
+    tag = "b"
 
 
 b.r = b
@@ -959,36 +599,10 @@ b.d = b
 
 
 
-DELETED = ""
 
 
-class basefont(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is basefont:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("basefont", children, **attrs))
-        super(basefont, self).__init__()
-
-    def __enter__(self):
-        element_start("basefont", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("basefont", [])
-
-    def __str__(self):
-
-        blob = element_ret("basefont", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class basefont(base_element):
+    tag = "basefont"
 
 
 basefont.r = basefont
@@ -997,36 +611,10 @@ basefont.d = basefont
 
 
 
-DELETED = ""
 
 
-class bdi(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is bdi:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("bdi", children, **attrs))
-        super(bdi, self).__init__()
-
-    def __enter__(self):
-        element_start("bdi", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("bdi", [])
-
-    def __str__(self):
-
-        blob = element_ret("bdi", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class bdi(base_element):
+    tag = "bdi"
 
 
 bdi.r = bdi
@@ -1035,36 +623,10 @@ bdi.d = bdi
 
 
 
-DELETED = ""
 
 
-class bdo(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is bdo:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("bdo", children, **attrs))
-        super(bdo, self).__init__()
-
-    def __enter__(self):
-        element_start("bdo", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("bdo", [])
-
-    def __str__(self):
-
-        blob = element_ret("bdo", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class bdo(base_element):
+    tag = "bdo"
 
 
 bdo.r = bdo
@@ -1073,36 +635,10 @@ bdo.d = bdo
 
 
 
-DELETED = ""
 
 
-class big(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is big:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("big", children, **attrs))
-        super(big, self).__init__()
-
-    def __enter__(self):
-        element_start("big", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("big", [])
-
-    def __str__(self):
-
-        blob = element_ret("big", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class big(base_element):
+    tag = "big"
 
 
 big.r = big
@@ -1111,36 +647,10 @@ big.d = big
 
 
 
-DELETED = ""
 
 
-class blockquote(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is blockquote:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("blockquote", children, **attrs))
-        super(blockquote, self).__init__()
-
-    def __enter__(self):
-        element_start("blockquote", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("blockquote", [])
-
-    def __str__(self):
-
-        blob = element_ret("blockquote", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class blockquote(base_element):
+    tag = "blockquote"
 
 
 blockquote.r = blockquote
@@ -1149,36 +659,10 @@ blockquote.d = blockquote
 
 
 
-DELETED = ""
 
 
-class body(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is body:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("body", children, **attrs))
-        super(body, self).__init__()
-
-    def __enter__(self):
-        element_start("body", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("body", [])
-
-    def __str__(self):
-
-        blob = element_ret("body", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class body(base_element):
+    tag = "body"
 
 
 body.r = body
@@ -1187,36 +671,10 @@ body.d = body
 
 
 
-DELETED = ""
 
 
-class button(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is button:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("button", children, **attrs))
-        super(button, self).__init__()
-
-    def __enter__(self):
-        element_start("button", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("button", [])
-
-    def __str__(self):
-
-        blob = element_ret("button", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class button(base_element):
+    tag = "button"
 
 
 button.r = button
@@ -1225,36 +683,10 @@ button.d = button
 
 
 
-DELETED = ""
 
 
-class canvas(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is canvas:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("canvas", children, **attrs))
-        super(canvas, self).__init__()
-
-    def __enter__(self):
-        element_start("canvas", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("canvas", [])
-
-    def __str__(self):
-
-        blob = element_ret("canvas", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class canvas(base_element):
+    tag = "canvas"
 
 
 canvas.r = canvas
@@ -1263,36 +695,10 @@ canvas.d = canvas
 
 
 
-DELETED = ""
 
 
-class caption(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is caption:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("caption", children, **attrs))
-        super(caption, self).__init__()
-
-    def __enter__(self):
-        element_start("caption", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("caption", [])
-
-    def __str__(self):
-
-        blob = element_ret("caption", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class caption(base_element):
+    tag = "caption"
 
 
 caption.r = caption
@@ -1301,36 +707,10 @@ caption.d = caption
 
 
 
-DELETED = ""
 
 
-class center(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is center:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("center", children, **attrs))
-        super(center, self).__init__()
-
-    def __enter__(self):
-        element_start("center", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("center", [])
-
-    def __str__(self):
-
-        blob = element_ret("center", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class center(base_element):
+    tag = "center"
 
 
 center.r = center
@@ -1339,36 +719,10 @@ center.d = center
 
 
 
-DELETED = ""
 
 
-class cite(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is cite:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("cite", children, **attrs))
-        super(cite, self).__init__()
-
-    def __enter__(self):
-        element_start("cite", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("cite", [])
-
-    def __str__(self):
-
-        blob = element_ret("cite", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class cite(base_element):
+    tag = "cite"
 
 
 cite.r = cite
@@ -1377,36 +731,10 @@ cite.d = cite
 
 
 
-DELETED = ""
 
 
-class code(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is code:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("code", children, **attrs))
-        super(code, self).__init__()
-
-    def __enter__(self):
-        element_start("code", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("code", [])
-
-    def __str__(self):
-
-        blob = element_ret("code", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode_(self):
-        return self.__str__()
+class code(base_element):
+    tag = "code"
 
 
 code.r = code
@@ -1415,36 +743,10 @@ code.d = code
 
 
 
-DELETED = ""
 
 
-class colgroup(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is colgroup:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("colgroup", children, **attrs))
-        super(colgroup, self).__init__()
-
-    def __enter__(self):
-        element_start("colgroup", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("colgroup", [])
-
-    def __str__(self):
-
-        blob = element_ret("colgroup", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class colgroup(base_element):
+    tag = "colgroup"
 
 
 colgroup.r = colgroup
@@ -1453,36 +755,10 @@ colgroup.d = colgroup
 
 
 
-DELETED = ""
 
 
-class data(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is data:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("data", children, **attrs))
-        super(data, self).__init__()
-
-    def __enter__(self):
-        element_start("data", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("data", [])
-
-    def __str__(self):
-
-        blob = element_ret("data", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class data(base_element):
+    tag = "data"
 
 
 data.r = data
@@ -1491,36 +767,10 @@ data.d = data
 
 
 
-DELETED = ""
 
 
-class datalist(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is datalist:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("datalist", children, **attrs))
-        super(datalist, self).__init__()
-
-    def __enter__(self):
-        element_start("datalist", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("datalist", [])
-
-    def __str__(self):
-
-        blob = element_ret("datalist", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class datalist(base_element):
+    tag = "datalist"
 
 
 datalist.r = datalist
@@ -1529,36 +779,10 @@ datalist.d = datalist
 
 
 
-DELETED = ""
 
 
-class dd(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is dd:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("dd", children, **attrs))
-        super(dd, self).__init__()
-
-    def __enter__(self):
-        element_start("dd", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("dd", [])
-
-    def __str__(self):
-
-        blob = element_ret("dd", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class dd(base_element):
+    tag = "dd"
 
 
 dd.r = dd
@@ -1567,36 +791,10 @@ dd.d = dd
 
 
 
-DELETED = ""
 
 
-class del_(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is del_:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("del", children, **attrs))
-        super(del_, self).__init__()
-
-    def __enter__(self):
-        element_start("del", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("del", [])
-
-    def __str__(self):
-
-        blob = element_ret("del", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class del_(base_element):
+    tag = "del"
 
 
 del_.r = del_
@@ -1605,36 +803,10 @@ del_.d = del_
 
 
 
-DELETED = ""
 
 
-class details(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is details:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("details", children, **attrs))
-        super(details, self).__init__()
-
-    def __enter__(self):
-        element_start("details", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("details", [])
-
-    def __str__(self):
-
-        blob = element_ret("details", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class details(base_element):
+    tag = "details"
 
 
 details.r = details
@@ -1643,36 +815,10 @@ details.d = details
 
 
 
-DELETED = ""
 
 
-class dfn(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is dfn:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("dfn", children, **attrs))
-        super(dfn, self).__init__()
-
-    def __enter__(self):
-        element_start("dfn", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("dfn", [])
-
-    def __str__(self):
-
-        blob = element_ret("dfn", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class dfn(base_element):
+    tag = "dfn"
 
 
 dfn.r = dfn
@@ -1681,36 +827,10 @@ dfn.d = dfn
 
 
 
-DELETED = ""
 
 
-class dialog(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is dialog:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("dialog", children, **attrs))
-        super(dialog, self).__init__()
-
-    def __enter__(self):
-        element_start("dialog", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("dialog", [])
-
-    def __str__(self):
-
-        blob = element_ret("dialog", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class dialog(base_element):
+    tag = "dialog"
 
 
 dialog.r = dialog
@@ -1719,36 +839,10 @@ dialog.d = dialog
 
 
 
-DELETED = ""
 
 
-class dir_(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is dir_:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("dir", children, **attrs))
-        super(dir_, self).__init__()
-
-    def __enter__(self):
-        element_start("dir", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("dir", [])
-
-    def __str__(self):
-
-        blob = element_ret("dir", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class dir_(base_element):
+    tag = "dir"
 
 
 dir_.r = dir_
@@ -1757,36 +851,10 @@ dir_.d = dir_
 
 
 
-DELETED = ""
 
 
-class dl(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is dl:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("dl", children, **attrs))
-        super(dl, self).__init__()
-
-    def __enter__(self):
-        element_start("dl", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("dl", [])
-
-    def __str__(self):
-
-        blob = element_ret("dl", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class dl(base_element):
+    tag = "dl"
 
 
 dl.r = dl
@@ -1795,36 +863,10 @@ dl.d = dl
 
 
 
-DELETED = ""
 
 
-class dt(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is dt:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("dt", children, **attrs))
-        super(dt, self).__init__()
-
-    def __enter__(self):
-        element_start("dt", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("dt", [])
-
-    def __str__(self):
-
-        blob = element_ret("dt", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class dt(base_element):
+    tag = "dt"
 
 
 dt.r = dt
@@ -1833,36 +875,10 @@ dt.d = dt
 
 
 
-DELETED = ""
 
 
-class em(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is em:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("em", children, **attrs))
-        super(em, self).__init__()
-
-    def __enter__(self):
-        element_start("em", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("em", [])
-
-    def __str__(self):
-
-        blob = element_ret("em", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class em(base_element):
+    tag = "em"
 
 
 em.r = em
@@ -1871,36 +887,10 @@ em.d = em
 
 
 
-DELETED = ""
 
 
-class fieldset(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is fieldset:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("fieldset", children, **attrs))
-        super(fieldset, self).__init__()
-
-    def __enter__(self):
-        element_start("fieldset", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("fieldset", [])
-
-    def __str__(self):
-
-        blob = element_ret("fieldset", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class fieldset(base_element):
+    tag = "fieldset"
 
 
 fieldset.r = fieldset
@@ -1909,36 +899,10 @@ fieldset.d = fieldset
 
 
 
-DELETED = ""
 
 
-class figcaption(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is figcaption:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("figcaption", children, **attrs))
-        super(figcaption, self).__init__()
-
-    def __enter__(self):
-        element_start("figcaption", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("figcaption", [])
-
-    def __str__(self):
-
-        blob = element_ret("figcaption", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class figcaption(base_element):
+    tag = "figcaption"
 
 
 figcaption.r = figcaption
@@ -1947,36 +911,10 @@ figcaption.d = figcaption
 
 
 
-DELETED = ""
 
 
-class figure(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is figure:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("figure", children, **attrs))
-        super(figure, self).__init__()
-
-    def __enter__(self):
-        element_start("figure", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("figure", [])
-
-    def __str__(self):
-
-        blob = element_ret("figure", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class figure(base_element):
+    tag = "figure"
 
 
 figure.r = figure
@@ -1985,36 +923,10 @@ figure.d = figure
 
 
 
-DELETED = ""
 
 
-class font(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is font:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("font", children, **attrs))
-        super(font, self).__init__()
-
-    def __enter__(self):
-        element_start("font", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("font", [])
-
-    def __str__(self):
-
-        blob = element_ret("font", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class font(base_element):
+    tag = "font"
 
 
 font.r = font
@@ -2023,36 +935,10 @@ font.d = font
 
 
 
-DELETED = ""
 
 
-class footer(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is footer:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("footer", children, **attrs))
-        super(footer, self).__init__()
-
-    def __enter__(self):
-        element_start("footer", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("footer", [])
-
-    def __str__(self):
-
-        blob = element_ret("footer", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class footer(base_element):
+    tag = "footer"
 
 
 footer.r = footer
@@ -2061,36 +947,10 @@ footer.d = footer
 
 
 
-DELETED = ""
 
 
-class form(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is form:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("form", children, **attrs))
-        super(form, self).__init__()
-
-    def __enter__(self):
-        element_start("form", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("form", [])
-
-    def __str__(self):
-
-        blob = element_ret("form", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class form(base_element):
+    tag = "form"
 
 
 form.r = form
@@ -2099,36 +959,10 @@ form.d = form
 
 
 
-DELETED = ""
 
 
-class frame(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is frame:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("frame", children, **attrs))
-        super(frame, self).__init__()
-
-    def __enter__(self):
-        element_start("frame", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("frame", [])
-
-    def __str__(self):
-
-        blob = element_ret("frame", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class frame(base_element):
+    tag = "frame"
 
 
 frame.r = frame
@@ -2137,36 +971,10 @@ frame.d = frame
 
 
 
-DELETED = ""
 
 
-class frameset(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is frameset:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("frameset", children, **attrs))
-        super(frameset, self).__init__()
-
-    def __enter__(self):
-        element_start("frameset", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("frameset", [])
-
-    def __str__(self):
-
-        blob = element_ret("frameset", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class frameset(base_element):
+    tag = "frameset"
 
 
 frameset.r = frameset
@@ -2175,36 +983,10 @@ frameset.d = frameset
 
 
 
-DELETED = ""
 
 
-class h1(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is h1:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("h1", children, **attrs))
-        super(h1, self).__init__()
-
-    def __enter__(self):
-        element_start("h1", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("h1", [])
-
-    def __str__(self):
-
-        blob = element_ret("h1", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class h1(base_element):
+    tag = "h1"
 
 
 h1.r = h1
@@ -2213,36 +995,10 @@ h1.d = h1
 
 
 
-DELETED = ""
 
 
-class h2(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is h2:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("h2", children, **attrs))
-        super(h2, self).__init__()
-
-    def __enter__(self):
-        element_start("h2", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("h2", [])
-
-    def __str__(self):
-
-        blob = element_ret("h2", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class h2(base_element):
+    tag = "h2"
 
 
 h2.r = h2
@@ -2251,36 +1007,10 @@ h2.d = h2
 
 
 
-DELETED = ""
 
 
-class h3(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is h3:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("h3", children, **attrs))
-        super(h3, self).__init__()
-
-    def __enter__(self):
-        element_start("h3", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("h3", [])
-
-    def __str__(self):
-
-        blob = element_ret("h3", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class h3(base_element):
+    tag = "h3"
 
 
 h3.r = h3
@@ -2289,36 +1019,10 @@ h3.d = h3
 
 
 
-DELETED = ""
 
 
-class h4(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is h4:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("h4", children, **attrs))
-        super(h4, self).__init__()
-
-    def __enter__(self):
-        element_start("h4", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("h4", [])
-
-    def __str__(self):
-
-        blob = element_ret("h4", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class h4(base_element):
+    tag = "h4"
 
 
 h4.r = h4
@@ -2327,36 +1031,10 @@ h4.d = h4
 
 
 
-DELETED = ""
 
 
-class h5(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is h5:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("h5", children, **attrs))
-        super(h5, self).__init__()
-
-    def __enter__(self):
-        element_start("h5", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("h5", [])
-
-    def __str__(self):
-
-        blob = element_ret("h5", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class h5(base_element):
+    tag = "h5"
 
 
 h5.r = h5
@@ -2365,36 +1043,10 @@ h5.d = h5
 
 
 
-DELETED = ""
 
 
-class h6(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is h6:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("h6", children, **attrs))
-        super(h6, self).__init__()
-
-    def __enter__(self):
-        element_start("h6", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("h6", [])
-
-    def __str__(self):
-
-        blob = element_ret("h6", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class h6(base_element):
+    tag = "h6"
 
 
 h6.r = h6
@@ -2403,36 +1055,10 @@ h6.d = h6
 
 
 
-DELETED = ""
 
 
-class head(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is head:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("head", children, **attrs))
-        super(head, self).__init__()
-
-    def __enter__(self):
-        element_start("head", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("head", [])
-
-    def __str__(self):
-
-        blob = element_ret("head", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class head(base_element):
+    tag = "head"
 
 
 head.r = head
@@ -2441,36 +1067,10 @@ head.d = head
 
 
 
-DELETED = ""
 
 
-class header(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is header:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("header", children, **attrs))
-        super(header, self).__init__()
-
-    def __enter__(self):
-        element_start("header", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("header", [])
-
-    def __str__(self):
-
-        blob = element_ret("header", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class header(base_element):
+    tag = "header"
 
 
 header.r = header
@@ -2479,36 +1079,10 @@ header.d = header
 
 
 
-DELETED = ""
 
 
-class html(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is html:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("html", children, **attrs))
-        super(html, self).__init__()
-
-    def __enter__(self):
-        element_start("html", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("html", [])
-
-    def __str__(self):
-
-        blob = element_ret("html", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class html(base_element):
+    tag = "html"
 
 
 html.r = html
@@ -2517,36 +1091,10 @@ html.d = html
 
 
 
-DELETED = ""
 
 
-class i(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is i:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("i", children, **attrs))
-        super(i, self).__init__()
-
-    def __enter__(self):
-        element_start("i", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("i", [])
-
-    def __str__(self):
-
-        blob = element_ret("i", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class i(base_element):
+    tag = "i"
 
 
 i.r = i
@@ -2555,36 +1103,10 @@ i.d = i
 
 
 
-DELETED = ""
 
 
-class iframe(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is iframe:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("iframe", children, **attrs))
-        super(iframe, self).__init__()
-
-    def __enter__(self):
-        element_start("iframe", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("iframe", [])
-
-    def __str__(self):
-
-        blob = element_ret("iframe", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class iframe(base_element):
+    tag = "iframe"
 
 
 iframe.r = iframe
@@ -2593,36 +1115,10 @@ iframe.d = iframe
 
 
 
-DELETED = ""
 
 
-class ins(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is ins:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("ins", children, **attrs))
-        super(ins, self).__init__()
-
-    def __enter__(self):
-        element_start("ins", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("ins", [])
-
-    def __str__(self):
-
-        blob = element_ret("ins", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class ins(base_element):
+    tag = "ins"
 
 
 ins.r = ins
@@ -2631,36 +1127,10 @@ ins.d = ins
 
 
 
-DELETED = ""
 
 
-class kbd(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is kbd:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("kbd", children, **attrs))
-        super(kbd, self).__init__()
-
-    def __enter__(self):
-        element_start("kbd", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("kbd", [])
-
-    def __str__(self):
-
-        blob = element_ret("kbd", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class kbd(base_element):
+    tag = "kbd"
 
 
 kbd.r = kbd
@@ -2669,36 +1139,10 @@ kbd.d = kbd
 
 
 
-DELETED = ""
 
 
-class label(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is label:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("label", children, **attrs))
-        super(label, self).__init__()
-
-    def __enter__(self):
-        element_start("label", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("label", [])
-
-    def __str__(self):
-
-        blob = element_ret("label", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class label(base_element):
+    tag = "label"
 
 
 label.r = label
@@ -2707,36 +1151,10 @@ label.d = label
 
 
 
-DELETED = ""
 
 
-class legend(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is legend:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("legend", children, **attrs))
-        super(legend, self).__init__()
-
-    def __enter__(self):
-        element_start("legend", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("legend", [])
-
-    def __str__(self):
-
-        blob = element_ret("legend", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class legend(base_element):
+    tag = "legend"
 
 
 legend.r = legend
@@ -2745,36 +1163,10 @@ legend.d = legend
 
 
 
-DELETED = ""
 
 
-class li(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is li:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("li", children, **attrs))
-        super(li, self).__init__()
-
-    def __enter__(self):
-        element_start("li", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("li", [])
-
-    def __str__(self):
-
-        blob = element_ret("li", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class li(base_element):
+    tag = "li"
 
 
 li.r = li
@@ -2783,36 +1175,10 @@ li.d = li
 
 
 
-DELETED = ""
 
 
-class main(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is main:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("main", children, **attrs))
-        super(main, self).__init__()
-
-    def __enter__(self):
-        element_start("main", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("main", [])
-
-    def __str__(self):
-
-        blob = element_ret("main", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class main(base_element):
+    tag = "main"
 
 
 main.r = main
@@ -2821,36 +1187,10 @@ main.d = main
 
 
 
-DELETED = ""
 
 
-class map_(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is map_:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("map", children, **attrs))
-        super(map_, self).__init__()
-
-    def __enter__(self):
-        element_start("map", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("map", [])
-
-    def __str__(self):
-
-        blob = element_ret("map", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class map_(base_element):
+    tag = "map"
 
 
 map_.r = map_
@@ -2859,36 +1199,10 @@ map_.d = map_
 
 
 
-DELETED = ""
 
 
-class mark(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is mark:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("mark", children, **attrs))
-        super(mark, self).__init__()
-
-    def __enter__(self):
-        element_start("mark", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("mark", [])
-
-    def __str__(self):
-
-        blob = element_ret("mark", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class mark(base_element):
+    tag = "mark"
 
 
 mark.r = mark
@@ -2897,36 +1211,10 @@ mark.d = mark
 
 
 
-DELETED = ""
 
 
-class meter(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is meter:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("meter", children, **attrs))
-        super(meter, self).__init__()
-
-    def __enter__(self):
-        element_start("meter", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("meter", [])
-
-    def __str__(self):
-
-        blob = element_ret("meter", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class meter(base_element):
+    tag = "meter"
 
 
 meter.r = meter
@@ -2935,36 +1223,10 @@ meter.d = meter
 
 
 
-DELETED = ""
 
 
-class nav(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is nav:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("nav", children, **attrs))
-        super(nav, self).__init__()
-
-    def __enter__(self):
-        element_start("nav", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("nav", [])
-
-    def __str__(self):
-
-        blob = element_ret("nav", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class nav(base_element):
+    tag = "nav"
 
 
 nav.r = nav
@@ -2973,36 +1235,10 @@ nav.d = nav
 
 
 
-DELETED = ""
 
 
-class noframes(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is noframes:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("noframes", children, **attrs))
-        super(noframes, self).__init__()
-
-    def __enter__(self):
-        element_start("noframes", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("noframes", [])
-
-    def __str__(self):
-
-        blob = element_ret("noframes", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class noframes(base_element):
+    tag = "noframes"
 
 
 noframes.r = noframes
@@ -3011,36 +1247,10 @@ noframes.d = noframes
 
 
 
-DELETED = ""
 
 
-class noscript(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is noscript:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("noscript", children, **attrs))
-        super(noscript, self).__init__()
-
-    def __enter__(self):
-        element_start("noscript", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("noscript", [])
-
-    def __str__(self):
-
-        blob = element_ret("noscript", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class noscript(base_element):
+    tag = "noscript"
 
 
 noscript.r = noscript
@@ -3049,36 +1259,10 @@ noscript.d = noscript
 
 
 
-DELETED = ""
 
 
-class object_(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is object_:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("object", children, **attrs))
-        super(object_, self).__init__()
-
-    def __enter__(self):
-        element_start("object", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("object", [])
-
-    def __str__(self):
-
-        blob = element_ret("object", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class object_(base_element):
+    tag = "object"
 
 
 object_.r = object_
@@ -3087,36 +1271,10 @@ object_.d = object_
 
 
 
-DELETED = ""
 
 
-class ol(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is ol:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("ol", children, **attrs))
-        super(ol, self).__init__()
-
-    def __enter__(self):
-        element_start("ol", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("ol", [])
-
-    def __str__(self):
-
-        blob = element_ret("ol", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class ol(base_element):
+    tag = "ol"
 
 
 ol.r = ol
@@ -3125,36 +1283,10 @@ ol.d = ol
 
 
 
-DELETED = ""
 
 
-class optgroup(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is optgroup:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("optgroup", children, **attrs))
-        super(optgroup, self).__init__()
-
-    def __enter__(self):
-        element_start("optgroup", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("optgroup", [])
-
-    def __str__(self):
-
-        blob = element_ret("optgroup", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class optgroup(base_element):
+    tag = "optgroup"
 
 
 optgroup.r = optgroup
@@ -3163,36 +1295,10 @@ optgroup.d = optgroup
 
 
 
-DELETED = ""
 
 
-class option(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is option:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("option", children, **attrs))
-        super(option, self).__init__()
-
-    def __enter__(self):
-        element_start("option", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("option", [])
-
-    def __str__(self):
-
-        blob = element_ret("option", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class option(base_element):
+    tag = "option"
 
 
 option.r = option
@@ -3201,36 +1307,10 @@ option.d = option
 
 
 
-DELETED = ""
 
 
-class output(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is output:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("output", children, **attrs))
-        super(output, self).__init__()
-
-    def __enter__(self):
-        element_start("output", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("output", [])
-
-    def __str__(self):
-
-        blob = element_ret("output", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class output(base_element):
+    tag = "output"
 
 
 output.r = output
@@ -3239,36 +1319,10 @@ output.d = output
 
 
 
-DELETED = ""
 
 
-class p(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is p:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("p", children, **attrs))
-        super(p, self).__init__()
-
-    def __enter__(self):
-        element_start("p", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("p", [])
-
-    def __str__(self):
-
-        blob = element_ret("p", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class p(base_element):
+    tag = "p"
 
 
 p.r = p
@@ -3277,36 +1331,10 @@ p.d = p
 
 
 
-DELETED = ""
 
 
-class picture(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is picture:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("picture", children, **attrs))
-        super(picture, self).__init__()
-
-    def __enter__(self):
-        element_start("picture", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("picture", [])
-
-    def __str__(self):
-
-        blob = element_ret("picture", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class picture(base_element):
+    tag = "picture"
 
 
 picture.r = picture
@@ -3315,36 +1343,10 @@ picture.d = picture
 
 
 
-DELETED = ""
 
 
-class pre(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is pre:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("pre", children, **attrs))
-        super(pre, self).__init__()
-
-    def __enter__(self):
-        element_start("pre", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("pre", [])
-
-    def __str__(self):
-
-        blob = element_ret("pre", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class pre(base_element):
+    tag = "pre"
 
 
 pre.r = pre
@@ -3353,36 +1355,10 @@ pre.d = pre
 
 
 
-DELETED = ""
 
 
-class progress(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is progress:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("progress", children, **attrs))
-        super(progress, self).__init__()
-
-    def __enter__(self):
-        element_start("progress", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("progress", [])
-
-    def __str__(self):
-
-        blob = element_ret("progress", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class progress(base_element):
+    tag = "progress"
 
 
 progress.r = progress
@@ -3391,36 +1367,10 @@ progress.d = progress
 
 
 
-DELETED = ""
 
 
-class q(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is q:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("q", children, **attrs))
-        super(q, self).__init__()
-
-    def __enter__(self):
-        element_start("q", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("q", [])
-
-    def __str__(self):
-
-        blob = element_ret("q", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class q(base_element):
+    tag = "q"
 
 
 q.r = q
@@ -3429,36 +1379,10 @@ q.d = q
 
 
 
-DELETED = ""
 
 
-class rp(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is rp:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("rp", children, **attrs))
-        super(rp, self).__init__()
-
-    def __enter__(self):
-        element_start("rp", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("rp", [])
-
-    def __str__(self):
-
-        blob = element_ret("rp", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class rp(base_element):
+    tag = "rp"
 
 
 rp.r = rp
@@ -3467,36 +1391,10 @@ rp.d = rp
 
 
 
-DELETED = ""
 
 
-class rt(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is rt:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("rt", children, **attrs))
-        super(rt, self).__init__()
-
-    def __enter__(self):
-        element_start("rt", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("rt", [])
-
-    def __str__(self):
-
-        blob = element_ret("rt", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class rt(base_element):
+    tag = "rt"
 
 
 rt.r = rt
@@ -3505,36 +1403,10 @@ rt.d = rt
 
 
 
-DELETED = ""
 
 
-class ruby(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is ruby:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("ruby", children, **attrs))
-        super(ruby, self).__init__()
-
-    def __enter__(self):
-        element_start("ruby", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("ruby", [])
-
-    def __str__(self):
-
-        blob = element_ret("ruby", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class ruby(base_element):
+    tag = "ruby"
 
 
 ruby.r = ruby
@@ -3543,36 +1415,10 @@ ruby.d = ruby
 
 
 
-DELETED = ""
 
 
-class s(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is s:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("s", children, **attrs))
-        super(s, self).__init__()
-
-    def __enter__(self):
-        element_start("s", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("s", [])
-
-    def __str__(self):
-
-        blob = element_ret("s", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class s(base_element):
+    tag = "s"
 
 
 s.r = s
@@ -3581,36 +1427,10 @@ s.d = s
 
 
 
-DELETED = ""
 
 
-class samp(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is samp:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("samp", children, **attrs))
-        super(samp, self).__init__()
-
-    def __enter__(self):
-        element_start("samp", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("samp", [])
-
-    def __str__(self):
-
-        blob = element_ret("samp", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class samp(base_element):
+    tag = "samp"
 
 
 samp.r = samp
@@ -3619,36 +1439,10 @@ samp.d = samp
 
 
 
-DELETED = ""
 
 
-class script(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is script:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("script", children, **attrs))
-        super(script, self).__init__()
-
-    def __enter__(self):
-        element_start("script", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("script", [])
-
-    def __str__(self):
-
-        blob = element_ret("script", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class script(base_element):
+    tag = "script"
 
 
 script.r = script
@@ -3657,36 +1451,10 @@ script.d = script
 
 
 
-DELETED = ""
 
 
-class section(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is section:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("section", children, **attrs))
-        super(section, self).__init__()
-
-    def __enter__(self):
-        element_start("section", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("section", [])
-
-    def __str__(self):
-
-        blob = element_ret("section", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class section(base_element):
+    tag = "section"
 
 
 section.r = section
@@ -3695,36 +1463,10 @@ section.d = section
 
 
 
-DELETED = ""
 
 
-class small(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is small:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("small", children, **attrs))
-        super(small, self).__init__()
-
-    def __enter__(self):
-        element_start("small", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("small", [])
-
-    def __str__(self):
-
-        blob = element_ret("small", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class small(base_element):
+    tag = "small"
 
 
 small.r = small
@@ -3733,36 +1475,10 @@ small.d = small
 
 
 
-DELETED = ""
 
 
-class span(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is span:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("span", children, **attrs))
-        super(span, self).__init__()
-
-    def __enter__(self):
-        element_start("span", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("span", [])
-
-    def __str__(self):
-
-        blob = element_ret("span", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class span(base_element):
+    tag = "span"
 
 
 span.r = span
@@ -3771,36 +1487,10 @@ span.d = span
 
 
 
-DELETED = ""
 
 
-class strike(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is strike:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("strike", children, **attrs))
-        super(strike, self).__init__()
-
-    def __enter__(self):
-        element_start("strike", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("strike", [])
-
-    def __str__(self):
-
-        blob = element_ret("strike", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class strike(base_element):
+    tag = "strike"
 
 
 strike.r = strike
@@ -3809,36 +1499,10 @@ strike.d = strike
 
 
 
-DELETED = ""
 
 
-class strong(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is strong:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("strong", children, **attrs))
-        super(strong, self).__init__()
-
-    def __enter__(self):
-        element_start("strong", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("strong", [])
-
-    def __str__(self):
-
-        blob = element_ret("strong", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class strong(base_element):
+    tag = "strong"
 
 
 strong.r = strong
@@ -3847,36 +1511,10 @@ strong.d = strong
 
 
 
-DELETED = ""
 
 
-class style(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is style:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("style", children, **attrs))
-        super(style, self).__init__()
-
-    def __enter__(self):
-        element_start("style", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("style", [])
-
-    def __str__(self):
-
-        blob = element_ret("style", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class style(base_element):
+    tag = "style"
 
 
 style.r = style
@@ -3885,36 +1523,10 @@ style.d = style
 
 
 
-DELETED = ""
 
 
-class sub(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is sub:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("sub", children, **attrs))
-        super(sub, self).__init__()
-
-    def __enter__(self):
-        element_start("sub", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("sub", [])
-
-    def __str__(self):
-
-        blob = element_ret("sub", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class sub(base_element):
+    tag = "sub"
 
 
 sub.r = sub
@@ -3923,36 +1535,10 @@ sub.d = sub
 
 
 
-DELETED = ""
 
 
-class summary(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is summary:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("summary", children, **attrs))
-        super(summary, self).__init__()
-
-    def __enter__(self):
-        element_start("summary", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("summary", [])
-
-    def __str__(self):
-
-        blob = element_ret("summary", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class summary(base_element):
+    tag = "summary"
 
 
 summary.r = summary
@@ -3961,36 +1547,10 @@ summary.d = summary
 
 
 
-DELETED = ""
 
 
-class sup(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is sup:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("sup", children, **attrs))
-        super(sup, self).__init__()
-
-    def __enter__(self):
-        element_start("sup", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("sup", [])
-
-    def __str__(self):
-
-        blob = element_ret("sup", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class sup(base_element):
+    tag = "sup"
 
 
 sup.r = sup
@@ -3999,36 +1559,10 @@ sup.d = sup
 
 
 
-DELETED = ""
 
 
-class svg(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is svg:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("svg", children, **attrs))
-        super(svg, self).__init__()
-
-    def __enter__(self):
-        element_start("svg", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("svg", [])
-
-    def __str__(self):
-
-        blob = element_ret("svg", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class svg(base_element):
+    tag = "svg"
 
 
 svg.r = svg
@@ -4037,36 +1571,10 @@ svg.d = svg
 
 
 
-DELETED = ""
 
 
-class table(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is table:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("table", children, **attrs))
-        super(table, self).__init__()
-
-    def __enter__(self):
-        element_start("table", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("table", [])
-
-    def __str__(self):
-
-        blob = element_ret("table", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class table(base_element):
+    tag = "table"
 
 
 table.r = table
@@ -4075,36 +1583,10 @@ table.d = table
 
 
 
-DELETED = ""
 
 
-class tbody(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is tbody:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("tbody", children, **attrs))
-        super(tbody, self).__init__()
-
-    def __enter__(self):
-        element_start("tbody", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("tbody", [])
-
-    def __str__(self):
-
-        blob = element_ret("tbody", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class tbody(base_element):
+    tag = "tbody"
 
 
 tbody.r = tbody
@@ -4113,36 +1595,10 @@ tbody.d = tbody
 
 
 
-DELETED = ""
 
 
-class td(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is td:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("td", children, **attrs))
-        super(td, self).__init__()
-
-    def __enter__(self):
-        element_start("td", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("td", [])
-
-    def __str__(self):
-
-        blob = element_ret("td", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class td(base_element):
+    tag = "td"
 
 
 td.r = td
@@ -4151,36 +1607,10 @@ td.d = td
 
 
 
-DELETED = ""
 
 
-class template(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is template:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("template", children, **attrs))
-        super(template, self).__init__()
-
-    def __enter__(self):
-        element_start("template", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("template", [])
-
-    def __str__(self):
-
-        blob = element_ret("template", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class template(base_element):
+    tag = "template"
 
 
 template.r = template
@@ -4189,36 +1619,10 @@ template.d = template
 
 
 
-DELETED = ""
 
 
-class tfoot(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is tfoot:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("tfoot", children, **attrs))
-        super(tfoot, self).__init__()
-
-    def __enter__(self):
-        element_start("tfoot", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("tfoot", [])
-
-    def __str__(self):
-
-        blob = element_ret("tfoot", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class tfoot(base_element):
+    tag = "tfoot"
 
 
 tfoot.r = tfoot
@@ -4227,36 +1631,10 @@ tfoot.d = tfoot
 
 
 
-DELETED = ""
 
 
-class th(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is th:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("th", children, **attrs))
-        super(th, self).__init__()
-
-    def __enter__(self):
-        element_start("th", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("th", [])
-
-    def __str__(self):
-
-        blob = element_ret("th", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class th(base_element):
+    tag = "th"
 
 
 th.r = th
@@ -4265,36 +1643,10 @@ th.d = th
 
 
 
-DELETED = ""
 
 
-class thead(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is thead:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("thead", children, **attrs))
-        super(thead, self).__init__()
-
-    def __enter__(self):
-        element_start("thead", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("thead", [])
-
-    def __str__(self):
-
-        blob = element_ret("thead", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class thead(base_element):
+    tag = "thead"
 
 
 thead.r = thead
@@ -4303,36 +1655,10 @@ thead.d = thead
 
 
 
-DELETED = ""
 
 
-class time(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is time:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("time", children, **attrs))
-        super(time, self).__init__()
-
-    def __enter__(self):
-        element_start("time", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("time", [])
-
-    def __str__(self):
-
-        blob = element_ret("time", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class time(base_element):
+    tag = "time"
 
 
 time.r = time
@@ -4341,36 +1667,10 @@ time.d = time
 
 
 
-DELETED = ""
 
 
-class title(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is title:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("title", children, **attrs))
-        super(title, self).__init__()
-
-    def __enter__(self):
-        element_start("title", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("title", [])
-
-    def __str__(self):
-
-        blob = element_ret("title", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class title(base_element):
+    tag = "title"
 
 
 title.r = title
@@ -4379,36 +1679,10 @@ title.d = title
 
 
 
-DELETED = ""
 
 
-class tr(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is tr:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("tr", children, **attrs))
-        super(tr, self).__init__()
-
-    def __enter__(self):
-        element_start("tr", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("tr", [])
-
-    def __str_(self):
-
-        blob = element_ret("tr", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str_()
+class tr(base_element):
+    tag = "tr"
 
 
 tr.r = tr
@@ -4417,36 +1691,10 @@ tr.d = tr
 
 
 
-DELETED = ""
 
 
-class tt(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is tt:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("tt", children, **attrs))
-        super(tt, self).__init__()
-
-    def __enter__(self):
-        element_start("tt", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("tt", [])
-
-    def __str__(self):
-
-        blob = element_ret("tt", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class tt(base_element):
+    tag = "tt"
 
 
 tt.r = tt
@@ -4455,36 +1703,10 @@ tt.d = tt
 
 
 
-DELETED = ""
 
 
-class u(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is u:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("u", children, **attrs))
-        super(u, self).__init__()
-
-    def __enter__(self):
-        element_start("u", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("u", [])
-
-    def __str__(self):
-
-        blob = element_ret("u", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class u(base_element):
+    tag = "u"
 
 
 u.r = u
@@ -4493,36 +1715,10 @@ u.d = u
 
 
 
-DELETED = ""
 
 
-class ul(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is ul:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("ul", children, **attrs))
-        super(ul, self).__init__()
-
-    def __enter__(self):
-        element_start("ul", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("ul", [])
-
-    def __str__(self):
-
-        blob = element_ret("ul", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class ul(base_element):
+    tag = "ul"
 
 
 ul.r = ul
@@ -4531,36 +1727,10 @@ ul.d = ul
 
 
 
-DELETED = ""
 
 
-class var(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is var:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("var", children, **attrs))
-        super(var, self).__init__()
-
-    def __enter__(self):
-        element_start("var", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("var", [])
-
-    def __str__(self):
-
-        blob = element_ret("var", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class var(base_element):
+    tag = "var"
 
 
 var.r = var
@@ -4569,36 +1739,10 @@ var.d = var
 
 
 
-DELETED = ""
 
 
-class video(ContextDecorator):
-    def __init__(self, *children, **attrs):
-        self.children = children
-        self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if type(child) is video:
-                state.html[child.i] = DELETED
-
-        state.html.append(lambda: element_ret("video", children, **attrs))
-        super(video, self).__init__()
-
-    def __enter__(self):
-        element_start("video", self.children, **self.attrs)
-        state.html[self.i] = DELETED
-        return self
-
-    def __exit__(self, *exc):
-        return element_end("video", [])
-
-    def __str__(self):
-
-        blob = element_ret("video", self.children, **self.attrs)
-        return "".join(blob.html)
-
-    def __unicode__(self):
-        return self.__str__()
+class video(base_element):
+    tag = "video"
 
 
 video.r = video
