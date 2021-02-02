@@ -9,6 +9,7 @@ from functools import wraps
 from copy import deepcopy
 from types import GeneratorType
 
+from contextlib2 import ContextDecorator
 from django.urls.base import reverse_lazy
 from django.http.response import HttpResponse
 
@@ -69,7 +70,8 @@ def hypergen(func, *args, **kwargs):
                 s = '<script>window.applyCommands({})</script>'.format(
                     freedom.dumps(state.commands))
                 pos = html.find("</head")
-                html = insert(html, s, pos)
+                if pos != -1:
+                    html = insert(html, s, pos)
                 return HttpResponse(html)
             else:
                 state.commands.append(
@@ -183,7 +185,7 @@ def element_dec(tag, children, into=None, sep="", void=False, **attrs):
         def __(*args, **kwargs):
             element_start(
                 tag, children, into=into, sep=sep, void=void, **attrs)
-             f(*args, **kwargs)
+            f(*args, **kwargs)
             element_end(tag, [], into=into, void=void)
 
         return __
@@ -269,6 +271,12 @@ class Blob(object):
 
     def __getitem__(self, index):
         return self.html[index]
+
+    def __str__(self):
+        return "".join(str(x) for x in self.html)
+
+    def __unicode__(self):
+        return "".join([str(x) for x in self.html])
 
 
 def base65_counter():
@@ -558,37 +566,41 @@ def doctype(type_="html"):
 
 
 ### TEMPLATE-ELEMENT ###
-def div_sta(*children, **attrs):
-    return element_start("div", children, **attrs)
+DELETED = ""
 
 
-def div_end(*children, **kwargs):
-    return element_end("div", children, **kwargs)
+class div(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is div:
+                state.html[child.i] = DELETED
+
+        state.html.append(lambda: element_ret("div", children, **attrs))
+        super(div, self).__init__()
+
+    def __enter__(self):
+        element_start("div", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
+
+    def __exit__(self, *exc):
+        return element_end("div", [])
+
+    def __str__(self):
+
+        blob = element_ret("div", self.children, **self.attrs)
+        return "".join(blob.html)
+
+    def __unicode__(self):
+        return self.__str__()
 
 
-def div_ret(*children, **kwargs):
-    return element_ret("div", children, **kwargs)
-
-
-@contextmanager
-def div_con(*children, **attrs):
-    for x in element_con("div", children, **attrs):
-        yield x
-
-
-def div_dec(*children, **attrs):
-    return element_dec("div", children, **attrs)
-
-
-def div(*children, **attrs):
-    return element("div", children, **attrs)
-
-
-div.s = div_sta
-div.e = div_end
-div.r = div_ret
-div.c = div_con
-div.d = div_dec
+div.r = div
+div.c = div
+div.d = div
 
 
 ### TEMPLATE-ELEMENT ###
