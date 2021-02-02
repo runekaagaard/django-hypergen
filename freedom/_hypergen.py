@@ -602,7 +602,6 @@ def link_ret(*children, **attrs):
 
 
 link.r = link_ret
-
 ### TEMPLATE-VOID-ELEMENT ###
 
 ### RENDERED-ELEMENTS ###
