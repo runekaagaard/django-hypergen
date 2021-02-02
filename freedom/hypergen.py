@@ -614,3473 +614,3999 @@ def link_ret(*children, **attrs):
 
 
 link.r = link_ret
-
 ### TEMPLATE-VOID-ELEMENT ###
 
 
-def a_sta(*children, **attrs):
-    return element_start("a", children, **attrs)
+DELETED = ""
 
 
-def a_end(*children, **kwargs):
-    return element_end("a", children, **kwargs)
+class a(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is a:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("a", children, **attrs))
+        super(a, self).__init__()
 
-def a_ret(*children, **kwargs):
-    return element_ret("a", children, **kwargs)
+    def __enter__(self):
+        element_start("a", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("a", [])
 
-@contextmanager
-def a_con(*children, **attrs):
-    for x in element_con("a", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("a", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def a_dec(*children, **attrs):
-    return element_dec("a", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def a(*children, **attrs):
-    return element("a", children, **attrs)
+a.r = a
+a.c = a
+a.d = a
 
 
-a.s = a_sta
-a.e = a_end
-a.r = a_ret
-a.c = a_con
-a.d = a_dec
 
+DELETED = ""
 
-def abbr_sta(*children, **attrs):
-    return element_start("abbr", children, **attrs)
 
+class abbr(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is abbr:
+                state.html[child.i] = DELETED
 
-def abbr_end(*children, **kwargs):
-    return element_end("abbr", children, **kwargs)
+        state.html.append(lambda: element_ret("abbr", children, **attrs))
+        super(abbr, self).__init__()
 
+    def __enter__(self):
+        element_start("abbr", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def abbr_ret(*children, **kwargs):
-    return element_ret("abbr", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("abbr", [])
 
+    def __str__(self):
 
-@contextmanager
-def abbr_con(*children, **attrs):
-    for x in element_con("abbr", children, **attrs):
-        yield x
+        blob = element_ret("abbr", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def abbr_dec(*children, **attrs):
-    return element_dec("abbr", children, **attrs)
 
+abbr.r = abbr
+abbr.c = abbr
+abbr.d = abbr
 
-def abbr(*children, **attrs):
-    return element("abbr", children, **attrs)
 
 
-abbr.s = abbr_sta
-abbr.e = abbr_end
-abbr.r = abbr_ret
-abbr.c = abbr_con
-abbr.d = abbr_dec
+DELETED = ""
 
 
-def acronym_sta(*children, **attrs):
-    return element_start("acronym", children, **attrs)
+class acronym(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is acronym:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("acronym", children, **attrs))
+        super(acronym, self).__init__()
 
-def acronym_end(*children, **kwargs):
-    return element_end("acronym", children, **kwargs)
+    def __enter__(self):
+        element_start("acronym", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("acronym", [])
 
-def acronym_ret(*children, **kwargs):
-    return element_ret("acronym", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("acronym", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def acronym_con(*children, **attrs):
-    for x in element_con("acronym", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def acronym_dec(*children, **attrs):
-    return element_dec("acronym", children, **attrs)
+acronym.r = acronym
+acronym.c = acronym
+acronym.d = acronym
 
 
-def acronym(*children, **attrs):
-    return element("acronym", children, **attrs)
 
+DELETED = ""
 
-acronym.s = acronym_sta
-acronym.e = acronym_end
-acronym.r = acronym_ret
-acronym.c = acronym_con
-acronym.d = acronym_dec
 
+class address(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is address:
+                state.html[child.i] = DELETED
 
-def address_sta(*children, **attrs):
-    return element_start("address", children, **attrs)
+        state.html.append(lambda: element_ret("address", children, **attrs))
+        super(address, self).__init__()
 
+    def __enter__(self):
+        element_start("address", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def address_end(*children, **kwargs):
-    return element_end("address", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("address", [])
 
+    def __str__(self):
 
-def address_ret(*children, **kwargs):
-    return element_ret("address", children, **kwargs)
+        blob = element_ret("address", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def address_con(*children, **attrs):
-    for x in element_con("address", children, **attrs):
-        yield x
 
+address.r = address
+address.c = address
+address.d = address
 
-def address_dec(*children, **attrs):
-    return element_dec("address", children, **attrs)
 
 
-def address(*children, **attrs):
-    return element("address", children, **attrs)
+DELETED = ""
 
 
-address.s = address_sta
-address.e = address_end
-address.r = address_ret
-address.c = address_con
-address.d = address_dec
+class applet(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is applet:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("applet", children, **attrs))
+        super(applet, self).__init__()
 
-def applet_sta(*children, **attrs):
-    return element_start("applet", children, **attrs)
+    def __enter__(self):
+        element_start("applet", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("applet", [])
 
-def applet_end(*children, **kwargs):
-    return element_end("applet", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("applet", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def applet_ret(*children, **kwargs):
-    return element_ret("applet", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def applet_con(*children, **attrs):
-    for x in element_con("applet", children, **attrs):
-        yield x
+applet.r = applet
+applet.c = applet
+applet.d = applet
 
 
-def applet_dec(*children, **attrs):
-    return element_dec("applet", children, **attrs)
 
+DELETED = ""
 
-def applet(*children, **attrs):
-    return element("applet", children, **attrs)
 
+class article(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is article:
+                state.html[child.i] = DELETED
 
-applet.s = applet_sta
-applet.e = applet_end
-applet.r = applet_ret
-applet.c = applet_con
-applet.d = applet_dec
+        state.html.append(lambda: element_ret("article", children, **attrs))
+        super(article, self).__init__()
 
+    def __enter__(self):
+        element_start("article", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def article_sta(*children, **attrs):
-    return element_start("article", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("article", [])
 
+    def __str__(self):
 
-def article_end(*children, **kwargs):
-    return element_end("article", children, **kwargs)
+        blob = element_ret("article", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def article_ret(*children, **kwargs):
-    return element_ret("article", children, **kwargs)
 
+article.r = article
+article.c = article
+article.d = article
 
-@contextmanager
-def article_con(*children, **attrs):
-    for x in element_con("article", children, **attrs):
-        yield x
 
 
-def article_dec(*children, **attrs):
-    return element_dec("article", children, **attrs)
+DELETED = ""
 
 
-def article(*children, **attrs):
-    return element("article", children, **attrs)
+class aside(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is aside:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("aside", children, **attrs))
+        super(aside, self).__init__()
 
-article.s = article_sta
-article.e = article_end
-article.r = article_ret
-article.c = article_con
-article.d = article_dec
+    def __enter__(self):
+        element_start("aside", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("aside", [])
 
-def aside_sta(*children, **attrs):
-    return element_start("aside", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("aside", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def aside_end(*children, **kwargs):
-    return element_end("aside", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def aside_ret(*children, **kwargs):
-    return element_ret("aside", children, **kwargs)
+aside.r = aside
+aside.c = aside
+aside.d = aside
 
 
-@contextmanager
-def aside_con(*children, **attrs):
-    for x in element_con("aside", children, **attrs):
-        yield x
 
+DELETED = ""
 
-def aside_dec(*children, **attrs):
-    return element_dec("aside", children, **attrs)
 
+class audio(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is audio:
+                state.html[child.i] = DELETED
 
-def aside(*children, **attrs):
-    return element("aside", children, **attrs)
+        state.html.append(lambda: element_ret("audio", children, **attrs))
+        super(audio, self).__init__()
 
+    def __enter__(self):
+        element_start("audio", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-aside.s = aside_sta
-aside.e = aside_end
-aside.r = aside_ret
-aside.c = aside_con
-aside.d = aside_dec
+    def __exit__(self, *exc):
+        return element_end("audio", [])
 
+    def __str__(self):
 
-def audio_sta(*children, **attrs):
-    return element_start("audio", children, **attrs)
+        blob = element_ret("audio", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def audio_end(*children, **kwargs):
-    return element_end("audio", children, **kwargs)
 
+audio.r = audio
+audio.c = audio
+audio.d = audio
 
-def audio_ret(*children, **kwargs):
-    return element_ret("audio", children, **kwargs)
 
 
-@contextmanager
-def audio_con(*children, **attrs):
-    for x in element_con("audio", children, **attrs):
-        yield x
+DELETED = ""
 
 
-def audio_dec(*children, **attrs):
-    return element_dec("audio", children, **attrs)
+class b(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is b:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("b", children, **attrs))
+        super(b, self).__init__()
 
-def audio(*children, **attrs):
-    return element("audio", children, **attrs)
+    def __enter__(self):
+        element_start("b", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("b", [])
 
-audio.s = audio_sta
-audio.e = audio_end
-audio.r = audio_ret
-audio.c = audio_con
-audio.d = audio_dec
+    def __str__(self):
 
+        blob = element_ret("b", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def b_sta(*children, **attrs):
-    return element_start("b", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def b_end(*children, **kwargs):
-    return element_end("b", children, **kwargs)
+b.r = b
+b.c = b
+b.d = b
 
 
-def b_ret(*children, **kwargs):
-    return element_ret("b", children, **kwargs)
 
+DELETED = ""
 
-@contextmanager
-def b_con(*children, **attrs):
-    for x in element_con("b", children, **attrs):
-        yield x
 
+class basefont(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is basefont:
+                state.html[child.i] = DELETED
 
-def b_dec(*children, **attrs):
-    return element_dec("b", children, **attrs)
+        state.html.append(lambda: element_ret("basefont", children, **attrs))
+        super(basefont, self).__init__()
 
+    def __enter__(self):
+        element_start("basefont", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def b(*children, **attrs):
-    return element("b", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("basefont", [])
 
+    def __str__(self):
 
-b.s = b_sta
-b.e = b_end
-b.r = b_ret
-b.c = b_con
-b.d = b_dec
+        blob = element_ret("basefont", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def basefont_sta(*children, **attrs):
-    return element_start("basefont", children, **attrs)
 
+basefont.r = basefont
+basefont.c = basefont
+basefont.d = basefont
 
-def basefont_end(*children, **kwargs):
-    return element_end("basefont", children, **kwargs)
 
 
-def basefont_ret(*children, **kwargs):
-    return element_ret("basefont", children, **kwargs)
+DELETED = ""
 
 
-@contextmanager
-def basefont_con(*children, **attrs):
-    for x in element_con("basefont", children, **attrs):
-        yield x
+class bdi(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is bdi:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("bdi", children, **attrs))
+        super(bdi, self).__init__()
 
-def basefont_dec(*children, **attrs):
-    return element_dec("basefont", children, **attrs)
+    def __enter__(self):
+        element_start("bdi", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("bdi", [])
 
-def basefont(*children, **attrs):
-    return element("basefont", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("bdi", self.children, **self.attrs)
+        return "".join(blob.html)
 
-basefont.s = basefont_sta
-basefont.e = basefont_end
-basefont.r = basefont_ret
-basefont.c = basefont_con
-basefont.d = basefont_dec
+    def __unicode__(self):
+        return self.__str__()
 
 
-def bdi_sta(*children, **attrs):
-    return element_start("bdi", children, **attrs)
+bdi.r = bdi
+bdi.c = bdi
+bdi.d = bdi
 
 
-def bdi_end(*children, **kwargs):
-    return element_end("bdi", children, **kwargs)
 
+DELETED = ""
 
-def bdi_ret(*children, **kwargs):
-    return element_ret("bdi", children, **kwargs)
 
+class bdo(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is bdo:
+                state.html[child.i] = DELETED
 
-@contextmanager
-def bdi_con(*children, **attrs):
-    for x in element_con("bdi", children, **attrs):
-        yield x
+        state.html.append(lambda: element_ret("bdo", children, **attrs))
+        super(bdo, self).__init__()
 
+    def __enter__(self):
+        element_start("bdo", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def bdi_dec(*children, **attrs):
-    return element_dec("bdi", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("bdo", [])
 
+    def __str__(self):
 
-def bdi(*children, **attrs):
-    return element("bdi", children, **attrs)
+        blob = element_ret("bdo", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-bdi.s = bdi_sta
-bdi.e = bdi_end
-bdi.r = bdi_ret
-bdi.c = bdi_con
-bdi.d = bdi_dec
 
+bdo.r = bdo
+bdo.c = bdo
+bdo.d = bdo
 
-def bdo_sta(*children, **attrs):
-    return element_start("bdo", children, **attrs)
 
 
-def bdo_end(*children, **kwargs):
-    return element_end("bdo", children, **kwargs)
+DELETED = ""
 
 
-def bdo_ret(*children, **kwargs):
-    return element_ret("bdo", children, **kwargs)
+class big(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is big:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("big", children, **attrs))
+        super(big, self).__init__()
 
-@contextmanager
-def bdo_con(*children, **attrs):
-    for x in element_con("bdo", children, **attrs):
-        yield x
+    def __enter__(self):
+        element_start("big", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("big", [])
 
-def bdo_dec(*children, **attrs):
-    return element_dec("bdo", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("big", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def bdo(*children, **attrs):
-    return element("bdo", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-bdo.s = bdo_sta
-bdo.e = bdo_end
-bdo.r = bdo_ret
-bdo.c = bdo_con
-bdo.d = bdo_dec
+big.r = big
+big.c = big
+big.d = big
 
 
-def big_sta(*children, **attrs):
-    return element_start("big", children, **attrs)
 
+DELETED = ""
 
-def big_end(*children, **kwargs):
-    return element_end("big", children, **kwargs)
 
+class blockquote(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is blockquote:
+                state.html[child.i] = DELETED
 
-def big_ret(*children, **kwargs):
-    return element_ret("big", children, **kwargs)
+        state.html.append(lambda: element_ret("blockquote", children, **attrs))
+        super(blockquote, self).__init__()
 
+    def __enter__(self):
+        element_start("blockquote", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-@contextmanager
-def big_con(*children, **attrs):
-    for x in element_con("big", children, **attrs):
-        yield x
+    def __exit__(self, *exc):
+        return element_end("blockquote", [])
 
+    def __str__(self):
 
-def big_dec(*children, **attrs):
-    return element_dec("big", children, **attrs)
+        blob = element_ret("blockquote", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def big(*children, **attrs):
-    return element("big", children, **attrs)
 
+blockquote.r = blockquote
+blockquote.c = blockquote
+blockquote.d = blockquote
 
-big.s = big_sta
-big.e = big_end
-big.r = big_ret
-big.c = big_con
-big.d = big_dec
 
 
-def blockquote_sta(*children, **attrs):
-    return element_start("blockquote", children, **attrs)
+DELETED = ""
 
 
-def blockquote_end(*children, **kwargs):
-    return element_end("blockquote", children, **kwargs)
+class body(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is body:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("body", children, **attrs))
+        super(body, self).__init__()
 
-def blockquote_ret(*children, **kwargs):
-    return element_ret("blockquote", children, **kwargs)
+    def __enter__(self):
+        element_start("body", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("body", [])
 
-@contextmanager
-def blockquote_con(*children, **attrs):
-    for x in element_con("blockquote", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("body", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def blockquote_dec(*children, **attrs):
-    return element_dec("blockquote", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def blockquote(*children, **attrs):
-    return element("blockquote", children, **attrs)
+body.r = body
+body.c = body
+body.d = body
 
 
-blockquote.s = blockquote_sta
-blockquote.e = blockquote_end
-blockquote.r = blockquote_ret
-blockquote.c = blockquote_con
-blockquote.d = blockquote_dec
 
+DELETED = ""
 
-def body_sta(*children, **attrs):
-    return element_start("body", children, **attrs)
 
+class button(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is button:
+                state.html[child.i] = DELETED
 
-def body_end(*children, **kwargs):
-    return element_end("body", children, **kwargs)
+        state.html.append(lambda: element_ret("button", children, **attrs))
+        super(button, self).__init__()
 
+    def __enter__(self):
+        element_start("button", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def body_ret(*children, **kwargs):
-    return element_ret("body", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("button", [])
 
+    def __str__(self):
 
-@contextmanager
-def body_con(*children, **attrs):
-    for x in element_con("body", children, **attrs):
-        yield x
+        blob = element_ret("button", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def body_dec(*children, **attrs):
-    return element_dec("body", children, **attrs)
 
+button.r = button
+button.c = button
+button.d = button
 
-def body(*children, **attrs):
-    return element("body", children, **attrs)
 
 
-body.s = body_sta
-body.e = body_end
-body.r = body_ret
-body.c = body_con
-body.d = body_dec
+DELETED = ""
 
 
-def button_sta(*children, **attrs):
-    return element_start("button", children, **attrs)
+class canvas(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is canvas:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("canvas", children, **attrs))
+        super(canvas, self).__init__()
 
-def button_end(*children, **kwargs):
-    return element_end("button", children, **kwargs)
+    def __enter__(self):
+        element_start("canvas", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("canvas", [])
 
-def button_ret(*children, **kwargs):
-    return element_ret("button", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("canvas", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def button_con(*children, **attrs):
-    for x in element_con("button", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def button_dec(*children, **attrs):
-    return element_dec("button", children, **attrs)
+canvas.r = canvas
+canvas.c = canvas
+canvas.d = canvas
 
 
-def button(*children, **attrs):
-    return element("button", children, **attrs)
 
+DELETED = ""
 
-button.s = button_sta
-button.e = button_end
-button.r = button_ret
-button.c = button_con
-button.d = button_dec
 
+class caption(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is caption:
+                state.html[child.i] = DELETED
 
-def canvas_sta(*children, **attrs):
-    return element_start("canvas", children, **attrs)
+        state.html.append(lambda: element_ret("caption", children, **attrs))
+        super(caption, self).__init__()
 
+    def __enter__(self):
+        element_start("caption", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def canvas_end(*children, **kwargs):
-    return element_end("canvas", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("caption", [])
 
+    def __str__(self):
 
-def canvas_ret(*children, **kwargs):
-    return element_ret("canvas", children, **kwargs)
+        blob = element_ret("caption", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def canvas_con(*children, **attrs):
-    for x in element_con("canvas", children, **attrs):
-        yield x
 
+caption.r = caption
+caption.c = caption
+caption.d = caption
 
-def canvas_dec(*children, **attrs):
-    return element_dec("canvas", children, **attrs)
 
 
-def canvas(*children, **attrs):
-    return element("canvas", children, **attrs)
+DELETED = ""
 
 
-canvas.s = canvas_sta
-canvas.e = canvas_end
-canvas.r = canvas_ret
-canvas.c = canvas_con
-canvas.d = canvas_dec
+class center(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is center:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("center", children, **attrs))
+        super(center, self).__init__()
 
-def caption_sta(*children, **attrs):
-    return element_start("caption", children, **attrs)
+    def __enter__(self):
+        element_start("center", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("center", [])
 
-def caption_end(*children, **kwargs):
-    return element_end("caption", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("center", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def caption_ret(*children, **kwargs):
-    return element_ret("caption", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def caption_con(*children, **attrs):
-    for x in element_con("caption", children, **attrs):
-        yield x
+center.r = center
+center.c = center
+center.d = center
 
 
-def caption_dec(*children, **attrs):
-    return element_dec("caption", children, **attrs)
 
+DELETED = ""
 
-def caption(*children, **attrs):
-    return element("caption", children, **attrs)
 
+class cite(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is cite:
+                state.html[child.i] = DELETED
 
-caption.s = caption_sta
-caption.e = caption_end
-caption.r = caption_ret
-caption.c = caption_con
-caption.d = caption_dec
+        state.html.append(lambda: element_ret("cite", children, **attrs))
+        super(cite, self).__init__()
 
+    def __enter__(self):
+        element_start("cite", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def center_sta(*children, **attrs):
-    return element_start("center", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("cite", [])
 
+    def __str__(self):
 
-def center_end(*children, **kwargs):
-    return element_end("center", children, **kwargs)
+        blob = element_ret("cite", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def center_ret(*children, **kwargs):
-    return element_ret("center", children, **kwargs)
 
+cite.r = cite
+cite.c = cite
+cite.d = cite
 
-@contextmanager
-def center_con(*children, **attrs):
-    for x in element_con("center", children, **attrs):
-        yield x
 
 
-def center_dec(*children, **attrs):
-    return element_dec("center", children, **attrs)
+DELETED = ""
 
 
-def center(*children, **attrs):
-    return element("center", children, **attrs)
+class code(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is code:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("code", children, **attrs))
+        super(code, self).__init__()
 
-center.s = center_sta
-center.e = center_end
-center.r = center_ret
-center.c = center_con
-center.d = center_dec
+    def __enter__(self):
+        element_start("code", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("code", [])
 
-def cite_sta(*children, **attrs):
-    return element_start("cite", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("code", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def cite_end(*children, **kwargs):
-    return element_end("cite", children, **kwargs)
+    def __unicode_(self):
+        return self.__str__()
 
 
-def cite_ret(*children, **kwargs):
-    return element_ret("cite", children, **kwargs)
+code.r = code
+code.c = code
+code.d = code
 
 
-@contextmanager
-def cite_con(*children, **attrs):
-    for x in element_con("cite", children, **attrs):
-        yield x
 
+DELETED = ""
 
-def cite_dec(*children, **attrs):
-    return element_dec("cite", children, **attrs)
 
+class colgroup(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is colgroup:
+                state.html[child.i] = DELETED
 
-def cite(*children, **attrs):
-    return element("cite", children, **attrs)
+        state.html.append(lambda: element_ret("colgroup", children, **attrs))
+        super(colgroup, self).__init__()
 
+    def __enter__(self):
+        element_start("colgroup", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-cite.s = cite_sta
-cite.e = cite_end
-cite.r = cite_ret
-cite.c = cite_con
-cite.d = cite_dec
+    def __exit__(self, *exc):
+        return element_end("colgroup", [])
 
+    def __str__(self):
 
-def code_sta(*children, **attrs):
-    return element_start("code", children, **attrs)
+        blob = element_ret("colgroup", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def code_end(*children, **kwargs):
-    return element_end("code", children, **kwargs)
 
+colgroup.r = colgroup
+colgroup.c = colgroup
+colgroup.d = colgroup
 
-def code_ret(*children, **kwargs):
-    return element_ret("code", children, **kwargs)
 
 
-@contextmanager
-def code_con(*children, **attrs):
-    for x in element_con("code", children, **attrs):
-        yield x
+DELETED = ""
 
 
-def code_dec(*children, **attrs):
-    return element_dec("code", children, **attrs)
+class data(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is data:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("data", children, **attrs))
+        super(data, self).__init__()
 
-def code(*children, **attrs):
-    return element("code", children, **attrs)
+    def __enter__(self):
+        element_start("data", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("data", [])
 
-code.s = code_sta
-code.e = code_end
-code.r = code_ret
-code.c = code_con
-code.d = code_dec
+    def __str__(self):
 
+        blob = element_ret("data", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def colgroup_sta(*children, **attrs):
-    return element_start("colgroup", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def colgroup_end(*children, **kwargs):
-    return element_end("colgroup", children, **kwargs)
+data.r = data
+data.c = data
+data.d = data
 
 
-def colgroup_ret(*children, **kwargs):
-    return element_ret("colgroup", children, **kwargs)
 
+DELETED = ""
 
-@contextmanager
-def colgroup_con(*children, **attrs):
-    for x in element_con("colgroup", children, **attrs):
-        yield x
 
+class datalist(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is datalist:
+                state.html[child.i] = DELETED
 
-def colgroup_dec(*children, **attrs):
-    return element_dec("colgroup", children, **attrs)
+        state.html.append(lambda: element_ret("datalist", children, **attrs))
+        super(datalist, self).__init__()
 
+    def __enter__(self):
+        element_start("datalist", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def colgroup(*children, **attrs):
-    return element("colgroup", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("datalist", [])
 
+    def __str__(self):
 
-colgroup.s = colgroup_sta
-colgroup.e = colgroup_end
-colgroup.r = colgroup_ret
-colgroup.c = colgroup_con
-colgroup.d = colgroup_dec
+        blob = element_ret("datalist", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def data_sta(*children, **attrs):
-    return element_start("data", children, **attrs)
 
+datalist.r = datalist
+datalist.c = datalist
+datalist.d = datalist
 
-def data_end(*children, **kwargs):
-    return element_end("data", children, **kwargs)
 
 
-def data_ret(*children, **kwargs):
-    return element_ret("data", children, **kwargs)
+DELETED = ""
 
 
-@contextmanager
-def data_con(*children, **attrs):
-    for x in element_con("data", children, **attrs):
-        yield x
+class dd(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is dd:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("dd", children, **attrs))
+        super(dd, self).__init__()
 
-def data_dec(*children, **attrs):
-    return element_dec("data", children, **attrs)
+    def __enter__(self):
+        element_start("dd", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("dd", [])
 
-def data(*children, **attrs):
-    return element("data", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("dd", self.children, **self.attrs)
+        return "".join(blob.html)
 
-data.s = data_sta
-data.e = data_end
-data.r = data_ret
-data.c = data_con
-data.d = data_dec
+    def __unicode__(self):
+        return self.__str__()
 
 
-def datalist_sta(*children, **attrs):
-    return element_start("datalist", children, **attrs)
+dd.r = dd
+dd.c = dd
+dd.d = dd
 
 
-def datalist_end(*children, **kwargs):
-    return element_end("datalist", children, **kwargs)
 
+DELETED = ""
 
-def datalist_ret(*children, **kwargs):
-    return element_ret("datalist", children, **kwargs)
 
+class del_(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is del_:
+                state.html[child.i] = DELETED
 
-@contextmanager
-def datalist_con(*children, **attrs):
-    for x in element_con("datalist", children, **attrs):
-        yield x
+        state.html.append(lambda: element_ret("del", children, **attrs))
+        super(del_, self).__init__()
 
+    def __enter__(self):
+        element_start("del", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def datalist_dec(*children, **attrs):
-    return element_dec("datalist", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("del", [])
 
+    def __str__(self):
 
-def datalist(*children, **attrs):
-    return element("datalist", children, **attrs)
+        blob = element_ret("del", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-datalist.s = datalist_sta
-datalist.e = datalist_end
-datalist.r = datalist_ret
-datalist.c = datalist_con
-datalist.d = datalist_dec
 
+del_.r = del_
+del_.c = del_
+del_.d = del_
 
-def dd_sta(*children, **attrs):
-    return element_start("dd", children, **attrs)
 
 
-def dd_end(*children, **kwargs):
-    return element_end("dd", children, **kwargs)
+DELETED = ""
 
 
-def dd_ret(*children, **kwargs):
-    return element_ret("dd", children, **kwargs)
+class details(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is details:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("details", children, **attrs))
+        super(details, self).__init__()
 
-@contextmanager
-def dd_con(*children, **attrs):
-    for x in element_con("dd", children, **attrs):
-        yield x
+    def __enter__(self):
+        element_start("details", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("details", [])
 
-def dd_dec(*children, **attrs):
-    return element_dec("dd", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("details", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def dd(*children, **attrs):
-    return element("dd", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-dd.s = dd_sta
-dd.e = dd_end
-dd.r = dd_ret
-dd.c = dd_con
-dd.d = dd_dec
+details.r = details
+details.c = details
+details.d = details
 
 
-def del_sta(*children, **attrs):
-    return element_start("del", children, **attrs)
 
+DELETED = ""
 
-def del_end(*children, **kwargs):
-    return element_end("del", children, **kwargs)
 
+class dfn(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is dfn:
+                state.html[child.i] = DELETED
 
-def del_ret(*children, **kwargs):
-    return element_ret("del", children, **kwargs)
+        state.html.append(lambda: element_ret("dfn", children, **attrs))
+        super(dfn, self).__init__()
 
+    def __enter__(self):
+        element_start("dfn", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-@contextmanager
-def del_con(*children, **attrs):
-    for x in element_con("del", children, **attrs):
-        yield x
+    def __exit__(self, *exc):
+        return element_end("dfn", [])
 
+    def __str__(self):
 
-def del_dec(*children, **attrs):
-    return element_dec("del", children, **attrs)
+        blob = element_ret("dfn", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def del_(*children, **attrs):
-    return element("del", children, **attrs)
 
+dfn.r = dfn
+dfn.c = dfn
+dfn.d = dfn
 
-del_.s = del_sta
-del_.e = del_end
-del_.r = del_ret
-del_.c = del_con
-del_.d = del_dec
 
 
-def details_sta(*children, **attrs):
-    return element_start("details", children, **attrs)
+DELETED = ""
 
 
-def details_end(*children, **kwargs):
-    return element_end("details", children, **kwargs)
+class dialog(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is dialog:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("dialog", children, **attrs))
+        super(dialog, self).__init__()
 
-def details_ret(*children, **kwargs):
-    return element_ret("details", children, **kwargs)
+    def __enter__(self):
+        element_start("dialog", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("dialog", [])
 
-@contextmanager
-def details_con(*children, **attrs):
-    for x in element_con("details", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("dialog", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def details_dec(*children, **attrs):
-    return element_dec("details", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def details(*children, **attrs):
-    return element("details", children, **attrs)
+dialog.r = dialog
+dialog.c = dialog
+dialog.d = dialog
 
 
-details.s = details_sta
-details.e = details_end
-details.r = details_ret
-details.c = details_con
-details.d = details_dec
 
+DELETED = ""
 
-def dfn_sta(*children, **attrs):
-    return element_start("dfn", children, **attrs)
 
+class dir_(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is dir_:
+                state.html[child.i] = DELETED
 
-def dfn_end(*children, **kwargs):
-    return element_end("dfn", children, **kwargs)
+        state.html.append(lambda: element_ret("dir", children, **attrs))
+        super(dir_, self).__init__()
 
+    def __enter__(self):
+        element_start("dir", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def dfn_ret(*children, **kwargs):
-    return element_ret("dfn", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("dir", [])
 
+    def __str__(self):
 
-@contextmanager
-def dfn_con(*children, **attrs):
-    for x in element_con("dfn", children, **attrs):
-        yield x
+        blob = element_ret("dir", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def dfn_dec(*children, **attrs):
-    return element_dec("dfn", children, **attrs)
 
+dir_.r = dir_
+dir_.c = dir_
+dir_.d = dir_
 
-def dfn(*children, **attrs):
-    return element("dfn", children, **attrs)
 
 
-dfn.s = dfn_sta
-dfn.e = dfn_end
-dfn.r = dfn_ret
-dfn.c = dfn_con
-dfn.d = dfn_dec
+DELETED = ""
 
 
-def dialog_sta(*children, **attrs):
-    return element_start("dialog", children, **attrs)
+class dl(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is dl:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("dl", children, **attrs))
+        super(dl, self).__init__()
 
-def dialog_end(*children, **kwargs):
-    return element_end("dialog", children, **kwargs)
+    def __enter__(self):
+        element_start("dl", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("dl", [])
 
-def dialog_ret(*children, **kwargs):
-    return element_ret("dialog", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("dl", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def dialog_con(*children, **attrs):
-    for x in element_con("dialog", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def dialog_dec(*children, **attrs):
-    return element_dec("dialog", children, **attrs)
+dl.r = dl
+dl.c = dl
+dl.d = dl
 
 
-def dialog(*children, **attrs):
-    return element("dialog", children, **attrs)
 
+DELETED = ""
 
-dialog.s = dialog_sta
-dialog.e = dialog_end
-dialog.r = dialog_ret
-dialog.c = dialog_con
-dialog.d = dialog_dec
 
+class dt(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is dt:
+                state.html[child.i] = DELETED
 
-def dir_sta(*children, **attrs):
-    return element_start("dir", children, **attrs)
+        state.html.append(lambda: element_ret("dt", children, **attrs))
+        super(dt, self).__init__()
 
+    def __enter__(self):
+        element_start("dt", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def dir_end(*children, **kwargs):
-    return element_end("dir", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("dt", [])
 
+    def __str__(self):
 
-def dir_ret(*children, **kwargs):
-    return element_ret("dir", children, **kwargs)
+        blob = element_ret("dt", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def dir_con(*children, **attrs):
-    for x in element_con("dir", children, **attrs):
-        yield x
 
+dt.r = dt
+dt.c = dt
+dt.d = dt
 
-def dir_dec(*children, **attrs):
-    return element_dec("dir", children, **attrs)
 
 
-def dir_(*children, **attrs):
-    return element("dir", children, **attrs)
+DELETED = ""
 
 
-dir_.s = dir_sta
-dir_.e = dir_end
-dir_.r = dir_ret
-dir_.c = dir_con
-dir_.d = dir_dec
+class em(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is em:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("em", children, **attrs))
+        super(em, self).__init__()
 
-def dl_sta(*children, **attrs):
-    return element_start("dl", children, **attrs)
+    def __enter__(self):
+        element_start("em", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("em", [])
 
-def dl_end(*children, **kwargs):
-    return element_end("dl", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("em", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def dl_ret(*children, **kwargs):
-    return element_ret("dl", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def dl_con(*children, **attrs):
-    for x in element_con("dl", children, **attrs):
-        yield x
+em.r = em
+em.c = em
+em.d = em
 
 
-def dl_dec(*children, **attrs):
-    return element_dec("dl", children, **attrs)
 
+DELETED = ""
 
-def dl(*children, **attrs):
-    return element("dl", children, **attrs)
 
+class fieldset(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is fieldset:
+                state.html[child.i] = DELETED
 
-dl.s = dl_sta
-dl.e = dl_end
-dl.r = dl_ret
-dl.c = dl_con
-dl.d = dl_dec
+        state.html.append(lambda: element_ret("fieldset", children, **attrs))
+        super(fieldset, self).__init__()
 
+    def __enter__(self):
+        element_start("fieldset", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def dt_sta(*children, **attrs):
-    return element_start("dt", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("fieldset", [])
 
+    def __str__(self):
 
-def dt_end(*children, **kwargs):
-    return element_end("dt", children, **kwargs)
+        blob = element_ret("fieldset", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def dt_ret(*children, **kwargs):
-    return element_ret("dt", children, **kwargs)
 
+fieldset.r = fieldset
+fieldset.c = fieldset
+fieldset.d = fieldset
 
-@contextmanager
-def dt_con(*children, **attrs):
-    for x in element_con("dt", children, **attrs):
-        yield x
 
 
-def dt_dec(*children, **attrs):
-    return element_dec("dt", children, **attrs)
+DELETED = ""
 
 
-def dt(*children, **attrs):
-    return element("dt", children, **attrs)
+class figcaption(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is figcaption:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("figcaption", children, **attrs))
+        super(figcaption, self).__init__()
 
-dt.s = dt_sta
-dt.e = dt_end
-dt.r = dt_ret
-dt.c = dt_con
-dt.d = dt_dec
+    def __enter__(self):
+        element_start("figcaption", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("figcaption", [])
 
-def em_sta(*children, **attrs):
-    return element_start("em", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("figcaption", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def em_end(*children, **kwargs):
-    return element_end("em", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def em_ret(*children, **kwargs):
-    return element_ret("em", children, **kwargs)
+figcaption.r = figcaption
+figcaption.c = figcaption
+figcaption.d = figcaption
 
 
-@contextmanager
-def em_con(*children, **attrs):
-    for x in element_con("em", children, **attrs):
-        yield x
 
+DELETED = ""
 
-def em_dec(*children, **attrs):
-    return element_dec("em", children, **attrs)
 
+class figure(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is figure:
+                state.html[child.i] = DELETED
 
-def em(*children, **attrs):
-    return element("em", children, **attrs)
+        state.html.append(lambda: element_ret("figure", children, **attrs))
+        super(figure, self).__init__()
 
+    def __enter__(self):
+        element_start("figure", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-em.s = em_sta
-em.e = em_end
-em.r = em_ret
-em.c = em_con
-em.d = em_dec
+    def __exit__(self, *exc):
+        return element_end("figure", [])
 
+    def __str__(self):
 
-def fieldset_sta(*children, **attrs):
-    return element_start("fieldset", children, **attrs)
+        blob = element_ret("figure", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def fieldset_end(*children, **kwargs):
-    return element_end("fieldset", children, **kwargs)
 
+figure.r = figure
+figure.c = figure
+figure.d = figure
 
-def fieldset_ret(*children, **kwargs):
-    return element_ret("fieldset", children, **kwargs)
 
 
-@contextmanager
-def fieldset_con(*children, **attrs):
-    for x in element_con("fieldset", children, **attrs):
-        yield x
+DELETED = ""
 
 
-def fieldset_dec(*children, **attrs):
-    return element_dec("fieldset", children, **attrs)
+class font(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is font:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("font", children, **attrs))
+        super(font, self).__init__()
 
-def fieldset(*children, **attrs):
-    return element("fieldset", children, **attrs)
+    def __enter__(self):
+        element_start("font", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("font", [])
 
-fieldset.s = fieldset_sta
-fieldset.e = fieldset_end
-fieldset.r = fieldset_ret
-fieldset.c = fieldset_con
-fieldset.d = fieldset_dec
+    def __str__(self):
 
+        blob = element_ret("font", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def figcaption_sta(*children, **attrs):
-    return element_start("figcaption", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def figcaption_end(*children, **kwargs):
-    return element_end("figcaption", children, **kwargs)
+font.r = font
+font.c = font
+font.d = font
 
 
-def figcaption_ret(*children, **kwargs):
-    return element_ret("figcaption", children, **kwargs)
 
+DELETED = ""
 
-@contextmanager
-def figcaption_con(*children, **attrs):
-    for x in element_con("figcaption", children, **attrs):
-        yield x
 
+class footer(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is footer:
+                state.html[child.i] = DELETED
 
-def figcaption_dec(*children, **attrs):
-    return element_dec("figcaption", children, **attrs)
+        state.html.append(lambda: element_ret("footer", children, **attrs))
+        super(footer, self).__init__()
 
+    def __enter__(self):
+        element_start("footer", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def figcaption(*children, **attrs):
-    return element("figcaption", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("footer", [])
 
+    def __str__(self):
 
-figcaption.s = figcaption_sta
-figcaption.e = figcaption_end
-figcaption.r = figcaption_ret
-figcaption.c = figcaption_con
-figcaption.d = figcaption_dec
+        blob = element_ret("footer", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def figure_sta(*children, **attrs):
-    return element_start("figure", children, **attrs)
 
+footer.r = footer
+footer.c = footer
+footer.d = footer
 
-def figure_end(*children, **kwargs):
-    return element_end("figure", children, **kwargs)
 
 
-def figure_ret(*children, **kwargs):
-    return element_ret("figure", children, **kwargs)
+DELETED = ""
 
 
-@contextmanager
-def figure_con(*children, **attrs):
-    for x in element_con("figure", children, **attrs):
-        yield x
+class form(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is form:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("form", children, **attrs))
+        super(form, self).__init__()
 
-def figure_dec(*children, **attrs):
-    return element_dec("figure", children, **attrs)
+    def __enter__(self):
+        element_start("form", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("form", [])
 
-def figure(*children, **attrs):
-    return element("figure", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("form", self.children, **self.attrs)
+        return "".join(blob.html)
 
-figure.s = figure_sta
-figure.e = figure_end
-figure.r = figure_ret
-figure.c = figure_con
-figure.d = figure_dec
+    def __unicode__(self):
+        return self.__str__()
 
 
-def font_sta(*children, **attrs):
-    return element_start("font", children, **attrs)
+form.r = form
+form.c = form
+form.d = form
 
 
-def font_end(*children, **kwargs):
-    return element_end("font", children, **kwargs)
 
+DELETED = ""
 
-def font_ret(*children, **kwargs):
-    return element_ret("font", children, **kwargs)
 
+class frame(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is frame:
+                state.html[child.i] = DELETED
 
-@contextmanager
-def font_con(*children, **attrs):
-    for x in element_con("font", children, **attrs):
-        yield x
+        state.html.append(lambda: element_ret("frame", children, **attrs))
+        super(frame, self).__init__()
 
+    def __enter__(self):
+        element_start("frame", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def font_dec(*children, **attrs):
-    return element_dec("font", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("frame", [])
 
+    def __str__(self):
 
-def font(*children, **attrs):
-    return element("font", children, **attrs)
+        blob = element_ret("frame", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-font.s = font_sta
-font.e = font_end
-font.r = font_ret
-font.c = font_con
-font.d = font_dec
 
+frame.r = frame
+frame.c = frame
+frame.d = frame
 
-def footer_sta(*children, **attrs):
-    return element_start("footer", children, **attrs)
 
 
-def footer_end(*children, **kwargs):
-    return element_end("footer", children, **kwargs)
+DELETED = ""
 
 
-def footer_ret(*children, **kwargs):
-    return element_ret("footer", children, **kwargs)
+class frameset(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is frameset:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("frameset", children, **attrs))
+        super(frameset, self).__init__()
 
-@contextmanager
-def footer_con(*children, **attrs):
-    for x in element_con("footer", children, **attrs):
-        yield x
+    def __enter__(self):
+        element_start("frameset", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("frameset", [])
 
-def footer_dec(*children, **attrs):
-    return element_dec("footer", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("frameset", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def footer(*children, **attrs):
-    return element("footer", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-footer.s = footer_sta
-footer.e = footer_end
-footer.r = footer_ret
-footer.c = footer_con
-footer.d = footer_dec
+frameset.r = frameset
+frameset.c = frameset
+frameset.d = frameset
 
 
-def form_sta(*children, **attrs):
-    return element_start("form", children, **attrs)
 
+DELETED = ""
 
-def form_end(*children, **kwargs):
-    return element_end("form", children, **kwargs)
 
+class h1(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is h1:
+                state.html[child.i] = DELETED
 
-def form_ret(*children, **kwargs):
-    return element_ret("form", children, **kwargs)
+        state.html.append(lambda: element_ret("h1", children, **attrs))
+        super(h1, self).__init__()
 
+    def __enter__(self):
+        element_start("h1", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-@contextmanager
-def form_con(*children, **attrs):
-    for x in element_con("form", children, **attrs):
-        yield x
+    def __exit__(self, *exc):
+        return element_end("h1", [])
 
+    def __str__(self):
 
-def form_dec(*children, **attrs):
-    return element_dec("form", children, **attrs)
+        blob = element_ret("h1", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def form(*children, **attrs):
-    return element("form", children, **attrs)
 
+h1.r = h1
+h1.c = h1
+h1.d = h1
 
-form.s = form_sta
-form.e = form_end
-form.r = form_ret
-form.c = form_con
-form.d = form_dec
 
 
-def frame_sta(*children, **attrs):
-    return element_start("frame", children, **attrs)
+DELETED = ""
 
 
-def frame_end(*children, **kwargs):
-    return element_end("frame", children, **kwargs)
+class h2(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is h2:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("h2", children, **attrs))
+        super(h2, self).__init__()
 
-def frame_ret(*children, **kwargs):
-    return element_ret("frame", children, **kwargs)
+    def __enter__(self):
+        element_start("h2", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("h2", [])
 
-@contextmanager
-def frame_con(*children, **attrs):
-    for x in element_con("frame", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("h2", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def frame_dec(*children, **attrs):
-    return element_dec("frame", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def frame(*children, **attrs):
-    return element("frame", children, **attrs)
+h2.r = h2
+h2.c = h2
+h2.d = h2
 
 
-frame.s = frame_sta
-frame.e = frame_end
-frame.r = frame_ret
-frame.c = frame_con
-frame.d = frame_dec
 
+DELETED = ""
 
-def frameset_sta(*children, **attrs):
-    return element_start("frameset", children, **attrs)
 
+class h3(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is h3:
+                state.html[child.i] = DELETED
 
-def frameset_end(*children, **kwargs):
-    return element_end("frameset", children, **kwargs)
+        state.html.append(lambda: element_ret("h3", children, **attrs))
+        super(h3, self).__init__()
 
+    def __enter__(self):
+        element_start("h3", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def frameset_ret(*children, **kwargs):
-    return element_ret("frameset", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("h3", [])
 
+    def __str__(self):
 
-@contextmanager
-def frameset_con(*children, **attrs):
-    for x in element_con("frameset", children, **attrs):
-        yield x
+        blob = element_ret("h3", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def frameset_dec(*children, **attrs):
-    return element_dec("frameset", children, **attrs)
 
+h3.r = h3
+h3.c = h3
+h3.d = h3
 
-def frameset(*children, **attrs):
-    return element("frameset", children, **attrs)
 
 
-frameset.s = frameset_sta
-frameset.e = frameset_end
-frameset.r = frameset_ret
-frameset.c = frameset_con
-frameset.d = frameset_dec
+DELETED = ""
 
 
-def h1_sta(*children, **attrs):
-    return element_start("h1", children, **attrs)
+class h4(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is h4:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("h4", children, **attrs))
+        super(h4, self).__init__()
 
-def h1_end(*children, **kwargs):
-    return element_end("h1", children, **kwargs)
+    def __enter__(self):
+        element_start("h4", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("h4", [])
 
-def h1_ret(*children, **kwargs):
-    return element_ret("h1", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("h4", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def h1_con(*children, **attrs):
-    for x in element_con("h1", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def h1_dec(*children, **attrs):
-    return element_dec("h1", children, **attrs)
+h4.r = h4
+h4.c = h4
+h4.d = h4
 
 
-def h1(*children, **attrs):
-    return element("h1", children, **attrs)
 
+DELETED = ""
 
-h1.s = h1_sta
-h1.e = h1_end
-h1.r = h1_ret
-h1.c = h1_con
-h1.d = h1_dec
 
+class h5(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is h5:
+                state.html[child.i] = DELETED
 
-def h2_sta(*children, **attrs):
-    return element_start("h2", children, **attrs)
+        state.html.append(lambda: element_ret("h5", children, **attrs))
+        super(h5, self).__init__()
 
+    def __enter__(self):
+        element_start("h5", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def h2_end(*children, **kwargs):
-    return element_end("h2", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("h5", [])
 
+    def __str__(self):
 
-def h2_ret(*children, **kwargs):
-    return element_ret("h2", children, **kwargs)
+        blob = element_ret("h5", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def h2_con(*children, **attrs):
-    for x in element_con("h2", children, **attrs):
-        yield x
 
+h5.r = h5
+h5.c = h5
+h5.d = h5
 
-def h2_dec(*children, **attrs):
-    return element_dec("h2", children, **attrs)
 
 
-def h2(*children, **attrs):
-    return element("h2", children, **attrs)
+DELETED = ""
 
 
-h2.s = h2_sta
-h2.e = h2_end
-h2.r = h2_ret
-h2.c = h2_con
-h2.d = h2_dec
+class h6(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is h6:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("h6", children, **attrs))
+        super(h6, self).__init__()
 
-def h3_sta(*children, **attrs):
-    return element_start("h3", children, **attrs)
+    def __enter__(self):
+        element_start("h6", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("h6", [])
 
-def h3_end(*children, **kwargs):
-    return element_end("h3", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("h6", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def h3_ret(*children, **kwargs):
-    return element_ret("h3", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def h3_con(*children, **attrs):
-    for x in element_con("h3", children, **attrs):
-        yield x
+h6.r = h6
+h6.c = h6
+h6.d = h6
 
 
-def h3_dec(*children, **attrs):
-    return element_dec("h3", children, **attrs)
 
+DELETED = ""
 
-def h3(*children, **attrs):
-    return element("h3", children, **attrs)
 
+class head(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is head:
+                state.html[child.i] = DELETED
 
-h3.s = h3_sta
-h3.e = h3_end
-h3.r = h3_ret
-h3.c = h3_con
-h3.d = h3_dec
+        state.html.append(lambda: element_ret("head", children, **attrs))
+        super(head, self).__init__()
 
+    def __enter__(self):
+        element_start("head", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def h4_sta(*children, **attrs):
-    return element_start("h4", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("head", [])
 
+    def __str__(self):
 
-def h4_end(*children, **kwargs):
-    return element_end("h4", children, **kwargs)
+        blob = element_ret("head", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def h4_ret(*children, **kwargs):
-    return element_ret("h4", children, **kwargs)
 
+head.r = head
+head.c = head
+head.d = head
 
-@contextmanager
-def h4_con(*children, **attrs):
-    for x in element_con("h4", children, **attrs):
-        yield x
 
 
-def h4_dec(*children, **attrs):
-    return element_dec("h4", children, **attrs)
+DELETED = ""
 
 
-def h4(*children, **attrs):
-    return element("h4", children, **attrs)
+class header(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is header:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("header", children, **attrs))
+        super(header, self).__init__()
 
-h4.s = h4_sta
-h4.e = h4_end
-h4.r = h4_ret
-h4.c = h4_con
-h4.d = h4_dec
+    def __enter__(self):
+        element_start("header", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("header", [])
 
-def h5_sta(*children, **attrs):
-    return element_start("h5", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("header", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def h5_end(*children, **kwargs):
-    return element_end("h5", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def h5_ret(*children, **kwargs):
-    return element_ret("h5", children, **kwargs)
+header.r = header
+header.c = header
+header.d = header
 
 
-@contextmanager
-def h5_con(*children, **attrs):
-    for x in element_con("h5", children, **attrs):
-        yield x
 
+DELETED = ""
 
-def h5_dec(*children, **attrs):
-    return element_dec("h5", children, **attrs)
 
+class html(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is html:
+                state.html[child.i] = DELETED
 
-def h5(*children, **attrs):
-    return element("h5", children, **attrs)
+        state.html.append(lambda: element_ret("html", children, **attrs))
+        super(html, self).__init__()
 
+    def __enter__(self):
+        element_start("html", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-h5.s = h5_sta
-h5.e = h5_end
-h5.r = h5_ret
-h5.c = h5_con
-h5.d = h5_dec
+    def __exit__(self, *exc):
+        return element_end("html", [])
 
+    def __str__(self):
 
-def h6_sta(*children, **attrs):
-    return element_start("h6", children, **attrs)
+        blob = element_ret("html", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def h6_end(*children, **kwargs):
-    return element_end("h6", children, **kwargs)
 
+html.r = html
+html.c = html
+html.d = html
 
-def h6_ret(*children, **kwargs):
-    return element_ret("h6", children, **kwargs)
 
 
-@contextmanager
-def h6_con(*children, **attrs):
-    for x in element_con("h6", children, **attrs):
-        yield x
+DELETED = ""
 
 
-def h6_dec(*children, **attrs):
-    return element_dec("h6", children, **attrs)
+class i(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is i:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("i", children, **attrs))
+        super(i, self).__init__()
 
-def h6(*children, **attrs):
-    return element("h6", children, **attrs)
+    def __enter__(self):
+        element_start("i", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("i", [])
 
-h6.s = h6_sta
-h6.e = h6_end
-h6.r = h6_ret
-h6.c = h6_con
-h6.d = h6_dec
+    def __str__(self):
 
+        blob = element_ret("i", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def head_sta(*children, **attrs):
-    return element_start("head", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def head_end(*children, **kwargs):
-    return element_end("head", children, **kwargs)
+i.r = i
+i.c = i
+i.d = i
 
 
-def head_ret(*children, **kwargs):
-    return element_ret("head", children, **kwargs)
 
+DELETED = ""
 
-@contextmanager
-def head_con(*children, **attrs):
-    for x in element_con("head", children, **attrs):
-        yield x
 
+class iframe(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is iframe:
+                state.html[child.i] = DELETED
 
-def head_dec(*children, **attrs):
-    return element_dec("head", children, **attrs)
+        state.html.append(lambda: element_ret("iframe", children, **attrs))
+        super(iframe, self).__init__()
 
+    def __enter__(self):
+        element_start("iframe", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def head(*children, **attrs):
-    return element("head", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("iframe", [])
 
+    def __str__(self):
 
-head.s = head_sta
-head.e = head_end
-head.r = head_ret
-head.c = head_con
-head.d = head_dec
+        blob = element_ret("iframe", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def header_sta(*children, **attrs):
-    return element_start("header", children, **attrs)
 
+iframe.r = iframe
+iframe.c = iframe
+iframe.d = iframe
 
-def header_end(*children, **kwargs):
-    return element_end("header", children, **kwargs)
 
 
-def header_ret(*children, **kwargs):
-    return element_ret("header", children, **kwargs)
+DELETED = ""
 
 
-@contextmanager
-def header_con(*children, **attrs):
-    for x in element_con("header", children, **attrs):
-        yield x
+class ins(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is ins:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("ins", children, **attrs))
+        super(ins, self).__init__()
 
-def header_dec(*children, **attrs):
-    return element_dec("header", children, **attrs)
+    def __enter__(self):
+        element_start("ins", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("ins", [])
 
-def header(*children, **attrs):
-    return element("header", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("ins", self.children, **self.attrs)
+        return "".join(blob.html)
 
-header.s = header_sta
-header.e = header_end
-header.r = header_ret
-header.c = header_con
-header.d = header_dec
+    def __unicode__(self):
+        return self.__str__()
 
 
-def html_sta(*children, **attrs):
-    return element_start("html", children, **attrs)
+ins.r = ins
+ins.c = ins
+ins.d = ins
 
 
-def html_end(*children, **kwargs):
-    return element_end("html", children, **kwargs)
 
+DELETED = ""
 
-def html_ret(*children, **kwargs):
-    return element_ret("html", children, **kwargs)
 
+class kbd(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is kbd:
+                state.html[child.i] = DELETED
 
-@contextmanager
-def html_con(*children, **attrs):
-    for x in element_con("html", children, **attrs):
-        yield x
+        state.html.append(lambda: element_ret("kbd", children, **attrs))
+        super(kbd, self).__init__()
 
+    def __enter__(self):
+        element_start("kbd", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def html_dec(*children, **attrs):
-    return element_dec("html", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("kbd", [])
 
+    def __str__(self):
 
-def html(*children, **attrs):
-    return element("html", children, **attrs)
+        blob = element_ret("kbd", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-html.s = html_sta
-html.e = html_end
-html.r = html_ret
-html.c = html_con
-html.d = html_dec
 
+kbd.r = kbd
+kbd.c = kbd
+kbd.d = kbd
 
-def i_sta(*children, **attrs):
-    return element_start("i", children, **attrs)
 
 
-def i_end(*children, **kwargs):
-    return element_end("i", children, **kwargs)
+DELETED = ""
 
 
-def i_ret(*children, **kwargs):
-    return element_ret("i", children, **kwargs)
+class label(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is label:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("label", children, **attrs))
+        super(label, self).__init__()
 
-@contextmanager
-def i_con(*children, **attrs):
-    for x in element_con("i", children, **attrs):
-        yield x
+    def __enter__(self):
+        element_start("label", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("label", [])
 
-def i_dec(*children, **attrs):
-    return element_dec("i", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("label", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def i(*children, **attrs):
-    return element("i", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-i.s = i_sta
-i.e = i_end
-i.r = i_ret
-i.c = i_con
-i.d = i_dec
+label.r = label
+label.c = label
+label.d = label
 
 
-def iframe_sta(*children, **attrs):
-    return element_start("iframe", children, **attrs)
 
+DELETED = ""
 
-def iframe_end(*children, **kwargs):
-    return element_end("iframe", children, **kwargs)
 
+class legend(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is legend:
+                state.html[child.i] = DELETED
 
-def iframe_ret(*children, **kwargs):
-    return element_ret("iframe", children, **kwargs)
+        state.html.append(lambda: element_ret("legend", children, **attrs))
+        super(legend, self).__init__()
 
+    def __enter__(self):
+        element_start("legend", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-@contextmanager
-def iframe_con(*children, **attrs):
-    for x in element_con("iframe", children, **attrs):
-        yield x
+    def __exit__(self, *exc):
+        return element_end("legend", [])
 
+    def __str__(self):
 
-def iframe_dec(*children, **attrs):
-    return element_dec("iframe", children, **attrs)
+        blob = element_ret("legend", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def iframe(*children, **attrs):
-    return element("iframe", children, **attrs)
 
+legend.r = legend
+legend.c = legend
+legend.d = legend
 
-iframe.s = iframe_sta
-iframe.e = iframe_end
-iframe.r = iframe_ret
-iframe.c = iframe_con
-iframe.d = iframe_dec
 
 
-def ins_sta(*children, **attrs):
-    return element_start("ins", children, **attrs)
+DELETED = ""
 
 
-def ins_end(*children, **kwargs):
-    return element_end("ins", children, **kwargs)
+class li(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is li:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("li", children, **attrs))
+        super(li, self).__init__()
 
-def ins_ret(*children, **kwargs):
-    return element_ret("ins", children, **kwargs)
+    def __enter__(self):
+        element_start("li", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("li", [])
 
-@contextmanager
-def ins_con(*children, **attrs):
-    for x in element_con("ins", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("li", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def ins_dec(*children, **attrs):
-    return element_dec("ins", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def ins(*children, **attrs):
-    return element("ins", children, **attrs)
+li.r = li
+li.c = li
+li.d = li
 
 
-ins.s = ins_sta
-ins.e = ins_end
-ins.r = ins_ret
-ins.c = ins_con
-ins.d = ins_dec
 
+DELETED = ""
 
-def kbd_sta(*children, **attrs):
-    return element_start("kbd", children, **attrs)
 
+class main(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is main:
+                state.html[child.i] = DELETED
 
-def kbd_end(*children, **kwargs):
-    return element_end("kbd", children, **kwargs)
+        state.html.append(lambda: element_ret("main", children, **attrs))
+        super(main, self).__init__()
 
+    def __enter__(self):
+        element_start("main", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def kbd_ret(*children, **kwargs):
-    return element_ret("kbd", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("main", [])
 
+    def __str__(self):
 
-@contextmanager
-def kbd_con(*children, **attrs):
-    for x in element_con("kbd", children, **attrs):
-        yield x
+        blob = element_ret("main", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def kbd_dec(*children, **attrs):
-    return element_dec("kbd", children, **attrs)
 
+main.r = main
+main.c = main
+main.d = main
 
-def kbd(*children, **attrs):
-    return element("kbd", children, **attrs)
 
 
-kbd.s = kbd_sta
-kbd.e = kbd_end
-kbd.r = kbd_ret
-kbd.c = kbd_con
-kbd.d = kbd_dec
+DELETED = ""
 
 
-def label_sta(*children, **attrs):
-    return element_start("label", children, **attrs)
+class map_(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is map_:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("map", children, **attrs))
+        super(map_, self).__init__()
 
-def label_end(*children, **kwargs):
-    return element_end("label", children, **kwargs)
+    def __enter__(self):
+        element_start("map", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("map", [])
 
-def label_ret(*children, **kwargs):
-    return element_ret("label", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("map", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def label_con(*children, **attrs):
-    for x in element_con("label", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def label_dec(*children, **attrs):
-    return element_dec("label", children, **attrs)
+map_.r = map_
+map_.c = map_
+map_.d = map_
 
 
-def label(*children, **attrs):
-    return element("label", children, **attrs)
 
+DELETED = ""
 
-label.s = label_sta
-label.e = label_end
-label.r = label_ret
-label.c = label_con
-label.d = label_dec
 
+class mark(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is mark:
+                state.html[child.i] = DELETED
 
-def legend_sta(*children, **attrs):
-    return element_start("legend", children, **attrs)
+        state.html.append(lambda: element_ret("mark", children, **attrs))
+        super(mark, self).__init__()
 
+    def __enter__(self):
+        element_start("mark", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def legend_end(*children, **kwargs):
-    return element_end("legend", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("mark", [])
 
+    def __str__(self):
 
-def legend_ret(*children, **kwargs):
-    return element_ret("legend", children, **kwargs)
+        blob = element_ret("mark", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def legend_con(*children, **attrs):
-    for x in element_con("legend", children, **attrs):
-        yield x
 
+mark.r = mark
+mark.c = mark
+mark.d = mark
 
-def legend_dec(*children, **attrs):
-    return element_dec("legend", children, **attrs)
 
 
-def legend(*children, **attrs):
-    return element("legend", children, **attrs)
+DELETED = ""
 
 
-legend.s = legend_sta
-legend.e = legend_end
-legend.r = legend_ret
-legend.c = legend_con
-legend.d = legend_dec
+class meter(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is meter:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("meter", children, **attrs))
+        super(meter, self).__init__()
 
-def li_sta(*children, **attrs):
-    return element_start("li", children, **attrs)
+    def __enter__(self):
+        element_start("meter", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("meter", [])
 
-def li_end(*children, **kwargs):
-    return element_end("li", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("meter", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def li_ret(*children, **kwargs):
-    return element_ret("li", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def li_con(*children, **attrs):
-    for x in element_con("li", children, **attrs):
-        yield x
+meter.r = meter
+meter.c = meter
+meter.d = meter
 
 
-def li_dec(*children, **attrs):
-    return element_dec("li", children, **attrs)
 
+DELETED = ""
 
-def li(*children, **attrs):
-    return element("li", children, **attrs)
 
+class nav(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is nav:
+                state.html[child.i] = DELETED
 
-li.s = li_sta
-li.e = li_end
-li.r = li_ret
-li.c = li_con
-li.d = li_dec
+        state.html.append(lambda: element_ret("nav", children, **attrs))
+        super(nav, self).__init__()
 
+    def __enter__(self):
+        element_start("nav", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def main_sta(*children, **attrs):
-    return element_start("main", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("nav", [])
 
+    def __str__(self):
 
-def main_end(*children, **kwargs):
-    return element_end("main", children, **kwargs)
+        blob = element_ret("nav", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def main_ret(*children, **kwargs):
-    return element_ret("main", children, **kwargs)
 
+nav.r = nav
+nav.c = nav
+nav.d = nav
 
-@contextmanager
-def main_con(*children, **attrs):
-    for x in element_con("main", children, **attrs):
-        yield x
 
 
-def main_dec(*children, **attrs):
-    return element_dec("main", children, **attrs)
+DELETED = ""
 
 
-def main(*children, **attrs):
-    return element("main", children, **attrs)
+class noframes(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is noframes:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("noframes", children, **attrs))
+        super(noframes, self).__init__()
 
-main.s = main_sta
-main.e = main_end
-main.r = main_ret
-main.c = main_con
-main.d = main_dec
+    def __enter__(self):
+        element_start("noframes", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("noframes", [])
 
-def map_sta(*children, **attrs):
-    return element_start("map", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("noframes", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def map_end(*children, **kwargs):
-    return element_end("map", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def map_ret(*children, **kwargs):
-    return element_ret("map", children, **kwargs)
+noframes.r = noframes
+noframes.c = noframes
+noframes.d = noframes
 
 
-@contextmanager
-def map_con(*children, **attrs):
-    for x in element_con("map", children, **attrs):
-        yield x
 
+DELETED = ""
 
-def map_dec(*children, **attrs):
-    return element_dec("map", children, **attrs)
 
+class noscript(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is noscript:
+                state.html[child.i] = DELETED
 
-def map_(*children, **attrs):
-    return element("map", children, **attrs)
+        state.html.append(lambda: element_ret("noscript", children, **attrs))
+        super(noscript, self).__init__()
 
+    def __enter__(self):
+        element_start("noscript", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-map_.s = map_sta
-map_.e = map_end
-map_.r = map_ret
-map_.c = map_con
-map_.d = map_dec
+    def __exit__(self, *exc):
+        return element_end("noscript", [])
 
+    def __str__(self):
 
-def mark_sta(*children, **attrs):
-    return element_start("mark", children, **attrs)
+        blob = element_ret("noscript", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def mark_end(*children, **kwargs):
-    return element_end("mark", children, **kwargs)
 
+noscript.r = noscript
+noscript.c = noscript
+noscript.d = noscript
 
-def mark_ret(*children, **kwargs):
-    return element_ret("mark", children, **kwargs)
 
 
-@contextmanager
-def mark_con(*children, **attrs):
-    for x in element_con("mark", children, **attrs):
-        yield x
+DELETED = ""
 
 
-def mark_dec(*children, **attrs):
-    return element_dec("mark", children, **attrs)
+class object_(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is object_:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("object", children, **attrs))
+        super(object_, self).__init__()
 
-def mark(*children, **attrs):
-    return element("mark", children, **attrs)
+    def __enter__(self):
+        element_start("object", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("object", [])
 
-mark.s = mark_sta
-mark.e = mark_end
-mark.r = mark_ret
-mark.c = mark_con
-mark.d = mark_dec
+    def __str__(self):
 
+        blob = element_ret("object", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def meter_sta(*children, **attrs):
-    return element_start("meter", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def meter_end(*children, **kwargs):
-    return element_end("meter", children, **kwargs)
+object_.r = object_
+object_.c = object_
+object_.d = object_
 
 
-def meter_ret(*children, **kwargs):
-    return element_ret("meter", children, **kwargs)
 
+DELETED = ""
 
-@contextmanager
-def meter_con(*children, **attrs):
-    for x in element_con("meter", children, **attrs):
-        yield x
 
+class ol(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is ol:
+                state.html[child.i] = DELETED
 
-def meter_dec(*children, **attrs):
-    return element_dec("meter", children, **attrs)
+        state.html.append(lambda: element_ret("ol", children, **attrs))
+        super(ol, self).__init__()
 
+    def __enter__(self):
+        element_start("ol", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def meter(*children, **attrs):
-    return element("meter", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("ol", [])
 
+    def __str__(self):
 
-meter.s = meter_sta
-meter.e = meter_end
-meter.r = meter_ret
-meter.c = meter_con
-meter.d = meter_dec
+        blob = element_ret("ol", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def nav_sta(*children, **attrs):
-    return element_start("nav", children, **attrs)
 
+ol.r = ol
+ol.c = ol
+ol.d = ol
 
-def nav_end(*children, **kwargs):
-    return element_end("nav", children, **kwargs)
 
 
-def nav_ret(*children, **kwargs):
-    return element_ret("nav", children, **kwargs)
+DELETED = ""
 
 
-@contextmanager
-def nav_con(*children, **attrs):
-    for x in element_con("nav", children, **attrs):
-        yield x
+class optgroup(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is optgroup:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("optgroup", children, **attrs))
+        super(optgroup, self).__init__()
 
-def nav_dec(*children, **attrs):
-    return element_dec("nav", children, **attrs)
+    def __enter__(self):
+        element_start("optgroup", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("optgroup", [])
 
-def nav(*children, **attrs):
-    return element("nav", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("optgroup", self.children, **self.attrs)
+        return "".join(blob.html)
 
-nav.s = nav_sta
-nav.e = nav_end
-nav.r = nav_ret
-nav.c = nav_con
-nav.d = nav_dec
+    def __unicode__(self):
+        return self.__str__()
 
 
-def noframes_sta(*children, **attrs):
-    return element_start("noframes", children, **attrs)
+optgroup.r = optgroup
+optgroup.c = optgroup
+optgroup.d = optgroup
 
 
-def noframes_end(*children, **kwargs):
-    return element_end("noframes", children, **kwargs)
 
+DELETED = ""
 
-def noframes_ret(*children, **kwargs):
-    return element_ret("noframes", children, **kwargs)
 
+class option(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is option:
+                state.html[child.i] = DELETED
 
-@contextmanager
-def noframes_con(*children, **attrs):
-    for x in element_con("noframes", children, **attrs):
-        yield x
+        state.html.append(lambda: element_ret("option", children, **attrs))
+        super(option, self).__init__()
 
+    def __enter__(self):
+        element_start("option", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def noframes_dec(*children, **attrs):
-    return element_dec("noframes", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("option", [])
 
+    def __str__(self):
 
-def noframes(*children, **attrs):
-    return element("noframes", children, **attrs)
+        blob = element_ret("option", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-noframes.s = noframes_sta
-noframes.e = noframes_end
-noframes.r = noframes_ret
-noframes.c = noframes_con
-noframes.d = noframes_dec
 
+option.r = option
+option.c = option
+option.d = option
 
-def noscript_sta(*children, **attrs):
-    return element_start("noscript", children, **attrs)
 
 
-def noscript_end(*children, **kwargs):
-    return element_end("noscript", children, **kwargs)
+DELETED = ""
 
 
-def noscript_ret(*children, **kwargs):
-    return element_ret("noscript", children, **kwargs)
+class output(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is output:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("output", children, **attrs))
+        super(output, self).__init__()
 
-@contextmanager
-def noscript_con(*children, **attrs):
-    for x in element_con("noscript", children, **attrs):
-        yield x
+    def __enter__(self):
+        element_start("output", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("output", [])
 
-def noscript_dec(*children, **attrs):
-    return element_dec("noscript", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("output", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def noscript(*children, **attrs):
-    return element("noscript", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-noscript.s = noscript_sta
-noscript.e = noscript_end
-noscript.r = noscript_ret
-noscript.c = noscript_con
-noscript.d = noscript_dec
+output.r = output
+output.c = output
+output.d = output
 
 
-def object_sta(*children, **attrs):
-    return element_start("object", children, **attrs)
 
+DELETED = ""
 
-def object_end(*children, **kwargs):
-    return element_end("object", children, **kwargs)
 
+class p(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is p:
+                state.html[child.i] = DELETED
 
-def object_ret(*children, **kwargs):
-    return element_ret("object", children, **kwargs)
+        state.html.append(lambda: element_ret("p", children, **attrs))
+        super(p, self).__init__()
 
+    def __enter__(self):
+        element_start("p", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-@contextmanager
-def object_con(*children, **attrs):
-    for x in element_con("object", children, **attrs):
-        yield x
+    def __exit__(self, *exc):
+        return element_end("p", [])
 
+    def __str__(self):
 
-def object_dec(*children, **attrs):
-    return element_dec("object", children, **attrs)
+        blob = element_ret("p", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def object_(*children, **attrs):
-    return element("object", children, **attrs)
 
+p.r = p
+p.c = p
+p.d = p
 
-object_.s = object_sta
-object_.e = object_end
-object_.r = object_ret
-object_.c = object_con
-object_.d = object_dec
 
 
-def ol_sta(*children, **attrs):
-    return element_start("ol", children, **attrs)
+DELETED = ""
 
 
-def ol_end(*children, **kwargs):
-    return element_end("ol", children, **kwargs)
+class picture(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is picture:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("picture", children, **attrs))
+        super(picture, self).__init__()
 
-def ol_ret(*children, **kwargs):
-    return element_ret("ol", children, **kwargs)
+    def __enter__(self):
+        element_start("picture", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("picture", [])
 
-@contextmanager
-def ol_con(*children, **attrs):
-    for x in element_con("ol", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("picture", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def ol_dec(*children, **attrs):
-    return element_dec("ol", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def ol(*children, **attrs):
-    return element("ol", children, **attrs)
+picture.r = picture
+picture.c = picture
+picture.d = picture
 
 
-ol.s = ol_sta
-ol.e = ol_end
-ol.r = ol_ret
-ol.c = ol_con
-ol.d = ol_dec
 
+DELETED = ""
 
-def optgroup_sta(*children, **attrs):
-    return element_start("optgroup", children, **attrs)
 
+class pre(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is pre:
+                state.html[child.i] = DELETED
 
-def optgroup_end(*children, **kwargs):
-    return element_end("optgroup", children, **kwargs)
+        state.html.append(lambda: element_ret("pre", children, **attrs))
+        super(pre, self).__init__()
 
+    def __enter__(self):
+        element_start("pre", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def optgroup_ret(*children, **kwargs):
-    return element_ret("optgroup", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("pre", [])
 
+    def __str__(self):
 
-@contextmanager
-def optgroup_con(*children, **attrs):
-    for x in element_con("optgroup", children, **attrs):
-        yield x
+        blob = element_ret("pre", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def optgroup_dec(*children, **attrs):
-    return element_dec("optgroup", children, **attrs)
 
+pre.r = pre
+pre.c = pre
+pre.d = pre
 
-def optgroup(*children, **attrs):
-    return element("optgroup", children, **attrs)
 
 
-optgroup.s = optgroup_sta
-optgroup.e = optgroup_end
-optgroup.r = optgroup_ret
-optgroup.c = optgroup_con
-optgroup.d = optgroup_dec
+DELETED = ""
 
 
-def option_sta(*children, **attrs):
-    return element_start("option", children, **attrs)
+class progress(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is progress:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("progress", children, **attrs))
+        super(progress, self).__init__()
 
-def option_end(*children, **kwargs):
-    return element_end("option", children, **kwargs)
+    def __enter__(self):
+        element_start("progress", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("progress", [])
 
-def option_ret(*children, **kwargs):
-    return element_ret("option", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("progress", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def option_con(*children, **attrs):
-    for x in element_con("option", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def option_dec(*children, **attrs):
-    return element_dec("option", children, **attrs)
+progress.r = progress
+progress.c = progress
+progress.d = progress
 
 
-def option(*children, **attrs):
-    return element("option", children, **attrs)
 
+DELETED = ""
 
-option.s = option_sta
-option.e = option_end
-option.r = option_ret
-option.c = option_con
-option.d = option_dec
 
+class q(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is q:
+                state.html[child.i] = DELETED
 
-def output_sta(*children, **attrs):
-    return element_start("output", children, **attrs)
+        state.html.append(lambda: element_ret("q", children, **attrs))
+        super(q, self).__init__()
 
+    def __enter__(self):
+        element_start("q", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def output_end(*children, **kwargs):
-    return element_end("output", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("q", [])
 
+    def __str__(self):
 
-def output_ret(*children, **kwargs):
-    return element_ret("output", children, **kwargs)
+        blob = element_ret("q", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def output_con(*children, **attrs):
-    for x in element_con("output", children, **attrs):
-        yield x
 
+q.r = q
+q.c = q
+q.d = q
 
-def output_dec(*children, **attrs):
-    return element_dec("output", children, **attrs)
 
 
-def output(*children, **attrs):
-    return element("output", children, **attrs)
+DELETED = ""
 
 
-output.s = output_sta
-output.e = output_end
-output.r = output_ret
-output.c = output_con
-output.d = output_dec
+class rp(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is rp:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("rp", children, **attrs))
+        super(rp, self).__init__()
 
-def p_sta(*children, **attrs):
-    return element_start("p", children, **attrs)
+    def __enter__(self):
+        element_start("rp", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("rp", [])
 
-def p_end(*children, **kwargs):
-    return element_end("p", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("rp", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def p_ret(*children, **kwargs):
-    return element_ret("p", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def p_con(*children, **attrs):
-    for x in element_con("p", children, **attrs):
-        yield x
+rp.r = rp
+rp.c = rp
+rp.d = rp
 
 
-def p_dec(*children, **attrs):
-    return element_dec("p", children, **attrs)
 
+DELETED = ""
 
-def p(*children, **attrs):
-    return element("p", children, **attrs)
 
+class rt(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is rt:
+                state.html[child.i] = DELETED
 
-p.s = p_sta
-p.e = p_end
-p.r = p_ret
-p.c = p_con
-p.d = p_dec
+        state.html.append(lambda: element_ret("rt", children, **attrs))
+        super(rt, self).__init__()
 
+    def __enter__(self):
+        element_start("rt", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def picture_sta(*children, **attrs):
-    return element_start("picture", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("rt", [])
 
+    def __str__(self):
 
-def picture_end(*children, **kwargs):
-    return element_end("picture", children, **kwargs)
+        blob = element_ret("rt", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def picture_ret(*children, **kwargs):
-    return element_ret("picture", children, **kwargs)
 
+rt.r = rt
+rt.c = rt
+rt.d = rt
 
-@contextmanager
-def picture_con(*children, **attrs):
-    for x in element_con("picture", children, **attrs):
-        yield x
 
 
-def picture_dec(*children, **attrs):
-    return element_dec("picture", children, **attrs)
+DELETED = ""
 
 
-def picture(*children, **attrs):
-    return element("picture", children, **attrs)
+class ruby(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is ruby:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("ruby", children, **attrs))
+        super(ruby, self).__init__()
 
-picture.s = picture_sta
-picture.e = picture_end
-picture.r = picture_ret
-picture.c = picture_con
-picture.d = picture_dec
+    def __enter__(self):
+        element_start("ruby", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("ruby", [])
 
-def pre_sta(*children, **attrs):
-    return element_start("pre", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("ruby", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def pre_end(*children, **kwargs):
-    return element_end("pre", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def pre_ret(*children, **kwargs):
-    return element_ret("pre", children, **kwargs)
+ruby.r = ruby
+ruby.c = ruby
+ruby.d = ruby
 
 
-@contextmanager
-def pre_con(*children, **attrs):
-    for x in element_con("pre", children, **attrs):
-        yield x
 
+DELETED = ""
 
-def pre_dec(*children, **attrs):
-    return element_dec("pre", children, **attrs)
 
+class s(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is s:
+                state.html[child.i] = DELETED
 
-def pre(*children, **attrs):
-    return element("pre", children, **attrs)
+        state.html.append(lambda: element_ret("s", children, **attrs))
+        super(s, self).__init__()
 
+    def __enter__(self):
+        element_start("s", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-pre.s = pre_sta
-pre.e = pre_end
-pre.r = pre_ret
-pre.c = pre_con
-pre.d = pre_dec
+    def __exit__(self, *exc):
+        return element_end("s", [])
 
+    def __str__(self):
 
-def progress_sta(*children, **attrs):
-    return element_start("progress", children, **attrs)
+        blob = element_ret("s", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def progress_end(*children, **kwargs):
-    return element_end("progress", children, **kwargs)
 
+s.r = s
+s.c = s
+s.d = s
 
-def progress_ret(*children, **kwargs):
-    return element_ret("progress", children, **kwargs)
 
 
-@contextmanager
-def progress_con(*children, **attrs):
-    for x in element_con("progress", children, **attrs):
-        yield x
+DELETED = ""
 
 
-def progress_dec(*children, **attrs):
-    return element_dec("progress", children, **attrs)
+class samp(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is samp:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("samp", children, **attrs))
+        super(samp, self).__init__()
 
-def progress(*children, **attrs):
-    return element("progress", children, **attrs)
+    def __enter__(self):
+        element_start("samp", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("samp", [])
 
-progress.s = progress_sta
-progress.e = progress_end
-progress.r = progress_ret
-progress.c = progress_con
-progress.d = progress_dec
+    def __str__(self):
 
+        blob = element_ret("samp", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def q_sta(*children, **attrs):
-    return element_start("q", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def q_end(*children, **kwargs):
-    return element_end("q", children, **kwargs)
+samp.r = samp
+samp.c = samp
+samp.d = samp
 
 
-def q_ret(*children, **kwargs):
-    return element_ret("q", children, **kwargs)
 
+DELETED = ""
 
-@contextmanager
-def q_con(*children, **attrs):
-    for x in element_con("q", children, **attrs):
-        yield x
 
+class script(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is script:
+                state.html[child.i] = DELETED
 
-def q_dec(*children, **attrs):
-    return element_dec("q", children, **attrs)
+        state.html.append(lambda: element_ret("script", children, **attrs))
+        super(script, self).__init__()
 
+    def __enter__(self):
+        element_start("script", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def q(*children, **attrs):
-    return element("q", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("script", [])
 
+    def __str__(self):
 
-q.s = q_sta
-q.e = q_end
-q.r = q_ret
-q.c = q_con
-q.d = q_dec
+        blob = element_ret("script", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def rp_sta(*children, **attrs):
-    return element_start("rp", children, **attrs)
 
+script.r = script
+script.c = script
+script.d = script
 
-def rp_end(*children, **kwargs):
-    return element_end("rp", children, **kwargs)
 
 
-def rp_ret(*children, **kwargs):
-    return element_ret("rp", children, **kwargs)
+DELETED = ""
 
 
-@contextmanager
-def rp_con(*children, **attrs):
-    for x in element_con("rp", children, **attrs):
-        yield x
+class section(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is section:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("section", children, **attrs))
+        super(section, self).__init__()
 
-def rp_dec(*children, **attrs):
-    return element_dec("rp", children, **attrs)
+    def __enter__(self):
+        element_start("section", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("section", [])
 
-def rp(*children, **attrs):
-    return element("rp", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("section", self.children, **self.attrs)
+        return "".join(blob.html)
 
-rp.s = rp_sta
-rp.e = rp_end
-rp.r = rp_ret
-rp.c = rp_con
-rp.d = rp_dec
+    def __unicode__(self):
+        return self.__str__()
 
 
-def rt_sta(*children, **attrs):
-    return element_start("rt", children, **attrs)
+section.r = section
+section.c = section
+section.d = section
 
 
-def rt_end(*children, **kwargs):
-    return element_end("rt", children, **kwargs)
 
+DELETED = ""
 
-def rt_ret(*children, **kwargs):
-    return element_ret("rt", children, **kwargs)
 
+class small(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is small:
+                state.html[child.i] = DELETED
 
-@contextmanager
-def rt_con(*children, **attrs):
-    for x in element_con("rt", children, **attrs):
-        yield x
+        state.html.append(lambda: element_ret("small", children, **attrs))
+        super(small, self).__init__()
 
+    def __enter__(self):
+        element_start("small", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def rt_dec(*children, **attrs):
-    return element_dec("rt", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("small", [])
 
+    def __str__(self):
 
-def rt(*children, **attrs):
-    return element("rt", children, **attrs)
+        blob = element_ret("small", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-rt.s = rt_sta
-rt.e = rt_end
-rt.r = rt_ret
-rt.c = rt_con
-rt.d = rt_dec
 
+small.r = small
+small.c = small
+small.d = small
 
-def ruby_sta(*children, **attrs):
-    return element_start("ruby", children, **attrs)
 
 
-def ruby_end(*children, **kwargs):
-    return element_end("ruby", children, **kwargs)
+DELETED = ""
 
 
-def ruby_ret(*children, **kwargs):
-    return element_ret("ruby", children, **kwargs)
+class span(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is span:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("span", children, **attrs))
+        super(span, self).__init__()
 
-@contextmanager
-def ruby_con(*children, **attrs):
-    for x in element_con("ruby", children, **attrs):
-        yield x
+    def __enter__(self):
+        element_start("span", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("span", [])
 
-def ruby_dec(*children, **attrs):
-    return element_dec("ruby", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("span", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def ruby(*children, **attrs):
-    return element("ruby", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-ruby.s = ruby_sta
-ruby.e = ruby_end
-ruby.r = ruby_ret
-ruby.c = ruby_con
-ruby.d = ruby_dec
+span.r = span
+span.c = span
+span.d = span
 
 
-def s_sta(*children, **attrs):
-    return element_start("s", children, **attrs)
 
+DELETED = ""
 
-def s_end(*children, **kwargs):
-    return element_end("s", children, **kwargs)
 
+class strike(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is strike:
+                state.html[child.i] = DELETED
 
-def s_ret(*children, **kwargs):
-    return element_ret("s", children, **kwargs)
+        state.html.append(lambda: element_ret("strike", children, **attrs))
+        super(strike, self).__init__()
 
+    def __enter__(self):
+        element_start("strike", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-@contextmanager
-def s_con(*children, **attrs):
-    for x in element_con("s", children, **attrs):
-        yield x
+    def __exit__(self, *exc):
+        return element_end("strike", [])
 
+    def __str__(self):
 
-def s_dec(*children, **attrs):
-    return element_dec("s", children, **attrs)
+        blob = element_ret("strike", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def s(*children, **attrs):
-    return element("s", children, **attrs)
 
+strike.r = strike
+strike.c = strike
+strike.d = strike
 
-s.s = s_sta
-s.e = s_end
-s.r = s_ret
-s.c = s_con
-s.d = s_dec
 
 
-def samp_sta(*children, **attrs):
-    return element_start("samp", children, **attrs)
+DELETED = ""
 
 
-def samp_end(*children, **kwargs):
-    return element_end("samp", children, **kwargs)
+class strong(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is strong:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("strong", children, **attrs))
+        super(strong, self).__init__()
 
-def samp_ret(*children, **kwargs):
-    return element_ret("samp", children, **kwargs)
+    def __enter__(self):
+        element_start("strong", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("strong", [])
 
-@contextmanager
-def samp_con(*children, **attrs):
-    for x in element_con("samp", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("strong", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def samp_dec(*children, **attrs):
-    return element_dec("samp", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def samp(*children, **attrs):
-    return element("samp", children, **attrs)
+strong.r = strong
+strong.c = strong
+strong.d = strong
 
 
-samp.s = samp_sta
-samp.e = samp_end
-samp.r = samp_ret
-samp.c = samp_con
-samp.d = samp_dec
 
+DELETED = ""
 
-def script_sta(*children, **attrs):
-    return element_start("script", children, **attrs)
 
+class style(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is style:
+                state.html[child.i] = DELETED
 
-def script_end(*children, **kwargs):
-    return element_end("script", children, **kwargs)
+        state.html.append(lambda: element_ret("style", children, **attrs))
+        super(style, self).__init__()
 
+    def __enter__(self):
+        element_start("style", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def script_ret(*children, **kwargs):
-    return element_ret("script", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("style", [])
 
+    def __str__(self):
 
-@contextmanager
-def script_con(*children, **attrs):
-    for x in element_con("script", children, **attrs):
-        yield x
+        blob = element_ret("style", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def script_dec(*children, **attrs):
-    return element_dec("script", children, **attrs)
 
+style.r = style
+style.c = style
+style.d = style
 
-def script(*children, **attrs):
-    return element("script", children, **attrs)
 
 
-script.s = script_sta
-script.e = script_end
-script.r = script_ret
-script.c = script_con
-script.d = script_dec
+DELETED = ""
 
 
-def section_sta(*children, **attrs):
-    return element_start("section", children, **attrs)
+class sub(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is sub:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("sub", children, **attrs))
+        super(sub, self).__init__()
 
-def section_end(*children, **kwargs):
-    return element_end("section", children, **kwargs)
+    def __enter__(self):
+        element_start("sub", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("sub", [])
 
-def section_ret(*children, **kwargs):
-    return element_ret("section", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("sub", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def section_con(*children, **attrs):
-    for x in element_con("section", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def section_dec(*children, **attrs):
-    return element_dec("section", children, **attrs)
+sub.r = sub
+sub.c = sub
+sub.d = sub
 
 
-def section(*children, **attrs):
-    return element("section", children, **attrs)
 
+DELETED = ""
 
-section.s = section_sta
-section.e = section_end
-section.r = section_ret
-section.c = section_con
-section.d = section_dec
 
+class summary(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is summary:
+                state.html[child.i] = DELETED
 
-def small_sta(*children, **attrs):
-    return element_start("small", children, **attrs)
+        state.html.append(lambda: element_ret("summary", children, **attrs))
+        super(summary, self).__init__()
 
+    def __enter__(self):
+        element_start("summary", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def small_end(*children, **kwargs):
-    return element_end("small", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("summary", [])
 
+    def __str__(self):
 
-def small_ret(*children, **kwargs):
-    return element_ret("small", children, **kwargs)
+        blob = element_ret("summary", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def small_con(*children, **attrs):
-    for x in element_con("small", children, **attrs):
-        yield x
 
+summary.r = summary
+summary.c = summary
+summary.d = summary
 
-def small_dec(*children, **attrs):
-    return element_dec("small", children, **attrs)
 
 
-def small(*children, **attrs):
-    return element("small", children, **attrs)
+DELETED = ""
 
 
-small.s = small_sta
-small.e = small_end
-small.r = small_ret
-small.c = small_con
-small.d = small_dec
+class sup(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is sup:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("sup", children, **attrs))
+        super(sup, self).__init__()
 
-def span_sta(*children, **attrs):
-    return element_start("span", children, **attrs)
+    def __enter__(self):
+        element_start("sup", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("sup", [])
 
-def span_end(*children, **kwargs):
-    return element_end("span", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("sup", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def span_ret(*children, **kwargs):
-    return element_ret("span", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def span_con(*children, **attrs):
-    for x in element_con("span", children, **attrs):
-        yield x
+sup.r = sup
+sup.c = sup
+sup.d = sup
 
 
-def span_dec(*children, **attrs):
-    return element_dec("span", children, **attrs)
 
+DELETED = ""
 
-def span(*children, **attrs):
-    return element("span", children, **attrs)
 
+class svg(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is svg:
+                state.html[child.i] = DELETED
 
-span.s = span_sta
-span.e = span_end
-span.r = span_ret
-span.c = span_con
-span.d = span_dec
+        state.html.append(lambda: element_ret("svg", children, **attrs))
+        super(svg, self).__init__()
 
+    def __enter__(self):
+        element_start("svg", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def strike_sta(*children, **attrs):
-    return element_start("strike", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("svg", [])
 
+    def __str__(self):
 
-def strike_end(*children, **kwargs):
-    return element_end("strike", children, **kwargs)
+        blob = element_ret("svg", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def strike_ret(*children, **kwargs):
-    return element_ret("strike", children, **kwargs)
 
+svg.r = svg
+svg.c = svg
+svg.d = svg
 
-@contextmanager
-def strike_con(*children, **attrs):
-    for x in element_con("strike", children, **attrs):
-        yield x
 
 
-def strike_dec(*children, **attrs):
-    return element_dec("strike", children, **attrs)
+DELETED = ""
 
 
-def strike(*children, **attrs):
-    return element("strike", children, **attrs)
+class table(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is table:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("table", children, **attrs))
+        super(table, self).__init__()
 
-strike.s = strike_sta
-strike.e = strike_end
-strike.r = strike_ret
-strike.c = strike_con
-strike.d = strike_dec
+    def __enter__(self):
+        element_start("table", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("table", [])
 
-def strong_sta(*children, **attrs):
-    return element_start("strong", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("table", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def strong_end(*children, **kwargs):
-    return element_end("strong", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def strong_ret(*children, **kwargs):
-    return element_ret("strong", children, **kwargs)
+table.r = table
+table.c = table
+table.d = table
 
 
-@contextmanager
-def strong_con(*children, **attrs):
-    for x in element_con("strong", children, **attrs):
-        yield x
 
+DELETED = ""
 
-def strong_dec(*children, **attrs):
-    return element_dec("strong", children, **attrs)
 
+class tbody(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is tbody:
+                state.html[child.i] = DELETED
 
-def strong(*children, **attrs):
-    return element("strong", children, **attrs)
+        state.html.append(lambda: element_ret("tbody", children, **attrs))
+        super(tbody, self).__init__()
 
+    def __enter__(self):
+        element_start("tbody", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-strong.s = strong_sta
-strong.e = strong_end
-strong.r = strong_ret
-strong.c = strong_con
-strong.d = strong_dec
+    def __exit__(self, *exc):
+        return element_end("tbody", [])
 
+    def __str__(self):
 
-def style_sta(*children, **attrs):
-    return element_start("style", children, **attrs)
+        blob = element_ret("tbody", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def style_end(*children, **kwargs):
-    return element_end("style", children, **kwargs)
 
+tbody.r = tbody
+tbody.c = tbody
+tbody.d = tbody
 
-def style_ret(*children, **kwargs):
-    return element_ret("style", children, **kwargs)
 
 
-@contextmanager
-def style_con(*children, **attrs):
-    for x in element_con("style", children, **attrs):
-        yield x
+DELETED = ""
 
 
-def style_dec(*children, **attrs):
-    return element_dec("style", children, **attrs)
+class td(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is td:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("td", children, **attrs))
+        super(td, self).__init__()
 
-def style(*children, **attrs):
-    return element("style", children, **attrs)
+    def __enter__(self):
+        element_start("td", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("td", [])
 
-style.s = style_sta
-style.e = style_end
-style.r = style_ret
-style.c = style_con
-style.d = style_dec
+    def __str__(self):
 
+        blob = element_ret("td", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def sub_sta(*children, **attrs):
-    return element_start("sub", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def sub_end(*children, **kwargs):
-    return element_end("sub", children, **kwargs)
+td.r = td
+td.c = td
+td.d = td
 
 
-def sub_ret(*children, **kwargs):
-    return element_ret("sub", children, **kwargs)
 
+DELETED = ""
 
-@contextmanager
-def sub_con(*children, **attrs):
-    for x in element_con("sub", children, **attrs):
-        yield x
 
+class template(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is template:
+                state.html[child.i] = DELETED
 
-def sub_dec(*children, **attrs):
-    return element_dec("sub", children, **attrs)
+        state.html.append(lambda: element_ret("template", children, **attrs))
+        super(template, self).__init__()
 
+    def __enter__(self):
+        element_start("template", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def sub(*children, **attrs):
-    return element("sub", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("template", [])
 
+    def __str__(self):
 
-sub.s = sub_sta
-sub.e = sub_end
-sub.r = sub_ret
-sub.c = sub_con
-sub.d = sub_dec
+        blob = element_ret("template", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def summary_sta(*children, **attrs):
-    return element_start("summary", children, **attrs)
 
+template.r = template
+template.c = template
+template.d = template
 
-def summary_end(*children, **kwargs):
-    return element_end("summary", children, **kwargs)
 
 
-def summary_ret(*children, **kwargs):
-    return element_ret("summary", children, **kwargs)
+DELETED = ""
 
 
-@contextmanager
-def summary_con(*children, **attrs):
-    for x in element_con("summary", children, **attrs):
-        yield x
+class tfoot(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is tfoot:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("tfoot", children, **attrs))
+        super(tfoot, self).__init__()
 
-def summary_dec(*children, **attrs):
-    return element_dec("summary", children, **attrs)
+    def __enter__(self):
+        element_start("tfoot", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("tfoot", [])
 
-def summary(*children, **attrs):
-    return element("summary", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("tfoot", self.children, **self.attrs)
+        return "".join(blob.html)
 
-summary.s = summary_sta
-summary.e = summary_end
-summary.r = summary_ret
-summary.c = summary_con
-summary.d = summary_dec
+    def __unicode__(self):
+        return self.__str__()
 
 
-def sup_sta(*children, **attrs):
-    return element_start("sup", children, **attrs)
+tfoot.r = tfoot
+tfoot.c = tfoot
+tfoot.d = tfoot
 
 
-def sup_end(*children, **kwargs):
-    return element_end("sup", children, **kwargs)
 
+DELETED = ""
 
-def sup_ret(*children, **kwargs):
-    return element_ret("sup", children, **kwargs)
 
+class th(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is th:
+                state.html[child.i] = DELETED
 
-@contextmanager
-def sup_con(*children, **attrs):
-    for x in element_con("sup", children, **attrs):
-        yield x
+        state.html.append(lambda: element_ret("th", children, **attrs))
+        super(th, self).__init__()
 
+    def __enter__(self):
+        element_start("th", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def sup_dec(*children, **attrs):
-    return element_dec("sup", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("th", [])
 
+    def __str__(self):
 
-def sup(*children, **attrs):
-    return element("sup", children, **attrs)
+        blob = element_ret("th", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-sup.s = sup_sta
-sup.e = sup_end
-sup.r = sup_ret
-sup.c = sup_con
-sup.d = sup_dec
 
+th.r = th
+th.c = th
+th.d = th
 
-def svg_sta(*children, **attrs):
-    return element_start("svg", children, **attrs)
 
 
-def svg_end(*children, **kwargs):
-    return element_end("svg", children, **kwargs)
+DELETED = ""
 
 
-def svg_ret(*children, **kwargs):
-    return element_ret("svg", children, **kwargs)
+class thead(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is thead:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("thead", children, **attrs))
+        super(thead, self).__init__()
 
-@contextmanager
-def svg_con(*children, **attrs):
-    for x in element_con("svg", children, **attrs):
-        yield x
+    def __enter__(self):
+        element_start("thead", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("thead", [])
 
-def svg_dec(*children, **attrs):
-    return element_dec("svg", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("thead", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def svg(*children, **attrs):
-    return element("svg", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-svg.s = svg_sta
-svg.e = svg_end
-svg.r = svg_ret
-svg.c = svg_con
-svg.d = svg_dec
+thead.r = thead
+thead.c = thead
+thead.d = thead
 
 
-def table_sta(*children, **attrs):
-    return element_start("table", children, **attrs)
 
+DELETED = ""
 
-def table_end(*children, **kwargs):
-    return element_end("table", children, **kwargs)
 
+class time(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is time:
+                state.html[child.i] = DELETED
 
-def table_ret(*children, **kwargs):
-    return element_ret("table", children, **kwargs)
+        state.html.append(lambda: element_ret("time", children, **attrs))
+        super(time, self).__init__()
 
+    def __enter__(self):
+        element_start("time", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-@contextmanager
-def table_con(*children, **attrs):
-    for x in element_con("table", children, **attrs):
-        yield x
+    def __exit__(self, *exc):
+        return element_end("time", [])
 
+    def __str__(self):
 
-def table_dec(*children, **attrs):
-    return element_dec("table", children, **attrs)
+        blob = element_ret("time", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def table(*children, **attrs):
-    return element("table", children, **attrs)
 
+time.r = time
+time.c = time
+time.d = time
 
-table.s = table_sta
-table.e = table_end
-table.r = table_ret
-table.c = table_con
-table.d = table_dec
 
 
-def tbody_sta(*children, **attrs):
-    return element_start("tbody", children, **attrs)
+DELETED = ""
 
 
-def tbody_end(*children, **kwargs):
-    return element_end("tbody", children, **kwargs)
+class title(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is title:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("title", children, **attrs))
+        super(title, self).__init__()
 
-def tbody_ret(*children, **kwargs):
-    return element_ret("tbody", children, **kwargs)
+    def __enter__(self):
+        element_start("title", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("title", [])
 
-@contextmanager
-def tbody_con(*children, **attrs):
-    for x in element_con("tbody", children, **attrs):
-        yield x
+    def __str__(self):
 
+        blob = element_ret("title", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def tbody_dec(*children, **attrs):
-    return element_dec("tbody", children, **attrs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def tbody(*children, **attrs):
-    return element("tbody", children, **attrs)
+title.r = title
+title.c = title
+title.d = title
 
 
-tbody.s = tbody_sta
-tbody.e = tbody_end
-tbody.r = tbody_ret
-tbody.c = tbody_con
-tbody.d = tbody_dec
 
+DELETED = ""
 
-def td_sta(*children, **attrs):
-    return element_start("td", children, **attrs)
 
+class tr(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is tr:
+                state.html[child.i] = DELETED
 
-def td_end(*children, **kwargs):
-    return element_end("td", children, **kwargs)
+        state.html.append(lambda: element_ret("tr", children, **attrs))
+        super(tr, self).__init__()
 
+    def __enter__(self):
+        element_start("tr", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def td_ret(*children, **kwargs):
-    return element_ret("td", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("tr", [])
 
+    def __str_(self):
 
-@contextmanager
-def td_con(*children, **attrs):
-    for x in element_con("td", children, **attrs):
-        yield x
+        blob = element_ret("tr", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str_()
 
-def td_dec(*children, **attrs):
-    return element_dec("td", children, **attrs)
 
+tr.r = tr
+tr.c = tr
+tr.d = tr
 
-def td(*children, **attrs):
-    return element("td", children, **attrs)
 
 
-td.s = td_sta
-td.e = td_end
-td.r = td_ret
-td.c = td_con
-td.d = td_dec
+DELETED = ""
 
 
-def template_sta(*children, **attrs):
-    return element_start("template", children, **attrs)
+class tt(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is tt:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("tt", children, **attrs))
+        super(tt, self).__init__()
 
-def template_end(*children, **kwargs):
-    return element_end("template", children, **kwargs)
+    def __enter__(self):
+        element_start("tt", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("tt", [])
 
-def template_ret(*children, **kwargs):
-    return element_ret("template", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("tt", self.children, **self.attrs)
+        return "".join(blob.html)
 
-@contextmanager
-def template_con(*children, **attrs):
-    for x in element_con("template", children, **attrs):
-        yield x
+    def __unicode__(self):
+        return self.__str__()
 
 
-def template_dec(*children, **attrs):
-    return element_dec("template", children, **attrs)
+tt.r = tt
+tt.c = tt
+tt.d = tt
 
 
-def template(*children, **attrs):
-    return element("template", children, **attrs)
 
+DELETED = ""
 
-template.s = template_sta
-template.e = template_end
-template.r = template_ret
-template.c = template_con
-template.d = template_dec
 
+class u(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is u:
+                state.html[child.i] = DELETED
 
-def tfoot_sta(*children, **attrs):
-    return element_start("tfoot", children, **attrs)
+        state.html.append(lambda: element_ret("u", children, **attrs))
+        super(u, self).__init__()
 
+    def __enter__(self):
+        element_start("u", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def tfoot_end(*children, **kwargs):
-    return element_end("tfoot", children, **kwargs)
+    def __exit__(self, *exc):
+        return element_end("u", [])
 
+    def __str__(self):
 
-def tfoot_ret(*children, **kwargs):
-    return element_ret("tfoot", children, **kwargs)
+        blob = element_ret("u", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-@contextmanager
-def tfoot_con(*children, **attrs):
-    for x in element_con("tfoot", children, **attrs):
-        yield x
 
+u.r = u
+u.c = u
+u.d = u
 
-def tfoot_dec(*children, **attrs):
-    return element_dec("tfoot", children, **attrs)
 
 
-def tfoot(*children, **attrs):
-    return element("tfoot", children, **attrs)
+DELETED = ""
 
 
-tfoot.s = tfoot_sta
-tfoot.e = tfoot_end
-tfoot.r = tfoot_ret
-tfoot.c = tfoot_con
-tfoot.d = tfoot_dec
+class ul(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is ul:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("ul", children, **attrs))
+        super(ul, self).__init__()
 
-def th_sta(*children, **attrs):
-    return element_start("th", children, **attrs)
+    def __enter__(self):
+        element_start("ul", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("ul", [])
 
-def th_end(*children, **kwargs):
-    return element_end("th", children, **kwargs)
+    def __str__(self):
 
+        blob = element_ret("ul", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def th_ret(*children, **kwargs):
-    return element_ret("th", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-@contextmanager
-def th_con(*children, **attrs):
-    for x in element_con("th", children, **attrs):
-        yield x
+ul.r = ul
+ul.c = ul
+ul.d = ul
 
 
-def th_dec(*children, **attrs):
-    return element_dec("th", children, **attrs)
 
+DELETED = ""
 
-def th(*children, **attrs):
-    return element("th", children, **attrs)
 
+class var(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is var:
+                state.html[child.i] = DELETED
 
-th.s = th_sta
-th.e = th_end
-th.r = th_ret
-th.c = th_con
-th.d = th_dec
+        state.html.append(lambda: element_ret("var", children, **attrs))
+        super(var, self).__init__()
 
+    def __enter__(self):
+        element_start("var", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
-def thead_sta(*children, **attrs):
-    return element_start("thead", children, **attrs)
+    def __exit__(self, *exc):
+        return element_end("var", [])
 
+    def __str__(self):
 
-def thead_end(*children, **kwargs):
-    return element_end("thead", children, **kwargs)
+        blob = element_ret("var", self.children, **self.attrs)
+        return "".join(blob.html)
 
+    def __unicode__(self):
+        return self.__str__()
 
-def thead_ret(*children, **kwargs):
-    return element_ret("thead", children, **kwargs)
 
+var.r = var
+var.c = var
+var.d = var
 
-@contextmanager
-def thead_con(*children, **attrs):
-    for x in element_con("thead", children, **attrs):
-        yield x
 
 
-def thead_dec(*children, **attrs):
-    return element_dec("thead", children, **attrs)
+DELETED = ""
 
 
-def thead(*children, **attrs):
-    return element("thead", children, **attrs)
+class video(ContextDecorator):
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        self.i = len(state.html)
+        for child in children:
+            if type(child) is video:
+                state.html[child.i] = DELETED
 
+        state.html.append(lambda: element_ret("video", children, **attrs))
+        super(video, self).__init__()
 
-thead.s = thead_sta
-thead.e = thead_end
-thead.r = thead_ret
-thead.c = thead_con
-thead.d = thead_dec
+    def __enter__(self):
+        element_start("video", self.children, **self.attrs)
+        state.html[self.i] = DELETED
+        return self
 
+    def __exit__(self, *exc):
+        return element_end("video", [])
 
-def time_sta(*children, **attrs):
-    return element_start("time", children, **attrs)
+    def __str__(self):
 
+        blob = element_ret("video", self.children, **self.attrs)
+        return "".join(blob.html)
 
-def time_end(*children, **kwargs):
-    return element_end("time", children, **kwargs)
+    def __unicode__(self):
+        return self.__str__()
 
 
-def time_ret(*children, **kwargs):
-    return element_ret("time", children, **kwargs)
+video.r = video
+video.c = video
+video.d = video
 
 
-@contextmanager
-def time_con(*children, **attrs):
-    for x in element_con("time", children, **attrs):
-        yield x
 
-
-def time_dec(*children, **attrs):
-    return element_dec("time", children, **attrs)
-
-
-def time(*children, **attrs):
-    return element("time", children, **attrs)
-
-
-time.s = time_sta
-time.e = time_end
-time.r = time_ret
-time.c = time_con
-time.d = time_dec
-
-
-def title_sta(*children, **attrs):
-    return element_start("title", children, **attrs)
-
-
-def title_end(*children, **kwargs):
-    return element_end("title", children, **kwargs)
-
-
-def title_ret(*children, **kwargs):
-    return element_ret("title", children, **kwargs)
-
-
-@contextmanager
-def title_con(*children, **attrs):
-    for x in element_con("title", children, **attrs):
-        yield x
-
-
-def title_dec(*children, **attrs):
-    return element_dec("title", children, **attrs)
-
-
-def title(*children, **attrs):
-    return element("title", children, **attrs)
-
-
-title.s = title_sta
-title.e = title_end
-title.r = title_ret
-title.c = title_con
-title.d = title_dec
-
-
-def tr_sta(*children, **attrs):
-    return element_start("tr", children, **attrs)
-
-
-def tr_end(*children, **kwargs):
-    return element_end("tr", children, **kwargs)
-
-
-def tr_ret(*children, **kwargs):
-    return element_ret("tr", children, **kwargs)
-
-
-@contextmanager
-def tr_con(*children, **attrs):
-    for x in element_con("tr", children, **attrs):
-        yield x
-
-
-def tr_dec(*children, **attrs):
-    return element_dec("tr", children, **attrs)
-
-
-def tr(*children, **attrs):
-    return element("tr", children, **attrs)
-
-
-tr.s = tr_sta
-tr.e = tr_end
-tr.r = tr_ret
-tr.c = tr_con
-tr.d = tr_dec
-
-
-def tt_sta(*children, **attrs):
-    return element_start("tt", children, **attrs)
-
-
-def tt_end(*children, **kwargs):
-    return element_end("tt", children, **kwargs)
-
-
-def tt_ret(*children, **kwargs):
-    return element_ret("tt", children, **kwargs)
-
-
-@contextmanager
-def tt_con(*children, **attrs):
-    for x in element_con("tt", children, **attrs):
-        yield x
-
-
-def tt_dec(*children, **attrs):
-    return element_dec("tt", children, **attrs)
-
-
-def tt(*children, **attrs):
-    return element("tt", children, **attrs)
-
-
-tt.s = tt_sta
-tt.e = tt_end
-tt.r = tt_ret
-tt.c = tt_con
-tt.d = tt_dec
-
-
-def u_sta(*children, **attrs):
-    return element_start("u", children, **attrs)
-
-
-def u_end(*children, **kwargs):
-    return element_end("u", children, **kwargs)
-
-
-def u_ret(*children, **kwargs):
-    return element_ret("u", children, **kwargs)
-
-
-@contextmanager
-def u_con(*children, **attrs):
-    for x in element_con("u", children, **attrs):
-        yield x
-
-
-def u_dec(*children, **attrs):
-    return element_dec("u", children, **attrs)
-
-
-def u(*children, **attrs):
-    return element("u", children, **attrs)
-
-
-u.s = u_sta
-u.e = u_end
-u.r = u_ret
-u.c = u_con
-u.d = u_dec
-
-
-def ul_sta(*children, **attrs):
-    return element_start("ul", children, **attrs)
-
-
-def ul_end(*children, **kwargs):
-    return element_end("ul", children, **kwargs)
-
-
-def ul_ret(*children, **kwargs):
-    return element_ret("ul", children, **kwargs)
-
-
-@contextmanager
-def ul_con(*children, **attrs):
-    for x in element_con("ul", children, **attrs):
-        yield x
-
-
-def ul_dec(*children, **attrs):
-    return element_dec("ul", children, **attrs)
-
-
-def ul(*children, **attrs):
-    return element("ul", children, **attrs)
-
-
-ul.s = ul_sta
-ul.e = ul_end
-ul.r = ul_ret
-ul.c = ul_con
-ul.d = ul_dec
-
-
-def var_sta(*children, **attrs):
-    return element_start("var", children, **attrs)
-
-
-def var_end(*children, **kwargs):
-    return element_end("var", children, **kwargs)
-
-
-def var_ret(*children, **kwargs):
-    return element_ret("var", children, **kwargs)
-
-
-@contextmanager
-def var_con(*children, **attrs):
-    for x in element_con("var", children, **attrs):
-        yield x
-
-
-def var_dec(*children, **attrs):
-    return element_dec("var", children, **attrs)
-
-
-def var(*children, **attrs):
-    return element("var", children, **attrs)
-
-
-var.s = var_sta
-var.e = var_end
-var.r = var_ret
-var.c = var_con
-var.d = var_dec
-
-
-def video_sta(*children, **attrs):
-    return element_start("video", children, **attrs)
-
-
-def video_end(*children, **kwargs):
-    return element_end("video", children, **kwargs)
-
-
-def video_ret(*children, **kwargs):
-    return element_ret("video", children, **kwargs)
-
-
-@contextmanager
-def video_con(*children, **attrs):
-    for x in element_con("video", children, **attrs):
-        yield x
-
-
-def video_dec(*children, **attrs):
-    return element_dec("video", children, **attrs)
-
-
-def video(*children, **attrs):
-    return element("video", children, **attrs)
-
-
-video.s = video_sta
-video.e = video_end
-video.r = video_ret
-video.c = video_con
-video.d = video_dec
 
 
 def wbr(*children, **attrs):
@@ -4093,7 +4619,6 @@ def wbr_ret(*children, **attrs):
 
 wbr.r = wbr_ret
 
-
 def img(*children, **attrs):
     return element("img", children, void=True, **attrs)
 
@@ -4103,7 +4628,6 @@ def img_ret(*children, **attrs):
 
 
 img.r = img_ret
-
 
 def area(*children, **attrs):
     return element("area", children, void=True, **attrs)
@@ -4115,7 +4639,6 @@ def area_ret(*children, **attrs):
 
 area.r = area_ret
 
-
 def hr(*children, **attrs):
     return element("hr", children, void=True, **attrs)
 
@@ -4125,7 +4648,6 @@ def hr_ret(*children, **attrs):
 
 
 hr.r = hr_ret
-
 
 def param(*children, **attrs):
     return element("param", children, void=True, **attrs)
@@ -4137,7 +4659,6 @@ def param_ret(*children, **attrs):
 
 param.r = param_ret
 
-
 def keygen(*children, **attrs):
     return element("keygen", children, void=True, **attrs)
 
@@ -4147,7 +4668,6 @@ def keygen_ret(*children, **attrs):
 
 
 keygen.r = keygen_ret
-
 
 def source(*children, **attrs):
     return element("source", children, void=True, **attrs)
@@ -4159,7 +4679,6 @@ def source_ret(*children, **attrs):
 
 source.r = source_ret
 
-
 def base(*children, **attrs):
     return element("base", children, void=True, **attrs)
 
@@ -4169,7 +4688,6 @@ def base_ret(*children, **attrs):
 
 
 base.r = base_ret
-
 
 def meta(*children, **attrs):
     return element("meta", children, void=True, **attrs)
@@ -4181,7 +4699,6 @@ def meta_ret(*children, **attrs):
 
 meta.r = meta_ret
 
-
 def br(*children, **attrs):
     return element("br", children, void=True, **attrs)
 
@@ -4191,7 +4708,6 @@ def br_ret(*children, **attrs):
 
 
 br.r = br_ret
-
 
 def track(*children, **attrs):
     return element("track", children, void=True, **attrs)
@@ -4203,7 +4719,6 @@ def track_ret(*children, **attrs):
 
 track.r = track_ret
 
-
 def menuitem(*children, **attrs):
     return element("menuitem", children, void=True, **attrs)
 
@@ -4213,7 +4728,6 @@ def menuitem_ret(*children, **attrs):
 
 
 menuitem.r = menuitem_ret
-
 
 def command(*children, **attrs):
     return element("command", children, void=True, **attrs)
@@ -4225,7 +4739,6 @@ def command_ret(*children, **attrs):
 
 command.r = command_ret
 
-
 def embed(*children, **attrs):
     return element("embed", children, void=True, **attrs)
 
@@ -4236,7 +4749,6 @@ def embed_ret(*children, **attrs):
 
 embed.r = embed_ret
 
-
 def col(*children, **attrs):
     return element("col", children, void=True, **attrs)
 
@@ -4246,3 +4758,4 @@ def col_ret(*children, **attrs):
 
 
 col.r = col_ret
+
