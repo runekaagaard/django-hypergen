@@ -425,6 +425,27 @@ def control_element_ret(tag,
     return into
 
 
+def control_element_ret2(tag,
+                         children,
+                         lazy=False,
+                         into=None,
+                         void=False,
+                         sep="",
+                         add_to=None,
+                         **attrs):
+    into = Blob()
+    control_element(
+        tag,
+        children,
+        lazy=lazy,
+        into=into,
+        void=void,
+        sep="",
+        add_to=add_to,
+        **attrs)
+    return into
+
+
 ### Input ###
 
 INPUT_TYPES = dict(
@@ -3680,7 +3701,8 @@ def textarea_end(*children, **attrs):
 
 def textarea_ret(*children, **attrs):
     _js_cb_textarea(attrs)
-    return control_element_start("textarea", children, **attrs)
+    # TODO FIX!
+    return control_element_ret2("textarea", children, **attrs)
 
 
 @contextmanager
