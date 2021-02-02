@@ -102,18 +102,18 @@ def test_element():
             div("a")
 
     def _3():
-        with div2():
-            div2("a")
+        with div():
+            div("a")
 
     def _4():
-        @div2(id_="4")
+        @div(id_="4")
         def _():
             div("5")
 
         _()
 
     def _5():
-        div2("a", div2("b"))
+        div("a", div("b"))
 
     assert render_hypergen(_1) == '<div id="x" class="y">foo</div>'
     assert render_hypergen(_2) == '<div id="A"><div id="B">a</div></div>'
