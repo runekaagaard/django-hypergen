@@ -1,5 +1,23 @@
 from django.test.client import RequestFactory
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
+from freedom.hypergen import *
+
+### Python 2+3 compatibility ###
+
+if sys.version_info.major > 2:
+    from html import escape
+    letters = string.ascii_letters
+
+    def items(x):
+        return x.items()
+
+else:
+    from cgi import escape
+    letters = string.letters
+    str = unicode
+
+    def items(x):
+        return x.iteritems()
 
 
 class User(object):
@@ -9,6 +27,9 @@ class User(object):
 
 class Request(object):
     user = User()
+
+    def is_ajax(self):
+        return False
 
 
 class HttpResponse(object):
@@ -56,3 +77,46 @@ def test_context_middleware_old():
     middleware = ContextMiddleware()
     middleware.process_request(Request())
     assert context.request.user.pk == 1
+
+
+def setup():
+    import os
+    DIR = os.path.realpath(os.path.dirname(__file__))
+    sys.path.append(DIR)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "test_settings")
+    import django
+    django.setup()
+    context.replace(request=Request(), user=User())
+
+
+def render_hypergen(func):
+    return hypergen(func).content
+
+
+def test_element():
+    def _1():
+        div("foo", id_="x", class_="y")
+
+    def _2():
+        with div.c():
+            div("a")
+
+    def _3():
+        with div2():
+            div2("a")
+
+    def _4():
+        @div2(id_="4")
+        def _():
+            div("5")
+
+        _()
+
+    def _5():
+        div2("a", div2("b"))
+
+    assert render_hypergen(_1) == '<div id="x" class="y">foo</div>'
+    assert render_hypergen(_2) == '<div id="A"><div id="B">a</div></div>'
+    assert render_hypergen(_3) == '<div id="A"><div id="B">a</div></div>'
+    assert render_hypergen(_4) == '<div id="4"><div id="A">5</div></div>'
+    assert render_hypergen(_5) == '<div id="A">a<div id="B">b</div></div>'

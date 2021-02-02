@@ -183,7 +183,7 @@ def element_dec(tag, children, into=None, sep="", void=False, **attrs):
         def __(*args, **kwargs):
             element_start(
                 tag, children, into=into, sep=sep, void=void, **attrs)
-            f(*args, **kwargs)
+             f(*args, **kwargs)
             element_end(tag, [], into=into, void=void)
 
         return __

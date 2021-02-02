@@ -9,7 +9,7 @@ class Context(threading.local):
         self.ctx = m(**items)
 
     def __getattr__(self, k):
-        return self.ctx[k]
+        return self.__dict__['ctx'][k]
 
     def __contains__(self, k):
         return k in self.ctx
