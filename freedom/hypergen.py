@@ -569,17 +569,17 @@ def doctype(type_="html"):
 DELETED = ""
 
 
-class div2(ContextDecorator):
+class div(ContextDecorator):
     def __init__(self, *children, **attrs):
         self.children = children
         self.attrs = attrs
         self.i = len(state.html)
         for child in children:
-            if type(child) is div2:
+            if type(child) is div:
                 state.html[child.i] = DELETED
 
         state.html.append(lambda: element_ret("div", children, **attrs))
-        super(div2, self).__init__()
+        super(div, self).__init__()
 
     def __enter__(self):
         element_start("div", self.children, **self.attrs)
@@ -598,37 +598,9 @@ class div2(ContextDecorator):
         return self.__str__()
 
 
-def div_sta(*children, **attrs):
-    return element_start("div", children, **attrs)
-
-
-def div_end(*children, **kwargs):
-    return element_end("div", children, **kwargs)
-
-
-def div_ret(*children, **kwargs):
-    return element_ret("div", children, **kwargs)
-
-
-@contextmanager
-def div_con(*children, **attrs):
-    for x in element_con("div", children, **attrs):
-        yield x
-
-
-def div_dec(*children, **attrs):
-    return element_dec("div", children, **attrs)
-
-
-def div(*children, **attrs):
-    return element("div", children, **attrs)
-
-
-div.s = div_sta
-div.e = div_end
-div.r = div_ret
-div.c = div_con
-div.d = div_dec
+div.r = div
+div.c = div
+div.d = div
 
 
 ### TEMPLATE-ELEMENT ###
