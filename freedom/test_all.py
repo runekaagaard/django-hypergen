@@ -103,14 +103,12 @@ def render_hypergen(func):
 def test_element():
     with context(hypergen=hypergen_context()):
         div("hello world!")
-        assert str(
-            join_html(c.hypergen.into)) == '<div id="A">hello world!</div>'
+        assert str(join_html(c.hypergen.into)) == '<div>hello world!</div>'
     with context(hypergen=hypergen_context()):
         with div("a", class_="foo"):
             div("b", x_foo=42)
-        assert str(
-            join_html(c.hypergen.into)
-        ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
+        assert str(join_html(c.hypergen.into)
+                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
     with context(hypergen=hypergen_context()):
 
         @div("a", class_="foo")
@@ -118,14 +116,17 @@ def test_element():
             div("b", x_foo=42)
 
         f1()
-        assert str(
-            join_html(c.hypergen.into)
-        ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
+        assert str(join_html(c.hypergen.into)
+                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
     with context(hypergen=hypergen_context()):
         div("a", div("b", x_foo=42), class_="foo")
-        assert str(
-            join_html(c.hypergen.into)
-        ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
+        assert str(join_html(c.hypergen.into)
+                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
+
+    with context(hypergen=hypergen_context()):
+        div([1, 2], sep="-")
+        # div([1, 2], (x for x in range(3, 4)), style={1: 2})
+        assert str(join_html(c.hypergen.into)) == '<div>1-2</div>'
 
 
 def test_live_element():
@@ -150,3 +151,14 @@ def test_live_element():
             assert re.match(
                 """<div id="A" onclick="H.cb\(&quot;/path/to/my_callback/&quot;,H.e\['__main__'\]\[[0-9]+\]\)">hello world!</div>""",
                 join_html(c.hypergen.into))
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            a = input_(name="a")
+            input_(name="b", onclick=(my_callback, a))
+
+            print ".................................................."
+            print join_html(c.hypergen.into)
+            print "..................................................."
+            assert str(
+                join_html(c.hypergen.into)
+            ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'

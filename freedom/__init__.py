@@ -11,22 +11,11 @@ default_app_config = 'freedom.apps.Freedom'
 
 
 def encoder(this, o):
-    from freedom.hypergen import THIS, Blob, base_element
+    from freedom._hypergen import THIS, base_element
+    print 2222222222222222222222222, type(o), issubclass(type(o), base_element)
     if o is THIS:
         return quote(this)
-    elif type(o) is Blob:
-        return [
-            "_",
-            "element_value",
-            {
-                "id": o.meta["id"],
-                "cb_name": o.meta["js_cb"].replace("H.cbs.",
-                                                   ""),  # TODO: Generalize.
-            }
-        ]
-        # return quote(o.meta["this"])
     elif issubclass(type(o), base_element):
-        print "-------------------------", o.attrs
         return [
             "_",
             "element_value",

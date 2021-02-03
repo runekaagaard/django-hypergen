@@ -3,7 +3,6 @@ from __future__ import (absolute_import, division, unicode_literals)
 
 import string, sys
 from threading import local
-from contextlib import contextmanager
 from collections import OrderedDict
 from functools import wraps
 from copy import deepcopy
@@ -15,7 +14,7 @@ from django.http.response import HttpResponse
 
 import freedom
 from freedom.utils import insert
-from freedom.core import context
+from freedom.core import context as c
 
 ### Python 2+3 compatibility ###
 
@@ -25,7 +24,6 @@ if sys.version_info.major > 2:
 
     def items(x):
         return x.items()
-
 else:
     from cgi import escape
     letters = string.letters
@@ -35,248 +33,66 @@ else:
         return x.iteritems()
 
 
-### Globals ###
+### Rendering ###
+def hypergen_context(**kwargs):
+    from freedom.core import namespace as ns
+    return ns(
+        into=[],
+        liveview=True,
+        id_counter=base65_counter(),
+        id_prefix=(freedom.loads(c.request.body)["id_prefix"]
+                   if c.request.is_ajax() else ""),
+        event_handler_cache={},
+        target_id=kwargs.pop("target_id", "__main__"),
+        commands=[], )
 
-state = local()
-UPDATE = 1
 
-
-### Control ###
 def hypergen(func, *args, **kwargs):
-    kwargs = deepcopy(kwargs)
-    auto_id = kwargs.pop("auto_id", True)
-    try:
-        if "request" in context:  # TODO
-            state.html = []
-            state.liveview = True
-            state.id_counter = base65_counter() if auto_id else None
-            state.id_prefix = kwargs.pop(
-                "id_prefix", (freedom.loads(context.request.body)["id_prefix"]
-                              if context.request.is_ajax() else ""))
-            state.auto_id = auto_id
-            # Key/value store sent to the frontend.
-            state.kv = {}
-            state.target_id = kwargs.pop("target_id", "__main__")
-            state.commands = []
-            func(*args, **kwargs)
-            html = "".join(
-                str(x()) if callable(x) else str(x) for x in state.html)
-            if state.kv:
-                state.commands.append([
-                    "./freedom", ["setEventHandlerCache"],
-                    [state.target_id, state.kv]
-                ])
-            if not context.request.is_ajax():
+    with c(hypergen=hypergen_context(**kwargs)):
+        func(*args, **kwargs)
+        html = join_html(c.hypergen.into)
+        if c.hypergen.event_handler_cache:
+            c.hypergen.commands.append([
+                "./freedom", ["setEventHandlerCache"],
+                [c.hypergen.target_id, c.hypergen.event_handler_cache]
+            ])
+        if not c.request.is_ajax():
+            pos = html.find("</head")
+            if pos != -1:
                 s = '<script>window.applyCommands({})</script>'.format(
-                    freedom.dumps(state.commands))
-                pos = html.find("</head")
-                if pos != -1:
-                    html = insert(html, s, pos)
-                return HttpResponse(html)
+                    freedom.dumps(c.hypergen.commands))
+                html = insert(html, s, pos)
+
+            return HttpResponse(html)
+        else:
+            c.hypergen.commands.append(
+                ["./freedom", ["morph"], [c.hypergen.target_id, html]])
+
+            return c.hypergen.commands
+
+
+### Helpers ###
+
+
+def join(*values):
+    return "".join(str(x) for x in values)
+
+
+def join_html(html):
+    def fmt(html):
+        for item in html:
+            if issubclass(type(item), base_element):
+                yield str(item)
+            elif callable(item):
+                yield str(item())
             else:
-                state.commands.append(
-                    ["./freedom", ["morph"], [state.target_id, html]])
-                return state.commands
+                yield str(item)
 
-    finally:
-        state.html = []
-        state.id_counter = None
-        state.id_prefix = ""
-        state.auto_id = False
-        state.liveview = False
-        state.kv = {}
-        state.target_id = None
-        state.commands = []
-
-    return html
+    return "".join(fmt(html))
 
 
-### Building HTML, internal API ###
-
-
-def _element_start_1(tag, attrs, into):
-    attrs = _sort_attrs(attrs)
-    raw(("<", tag), into=into)
-    return attrs
-
-
-def _element_start_2(k, v, into):
-    k = t(k).rstrip("_").replace("_", "-")
-    if type(v) is bool:
-        if v is True:
-            raw((" ", k), into=into)
-    elif k == "style" and type(v) in (dict, OrderedDict):
-        raw((" ", k, '="', ";".join(
-            t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"'),
-            into=into)
-    else:
-        raw((" ", k, '="', t(v), '"'), into=into)
-
-
-def _element_start_3(children, into, void, sep):
-    if void:
-        raw(("/"), into=into)
-    raw(('>', ), into=into)
-    write(*children, into=into, sep=sep)
-
-
-def element_start(tag,
-                  children,
-                  lazy=False,
-                  into=None,
-                  void=False,
-                  sep="",
-                  add_to=None,
-                  js_cb="H.cbs.s",
-                  **attrs):
-    # TODO: Clean up this function. Only auto-id things with event handlers.
-    assert "add_to" not in attrs
-    if state.auto_id and "id_" not in attrs:
-        attrs["id_"] = state.id_prefix + next(state.id_counter)
-
-    attrs = _element_start_1(tag, attrs, into)
-
-    meta = {}
-    if state.liveview is True:
-        meta["this"] = "{}('{}')".format(js_cb, attrs["id_"])
-        meta["id"] = attrs["id_"]
-        meta["js_cb"] = js_cb
-    if into is not None:
-        into.meta = meta
-    for k, v in items(attrs):
-        if state.liveview is True and k.startswith("on") and type(v) in (
-                list, tuple):
-            tmp1 = v
-            tmp2 = lambda: _callback(tmp1, meta["this"])
-            raw(" ", k, '="', into=into)
-            raw(tmp2 if lazy else tmp2(), into=into)
-            raw('"', into=into)
-        else:
-            _element_start_2(k, v, into)
-
-    _element_start_3(children, into, void, sep)
-
-    blob = Blob(into, meta)
-    if add_to is not None:
-        add_to.append(blob)
-    return blob
-
-
-def element(tag,
-            children,
-            lazy=False,
-            into=None,
-            void=False,
-            sep="",
-            add_to=None,
-            **attrs):
-    blob = element_start(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-    element_end(tag, [], into=into, void=void)
-    return blob
-
-
-def element_ret(tag,
-                children,
-                lazy=False,
-                into=None,
-                void=False,
-                sep="",
-                add_to=None,
-                **attrs):
-    into = Blob()
-    element(
-        tag,
-        children,
-        lazy=lazy,
-        into=into,
-        void=void,
-        sep="",
-        add_to=add_to,
-        **attrs)
-
-    return into
-
-
-def element_end(tag, children, into=None, sep="", void=False):
-    if void is False:
-        write(*children, into=into, sep=sep)
-        raw(("</", t(tag), ">"), into=into)
-
-
-def element_con(tag, children, into=None, sep="", void=False, **attrs):
-    element = element_start(
-        tag, children, into=into, sep=sep, void=void, **attrs)
-    yield element
-    element_end(tag, [], into=into, void=void)
-
-
-def element_dec(tag, children, into=None, sep="", void=False, **attrs):
-    def _(f):
-        @wraps(f)
-        def __(*args, **kwargs):
-            element_start(
-                tag, children, into=into, sep=sep, void=void, **attrs)
-            f(*args, **kwargs)
-            element_end(tag, [], into=into, void=void)
-
-        return __
-
-    return _
-
-
-### Building HTML, public API ###
-
-
-def _write(_t, children, **kwargs):
-    into = kwargs.get("into", None)
-    if into is None:
-        into = state.html
-    sep = _t(kwargs.get("sep", ""))
-
-    for x in children:
-        if x is None:
-            continue
-        elif type(x) is Blob:
-            into.extend(x)
-        elif type(x) in (list, tuple, GeneratorType):
-            _write(_t, list(x), into=into, sep=sep)
-        elif callable(x):
-            into.append(x)
-        else:
-            into.append(_t(x))
-        if sep:
-            into.append(sep)
-    if sep and children:
-        into.pop()
-
-
-def write(*children, **kwargs):
-    _write(t, children, **kwargs)
-
-
-def raw(*children, **kwargs):
-    _write(lambda x: x, children, **kwargs)
-
-
-### Django helpers ###
-def callback(func):
-    func.hypergen_callback_url = reverse_lazy(
-        "freedom:callback", args=[".".join((func.__module__, func.__name__))])
-
-    func.hypergen_is_callback = True
-
-    return func
-
-
-### Misc ###
+def raw(*children):
+    c.hypergen.into.extend(children)
 
 
 def _sort_attrs(attrs):
@@ -292,30 +108,6 @@ def _sort_attrs(attrs):
 
 def t(s, quote=True):
     return escape(str(s), quote=quote)
-
-
-class Blob(object):
-    def __init__(self, html=None, meta=None):
-        self.html = html if html is not None else []
-        self.meta = meta
-
-    def append(self, x):
-        return self.html.append(x)
-
-    def extend(self, x):
-        return self.html.extend(x)
-
-    def pop(self, n=-1):
-        return self.html.pop(n)
-
-    def __getitem__(self, index):
-        return self.html[index]
-
-    def __str__(self):
-        return "".join(str(x) for x in self.html)
-
-    def __unicode__(self):
-        return "".join([str(x) for x in self.html])
 
 
 def base65_counter():
@@ -335,7 +127,26 @@ def base65_counter():
         yield output
 
 
-### Form elements and liveview ###
+### Django ###
+
+
+def callback(func):
+    """
+    Makes a function a callback for django.
+    """
+    if "is_test" in c:
+        func.hypergen_callback_url = "/path/to/{}/".format(func.__name__)
+    else:
+        func.hypergen_callback_url = reverse_lazy(
+            "freedom:callback",
+            args=[".".join((func.__module__, func.__name__))])
+
+    func.hypergen_is_callback = True
+
+    return func
+
+
+### Base dom element ###
 class THIS(object):
     pass
 
@@ -344,78 +155,138 @@ NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
 
 
-def _callback(args, this, debounce=0):
-    func = args[0]
-    assert callable(func), ("First callback argument must be a callable, got "
-                            "{}.".format(repr(func)))
-    args = args[1:]
-
-    args2 = []
-    for arg in args:
-        if type(arg) in NON_SCALARS:
-            state.kv[id(arg)] = arg
-            args2.append(
-                freedom.quote("H.e['{}'][{}]".format(state.target_id, id(
-                    arg))))
-            print "AAAA", repr(arg)
-        else:
-            print "BBB", repr(arg)
-            args2.append(arg)
-
-    return "H.cb({})".format(
-        freedom.dumps(
-            [func.hypergen_callback_url] + list(args2),
-            unquote=True,
-            escape=True,
-            this=this))
-
-
 class base_element(ContextDecorator):
     js_cb = "H.cbs.s"
     void = False
+    auto_id = False
+
+    def __new__(cls, *args, **kwargs):
+        instance = ContextDecorator.__new__(cls)
+        setattr(instance, "tag", cls.__name__.rstrip("_"))
+        return instance
 
     def __init__(self, *children, **attrs):
+        assert "hypergen" in c, "Missing global context: hypergen"
         self.children = children
         self.attrs = attrs
-        self.i = len(state.html)
+        self.i = len(c.hypergen.into)
+        self.sep = attrs.pop("sep", "")
+        self.auto_id = self.has_any_liveview_attribute()
+
         for child in children:
             if issubclass(type(child), base_element):
-                state.html[child.i] = DELETED
-
-        state.html.append(
-            lambda: element_ret(self.tag, children, js_cb=self.js_cb, void=self.void, **attrs))
+                c.hypergen.into[child.i] = DELETED
+        c.hypergen.into.append(lambda: join_html((self.start(), self.end())))
         super(base_element, self).__init__()
 
     def __enter__(self):
-        element_start(
-            self.tag,
-            self.children,
-            js_cb=self.js_cb,
-            void=self.void,
-            **self.attrs)
-        state.html[self.i] = DELETED
+        c.hypergen.into.append(lambda: self.start())
+        c.hypergen.into[self.i] = DELETED
         return self
 
     def __exit__(self, *exc):
-        return element_end(self.tag, [])
+        if not self.void:
+            c.hypergen.into.append(lambda: self.end())
 
     def __str__(self):
-
-        blob = element_ret(
-            self.tag,
-            self.children,
-            js_cb=self.js_cb,
-            void=self.void,
-            **self.attrs)
-        return "".join(blob.html)
+        return join_html((self.start(), self.end()))
 
     def __unicode__(self):
         return self.__str__()
 
+    def format_children(self, children):
+        into = []
+        sep = t(self.sep)
 
-### Input ###
+        for x in children:
+            if x in ("", None):
+                continue
+            elif issubclass(type(x), base_element):
+                into.append(str(x))
+            elif type(x) in (list, tuple, GeneratorType):
+                into.extend(self.format_children(list(x)))
+            elif callable(x):
+                into.append(x)
+            else:
+                into.append(t(x))
+            if sep:
+                into.append(sep)
+        if sep and children:
+            into.pop()
 
-INPUT_TYPES = dict(
+        return into
+
+    def liveview_attribute(self, args):
+        func = args[0]
+        assert callable(func), (
+            "First callback argument must be a callable, got "
+            "{}.".format(repr(func)))
+        args = args[1:]
+
+        args2 = []
+        for arg in args:
+            if type(arg) in NON_SCALARS:
+                c.hypergen.event_handler_cache[id(arg)] = arg
+                args2.append(
+                    freedom.quote("H.e['{}'][{}]".format(
+                        c.hypergen.target_id, id(arg))))
+            else:
+                args2.append(arg)
+
+        print "AAAAAAAAAAAAAAAAAAA", args2
+        return "H.cb({})".format(
+            freedom.dumps(
+                [func.hypergen_callback_url] + list(args2),
+                unquote=True,
+                escape=True,
+                this=self))
+
+    def has_any_liveview_attribute(self):
+        return any(self.is_liveview_attribute(*x) for x in items(self.attrs))
+
+    def is_liveview_attribute(self, k, v):
+        return c.hypergen.liveview is True and k.startswith("on") and type(
+            v) in (list, tuple)
+
+    def attribute(self, k, v):
+        k = t(k).rstrip("_").replace("_", "-")
+        if self.is_liveview_attribute(k, v):
+            return join(" ", k, '="', self.liveview_attribute(v), '"')
+        elif type(v) is bool:
+            if v is True:
+                return join((" ", k))
+        elif k == "style" and type(v) in (dict, OrderedDict):
+            return join((" ", k, '="', ";".join(
+                t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"'))
+        else:
+            return join(" ", k, '="', t(v), '"')
+
+    def start(self):
+        if self.auto_id and "id_" not in self.attrs:
+            self.attrs[
+                "id_"] = c.hypergen.id_prefix + next(c.hypergen.id_counter)
+
+        into = ["<", self.tag]
+        for k, v in items(self.attrs):
+            into.append(self.attribute(k, v))
+
+        if self.void:
+            into.append(join(("/")))
+        into.append(join('>', ))
+        into.extend(self.format_children(self.children))
+
+        return join_html(into)
+
+    def end(self):
+        if not self.void:
+            return "</{}>".format(self.tag)
+        else:
+            return ""
+
+
+### Some special dom elements ###
+
+INPUT_CALLBACK_TYPES = dict(
     checkbox="H.cbs.c",
     month="H.cbs.i",
     number="H.cbs.i",
@@ -424,39 +295,15 @@ INPUT_TYPES = dict(
 
 
 class input_(base_element):
-    tag = "input"
     void = True
 
     def __init__(self, *children, **attrs):
-        self.js_cb = INPUT_TYPES.get(attrs.get("type_", "text"), "H.cbs.s")
+        self.js_cb = INPUT_CALLBACK_TYPES.get(
+            attrs.get("type_", "text"), "H.cbs.s")
         super(input_, self).__init__(*children, **attrs)
 
     void = True
 
-
-input_.r = input_
-
-### Select ###
-
-
-class select(base_element):
-    tag = "select"
-
-
-select.r = select
-select.c = select
-select.d = select
-
-### Textarea ###
-
-
-class textarea(base_element):
-    tag = "textarea"
-
-
-textarea.r = textarea
-textarea.c = textarea
-textarea.d = textarea
 
 ### Special tags ###
 
@@ -469,7 +316,7 @@ def doctype(type_="html"):
 
 
 class div(base_element):
-    tag = "div"
+    pass
 
 
 div.r = div
@@ -479,22 +326,18 @@ div.d = div
 
 ### TEMPLATE-ELEMENT ###
 ### TEMPLATE-VOID-ELEMENT ###
-def link(*children, **attrs):
-    return element("link", children, void=True, **attrs)
+class link(base_element):
+    void = True
 
 
-def link_ret(*children, **attrs):
-    return element_ret("link", children, void=True, **attrs)
-
-
-link.r = link_ret
+link.r = link
 ### TEMPLATE-VOID-ELEMENT ###
 
 
 
 
 class a(base_element):
-    tag = "a"
+    pass
 
 
 a.r = a
@@ -506,7 +349,7 @@ a.d = a
 
 
 class abbr(base_element):
-    tag = "abbr"
+    pass
 
 
 abbr.r = abbr
@@ -518,7 +361,7 @@ abbr.d = abbr
 
 
 class acronym(base_element):
-    tag = "acronym"
+    pass
 
 
 acronym.r = acronym
@@ -530,7 +373,7 @@ acronym.d = acronym
 
 
 class address(base_element):
-    tag = "address"
+    pass
 
 
 address.r = address
@@ -542,7 +385,7 @@ address.d = address
 
 
 class applet(base_element):
-    tag = "applet"
+    pass
 
 
 applet.r = applet
@@ -554,7 +397,7 @@ applet.d = applet
 
 
 class article(base_element):
-    tag = "article"
+    pass
 
 
 article.r = article
@@ -566,7 +409,7 @@ article.d = article
 
 
 class aside(base_element):
-    tag = "aside"
+    pass
 
 
 aside.r = aside
@@ -578,7 +421,7 @@ aside.d = aside
 
 
 class audio(base_element):
-    tag = "audio"
+    pass
 
 
 audio.r = audio
@@ -590,7 +433,7 @@ audio.d = audio
 
 
 class b(base_element):
-    tag = "b"
+    pass
 
 
 b.r = b
@@ -602,7 +445,7 @@ b.d = b
 
 
 class basefont(base_element):
-    tag = "basefont"
+    pass
 
 
 basefont.r = basefont
@@ -614,7 +457,7 @@ basefont.d = basefont
 
 
 class bdi(base_element):
-    tag = "bdi"
+    pass
 
 
 bdi.r = bdi
@@ -626,7 +469,7 @@ bdi.d = bdi
 
 
 class bdo(base_element):
-    tag = "bdo"
+    pass
 
 
 bdo.r = bdo
@@ -638,7 +481,7 @@ bdo.d = bdo
 
 
 class big(base_element):
-    tag = "big"
+    pass
 
 
 big.r = big
@@ -650,7 +493,7 @@ big.d = big
 
 
 class blockquote(base_element):
-    tag = "blockquote"
+    pass
 
 
 blockquote.r = blockquote
@@ -662,7 +505,7 @@ blockquote.d = blockquote
 
 
 class body(base_element):
-    tag = "body"
+    pass
 
 
 body.r = body
@@ -674,7 +517,7 @@ body.d = body
 
 
 class button(base_element):
-    tag = "button"
+    pass
 
 
 button.r = button
@@ -686,7 +529,7 @@ button.d = button
 
 
 class canvas(base_element):
-    tag = "canvas"
+    pass
 
 
 canvas.r = canvas
@@ -698,7 +541,7 @@ canvas.d = canvas
 
 
 class caption(base_element):
-    tag = "caption"
+    pass
 
 
 caption.r = caption
@@ -710,7 +553,7 @@ caption.d = caption
 
 
 class center(base_element):
-    tag = "center"
+    pass
 
 
 center.r = center
@@ -722,7 +565,7 @@ center.d = center
 
 
 class cite(base_element):
-    tag = "cite"
+    pass
 
 
 cite.r = cite
@@ -734,7 +577,7 @@ cite.d = cite
 
 
 class code(base_element):
-    tag = "code"
+    pass
 
 
 code.r = code
@@ -746,7 +589,7 @@ code.d = code
 
 
 class colgroup(base_element):
-    tag = "colgroup"
+    pass
 
 
 colgroup.r = colgroup
@@ -758,7 +601,7 @@ colgroup.d = colgroup
 
 
 class data(base_element):
-    tag = "data"
+    pass
 
 
 data.r = data
@@ -770,7 +613,7 @@ data.d = data
 
 
 class datalist(base_element):
-    tag = "datalist"
+    pass
 
 
 datalist.r = datalist
@@ -782,7 +625,7 @@ datalist.d = datalist
 
 
 class dd(base_element):
-    tag = "dd"
+    pass
 
 
 dd.r = dd
@@ -794,7 +637,7 @@ dd.d = dd
 
 
 class del_(base_element):
-    tag = "del"
+    pass
 
 
 del_.r = del_
@@ -806,7 +649,7 @@ del_.d = del_
 
 
 class details(base_element):
-    tag = "details"
+    pass
 
 
 details.r = details
@@ -818,7 +661,7 @@ details.d = details
 
 
 class dfn(base_element):
-    tag = "dfn"
+    pass
 
 
 dfn.r = dfn
@@ -830,7 +673,7 @@ dfn.d = dfn
 
 
 class dialog(base_element):
-    tag = "dialog"
+    pass
 
 
 dialog.r = dialog
@@ -842,7 +685,7 @@ dialog.d = dialog
 
 
 class dir_(base_element):
-    tag = "dir"
+    pass
 
 
 dir_.r = dir_
@@ -854,7 +697,7 @@ dir_.d = dir_
 
 
 class dl(base_element):
-    tag = "dl"
+    pass
 
 
 dl.r = dl
@@ -866,7 +709,7 @@ dl.d = dl
 
 
 class dt(base_element):
-    tag = "dt"
+    pass
 
 
 dt.r = dt
@@ -878,7 +721,7 @@ dt.d = dt
 
 
 class em(base_element):
-    tag = "em"
+    pass
 
 
 em.r = em
@@ -890,7 +733,7 @@ em.d = em
 
 
 class fieldset(base_element):
-    tag = "fieldset"
+    pass
 
 
 fieldset.r = fieldset
@@ -902,7 +745,7 @@ fieldset.d = fieldset
 
 
 class figcaption(base_element):
-    tag = "figcaption"
+    pass
 
 
 figcaption.r = figcaption
@@ -914,7 +757,7 @@ figcaption.d = figcaption
 
 
 class figure(base_element):
-    tag = "figure"
+    pass
 
 
 figure.r = figure
@@ -926,7 +769,7 @@ figure.d = figure
 
 
 class font(base_element):
-    tag = "font"
+    pass
 
 
 font.r = font
@@ -938,7 +781,7 @@ font.d = font
 
 
 class footer(base_element):
-    tag = "footer"
+    pass
 
 
 footer.r = footer
@@ -950,7 +793,7 @@ footer.d = footer
 
 
 class form(base_element):
-    tag = "form"
+    pass
 
 
 form.r = form
@@ -962,7 +805,7 @@ form.d = form
 
 
 class frame(base_element):
-    tag = "frame"
+    pass
 
 
 frame.r = frame
@@ -974,7 +817,7 @@ frame.d = frame
 
 
 class frameset(base_element):
-    tag = "frameset"
+    pass
 
 
 frameset.r = frameset
@@ -986,7 +829,7 @@ frameset.d = frameset
 
 
 class h1(base_element):
-    tag = "h1"
+    pass
 
 
 h1.r = h1
@@ -998,7 +841,7 @@ h1.d = h1
 
 
 class h2(base_element):
-    tag = "h2"
+    pass
 
 
 h2.r = h2
@@ -1010,7 +853,7 @@ h2.d = h2
 
 
 class h3(base_element):
-    tag = "h3"
+    pass
 
 
 h3.r = h3
@@ -1022,7 +865,7 @@ h3.d = h3
 
 
 class h4(base_element):
-    tag = "h4"
+    pass
 
 
 h4.r = h4
@@ -1034,7 +877,7 @@ h4.d = h4
 
 
 class h5(base_element):
-    tag = "h5"
+    pass
 
 
 h5.r = h5
@@ -1046,7 +889,7 @@ h5.d = h5
 
 
 class h6(base_element):
-    tag = "h6"
+    pass
 
 
 h6.r = h6
@@ -1058,7 +901,7 @@ h6.d = h6
 
 
 class head(base_element):
-    tag = "head"
+    pass
 
 
 head.r = head
@@ -1070,7 +913,7 @@ head.d = head
 
 
 class header(base_element):
-    tag = "header"
+    pass
 
 
 header.r = header
@@ -1082,7 +925,7 @@ header.d = header
 
 
 class html(base_element):
-    tag = "html"
+    pass
 
 
 html.r = html
@@ -1094,7 +937,7 @@ html.d = html
 
 
 class i(base_element):
-    tag = "i"
+    pass
 
 
 i.r = i
@@ -1106,7 +949,7 @@ i.d = i
 
 
 class iframe(base_element):
-    tag = "iframe"
+    pass
 
 
 iframe.r = iframe
@@ -1118,7 +961,7 @@ iframe.d = iframe
 
 
 class ins(base_element):
-    tag = "ins"
+    pass
 
 
 ins.r = ins
@@ -1130,7 +973,7 @@ ins.d = ins
 
 
 class kbd(base_element):
-    tag = "kbd"
+    pass
 
 
 kbd.r = kbd
@@ -1142,7 +985,7 @@ kbd.d = kbd
 
 
 class label(base_element):
-    tag = "label"
+    pass
 
 
 label.r = label
@@ -1154,7 +997,7 @@ label.d = label
 
 
 class legend(base_element):
-    tag = "legend"
+    pass
 
 
 legend.r = legend
@@ -1166,7 +1009,7 @@ legend.d = legend
 
 
 class li(base_element):
-    tag = "li"
+    pass
 
 
 li.r = li
@@ -1178,7 +1021,7 @@ li.d = li
 
 
 class main(base_element):
-    tag = "main"
+    pass
 
 
 main.r = main
@@ -1190,7 +1033,7 @@ main.d = main
 
 
 class map_(base_element):
-    tag = "map"
+    pass
 
 
 map_.r = map_
@@ -1202,7 +1045,7 @@ map_.d = map_
 
 
 class mark(base_element):
-    tag = "mark"
+    pass
 
 
 mark.r = mark
@@ -1214,7 +1057,7 @@ mark.d = mark
 
 
 class meter(base_element):
-    tag = "meter"
+    pass
 
 
 meter.r = meter
@@ -1226,7 +1069,7 @@ meter.d = meter
 
 
 class nav(base_element):
-    tag = "nav"
+    pass
 
 
 nav.r = nav
@@ -1238,7 +1081,7 @@ nav.d = nav
 
 
 class noframes(base_element):
-    tag = "noframes"
+    pass
 
 
 noframes.r = noframes
@@ -1250,7 +1093,7 @@ noframes.d = noframes
 
 
 class noscript(base_element):
-    tag = "noscript"
+    pass
 
 
 noscript.r = noscript
@@ -1262,7 +1105,7 @@ noscript.d = noscript
 
 
 class object_(base_element):
-    tag = "object"
+    pass
 
 
 object_.r = object_
@@ -1274,7 +1117,7 @@ object_.d = object_
 
 
 class ol(base_element):
-    tag = "ol"
+    pass
 
 
 ol.r = ol
@@ -1286,7 +1129,7 @@ ol.d = ol
 
 
 class optgroup(base_element):
-    tag = "optgroup"
+    pass
 
 
 optgroup.r = optgroup
@@ -1298,7 +1141,7 @@ optgroup.d = optgroup
 
 
 class option(base_element):
-    tag = "option"
+    pass
 
 
 option.r = option
@@ -1310,7 +1153,7 @@ option.d = option
 
 
 class output(base_element):
-    tag = "output"
+    pass
 
 
 output.r = output
@@ -1322,7 +1165,7 @@ output.d = output
 
 
 class p(base_element):
-    tag = "p"
+    pass
 
 
 p.r = p
@@ -1334,7 +1177,7 @@ p.d = p
 
 
 class picture(base_element):
-    tag = "picture"
+    pass
 
 
 picture.r = picture
@@ -1346,7 +1189,7 @@ picture.d = picture
 
 
 class pre(base_element):
-    tag = "pre"
+    pass
 
 
 pre.r = pre
@@ -1358,7 +1201,7 @@ pre.d = pre
 
 
 class progress(base_element):
-    tag = "progress"
+    pass
 
 
 progress.r = progress
@@ -1370,7 +1213,7 @@ progress.d = progress
 
 
 class q(base_element):
-    tag = "q"
+    pass
 
 
 q.r = q
@@ -1382,7 +1225,7 @@ q.d = q
 
 
 class rp(base_element):
-    tag = "rp"
+    pass
 
 
 rp.r = rp
@@ -1394,7 +1237,7 @@ rp.d = rp
 
 
 class rt(base_element):
-    tag = "rt"
+    pass
 
 
 rt.r = rt
@@ -1406,7 +1249,7 @@ rt.d = rt
 
 
 class ruby(base_element):
-    tag = "ruby"
+    pass
 
 
 ruby.r = ruby
@@ -1418,7 +1261,7 @@ ruby.d = ruby
 
 
 class s(base_element):
-    tag = "s"
+    pass
 
 
 s.r = s
@@ -1430,7 +1273,7 @@ s.d = s
 
 
 class samp(base_element):
-    tag = "samp"
+    pass
 
 
 samp.r = samp
@@ -1442,7 +1285,7 @@ samp.d = samp
 
 
 class script(base_element):
-    tag = "script"
+    pass
 
 
 script.r = script
@@ -1454,7 +1297,7 @@ script.d = script
 
 
 class section(base_element):
-    tag = "section"
+    pass
 
 
 section.r = section
@@ -1466,7 +1309,7 @@ section.d = section
 
 
 class small(base_element):
-    tag = "small"
+    pass
 
 
 small.r = small
@@ -1478,7 +1321,7 @@ small.d = small
 
 
 class span(base_element):
-    tag = "span"
+    pass
 
 
 span.r = span
@@ -1490,7 +1333,7 @@ span.d = span
 
 
 class strike(base_element):
-    tag = "strike"
+    pass
 
 
 strike.r = strike
@@ -1502,7 +1345,7 @@ strike.d = strike
 
 
 class strong(base_element):
-    tag = "strong"
+    pass
 
 
 strong.r = strong
@@ -1514,7 +1357,7 @@ strong.d = strong
 
 
 class style(base_element):
-    tag = "style"
+    pass
 
 
 style.r = style
@@ -1526,7 +1369,7 @@ style.d = style
 
 
 class sub(base_element):
-    tag = "sub"
+    pass
 
 
 sub.r = sub
@@ -1538,7 +1381,7 @@ sub.d = sub
 
 
 class summary(base_element):
-    tag = "summary"
+    pass
 
 
 summary.r = summary
@@ -1550,7 +1393,7 @@ summary.d = summary
 
 
 class sup(base_element):
-    tag = "sup"
+    pass
 
 
 sup.r = sup
@@ -1562,7 +1405,7 @@ sup.d = sup
 
 
 class svg(base_element):
-    tag = "svg"
+    pass
 
 
 svg.r = svg
@@ -1574,7 +1417,7 @@ svg.d = svg
 
 
 class table(base_element):
-    tag = "table"
+    pass
 
 
 table.r = table
@@ -1586,7 +1429,7 @@ table.d = table
 
 
 class tbody(base_element):
-    tag = "tbody"
+    pass
 
 
 tbody.r = tbody
@@ -1598,7 +1441,7 @@ tbody.d = tbody
 
 
 class td(base_element):
-    tag = "td"
+    pass
 
 
 td.r = td
@@ -1610,7 +1453,7 @@ td.d = td
 
 
 class template(base_element):
-    tag = "template"
+    pass
 
 
 template.r = template
@@ -1622,7 +1465,7 @@ template.d = template
 
 
 class tfoot(base_element):
-    tag = "tfoot"
+    pass
 
 
 tfoot.r = tfoot
@@ -1634,7 +1477,7 @@ tfoot.d = tfoot
 
 
 class th(base_element):
-    tag = "th"
+    pass
 
 
 th.r = th
@@ -1646,7 +1489,7 @@ th.d = th
 
 
 class thead(base_element):
-    tag = "thead"
+    pass
 
 
 thead.r = thead
@@ -1658,7 +1501,7 @@ thead.d = thead
 
 
 class time(base_element):
-    tag = "time"
+    pass
 
 
 time.r = time
@@ -1670,7 +1513,7 @@ time.d = time
 
 
 class title(base_element):
-    tag = "title"
+    pass
 
 
 title.r = title
@@ -1682,7 +1525,7 @@ title.d = title
 
 
 class tr(base_element):
-    tag = "tr"
+    pass
 
 
 tr.r = tr
@@ -1694,7 +1537,7 @@ tr.d = tr
 
 
 class tt(base_element):
-    tag = "tt"
+    pass
 
 
 tt.r = tt
@@ -1706,7 +1549,7 @@ tt.d = tt
 
 
 class u(base_element):
-    tag = "u"
+    pass
 
 
 u.r = u
@@ -1718,7 +1561,7 @@ u.d = u
 
 
 class ul(base_element):
-    tag = "ul"
+    pass
 
 
 ul.r = ul
@@ -1730,7 +1573,7 @@ ul.d = ul
 
 
 class var(base_element):
-    tag = "var"
+    pass
 
 
 var.r = var
@@ -1742,7 +1585,7 @@ var.d = var
 
 
 class video(base_element):
-    tag = "video"
+    pass
 
 
 video.r = video
@@ -1753,153 +1596,93 @@ video.d = video
 
 
 
-def wbr(*children, **attrs):
-    return element("wbr", children, void=True, **attrs)
+class wbr(base_element):
+    void = True
 
 
-def wbr_ret(*children, **attrs):
-    return element_ret("wbr", children, void=True, **attrs)
+wbr.r = wbr
 
+class img(base_element):
+    void = True
 
-wbr.r = wbr_ret
 
-def img(*children, **attrs):
-    return element("img", children, void=True, **attrs)
+img.r = img
 
+class area(base_element):
+    void = True
 
-def img_ret(*children, **attrs):
-    return element_ret("img", children, void=True, **attrs)
 
+area.r = area
 
-img.r = img_ret
+class hr(base_element):
+    void = True
 
-def area(*children, **attrs):
-    return element("area", children, void=True, **attrs)
 
+hr.r = hr
 
-def area_ret(*children, **attrs):
-    return element_ret("area", children, void=True, **attrs)
+class param(base_element):
+    void = True
 
 
-area.r = area_ret
+param.r = param
 
-def hr(*children, **attrs):
-    return element("hr", children, void=True, **attrs)
+class keygen(base_element):
+    void = True
 
 
-def hr_ret(*children, **attrs):
-    return element_ret("hr", children, void=True, **attrs)
+keygen.r = keygen
 
+class source(base_element):
+    void = True
 
-hr.r = hr_ret
 
-def param(*children, **attrs):
-    return element("param", children, void=True, **attrs)
+source.r = source
 
+class base(base_element):
+    void = True
 
-def param_ret(*children, **attrs):
-    return element_ret("param", children, void=True, **attrs)
 
+base.r = base
 
-param.r = param_ret
+class meta(base_element):
+    void = True
 
-def keygen(*children, **attrs):
-    return element("keygen", children, void=True, **attrs)
 
+meta.r = meta
 
-def keygen_ret(*children, **attrs):
-    return element_ret("keygen", children, void=True, **attrs)
+class br(base_element):
+    void = True
 
 
-keygen.r = keygen_ret
+br.r = br
 
-def source(*children, **attrs):
-    return element("source", children, void=True, **attrs)
+class track(base_element):
+    void = True
 
 
-def source_ret(*children, **attrs):
-    return element_ret("source", children, void=True, **attrs)
+track.r = track
 
+class menuitem(base_element):
+    void = True
 
-source.r = source_ret
 
-def base(*children, **attrs):
-    return element("base", children, void=True, **attrs)
+menuitem.r = menuitem
 
+class command(base_element):
+    void = True
 
-def base_ret(*children, **attrs):
-    return element_ret("base", children, void=True, **attrs)
 
+command.r = command
 
-base.r = base_ret
+class embed(base_element):
+    void = True
 
-def meta(*children, **attrs):
-    return element("meta", children, void=True, **attrs)
 
+embed.r = embed
 
-def meta_ret(*children, **attrs):
-    return element_ret("meta", children, void=True, **attrs)
+class col(base_element):
+    void = True
 
 
-meta.r = meta_ret
-
-def br(*children, **attrs):
-    return element("br", children, void=True, **attrs)
-
-
-def br_ret(*children, **attrs):
-    return element_ret("br", children, void=True, **attrs)
-
-
-br.r = br_ret
-
-def track(*children, **attrs):
-    return element("track", children, void=True, **attrs)
-
-
-def track_ret(*children, **attrs):
-    return element_ret("track", children, void=True, **attrs)
-
-
-track.r = track_ret
-
-def menuitem(*children, **attrs):
-    return element("menuitem", children, void=True, **attrs)
-
-
-def menuitem_ret(*children, **attrs):
-    return element_ret("menuitem", children, void=True, **attrs)
-
-
-menuitem.r = menuitem_ret
-
-def command(*children, **attrs):
-    return element("command", children, void=True, **attrs)
-
-
-def command_ret(*children, **attrs):
-    return element_ret("command", children, void=True, **attrs)
-
-
-command.r = command_ret
-
-def embed(*children, **attrs):
-    return element("embed", children, void=True, **attrs)
-
-
-def embed_ret(*children, **attrs):
-    return element_ret("embed", children, void=True, **attrs)
-
-
-embed.r = embed_ret
-
-def col(*children, **attrs):
-    return element("col", children, void=True, **attrs)
-
-
-def col_ret(*children, **attrs):
-    return element_ret("col", children, void=True, **attrs)
-
-
-col.r = col_ret
+col.r = col
 
