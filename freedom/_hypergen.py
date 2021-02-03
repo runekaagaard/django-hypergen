@@ -41,6 +41,15 @@ state.auto_id = False
 state.liveview = False
 UPDATE = 1
 
+def hypergen_context():
+    from freedom.core import namespace as ns
+    return ns(
+        into = [],
+        liveview = True,
+        id_counter = base65_counter(),
+        id_prefix = (freedom.loads(context.request.body)["id_prefix"]
+                              if context.request.is_ajax() else "")
+    )
 
 ### Control ###
 def hypergen(func, *args, **kwargs):

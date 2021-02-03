@@ -1,6 +1,10 @@
 from django.test.client import RequestFactory
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
+from freedom.core import context as c, namespace as ns
 from freedom._hypergen import *
+from contextlib2 import ContextDecorator
+
+d = dict
 
 ### Python 2+3 compatibility ###
 
@@ -93,36 +97,120 @@ def render_hypergen(func):
     return hypergen(func).content
 
 
+def raw(*children):
+    return "".join(children)
+
+
+class base_element(ContextDecorator):
+    js_cb = "H.cbs.s"
+    void = False
+    auto_id = True
+
+    def __init__(self, *children, **attrs):
+        self.children = children
+        self.attrs = attrs
+        if "hypergen" in c:
+            self.i = len(c.hypergen.into)
+            for child in children:
+                if issubclass(type(child), base_element):
+                    c.hypergen.into[child.i] = DELETED
+            c.hypergen.into.append(
+                lambda: join_html((self.start(), self.end())))
+        super(base_element, self).__init__()
+
+    def __enter__(self):
+        assert "hypergen" in c, "Missing global context: hypergen"
+        c.hypergen.into.append(lambda: self.start())
+        c.hypergen.into[self.i] = DELETED
+        return self
+
+    def __exit__(self, *exc):
+        if not self.void:
+            c.hypergen.into.append(lambda: self.end())
+
+    def __str__(self):
+        return join_html((self.start(), self.end()))
+
+    def __unicode__(self):
+        return self.__str__()
+
+    def start(self):
+        if self.auto_id and "id_" not in self.attrs:
+            self.attrs[
+                "id_"] = c.hypergen.id_prefix + next(c.hypergen.id_counter)
+
+        into = ["<", self.tag]
+        for k, v in items(self.attrs):
+            if state.liveview is True and k.startswith("on") and type(v) in (
+                    list, tuple):
+                tmp1 = v
+                tmp2 = lambda: _callback(tmp1, meta["this"])
+                raw(" ", k, '="', into=into)
+                raw(tmp2 if lazy else tmp2(), into=into)
+                raw('"', into=into)
+            else:
+                k = t(k).rstrip("_").replace("_", "-")
+                if type(v) is bool:
+                    if v is True:
+                        into.append(raw((" ", k)))
+                elif k == "style" and type(v) in (dict, OrderedDict):
+                    into.append(
+                        raw((" ", k, '="', ";".join(
+                            t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"')))
+                else:
+                    into.append(raw(" ", k, '="', t(v), '"'))
+
+        if self.void:
+            into.append(raw(("/")))
+        into.append(raw('>', ))
+        into.extend(self.children)
+
+        return join_html(into)
+
+    def end(self):
+        return "</{}>".format(self.tag)
+
+
+class div(base_element):
+    tag = "div"
+
+
+def join_html(html):
+    def fmt(html):
+        for item in html:
+            if issubclass(type(item), base_element):
+                yield str(item)
+            elif callable(item):
+                yield str(item())
+            else:
+                yield str(item)
+
+    return "".join(fmt(html))
+
+
 def test_element():
-    # def _1():
-    #     div("foo", id_="x", class_="y")
-
-    # def _2():
-    #     with div.c():
-    #         div("a")
-
-    # def _3():
-    #     with div():
-    #         div("a")
-
-    # def _4():
-    #     @div(id_="4")
-    #     def _():
-    #         div("5")
-
-    #     _()
-
-    # def _5():
-    #     div("a", div("b"))
-
-    # assert render_hypergen(_1) == '<div id="x" class="y">foo</div>'
-    # assert render_hypergen(_2) == '<div id="A"><div id="B">a</div></div>'
-    # assert render_hypergen(_3) == '<div id="A"><div id="B">a</div></div>'
-    # assert render_hypergen(_4) == '<div id="4"><div id="A">5</div></div>'
-    # assert render_hypergen(_5) == '<div id="A">a<div id="B">b</div></div>'
-
-    assert str(div("hello world!")) == "<div>hello world!</div>"
-    with context.ns(into=[]) as hypergen:
+    with context(hypergen=hypergen_context()) as c:
         div("hello world!")
+        assert str(
+            join_html(c.hypergen.into)) == '<div id="A">hello world!</div>'
+    with context(hypergen=hypergen_context()) as c:
+        with div("a", class_="foo"):
+            div("b", x_foo=42)
+        assert str(
+            join_html(c.hypergen.into)
+        ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
+    with context(hypergen=hypergen_context()) as c:
 
-    assert str(hypergen.into) == "<div>hello world!</div>"
+        @div("a", class_="foo")
+        def f1():
+            div("b", x_foo=42)
+
+        f1()
+        assert str(
+            join_html(c.hypergen.into)
+        ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
+    with context(hypergen=hypergen_context()) as c:
+        div("a", div("b", x_foo=42), class_="foo")
+        assert str(
+            join_html(c.hypergen.into)
+        ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'

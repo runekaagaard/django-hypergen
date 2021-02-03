@@ -27,10 +27,12 @@ class Context(threading.local):
         finally:
             self.ctx = ctx
 
-    def ns(self, mutator=None, **items):
-        return Context()(mutator=mutator, **items)
+    # def ns(self, mutator=None, **items):
+    #     return Context()(mutator=mutator, **items)
         
-
+def namespace(**items):
+    from bunch import Bunch
+    return Bunch(**items)
 
 context = Context()
 
