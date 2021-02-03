@@ -14,7 +14,7 @@ from django.http.response import HttpResponse
 
 import freedom
 from freedom.utils import insert
-from freedom.core import context
+from freedom.core import context as c
 
 ### Python 2+3 compatibility ###
 
@@ -41,8 +41,8 @@ def hypergen_context(**kwargs):
         into=[],
         liveview=True,
         id_counter=base65_counter(),
-        id_prefix=(freedom.loads(context.request.body)["id_prefix"]
-                   if context.request.is_ajax() else ""),
+        id_prefix=(freedom.loads(c.request.body)["id_prefix"]
+                   if c.request.is_ajax() else ""),
         event_handler_cache={},
         target_id=kwargs.pop("target_id", "__main__"),
         commands=[], )
@@ -50,29 +50,142 @@ def hypergen_context(**kwargs):
 
 ### Control ###
 def hypergen(func, *args, **kwargs):
-    with context(hypergen=hypergen_context(**kwargs)):
+    with c(hypergen=hypergen_context(**kwargs)):
         func(*args, **kwargs)
         # TODO, use join_html
         html = "".join(
-            str(x()) if callable(x) else str(x) for x in context.hypergen.into)
-        if context.hypergen.event_handler_cache:
-            context.hypergen.commands.append([
-                "./freedom", ["setEventHandlerCache"], [
-                    context.hypergen.target_id,
-                    context.hypergen.event_handler_cache
-                ]
+            str(x()) if callable(x) else str(x) for x in c.hypergen.into)
+        if c.hypergen.event_handler_cache:
+            c.hypergen.commands.append([
+                "./freedom", ["setEventHandlerCache"],
+                [c.hypergen.target_id, c.hypergen.event_handler_cache]
             ])
-        if not context.request.is_ajax():
+        if not c.request.is_ajax():
             s = '<script>window.applyCommands({})</script>'.format(
-                freedom.dumps(context.hypergen.commands))
+                freedom.dumps(c.hypergen.commands))
             pos = html.find("</head")
             if pos != -1:
                 html = insert(html, s, pos)
             return HttpResponse(html)
         else:
-            context.hypergen.commands.append(
-                ["./freedom", ["morph"], [context.hypergen.target_id, html]])
-            return context.hypergen.commands
+            c.hypergen.commands.append(
+                ["./freedom", ["morph"], [c.hypergen.target_id, html]])
+            return c.hypergen.commands
+
+
+def join(*children):
+    return "".join(children)
+
+
+class base_element(ContextDecorator):
+    js_cb = "H.cbs.s"
+    void = False
+    auto_id = True
+
+    def __new__(cls, *args, **kwargs):
+        instance = ContextDecorator.__new__(cls)
+        setattr(instance, "tag", cls.__name__.rstrip("_"))
+        return instance
+
+    def __init__(self, *children, **attrs):
+        assert "hypergen" in c, "Missing global context: hypergen"
+        self.children = children
+        self.attrs = attrs
+        self.i = len(c.hypergen.into)
+        for child in children:
+            if issubclass(type(child), base_element):
+                c.hypergen.into[child.i] = DELETED
+        c.hypergen.into.append(lambda: join_html((self.start(), self.end())))
+        super(base_element, self).__init__()
+
+    def __enter__(self):
+        c.hypergen.into.append(lambda: self.start())
+        c.hypergen.into[self.i] = DELETED
+        return self
+
+    def __exit__(self, *exc):
+        if not self.void:
+            c.hypergen.into.append(lambda: self.end())
+
+    def __str__(self):
+        return join_html((self.start(), self.end()))
+
+    def __unicode__(self):
+        return self.__str__()
+
+    def liveview_attribute(self, args):
+        func = args[0]
+        assert callable(func), (
+            "First callback argument must be a callable, got "
+            "{}.".format(repr(func)))
+        args = args[1:]
+
+        args2 = []
+        for arg in args:
+            if type(arg) in NON_SCALARS:
+                state.kv[id(arg)] = arg
+                args2.append(
+                    freedom.quote("H.e['{}'][{}]".format(
+                        state.target_id, id(arg))))
+            else:
+                args2.append(arg)
+
+        return "H.cb({})".format(
+            freedom.dumps(
+                [func.hypergen_callback_url] + list(args2),
+                unquote=True,
+                escape=True,
+                this=self))
+
+    def attribute(self, k, v):
+        k = t(k).rstrip("_").replace("_", "-")
+        if c.hypergen.liveview is True and k.startswith("on") and type(v) in (
+                list, tuple):
+            return join(" ", k, '="', self.liveview_attribute(v), '"')
+        elif type(v) is bool:
+            if v is True:
+                return join((" ", k))
+        elif k == "style" and type(v) in (dict, OrderedDict):
+            return join((" ", k, '="', ";".join(
+                t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"'))
+        else:
+            return join(" ", k, '="', t(v), '"')
+
+    def start(self):
+        if self.auto_id and "id_" not in self.attrs:
+            self.attrs[
+                "id_"] = c.hypergen.id_prefix + next(c.hypergen.id_counter)
+
+        into = ["<", self.tag]
+        for k, v in items(self.attrs):
+            into.append(self.attribute(k, v))
+
+        if self.void:
+            into.append(join(("/")))
+        into.append(join('>', ))
+        into.extend(self.children)
+
+        return join_html(into)
+
+    def end(self):
+        return "</{}>".format(self.tag)
+
+
+class div(base_element):
+    pass
+
+
+def join_html(html):
+    def fmt(html):
+        for item in html:
+            if issubclass(type(item), base_element):
+                yield str(item)
+            elif callable(item):
+                yield str(item())
+            else:
+                yield str(item)
+
+    return "".join(fmt(html))
 
 
 ### Building HTML, public API ###
@@ -111,7 +224,7 @@ def raw(*children, **kwargs):
 
 ### Django helpers ###
 def callback(func):
-    if "is_test" in context:
+    if "is_test" in c:
         func.hypergen_callback_url = "/path/to/{}/".format(func.__name__)
     else:
         func.hypergen_callback_url = reverse_lazy(
@@ -174,10 +287,6 @@ INPUT_TYPES = dict(
     number="H.cbs.i",
     range="H.cbs.f",
     week="H.cbs.i")
-
-
-class base_element(object):  # TODO: Delete
-    pass
 
 
 class input_(base_element):
