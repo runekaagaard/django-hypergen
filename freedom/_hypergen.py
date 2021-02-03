@@ -147,10 +147,10 @@ class base_element(ContextDecorator):
         args2 = []
         for arg in args:
             if type(arg) in NON_SCALARS:
-                state.kv[id(arg)] = arg
+                c.hypergen.event_handler_cache[id(arg)] = arg
                 args2.append(
                     freedom.quote("H.e['{}'][{}]".format(
-                        state.target_id, id(arg))))
+                        c.hypergen.target_id, id(arg))))
             else:
                 args2.append(arg)
 
@@ -210,6 +210,36 @@ def join_html(html):
                 yield str(item)
 
     return "".join(fmt(html))
+
+
+### Building HTML, public API ###
+
+
+def _write(_t, children, **kwargs):
+    into = kwargs.get("into", None)
+    if into is None:
+        into = state.html
+    sep = _t(kwargs.get("sep", ""))
+
+    for x in children:
+        if x is None:
+            continue
+        elif type(x) is Blob:
+            into.extend(x)
+        elif type(x) in (list, tuple, GeneratorType):
+            _write(_t, list(x), into=into, sep=sep)
+        elif callable(x):
+            into.append(x)
+        else:
+            into.append(_t(x))
+        if sep:
+            into.append(sep)
+    if sep and children:
+        into.pop()
+
+
+def write(*children, **kwargs):
+    _write(t, children, **kwargs)
 
 
 def raw(*children, **kwargs):

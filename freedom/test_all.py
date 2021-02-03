@@ -1,8 +1,11 @@
+import re
+
+from contextlib2 import ContextDecorator
 from django.test.client import RequestFactory
+
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
 from freedom.core import context as c, namespace as ns
 from freedom._hypergen import *
-from contextlib2 import ContextDecorator
 
 d = dict
 
@@ -139,3 +142,11 @@ def test_live_element():
             assert str(
                 join_html(c.hypergen.into)
             ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            div("hello world!", onclick=(my_callback, [42]))
+            print join_html(
+                c.hypergen.into), "----------------------------------------"
+            assert re.match(
+                """<div id="A" onclick="H.cb\(&quot;/path/to/my_callback/&quot;,H.e\['__main__'\]\[[0-9]+\]\)">hello world!</div>""",
+                join_html(c.hypergen.into))
