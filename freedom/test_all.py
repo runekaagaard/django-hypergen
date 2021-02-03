@@ -10,9 +10,9 @@ from freedom._hypergen import *
 d = dict
 
 ### Python 2+3 compatibility ###
-
 if sys.version_info.major > 2:
     from html import escape
+    from html.parser import HTMLParser
     letters = string.ascii_letters
 
     def items(x):
@@ -20,6 +20,8 @@ if sys.version_info.major > 2:
 
 else:
     from cgi import escape
+    from HTMLParser import HTMLParser
+
     letters = string.letters
     str = unicode
 
@@ -100,6 +102,11 @@ def render_hypergen(func):
     return hypergen(func).content
 
 
+def e(s):
+    h = HTMLParser()
+    return h.unescape(s)
+
+
 def test_element():
     with context(hypergen=hypergen_context()):
         div("hello world!")
@@ -146,8 +153,6 @@ def test_live_element():
 
         with context(is_test=True, hypergen=hypergen_context()):
             div("hello world!", onclick=(my_callback, [42]))
-            print join_html(
-                c.hypergen.into), "----------------------------------------"
             assert re.match(
                 """<div id="A" onclick="H.cb\(&quot;/path/to/my_callback/&quot;,H.e\['__main__'\]\[[0-9]+\]\)">hello world!</div>""",
                 join_html(c.hypergen.into))
@@ -155,10 +160,9 @@ def test_live_element():
         with context(is_test=True, hypergen=hypergen_context()):
             a = input_(name="a")
             input_(name="b", onclick=(my_callback, a))
-
-            print ".................................................."
-            print join_html(c.hypergen.into)
-            print "..................................................."
+            print "aaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            print e(join_html(c.hypergen.into))
+            print "bbbbbbbbbbbbbbbbbbbbbbbbbbb"
             assert str(
                 join_html(c.hypergen.into)
             ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'

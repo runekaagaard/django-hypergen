@@ -233,7 +233,6 @@ class base_element(ContextDecorator):
             else:
                 args2.append(arg)
 
-        print "AAAAAAAAAAAAAAAAAAA", args2
         return "H.cb({})".format(
             freedom.dumps(
                 [func.hypergen_callback_url] + list(args2),
