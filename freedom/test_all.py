@@ -137,7 +137,7 @@ class base_element(ContextDecorator):
     def __unicode__(self):
         return self.__str__()
 
-    def callback(self, args):
+    def liveview_attribute(self, args):
         func = args[0]
         assert callable(func), (
             "First callback argument must be a callable, got "
@@ -161,6 +161,20 @@ class base_element(ContextDecorator):
                 escape=True,
                 this=self))
 
+    def attribute(self, k, v):
+        k = t(k).rstrip("_").replace("_", "-")
+        if c.hypergen.liveview is True and k.startswith("on") and type(v) in (
+                list, tuple):
+            return raw(" ", k, '="', self.liveview_attribute(v), '"')
+        elif type(v) is bool:
+            if v is True:
+                return raw((" ", k))
+        elif k == "style" and type(v) in (dict, OrderedDict):
+            return raw((" ", k, '="', ";".join(
+                t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"'))
+        else:
+            return raw(" ", k, '="', t(v), '"')
+
     def start(self):
         if self.auto_id and "id_" not in self.attrs:
             self.attrs[
@@ -168,20 +182,7 @@ class base_element(ContextDecorator):
 
         into = ["<", self.tag]
         for k, v in items(self.attrs):
-            if c.hypergen.liveview is True and k.startswith("on") and type(
-                    v) in (list, tuple):
-                into.append(raw(" ", k, '="', self.callback(v), '"'))
-            else:
-                k = t(k).rstrip("_").replace("_", "-")
-                if type(v) is bool:
-                    if v is True:
-                        into.append(raw((" ", k)))
-                elif k == "style" and type(v) in (dict, OrderedDict):
-                    into.append(
-                        raw((" ", k, '="', ";".join(
-                            t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"')))
-                else:
-                    into.append(raw(" ", k, '="', t(v), '"'))
+            into.append(self.attribute(k, v))
 
         if self.void:
             into.append(raw(("/")))
