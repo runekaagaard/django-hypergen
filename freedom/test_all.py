@@ -1,6 +1,6 @@
 from django.test.client import RequestFactory
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
-from freedom.hypergen import *
+from freedom._hypergen import *
 
 ### Python 2+3 compatibility ###
 
@@ -82,8 +82,8 @@ def test_context_middleware_old():
 def setup():
     import os
     DIR = os.path.realpath(os.path.dirname(__file__))
-    sys.path.append(DIR)
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "test_settings")
+    sys.path.append(DIR)
     import django
     django.setup()
     context.replace(request=Request(), user=User())
@@ -94,29 +94,35 @@ def render_hypergen(func):
 
 
 def test_element():
-    def _1():
-        div("foo", id_="x", class_="y")
+    # def _1():
+    #     div("foo", id_="x", class_="y")
 
-    def _2():
-        with div.c():
-            div("a")
+    # def _2():
+    #     with div.c():
+    #         div("a")
 
-    def _3():
-        with div():
-            div("a")
+    # def _3():
+    #     with div():
+    #         div("a")
 
-    def _4():
-        @div(id_="4")
-        def _():
-            div("5")
+    # def _4():
+    #     @div(id_="4")
+    #     def _():
+    #         div("5")
 
-        _()
+    #     _()
 
-    def _5():
-        div("a", div("b"))
+    # def _5():
+    #     div("a", div("b"))
 
-    assert render_hypergen(_1) == '<div id="x" class="y">foo</div>'
-    assert render_hypergen(_2) == '<div id="A"><div id="B">a</div></div>'
-    assert render_hypergen(_3) == '<div id="A"><div id="B">a</div></div>'
-    assert render_hypergen(_4) == '<div id="4"><div id="A">5</div></div>'
-    assert render_hypergen(_5) == '<div id="A">a<div id="B">b</div></div>'
+    # assert render_hypergen(_1) == '<div id="x" class="y">foo</div>'
+    # assert render_hypergen(_2) == '<div id="A"><div id="B">a</div></div>'
+    # assert render_hypergen(_3) == '<div id="A"><div id="B">a</div></div>'
+    # assert render_hypergen(_4) == '<div id="4"><div id="A">5</div></div>'
+    # assert render_hypergen(_5) == '<div id="A">a<div id="B">b</div></div>'
+
+    assert str(div("hello world!")) == "<div>hello world!</div>"
+    with context.ns(into=[]) as hypergen:
+        div("hello world!")
+
+    assert str(hypergen.into) == "<div>hello world!</div>"

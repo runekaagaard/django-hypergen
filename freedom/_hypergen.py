@@ -3,7 +3,6 @@ from __future__ import (absolute_import, division, unicode_literals)
 
 import string, sys
 from threading import local
-from contextlib import contextmanager
 from collections import OrderedDict
 from functools import wraps
 from copy import deepcopy
@@ -38,6 +37,8 @@ else:
 ### Globals ###
 
 state = local()
+state.auto_id = False
+state.liveview = False
 UPDATE = 1
 
 
@@ -375,13 +376,13 @@ class base_element(ContextDecorator):
     def __init__(self, *children, **attrs):
         self.children = children
         self.attrs = attrs
-        self.i = len(state.html)
-        for child in children:
-            if issubclass(type(child), base_element):
-                state.html[child.i] = DELETED
+        # self.i = len(state.html)
+        # for child in children:
+        #     if issubclass(type(child), base_element):
+        #         state.html[child.i] = DELETED
 
-        state.html.append(
-            lambda: element_ret(self.tag, children, js_cb=self.js_cb, void=self.void, **attrs))
+        # state.html.append(
+        #     lambda: element_ret(self.tag, children, js_cb=self.js_cb, void=self.void, **attrs))
         super(base_element, self).__init__()
 
     def __enter__(self):
