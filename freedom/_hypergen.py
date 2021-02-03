@@ -41,15 +41,16 @@ state.auto_id = False
 state.liveview = False
 UPDATE = 1
 
+
 def hypergen_context():
     from freedom.core import namespace as ns
     return ns(
-        into = [],
-        liveview = True,
-        id_counter = base65_counter(),
-        id_prefix = (freedom.loads(context.request.body)["id_prefix"]
-                              if context.request.is_ajax() else "")
-    )
+        into=[],
+        liveview=True,
+        id_counter=base65_counter(),
+        id_prefix=(freedom.loads(context.request.body)["id_prefix"]
+                   if context.request.is_ajax() else ""))
+
 
 ### Control ###
 def hypergen(func, *args, **kwargs):
@@ -278,8 +279,12 @@ def raw(*children, **kwargs):
 
 ### Django helpers ###
 def callback(func):
-    func.hypergen_callback_url = reverse_lazy(
-        "freedom:callback", args=[".".join((func.__module__, func.__name__))])
+    if "is_test" in context:
+        func.hypergen_callback_url = "/path/to/{}/".format(func.__name__)
+    else:
+        func.hypergen_callback_url = reverse_lazy(
+            "freedom:callback",
+            args=[".".join((func.__module__, func.__name__))])
 
     func.hypergen_is_callback = True
 

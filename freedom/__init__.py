@@ -12,8 +12,6 @@ default_app_config = 'freedom.apps.Freedom'
 
 def encoder(this, o):
     from freedom.hypergen import THIS, Blob, base_element
-
-    print type(o), repr(o)
     if o is THIS:
         return quote(this)
     elif type(o) is Blob:

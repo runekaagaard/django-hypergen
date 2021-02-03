@@ -107,19 +107,17 @@ class base_element(ContextDecorator):
     auto_id = True
 
     def __init__(self, *children, **attrs):
+        assert "hypergen" in c, "Missing global context: hypergen"
         self.children = children
         self.attrs = attrs
-        if "hypergen" in c:
-            self.i = len(c.hypergen.into)
-            for child in children:
-                if issubclass(type(child), base_element):
-                    c.hypergen.into[child.i] = DELETED
-            c.hypergen.into.append(
-                lambda: join_html((self.start(), self.end())))
+        self.i = len(c.hypergen.into)
+        for child in children:
+            if issubclass(type(child), base_element):
+                c.hypergen.into[child.i] = DELETED
+        c.hypergen.into.append(lambda: join_html((self.start(), self.end())))
         super(base_element, self).__init__()
 
     def __enter__(self):
-        assert "hypergen" in c, "Missing global context: hypergen"
         c.hypergen.into.append(lambda: self.start())
         c.hypergen.into[self.i] = DELETED
         return self
@@ -134,6 +132,30 @@ class base_element(ContextDecorator):
     def __unicode__(self):
         return self.__str__()
 
+    def callback(self, args):
+        func = args[0]
+        assert callable(func), (
+            "First callback argument must be a callable, got "
+            "{}.".format(repr(func)))
+        args = args[1:]
+
+        args2 = []
+        for arg in args:
+            if type(arg) in NON_SCALARS:
+                state.kv[id(arg)] = arg
+                args2.append(
+                    freedom.quote("H.e['{}'][{}]".format(
+                        state.target_id, id(arg))))
+            else:
+                args2.append(arg)
+
+        return "H.cb({})".format(
+            freedom.dumps(
+                [func.hypergen_callback_url] + list(args2),
+                unquote=True,
+                escape=True,
+                this=self))
+
     def start(self):
         if self.auto_id and "id_" not in self.attrs:
             self.attrs[
@@ -141,13 +163,9 @@ class base_element(ContextDecorator):
 
         into = ["<", self.tag]
         for k, v in items(self.attrs):
-            if state.liveview is True and k.startswith("on") and type(v) in (
-                    list, tuple):
-                tmp1 = v
-                tmp2 = lambda: _callback(tmp1, meta["this"])
-                raw(" ", k, '="', into=into)
-                raw(tmp2 if lazy else tmp2(), into=into)
-                raw('"', into=into)
+            if c.hypergen.liveview is True and k.startswith("on") and type(
+                    v) in (list, tuple):
+                into.append(raw(" ", k, '="', self.callback(v), '"'))
             else:
                 k = t(k).rstrip("_").replace("_", "-")
                 if type(v) is bool:
@@ -189,17 +207,17 @@ def join_html(html):
 
 
 def test_element():
-    with context(hypergen=hypergen_context()) as c:
+    with context(hypergen=hypergen_context()):
         div("hello world!")
         assert str(
             join_html(c.hypergen.into)) == '<div id="A">hello world!</div>'
-    with context(hypergen=hypergen_context()) as c:
+    with context(hypergen=hypergen_context()):
         with div("a", class_="foo"):
             div("b", x_foo=42)
         assert str(
             join_html(c.hypergen.into)
         ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
-    with context(hypergen=hypergen_context()) as c:
+    with context(hypergen=hypergen_context()):
 
         @div("a", class_="foo")
         def f1():
@@ -209,8 +227,24 @@ def test_element():
         assert str(
             join_html(c.hypergen.into)
         ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
-    with context(hypergen=hypergen_context()) as c:
+    with context(hypergen=hypergen_context()):
         div("a", div("b", x_foo=42), class_="foo")
         assert str(
             join_html(c.hypergen.into)
         ) == '<div class="foo" id="A">a<div x-foo="42" id="B">b</div></div>'
+
+
+def test_live_element():
+    setup()
+
+    with context(is_test=True):
+
+        @callback
+        def my_callback():
+            pass
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            div("hello world!", onclick=(my_callback, 42))
+            assert str(
+                join_html(c.hypergen.into)
+            ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'
