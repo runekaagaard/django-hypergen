@@ -73,8 +73,8 @@ def hypergen(func, *args, **kwargs):
             return c.hypergen.commands
 
 
-def join(*children):
-    return "".join(children)
+def join(*strings):
+    return "".join(strings)
 
 
 class base_element(ContextDecorator):
@@ -92,6 +92,8 @@ class base_element(ContextDecorator):
         self.children = children
         self.attrs = attrs
         self.i = len(c.hypergen.into)
+        self.sep = attrs.pop("sep", "")
+
         for child in children:
             if issubclass(type(child), base_element):
                 c.hypergen.into[child.i] = DELETED
@@ -112,6 +114,28 @@ class base_element(ContextDecorator):
 
     def __unicode__(self):
         return self.__str__()
+
+    def format_children(self, children):
+        into = []
+        sep = t(self.sep)
+
+        for x in self.children:
+            if x is None:
+                continue
+            elif issubclass(type(x), base_element):
+                into.append(str(x))
+            elif type(x) in (list, tuple, GeneratorType):
+                into.append(self.format_children(list(x)))
+            elif callable(x):
+                into.append(x)
+            else:
+                into.append(t(x))
+            if sep:
+                into.append(sep)
+        if sep and children:
+            into.pop()
+
+        return into
 
     def liveview_attribute(self, args):
         func = args[0]
@@ -163,7 +187,7 @@ class base_element(ContextDecorator):
         if self.void:
             into.append(join(("/")))
         into.append(join('>', ))
-        into.extend(self.children)
+        into.extend(self.format_children(self.children))
 
         return join_html(into)
 
@@ -186,36 +210,6 @@ def join_html(html):
                 yield str(item)
 
     return "".join(fmt(html))
-
-
-### Building HTML, public API ###
-
-
-def _write(_t, children, **kwargs):
-    into = kwargs.get("into", None)
-    if into is None:
-        into = state.html
-    sep = _t(kwargs.get("sep", ""))
-
-    for x in children:
-        if x is None:
-            continue
-        elif type(x) is Blob:
-            into.extend(x)
-        elif type(x) in (list, tuple, GeneratorType):
-            _write(_t, list(x), into=into, sep=sep)
-        elif callable(x):
-            into.append(x)
-        else:
-            into.append(_t(x))
-        if sep:
-            into.append(sep)
-    if sep and children:
-        into.pop()
-
-
-def write(*children, **kwargs):
-    _write(t, children, **kwargs)
 
 
 def raw(*children, **kwargs):
