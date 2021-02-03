@@ -106,6 +106,11 @@ class base_element(ContextDecorator):
     void = False
     auto_id = True
 
+    def __new__(cls, *args, **kwargs):
+        instance = ContextDecorator.__new__(cls)
+        setattr(instance, "tag", cls.__name__.rstrip("_"))
+        return instance
+
     def __init__(self, *children, **attrs):
         assert "hypergen" in c, "Missing global context: hypergen"
         self.children = children
@@ -190,7 +195,7 @@ class base_element(ContextDecorator):
 
 
 class div(base_element):
-    tag = "div"
+    pass
 
 
 def join_html(html):
