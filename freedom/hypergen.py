@@ -2,9 +2,7 @@
 from __future__ import (absolute_import, division, unicode_literals)
 
 import string, sys
-from threading import local
 from collections import OrderedDict
-from functools import wraps
 from copy import deepcopy
 from types import GeneratorType
 
@@ -99,13 +97,13 @@ def join_html(html):
     def fmt(html):
         for item in html:
             if issubclass(type(item), base_element):
-                yield str(item)
+                yield item.as_string()
             elif callable(item):
-                yield str(item())
+                yield item()
             else:
-                yield str(item)
+                yield item
 
-    return "".join(fmt(html))
+    return "".join(str(x) for x in fmt(html))
 
 
 def raw(*children):
@@ -207,14 +205,21 @@ class base_element(ContextDecorator):
         if not self.void:
             c.hypergen.into.extend(self.end())
 
-    def __str__(self):
+    # def __str__(self):
+    #     assert False, "DONT DO IT"
+    #     into = self.start()
+    #     into.extend(self.end())
+    #     s = join_html(into)
+    #     return s
+
+    # def __unicode__(self):
+    #     return self.__str__()
+
+    def as_string(self):
         into = self.start()
         into.extend(self.end())
         s = join_html(into)
         return s
-
-    def __unicode__(self):
-        return self.__str__()
 
     def delete(self):
         for i in range(self.i, self.j):
@@ -243,7 +248,7 @@ class base_element(ContextDecorator):
         return into
 
     def liveview_attribute(self, args):
-        if type(self.attrs["id_"]) is LazyAttribute:
+        if self.attrs["id_"].v is None:
             self.attrs[
                 "id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
         func = args[0]
@@ -261,7 +266,7 @@ class base_element(ContextDecorator):
                         c.hypergen.target_id, id(arg))))
             else:
                 if issubclass(type(arg), base_element):
-                    if type(arg.attrs["id_"]) is LazyAttribute:
+                    if arg.attrs["id_"].v is None:
                         arg.attrs["id_"].v = c.hypergen.id_prefix + next(
                             c.hypergen.id_counter)
                 args2.append(arg)
@@ -273,16 +278,10 @@ class base_element(ContextDecorator):
                 escape=True,
                 this=self))
 
-    def has_any_liveview_attribute(self):
-        return any(self.is_liveview_attribute(*x) for x in items(self.attrs))
-
-    def is_liveview_attribute(self, k, v):
-        return c.hypergen.liveview is True and k.startswith("on") and type(
-            v) in (list, tuple)
-
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if self.is_liveview_attribute(k, v):
+        if c.hypergen.liveview is True and k.startswith("on") and type(v) in (
+                list, tuple):
             return [" ", k, '="', self.liveview_attribute(v), '"']
         elif type(v) is LazyAttribute:
             return [v]
@@ -339,6 +338,10 @@ class input_(base_element_void):
 
     void = True
 
+
+input_.c = input_
+input_.d = input_
+input_.r = input_
 
 ### Special tags ###
 

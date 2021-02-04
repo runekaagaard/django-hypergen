@@ -1,4 +1,5 @@
 # coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
 import datetime, json, sys
 from functools import partial
 
@@ -13,7 +14,7 @@ default_app_config = 'freedom.apps.Freedom'
 def encoder(this, o):
     from freedom.hypergen import THIS, base_element
     if o is THIS:
-        return quote(this)
+        return quote("{}(this)".format(this.js_cb))
     elif issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
         return [

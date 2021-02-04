@@ -191,3 +191,36 @@ def test_live_element():
                 '<div class="form form-write"><textarea id="B" placeholder="Skriv dit spørgsmål her og du '
                 'vil få svar hurtigst muligt af en rådgiver."></textarea></div></div>'
             )
+
+
+def test_live_element2():
+    setup()
+
+    with context(is_test=True):
+
+        @callback
+        def my_callback():
+            pass
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            el1 = input_.r(
+                id_="id_new_password",
+                placeholder="Adgangskode",
+                oninput=(my_callback, THIS, ""))
+            el2 = input_.r(
+                placeholder="Gentag Adgangskode",
+                oninput=(my_callback, THIS, el1))
+
+            h2(u"Skift Adgangskode")
+            p(u"Indtast din nye adgangskode efter følgende kriterier:")
+            with div.c(class_="form"):
+                with div.c():
+                    with ul.c(id_="password_verification_smartassness"):
+                        div("TODO")
+                    with div.c(class_="form"):
+                        div(el1, class_="form-field")
+                        div(el2, class_="form-field")
+                        div(u"Skift adgangskode", class_="button disabled")
+
+            print e(join_html(c.hypergen.into))
+            assert str(join_html(c.hypergen.into)) == 'TODO'
