@@ -116,8 +116,6 @@ def test_element():
     with context(hypergen=hypergen_context()):
         with div("a", class_="foo"):
             div("b", x_foo=42)
-        print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", c.hypergen.into
-        print str(join_html(c.hypergen.into))
         assert str(join_html(c.hypergen.into)
                    ) == '<div class="foo">a<div x-foo="42">b</div></div>'
     with context(hypergen=hypergen_context()):
@@ -162,11 +160,8 @@ def test_live_element():
                 join_html(c.hypergen.into))
 
         with context(is_test=True, hypergen=hypergen_context()):
-            print "BEGIN"
             a = input_(name="a")
             input_(name="b", onclick=(my_callback, a))
-            print 9999999999999999999999, join_html(c.hypergen.into)
-            print 9999999999999999999999, e(join_html(c.hypergen.into))
             assert e(
                 join_html(c.hypergen.into)
             ) == """<input id="B" name="a"/><input id="A" name="b" onclick="H.cb("/path/to/my_callback/",["_","element_value",{"cb_name":"s","id":"B"}])"/>"""
@@ -222,5 +217,6 @@ def test_live_element2():
                         div(el2, class_="form-field")
                         div(u"Skift adgangskode", class_="button disabled")
 
-            print e(join_html(c.hypergen.into))
-            assert str(join_html(c.hypergen.into)) == 'TODO'
+            assert str(
+                e(join_html(c.hypergen.into))
+            ) == '<h2>Skift Adgangskode</h2><p>Indtast din nye adgangskode efter følgende kriterier:</p><div class="form"><div><ul id="password_verification_smartassness"><div>TODO</div></ul><div class="form"><div class="form-field"><input id="id_new_password" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),"")" placeholder="Adgangskode"/></div><div class="form-field"><input id="A" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),["_","element_value",{"cb_name":"s","id":"id_new_password"}])" placeholder="Gentag Adgangskode"/></div><div class="button disabled">Skift adgangskode</div></div></div></div>'

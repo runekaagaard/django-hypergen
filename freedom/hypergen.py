@@ -205,16 +205,6 @@ class base_element(ContextDecorator):
         if not self.void:
             c.hypergen.into.extend(self.end())
 
-    # def __str__(self):
-    #     assert False, "DONT DO IT"
-    #     into = self.start()
-    #     into.extend(self.end())
-    #     s = join_html(into)
-    #     return s
-
-    # def __unicode__(self):
-    #     return self.__str__()
-
     def as_string(self):
         into = self.start()
         into.extend(self.end())
