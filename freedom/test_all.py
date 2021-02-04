@@ -1,4 +1,5 @@
 # coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
 import re
 
 from contextlib2 import ContextDecorator
@@ -183,5 +184,10 @@ def test_live_element():
                         u"Send", class_="clickable", onclick=(my_callback, el))
                 div(el, class_="form form-write")
 
-            print e(join_html(c.hypergen.into))
-            assert 0 > 1
+            assert e(join_html(c.hypergen.into)) == (
+                '<div class="message"><div class="action-left"><span class="clickable">Annullér</span>'
+                '</div><div class="action-right"><span class="clickable" onclick="H.cb("/path/to/my_callback/'
+                '",["_","element_value",{"cb_name":"s","id":"B"}])" id="A">Send</span></div>'
+                '<div class="form form-write"><textarea id="B" placeholder="Skriv dit spørgsmål her og du '
+                'vil få svar hurtigst muligt af en rådgiver."></textarea></div></div>'
+            )
