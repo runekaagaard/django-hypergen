@@ -59,6 +59,7 @@ window.H = (function() {
     return parseFloat($("#" + id).val())
   }}
   cbs.s = function(id) { return function() {
+    console.log("Searching for id", id)
     return "" + $("#" + id).val().trim()
   }}
   cbs.c = function(id) { return function() {
@@ -108,7 +109,7 @@ window.H = (function() {
     for (var i=1; i<arguments.length; i++) {
       args.push(arguments[i])
     }
-    
+    console.log(args, data)
     parseArgs(args, data)
     console.log("REQUEST", data)
     $.ajax({

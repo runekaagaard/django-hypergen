@@ -43,12 +43,14 @@ def hypergen_context(**kwargs):
         id_prefix=(freedom.loads(c.request.body)["id_prefix"]
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
-        target_id=kwargs.pop("target_id", "__main__"),
+        target_id=kwargs.get("target_id", "__main__"),
         commands=[], )
 
 
 def hypergen(func, *args, **kwargs):
-    with c(hypergen=hypergen_context(**kwargs)):
+    kwargs = deepcopy(kwargs)
+    target_id = kwargs.pop("target_id", "__main__")
+    with c(hypergen=hypergen_context(target_id=target_id, **kwargs)):
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
@@ -74,13 +76,28 @@ def hypergen(func, *args, **kwargs):
 ### Helpers ###
 
 
+class LazyAttribute(object):
+    def __init__(self, k, v):
+        self.k = k
+        self.v = v
+
+    def __str__(self):
+        if not self.v:
+            return ""
+        else:
+            return ' {}="{}"'.format(self.k, t(self.v))
+
+    def __unicode__(self):
+        return self.__str__()
+
+
 def join(*values):
     return "".join(str(x) for x in values)
 
 
 def join_html(html):
     def fmt(html):
-        for item in reversed(html):
+        for item in html:
             if issubclass(type(item), base_element):
                 yield str(item)
             elif callable(item):
@@ -88,7 +105,7 @@ def join_html(html):
             else:
                 yield str(item)
 
-    return "".join(reversed(list(fmt(html))))
+    return "".join(fmt(html))
 
 
 def raw(*children):
@@ -169,32 +186,39 @@ class base_element(ContextDecorator):
         assert "hypergen" in c, "Missing global context: hypergen"
         self.children = children
         self.attrs = attrs
+        self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
         self.i = len(c.hypergen.into)
         self.sep = attrs.pop("sep", "")
-        self.auto_id = self.has_any_liveview_attribute()
 
         for child in children:
             if issubclass(type(child), base_element):
-                c.hypergen.into[child.i] = DELETED
-        c.hypergen.into.append(lambda: join_html((self.start(), self.end())))
+                child.delete()
+        c.hypergen.into.extend(self.start())
+        c.hypergen.into.extend(self.end())
+        self.j = len(c.hypergen.into)
         super(base_element, self).__init__()
 
     def __enter__(self):
-        c.hypergen.into.append(lambda: self.start())
-        c.hypergen.into[self.i] = DELETED
+        c.hypergen.into.extend(self.start())
+        self.delete()
         return self
 
     def __exit__(self, *exc):
         if not self.void:
-            c.hypergen.into.append(lambda: self.end())
+            c.hypergen.into.extend(self.end())
 
     def __str__(self):
-        s = join_html((self.start(), self.end()))
-        print "CALLING STR", s
+        into = self.start()
+        into.extend(self.end())
+        s = join_html(into)
         return s
 
     def __unicode__(self):
         return self.__str__()
+
+    def delete(self):
+        for i in range(self.i, self.j):
+            c.hypergen.into[i] = DELETED
 
     def format_children(self, children):
         into = []
@@ -219,6 +243,9 @@ class base_element(ContextDecorator):
         return into
 
     def liveview_attribute(self, args):
+        if type(self.attrs["id_"]) is LazyAttribute:
+            self.attrs[
+                "id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
         func = args[0]
         assert callable(func), (
             "First callback argument must be a callable, got "
@@ -234,11 +261,9 @@ class base_element(ContextDecorator):
                         c.hypergen.target_id, id(arg))))
             else:
                 if issubclass(type(arg), base_element):
-                    if not arg.attrs.get("id_"):
-                        arg.attrs["id_"] = c.hypergen.id_prefix + next(
+                    if type(arg.attrs["id_"]) is LazyAttribute:
+                        arg.attrs["id_"].v = c.hypergen.id_prefix + next(
                             c.hypergen.id_counter)
-                    print "liveview_attribute: Setting id_ for", self.attrs.get(
-                        "name", "NONAME")
                 args2.append(arg)
 
         return lambda: "H.cb({})".format(
@@ -259,6 +284,8 @@ class base_element(ContextDecorator):
         k = t(k).rstrip("_").replace("_", "-")
         if self.is_liveview_attribute(k, v):
             return [" ", k, '="', self.liveview_attribute(v), '"']
+        elif type(v) is LazyAttribute:
+            return [v]
         elif type(v) is bool:
             if v is True:
                 return [join((" ", k))]
@@ -271,16 +298,6 @@ class base_element(ContextDecorator):
             return [join(" ", k, '="', t(v), '"')]
 
     def start(self):
-        if self.auto_id and "id_" not in self.attrs:
-            self.attrs[
-                "id_"] = c.hypergen.id_prefix + next(c.hypergen.id_counter)
-            print "start: Setting id_ for", self.attrs.get("name", "NONAME")
-        if "name" in self.attrs:
-            print "STARTING", self.attrs.get("name"), self.attrs.get(
-                "id_", "NOID"), self.auto_id
-        else:
-            print "NONAME"
-
         into = ["<", self.tag]
         for k, v in items(self.attrs):
             into.extend(self.attribute(k, v))
@@ -288,17 +305,14 @@ class base_element(ContextDecorator):
         if self.void:
             into.append(join(("/")))
         into.append(join('>', ))
-        into.append(lambda: join_html(self.format_children(self.children)))
-
-        print "ENDING", self.attrs.get("name", "NONAME"), self.attrs.get(
-            "id_", "NOID")
-        return join_html(into)
+        into.extend(self.format_children(self.children))
+        return into
 
     def end(self):
         if not self.void:
-            return "</{}>".format(self.tag)
+            return ["</{}>".format(self.tag)]
         else:
-            return ""
+            return [""]
 
 
 class base_element_void(base_element):

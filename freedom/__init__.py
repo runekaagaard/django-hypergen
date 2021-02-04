@@ -20,7 +20,7 @@ def encoder(this, o):
             "_",
             "element_value",
             {
-                "id": o.attrs["id_"],
+                "id": o.attrs["id_"].v,
                 "cb_name": o.js_cb.replace("H.cbs.", ""),  # TODO: Generalize.
             }
         ]
