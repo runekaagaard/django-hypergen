@@ -1,11 +1,20 @@
+# coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
+import re
+
+from contextlib2 import ContextDecorator
 from django.test.client import RequestFactory
+
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
+from freedom.core import context as c, namespace as ns
 from freedom.hypergen import *
 
-### Python 2+3 compatibility ###
+d = dict
 
+### Python 2+3 compatibility ###
 if sys.version_info.major > 2:
     from html import escape
+    from html.parser import HTMLParser
     letters = string.ascii_letters
 
     def items(x):
@@ -13,6 +22,8 @@ if sys.version_info.major > 2:
 
 else:
     from cgi import escape
+    from HTMLParser import HTMLParser
+
     letters = string.letters
     str = unicode
 
@@ -82,8 +93,8 @@ def test_context_middleware_old():
 def setup():
     import os
     DIR = os.path.realpath(os.path.dirname(__file__))
-    sys.path.append(DIR)
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "test_settings")
+    sys.path.append(DIR)
     import django
     django.setup()
     context.replace(request=Request(), user=User())
@@ -93,30 +104,123 @@ def render_hypergen(func):
     return hypergen(func).content
 
 
+def e(s):
+    h = HTMLParser()
+    return h.unescape(s)
+
+
 def test_element():
-    def _1():
-        div("foo", id_="x", class_="y")
+    with context(hypergen=hypergen_context()):
+        div("hello world!")
+        assert str(join_html(c.hypergen.into)) == '<div>hello world!</div>'
+    with context(hypergen=hypergen_context()):
+        with div("a", class_="foo"):
+            div("b", x_foo=42)
+        print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", c.hypergen.into
+        print str(join_html(c.hypergen.into))
+        assert str(join_html(c.hypergen.into)
+                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
+    with context(hypergen=hypergen_context()):
 
-    def _2():
-        with div.c():
-            div("a")
+        @div("a", class_="foo")
+        def f1():
+            div("b", x_foo=42)
 
-    def _3():
-        with div():
-            div("a")
+        f1()
+        assert str(join_html(c.hypergen.into)
+                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
+    with context(hypergen=hypergen_context()):
+        div("a", div("b", x_foo=42), class_="foo")
+        assert str(join_html(c.hypergen.into)
+                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
 
-    def _4():
-        @div(id_="4")
-        def _():
-            div("5")
+    with context(hypergen=hypergen_context()):
+        div([1, 2], sep="-")
+        # div([1, 2], (x for x in range(3, 4)), style={1: 2})
+        assert str(join_html(c.hypergen.into)) == '<div>1-2</div>'
 
-        _()
 
-    def _5():
-        div("a", div("b"))
+def test_live_element():
+    setup()
 
-    assert render_hypergen(_1) == '<div id="x" class="y">foo</div>'
-    assert render_hypergen(_2) == '<div id="A"><div id="B">a</div></div>'
-    assert render_hypergen(_3) == '<div id="A"><div id="B">a</div></div>'
-    assert render_hypergen(_4) == '<div id="4"><div id="A">5</div></div>'
-    assert render_hypergen(_5) == '<div id="A">a<div id="B">b</div></div>'
+    with context(is_test=True):
+
+        @callback
+        def my_callback():
+            pass
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            div("hello world!", onclick=(my_callback, 42))
+            assert str(
+                join_html(c.hypergen.into)
+            ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            div("hello world!", onclick=(my_callback, [42]))
+            assert re.match(
+                """<div id="A" onclick="H.cb\(&quot;/path/to/my_callback/&quot;,H.e\['__main__'\]\[[0-9]+\]\)">hello world!</div>""",
+                join_html(c.hypergen.into))
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            print "BEGIN"
+            a = input_(name="a")
+            input_(name="b", onclick=(my_callback, a))
+            print 9999999999999999999999, join_html(c.hypergen.into)
+            print 9999999999999999999999, e(join_html(c.hypergen.into))
+            assert e(
+                join_html(c.hypergen.into)
+            ) == """<input id="B" name="a"/><input id="A" name="b" onclick="H.cb("/path/to/my_callback/",["_","element_value",{"cb_name":"s","id":"B"}])"/>"""
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            el = textarea.r(
+                placeholder=
+                u"Skriv dit spørgsmål her og du vil få svar hurtigst muligt af en rådgiver."
+            )
+            with div.c(class_="message"):
+                with div.c(class_="action-left"):
+                    span(u"Annullér", class_="clickable")
+                with div.c(class_="action-right"):
+                    span(
+                        u"Send", class_="clickable", onclick=(my_callback, el))
+                div(el, class_="form form-write")
+
+            assert e(join_html(c.hypergen.into)) == (
+                '<div class="message"><div class="action-left"><span class="clickable">Annullér</span>'
+                '</div><div class="action-right"><span class="clickable" onclick="H.cb("/path/to/my_callback/'
+                '",["_","element_value",{"cb_name":"s","id":"B"}])" id="A">Send</span></div>'
+                '<div class="form form-write"><textarea id="B" placeholder="Skriv dit spørgsmål her og du '
+                'vil få svar hurtigst muligt af en rådgiver."></textarea></div></div>'
+            )
+
+
+def test_live_element2():
+    setup()
+
+    with context(is_test=True):
+
+        @callback
+        def my_callback():
+            pass
+
+        with context(is_test=True, hypergen=hypergen_context()):
+            el1 = input_.r(
+                id_="id_new_password",
+                placeholder="Adgangskode",
+                oninput=(my_callback, THIS, ""))
+            el2 = input_.r(
+                placeholder="Gentag Adgangskode",
+                oninput=(my_callback, THIS, el1))
+
+            h2(u"Skift Adgangskode")
+            p(u"Indtast din nye adgangskode efter følgende kriterier:")
+            with div.c(class_="form"):
+                with div.c():
+                    with ul.c(id_="password_verification_smartassness"):
+                        div("TODO")
+                    with div.c(class_="form"):
+                        div(el1, class_="form-field")
+                        div(el2, class_="form-field")
+                        div(u"Skift adgangskode", class_="button disabled")
+
+            print e(join_html(c.hypergen.into))
+            assert str(join_html(c.hypergen.into)) == 'TODO'

@@ -1,25 +1,30 @@
+# coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
+import datetime, json, sys
 from functools import partial
-import datetime, json
+
+if sys.version_info.major > 2:
+    pass
+else:
+    str = unicode
 
 default_app_config = 'freedom.apps.Freedom'
 
 
 def encoder(this, o):
-    from freedom.hypergen import THIS, Blob
-
+    from freedom.hypergen import THIS, base_element
     if o is THIS:
-        return quote(this)
-    elif type(o) is Blob:
+        return quote("{}(this)".format(this.js_cb))
+    elif issubclass(type(o), base_element):
+        assert o.attrs.get("id_", False), "Missing id_"
         return [
             "_",
             "element_value",
             {
-                "id": o.meta["id"],
-                "cb_name": o.meta["js_cb"].replace("H.cbs.",
-                                                   ""),  # TODO: Generalize.
+                "id": o.attrs["id_"].v,
+                "cb_name": o.js_cb.replace("H.cbs.", ""),  # TODO: Generalize.
             }
         ]
-        # return quote(o.meta["this"])
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
         return str(o)

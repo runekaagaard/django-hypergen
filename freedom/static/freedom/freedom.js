@@ -40,6 +40,10 @@ const applyCommands = function(commands) {
 }
 window.applyCommands = applyCommands
 
+const isDomEntity = entity => {
+  return typeof entity   === 'object' && entity.nodeType !== undefined
+}
+
 // Stub solution.
 window.H = (function() {
   // Shims
@@ -53,24 +57,30 @@ window.H = (function() {
   console.log("RECEIVING", arguments)
   var cbs = {}
   cbs.i = function(id) { return function() {
-    return parseInt($("#" + id).val())
+    const el = isDomEntity(id) ? $(id) : $("#" + id) 
+    return parseInt(el.val())
   }}
   cbs.f = function(id) { return function() {
-    return parseFloat($("#" + id).val())
+    const el = isDomEntity(id) ? $(id) : $("#" + id) 
+    return parseFloat(el.val())
   }}
   cbs.s = function(id) { return function() {
-    return "" + $("#" + id).val().trim()
+    const el = isDomEntity(id) ? $(id) : $("#" + id) 
+    return "" + el.val().trim()
   }}
   cbs.c = function(id) { return function() {
-    return document.getElementById(id).checked
+    const el = isDomEntity(id) ? $(id) : document.getElementById(id) 
+    return el.checked
   }}
   cbs.g = function(id) { return function() {
-    var v = $("#" + id).val()
+    const el = isDomEntity(id) ? $(id) : $("#" + id) 
+    var v = el.val()
     var v1 = parseInt(v)
     return !isNaN(v1) ? v1 : v
   }}
   cbs.t = function(id) { return function() {
-    return "" + $("#" + id).val().trim()
+    const el = isDomEntity(id) ? $(id) : $("#" + id) 
+    return "" + el.val().trim()
   }}
 
   function parseArgs(args, data) {
@@ -108,7 +118,7 @@ window.H = (function() {
     for (var i=1; i<arguments.length; i++) {
       args.push(arguments[i])
     }
-    
+    console.log(args, data)
     parseArgs(args, data)
     console.log("REQUEST", data)
     $.ajax({

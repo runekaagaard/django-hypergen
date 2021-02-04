@@ -2,7 +2,9 @@
 from __future__ import (absolute_import, division, unicode_literals)
 
 import string, sys
+from threading import local
 from collections import OrderedDict
+from functools import wraps
 from copy import deepcopy
 from types import GeneratorType
 
@@ -41,14 +43,12 @@ def hypergen_context(**kwargs):
         id_prefix=(freedom.loads(c.request.body)["id_prefix"]
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
-        target_id=kwargs.get("target_id", "__main__"),
+        target_id=kwargs.pop("target_id", "__main__"),
         commands=[], )
 
 
 def hypergen(func, *args, **kwargs):
-    kwargs = deepcopy(kwargs)
-    target_id = kwargs.pop("target_id", "__main__")
-    with c(hypergen=hypergen_context(target_id=target_id, **kwargs)):
+    with c(hypergen=hypergen_context(**kwargs)):
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
@@ -74,21 +74,6 @@ def hypergen(func, *args, **kwargs):
 ### Helpers ###
 
 
-class LazyAttribute(object):
-    def __init__(self, k, v):
-        self.k = k
-        self.v = v
-
-    def __str__(self):
-        if not self.v:
-            return ""
-        else:
-            return ' {}="{}"'.format(self.k, t(self.v))
-
-    def __unicode__(self):
-        return self.__str__()
-
-
 def join(*values):
     return "".join(str(x) for x in values)
 
@@ -97,13 +82,13 @@ def join_html(html):
     def fmt(html):
         for item in html:
             if issubclass(type(item), base_element):
-                yield item.as_string()
+                yield str(item)
             elif callable(item):
-                yield item()
+                yield str(item())
             else:
-                yield item
+                yield str(item)
 
-    return "".join(str(x) for x in fmt(html))
+    return "".join(fmt(html))
 
 
 def raw(*children):
@@ -184,46 +169,30 @@ class base_element(ContextDecorator):
         assert "hypergen" in c, "Missing global context: hypergen"
         self.children = children
         self.attrs = attrs
-        self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
         self.i = len(c.hypergen.into)
         self.sep = attrs.pop("sep", "")
+        self.auto_id = self.has_any_liveview_attribute()
 
         for child in children:
             if issubclass(type(child), base_element):
-                child.delete()
-        c.hypergen.into.extend(self.start())
-        c.hypergen.into.extend(self.end())
-        self.j = len(c.hypergen.into)
+                c.hypergen.into[child.i] = DELETED
+        c.hypergen.into.append(lambda: join_html((self.start(), self.end())))
         super(base_element, self).__init__()
 
     def __enter__(self):
-        c.hypergen.into.extend(self.start())
-        self.delete()
+        c.hypergen.into.append(lambda: self.start())
+        c.hypergen.into[self.i] = DELETED
         return self
 
     def __exit__(self, *exc):
         if not self.void:
-            c.hypergen.into.extend(self.end())
+            c.hypergen.into.append(lambda: self.end())
 
-    # def __str__(self):
-    #     assert False, "DONT DO IT"
-    #     into = self.start()
-    #     into.extend(self.end())
-    #     s = join_html(into)
-    #     return s
+    def __str__(self):
+        return join_html((self.start(), self.end()))
 
-    # def __unicode__(self):
-    #     return self.__str__()
-
-    def as_string(self):
-        into = self.start()
-        into.extend(self.end())
-        s = join_html(into)
-        return s
-
-    def delete(self):
-        for i in range(self.i, self.j):
-            c.hypergen.into[i] = DELETED
+    def __unicode__(self):
+        return self.__str__()
 
     def format_children(self, children):
         into = []
@@ -233,7 +202,7 @@ class base_element(ContextDecorator):
             if x in ("", None):
                 continue
             elif issubclass(type(x), base_element):
-                into.append(x)
+                into.append(str(x))
             elif type(x) in (list, tuple, GeneratorType):
                 into.extend(self.format_children(list(x)))
             elif callable(x):
@@ -248,9 +217,6 @@ class base_element(ContextDecorator):
         return into
 
     def liveview_attribute(self, args):
-        if self.attrs["id_"].v is None:
-            self.attrs[
-                "id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
         func = args[0]
         assert callable(func), (
             "First callback argument must be a callable, got "
@@ -265,57 +231,57 @@ class base_element(ContextDecorator):
                     freedom.quote("H.e['{}'][{}]".format(
                         c.hypergen.target_id, id(arg))))
             else:
-                if issubclass(type(arg), base_element):
-                    if arg.attrs["id_"].v is None:
-                        arg.attrs["id_"].v = c.hypergen.id_prefix + next(
-                            c.hypergen.id_counter)
                 args2.append(arg)
 
-        return lambda: "H.cb({})".format(
+        print "AAAAAAAAAAAAAAAAAAA", args2
+        return "H.cb({})".format(
             freedom.dumps(
                 [func.hypergen_callback_url] + list(args2),
                 unquote=True,
                 escape=True,
                 this=self))
 
+    def has_any_liveview_attribute(self):
+        return any(self.is_liveview_attribute(*x) for x in items(self.attrs))
+
+    def is_liveview_attribute(self, k, v):
+        return c.hypergen.liveview is True and k.startswith("on") and type(
+            v) in (list, tuple)
+
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if c.hypergen.liveview is True and k.startswith("on") and type(v) in (
-                list, tuple):
-            return [" ", k, '="', self.liveview_attribute(v), '"']
-        elif type(v) is LazyAttribute:
-            return [v]
+        if self.is_liveview_attribute(k, v):
+            return join(" ", k, '="', self.liveview_attribute(v), '"')
         elif type(v) is bool:
             if v is True:
-                return [join((" ", k))]
+                return join((" ", k))
         elif k == "style" and type(v) in (dict, OrderedDict):
-            return [
-                join((" ", k, '="', ";".join(
-                    t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"'))
-            ]
+            return join((" ", k, '="', ";".join(
+                t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"'))
         else:
-            return [join(" ", k, '="', t(v), '"')]
+            return join(" ", k, '="', t(v), '"')
 
     def start(self):
+        if self.auto_id and "id_" not in self.attrs:
+            self.attrs[
+                "id_"] = c.hypergen.id_prefix + next(c.hypergen.id_counter)
+
         into = ["<", self.tag]
         for k, v in items(self.attrs):
-            into.extend(self.attribute(k, v))
+            into.append(self.attribute(k, v))
 
         if self.void:
             into.append(join(("/")))
         into.append(join('>', ))
         into.extend(self.format_children(self.children))
-        return into
+
+        return join_html(into)
 
     def end(self):
         if not self.void:
-            return ["</{}>".format(self.tag)]
+            return "</{}>".format(self.tag)
         else:
-            return [""]
-
-
-class base_element_void(base_element):
-    void = True
+            return ""
 
 
 ### Some special dom elements ###
@@ -328,7 +294,7 @@ INPUT_CALLBACK_TYPES = dict(
     week="H.cbs.i")
 
 
-class input_(base_element_void):
+class input_(base_element):
     void = True
 
     def __init__(self, *children, **attrs):
@@ -339,10 +305,6 @@ class input_(base_element_void):
     void = True
 
 
-input_.c = input_
-input_.d = input_
-input_.r = input_
-
 ### Special tags ###
 
 
@@ -350,490 +312,1377 @@ def doctype(type_="html"):
     raw("<!DOCTYPE ", type_, ">")
 
 
-### GENERATED BY build.py ###
-# yapf: disable
-class a(base_element): pass
-a.c = a
-a.d = a
-a.r = a
-class abbr(base_element): pass
-abbr.c = abbr
-abbr.d = abbr
-abbr.r = abbr
-class acronym(base_element): pass
-acronym.c = acronym
-acronym.d = acronym
-acronym.r = acronym
-class address(base_element): pass
-address.c = address
-address.d = address
-address.r = address
-class applet(base_element): pass
-applet.c = applet
-applet.d = applet
-applet.r = applet
-class area(base_element_void): pass
-area.c = area
-area.d = area
-area.r = area
-class article(base_element): pass
-article.c = article
-article.d = article
-article.r = article
-class aside(base_element): pass
-aside.c = aside
-aside.d = aside
-aside.r = aside
-class audio(base_element): pass
-audio.c = audio
-audio.d = audio
-audio.r = audio
-class b(base_element): pass
-b.c = b
-b.d = b
-b.r = b
-class base(base_element_void): pass
-base.c = base
-base.d = base
-base.r = base
-class basefont(base_element): pass
-basefont.c = basefont
-basefont.d = basefont
-basefont.r = basefont
-class bdi(base_element): pass
-bdi.c = bdi
-bdi.d = bdi
-bdi.r = bdi
-class bdo(base_element): pass
-bdo.c = bdo
-bdo.d = bdo
-bdo.r = bdo
-class big(base_element): pass
-big.c = big
-big.d = big
-big.r = big
-class blockquote(base_element): pass
-blockquote.c = blockquote
-blockquote.d = blockquote
-blockquote.r = blockquote
-class body(base_element): pass
-body.c = body
-body.d = body
-body.r = body
-class br(base_element_void): pass
-br.c = br
-br.d = br
-br.r = br
-class button(base_element): pass
-button.c = button
-button.d = button
-button.r = button
-class canvas(base_element): pass
-canvas.c = canvas
-canvas.d = canvas
-canvas.r = canvas
-class caption(base_element): pass
-caption.c = caption
-caption.d = caption
-caption.r = caption
-class center(base_element): pass
-center.c = center
-center.d = center
-center.r = center
-class cite(base_element): pass
-cite.c = cite
-cite.d = cite
-cite.r = cite
-class code(base_element): pass
-code.c = code
-code.d = code
-code.r = code
-class col(base_element_void): pass
-col.c = col
-col.d = col
-col.r = col
-class colgroup(base_element): pass
-colgroup.c = colgroup
-colgroup.d = colgroup
-colgroup.r = colgroup
-class data(base_element): pass
-data.c = data
-data.d = data
-data.r = data
-class datalist(base_element): pass
-datalist.c = datalist
-datalist.d = datalist
-datalist.r = datalist
-class dd(base_element): pass
-dd.c = dd
-dd.d = dd
-dd.r = dd
-class del_(base_element): pass
-del_.c = del_
-del_.d = del_
-del_.r = del_
-class details(base_element): pass
-details.c = details
-details.d = details
-details.r = details
-class dfn(base_element): pass
-dfn.c = dfn
-dfn.d = dfn
-dfn.r = dfn
-class dialog(base_element): pass
-dialog.c = dialog
-dialog.d = dialog
-dialog.r = dialog
-class dir_(base_element): pass
-dir_.c = dir_
-dir_.d = dir_
-dir_.r = dir_
-class div(base_element): pass
+### TEMPLATE-ELEMENT ###
+
+
+class div(base_element):
+    pass
+
+
+div.r = div
 div.c = div
 div.d = div
-div.r = div
-class dl(base_element): pass
+
+
+### TEMPLATE-ELEMENT ###
+### TEMPLATE-VOID-ELEMENT ###
+class link(base_element):
+    void = True
+
+
+link.r = link
+### TEMPLATE-VOID-ELEMENT ###
+
+
+
+
+class a(base_element):
+    pass
+
+
+a.r = a
+a.c = a
+a.d = a
+
+
+
+
+
+class abbr(base_element):
+    pass
+
+
+abbr.r = abbr
+abbr.c = abbr
+abbr.d = abbr
+
+
+
+
+
+class acronym(base_element):
+    pass
+
+
+acronym.r = acronym
+acronym.c = acronym
+acronym.d = acronym
+
+
+
+
+
+class address(base_element):
+    pass
+
+
+address.r = address
+address.c = address
+address.d = address
+
+
+
+
+
+class applet(base_element):
+    pass
+
+
+applet.r = applet
+applet.c = applet
+applet.d = applet
+
+
+
+
+
+class article(base_element):
+    pass
+
+
+article.r = article
+article.c = article
+article.d = article
+
+
+
+
+
+class aside(base_element):
+    pass
+
+
+aside.r = aside
+aside.c = aside
+aside.d = aside
+
+
+
+
+
+class audio(base_element):
+    pass
+
+
+audio.r = audio
+audio.c = audio
+audio.d = audio
+
+
+
+
+
+class b(base_element):
+    pass
+
+
+b.r = b
+b.c = b
+b.d = b
+
+
+
+
+
+class basefont(base_element):
+    pass
+
+
+basefont.r = basefont
+basefont.c = basefont
+basefont.d = basefont
+
+
+
+
+
+class bdi(base_element):
+    pass
+
+
+bdi.r = bdi
+bdi.c = bdi
+bdi.d = bdi
+
+
+
+
+
+class bdo(base_element):
+    pass
+
+
+bdo.r = bdo
+bdo.c = bdo
+bdo.d = bdo
+
+
+
+
+
+class big(base_element):
+    pass
+
+
+big.r = big
+big.c = big
+big.d = big
+
+
+
+
+
+class blockquote(base_element):
+    pass
+
+
+blockquote.r = blockquote
+blockquote.c = blockquote
+blockquote.d = blockquote
+
+
+
+
+
+class body(base_element):
+    pass
+
+
+body.r = body
+body.c = body
+body.d = body
+
+
+
+
+
+class button(base_element):
+    pass
+
+
+button.r = button
+button.c = button
+button.d = button
+
+
+
+
+
+class canvas(base_element):
+    pass
+
+
+canvas.r = canvas
+canvas.c = canvas
+canvas.d = canvas
+
+
+
+
+
+class caption(base_element):
+    pass
+
+
+caption.r = caption
+caption.c = caption
+caption.d = caption
+
+
+
+
+
+class center(base_element):
+    pass
+
+
+center.r = center
+center.c = center
+center.d = center
+
+
+
+
+
+class cite(base_element):
+    pass
+
+
+cite.r = cite
+cite.c = cite
+cite.d = cite
+
+
+
+
+
+class code(base_element):
+    pass
+
+
+code.r = code
+code.c = code
+code.d = code
+
+
+
+
+
+class colgroup(base_element):
+    pass
+
+
+colgroup.r = colgroup
+colgroup.c = colgroup
+colgroup.d = colgroup
+
+
+
+
+
+class data(base_element):
+    pass
+
+
+data.r = data
+data.c = data
+data.d = data
+
+
+
+
+
+class datalist(base_element):
+    pass
+
+
+datalist.r = datalist
+datalist.c = datalist
+datalist.d = datalist
+
+
+
+
+
+class dd(base_element):
+    pass
+
+
+dd.r = dd
+dd.c = dd
+dd.d = dd
+
+
+
+
+
+class del_(base_element):
+    pass
+
+
+del_.r = del_
+del_.c = del_
+del_.d = del_
+
+
+
+
+
+class details(base_element):
+    pass
+
+
+details.r = details
+details.c = details
+details.d = details
+
+
+
+
+
+class dfn(base_element):
+    pass
+
+
+dfn.r = dfn
+dfn.c = dfn
+dfn.d = dfn
+
+
+
+
+
+class dialog(base_element):
+    pass
+
+
+dialog.r = dialog
+dialog.c = dialog
+dialog.d = dialog
+
+
+
+
+
+class dir_(base_element):
+    pass
+
+
+dir_.r = dir_
+dir_.c = dir_
+dir_.d = dir_
+
+
+
+
+
+class dl(base_element):
+    pass
+
+
+dl.r = dl
 dl.c = dl
 dl.d = dl
-dl.r = dl
-class dt(base_element): pass
+
+
+
+
+
+class dt(base_element):
+    pass
+
+
+dt.r = dt
 dt.c = dt
 dt.d = dt
-dt.r = dt
-class em(base_element): pass
+
+
+
+
+
+class em(base_element):
+    pass
+
+
+em.r = em
 em.c = em
 em.d = em
-em.r = em
-class embed(base_element_void): pass
-embed.c = embed
-embed.d = embed
-embed.r = embed
-class fieldset(base_element): pass
+
+
+
+
+
+class fieldset(base_element):
+    pass
+
+
+fieldset.r = fieldset
 fieldset.c = fieldset
 fieldset.d = fieldset
-fieldset.r = fieldset
-class figcaption(base_element): pass
+
+
+
+
+
+class figcaption(base_element):
+    pass
+
+
+figcaption.r = figcaption
 figcaption.c = figcaption
 figcaption.d = figcaption
-figcaption.r = figcaption
-class figure(base_element): pass
+
+
+
+
+
+class figure(base_element):
+    pass
+
+
+figure.r = figure
 figure.c = figure
 figure.d = figure
-figure.r = figure
-class font(base_element): pass
+
+
+
+
+
+class font(base_element):
+    pass
+
+
+font.r = font
 font.c = font
 font.d = font
-font.r = font
-class footer(base_element): pass
+
+
+
+
+
+class footer(base_element):
+    pass
+
+
+footer.r = footer
 footer.c = footer
 footer.d = footer
-footer.r = footer
-class form(base_element): pass
+
+
+
+
+
+class form(base_element):
+    pass
+
+
+form.r = form
 form.c = form
 form.d = form
-form.r = form
-class frame(base_element): pass
+
+
+
+
+
+class frame(base_element):
+    pass
+
+
+frame.r = frame
 frame.c = frame
 frame.d = frame
-frame.r = frame
-class frameset(base_element): pass
+
+
+
+
+
+class frameset(base_element):
+    pass
+
+
+frameset.r = frameset
 frameset.c = frameset
 frameset.d = frameset
-frameset.r = frameset
-class h1(base_element): pass
+
+
+
+
+
+class h1(base_element):
+    pass
+
+
+h1.r = h1
 h1.c = h1
 h1.d = h1
-h1.r = h1
-class h2(base_element): pass
+
+
+
+
+
+class h2(base_element):
+    pass
+
+
+h2.r = h2
 h2.c = h2
 h2.d = h2
-h2.r = h2
-class h3(base_element): pass
+
+
+
+
+
+class h3(base_element):
+    pass
+
+
+h3.r = h3
 h3.c = h3
 h3.d = h3
-h3.r = h3
-class h4(base_element): pass
+
+
+
+
+
+class h4(base_element):
+    pass
+
+
+h4.r = h4
 h4.c = h4
 h4.d = h4
-h4.r = h4
-class h5(base_element): pass
+
+
+
+
+
+class h5(base_element):
+    pass
+
+
+h5.r = h5
 h5.c = h5
 h5.d = h5
-h5.r = h5
-class h6(base_element): pass
+
+
+
+
+
+class h6(base_element):
+    pass
+
+
+h6.r = h6
 h6.c = h6
 h6.d = h6
-h6.r = h6
-class head(base_element): pass
+
+
+
+
+
+class head(base_element):
+    pass
+
+
+head.r = head
 head.c = head
 head.d = head
-head.r = head
-class header(base_element): pass
+
+
+
+
+
+class header(base_element):
+    pass
+
+
+header.r = header
 header.c = header
 header.d = header
-header.r = header
-class hr(base_element_void): pass
-hr.c = hr
-hr.d = hr
-hr.r = hr
-class html(base_element): pass
+
+
+
+
+
+class html(base_element):
+    pass
+
+
+html.r = html
 html.c = html
 html.d = html
-html.r = html
-class i(base_element): pass
+
+
+
+
+
+class i(base_element):
+    pass
+
+
+i.r = i
 i.c = i
 i.d = i
-i.r = i
-class iframe(base_element): pass
+
+
+
+
+
+class iframe(base_element):
+    pass
+
+
+iframe.r = iframe
 iframe.c = iframe
 iframe.d = iframe
-iframe.r = iframe
-class img(base_element_void): pass
-img.c = img
-img.d = img
-img.r = img
-class ins(base_element): pass
+
+
+
+
+
+class ins(base_element):
+    pass
+
+
+ins.r = ins
 ins.c = ins
 ins.d = ins
-ins.r = ins
-class kbd(base_element): pass
+
+
+
+
+
+class kbd(base_element):
+    pass
+
+
+kbd.r = kbd
 kbd.c = kbd
 kbd.d = kbd
-kbd.r = kbd
-class label(base_element): pass
+
+
+
+
+
+class label(base_element):
+    pass
+
+
+label.r = label
 label.c = label
 label.d = label
-label.r = label
-class legend(base_element): pass
+
+
+
+
+
+class legend(base_element):
+    pass
+
+
+legend.r = legend
 legend.c = legend
 legend.d = legend
-legend.r = legend
-class li(base_element): pass
+
+
+
+
+
+class li(base_element):
+    pass
+
+
+li.r = li
 li.c = li
 li.d = li
-li.r = li
-class link(base_element): pass
-link.c = link
-link.d = link
-link.r = link
-class main(base_element): pass
+
+
+
+
+
+class main(base_element):
+    pass
+
+
+main.r = main
 main.c = main
 main.d = main
-main.r = main
-class map_(base_element): pass
+
+
+
+
+
+class map_(base_element):
+    pass
+
+
+map_.r = map_
 map_.c = map_
 map_.d = map_
-map_.r = map_
-class mark(base_element): pass
+
+
+
+
+
+class mark(base_element):
+    pass
+
+
+mark.r = mark
 mark.c = mark
 mark.d = mark
-mark.r = mark
-class meta(base_element_void): pass
-meta.c = meta
-meta.d = meta
-meta.r = meta
-class meter(base_element): pass
+
+
+
+
+
+class meter(base_element):
+    pass
+
+
+meter.r = meter
 meter.c = meter
 meter.d = meter
-meter.r = meter
-class nav(base_element): pass
+
+
+
+
+
+class nav(base_element):
+    pass
+
+
+nav.r = nav
 nav.c = nav
 nav.d = nav
-nav.r = nav
-class noframes(base_element): pass
+
+
+
+
+
+class noframes(base_element):
+    pass
+
+
+noframes.r = noframes
 noframes.c = noframes
 noframes.d = noframes
-noframes.r = noframes
-class noscript(base_element): pass
+
+
+
+
+
+class noscript(base_element):
+    pass
+
+
+noscript.r = noscript
 noscript.c = noscript
 noscript.d = noscript
-noscript.r = noscript
-class object_(base_element): pass
+
+
+
+
+
+class object_(base_element):
+    pass
+
+
+object_.r = object_
 object_.c = object_
 object_.d = object_
-object_.r = object_
-class ol(base_element): pass
+
+
+
+
+
+class ol(base_element):
+    pass
+
+
+ol.r = ol
 ol.c = ol
 ol.d = ol
-ol.r = ol
-class optgroup(base_element): pass
+
+
+
+
+
+class optgroup(base_element):
+    pass
+
+
+optgroup.r = optgroup
 optgroup.c = optgroup
 optgroup.d = optgroup
-optgroup.r = optgroup
-class option(base_element): pass
+
+
+
+
+
+class option(base_element):
+    pass
+
+
+option.r = option
 option.c = option
 option.d = option
-option.r = option
-class output(base_element): pass
+
+
+
+
+
+class output(base_element):
+    pass
+
+
+output.r = output
 output.c = output
 output.d = output
-output.r = output
-class p(base_element): pass
+
+
+
+
+
+class p(base_element):
+    pass
+
+
+p.r = p
 p.c = p
 p.d = p
-p.r = p
-class param(base_element_void): pass
-param.c = param
-param.d = param
-param.r = param
-class picture(base_element): pass
+
+
+
+
+
+class picture(base_element):
+    pass
+
+
+picture.r = picture
 picture.c = picture
 picture.d = picture
-picture.r = picture
-class pre(base_element): pass
+
+
+
+
+
+class pre(base_element):
+    pass
+
+
+pre.r = pre
 pre.c = pre
 pre.d = pre
-pre.r = pre
-class progress(base_element): pass
+
+
+
+
+
+class progress(base_element):
+    pass
+
+
+progress.r = progress
 progress.c = progress
 progress.d = progress
-progress.r = progress
-class q(base_element): pass
+
+
+
+
+
+class q(base_element):
+    pass
+
+
+q.r = q
 q.c = q
 q.d = q
-q.r = q
-class rp(base_element): pass
+
+
+
+
+
+class rp(base_element):
+    pass
+
+
+rp.r = rp
 rp.c = rp
 rp.d = rp
-rp.r = rp
-class rt(base_element): pass
+
+
+
+
+
+class rt(base_element):
+    pass
+
+
+rt.r = rt
 rt.c = rt
 rt.d = rt
-rt.r = rt
-class ruby(base_element): pass
+
+
+
+
+
+class ruby(base_element):
+    pass
+
+
+ruby.r = ruby
 ruby.c = ruby
 ruby.d = ruby
-ruby.r = ruby
-class s(base_element): pass
+
+
+
+
+
+class s(base_element):
+    pass
+
+
+s.r = s
 s.c = s
 s.d = s
-s.r = s
-class samp(base_element): pass
+
+
+
+
+
+class samp(base_element):
+    pass
+
+
+samp.r = samp
 samp.c = samp
 samp.d = samp
-samp.r = samp
-class script(base_element): pass
+
+
+
+
+
+class script(base_element):
+    pass
+
+
+script.r = script
 script.c = script
 script.d = script
-script.r = script
-class section(base_element): pass
+
+
+
+
+
+class section(base_element):
+    pass
+
+
+section.r = section
 section.c = section
 section.d = section
-section.r = section
-class select(base_element): pass
-select.c = select
-select.d = select
-select.r = select
-class small(base_element): pass
+
+
+
+
+
+class small(base_element):
+    pass
+
+
+small.r = small
 small.c = small
 small.d = small
-small.r = small
-class source(base_element_void): pass
-source.c = source
-source.d = source
-source.r = source
-class span(base_element): pass
+
+
+
+
+
+class span(base_element):
+    pass
+
+
+span.r = span
 span.c = span
 span.d = span
-span.r = span
-class strike(base_element): pass
+
+
+
+
+
+class strike(base_element):
+    pass
+
+
+strike.r = strike
 strike.c = strike
 strike.d = strike
-strike.r = strike
-class strong(base_element): pass
+
+
+
+
+
+class strong(base_element):
+    pass
+
+
+strong.r = strong
 strong.c = strong
 strong.d = strong
-strong.r = strong
-class style(base_element): pass
+
+
+
+
+
+class style(base_element):
+    pass
+
+
+style.r = style
 style.c = style
 style.d = style
-style.r = style
-class sub(base_element): pass
+
+
+
+
+
+class sub(base_element):
+    pass
+
+
+sub.r = sub
 sub.c = sub
 sub.d = sub
-sub.r = sub
-class summary(base_element): pass
+
+
+
+
+
+class summary(base_element):
+    pass
+
+
+summary.r = summary
 summary.c = summary
 summary.d = summary
-summary.r = summary
-class sup(base_element): pass
+
+
+
+
+
+class sup(base_element):
+    pass
+
+
+sup.r = sup
 sup.c = sup
 sup.d = sup
-sup.r = sup
-class svg(base_element): pass
+
+
+
+
+
+class svg(base_element):
+    pass
+
+
+svg.r = svg
 svg.c = svg
 svg.d = svg
-svg.r = svg
-class table(base_element): pass
+
+
+
+
+
+class table(base_element):
+    pass
+
+
+table.r = table
 table.c = table
 table.d = table
-table.r = table
-class tbody(base_element): pass
+
+
+
+
+
+class tbody(base_element):
+    pass
+
+
+tbody.r = tbody
 tbody.c = tbody
 tbody.d = tbody
-tbody.r = tbody
-class td(base_element): pass
+
+
+
+
+
+class td(base_element):
+    pass
+
+
+td.r = td
 td.c = td
 td.d = td
-td.r = td
-class template(base_element): pass
+
+
+
+
+
+class template(base_element):
+    pass
+
+
+template.r = template
 template.c = template
 template.d = template
-template.r = template
-class textarea(base_element): pass
-textarea.c = textarea
-textarea.d = textarea
-textarea.r = textarea
-class tfoot(base_element): pass
+
+
+
+
+
+class tfoot(base_element):
+    pass
+
+
+tfoot.r = tfoot
 tfoot.c = tfoot
 tfoot.d = tfoot
-tfoot.r = tfoot
-class th(base_element): pass
+
+
+
+
+
+class th(base_element):
+    pass
+
+
+th.r = th
 th.c = th
 th.d = th
-th.r = th
-class thead(base_element): pass
+
+
+
+
+
+class thead(base_element):
+    pass
+
+
+thead.r = thead
 thead.c = thead
 thead.d = thead
-thead.r = thead
-class time(base_element): pass
+
+
+
+
+
+class time(base_element):
+    pass
+
+
+time.r = time
 time.c = time
 time.d = time
-time.r = time
-class title(base_element): pass
+
+
+
+
+
+class title(base_element):
+    pass
+
+
+title.r = title
 title.c = title
 title.d = title
-title.r = title
-class tr(base_element): pass
+
+
+
+
+
+class tr(base_element):
+    pass
+
+
+tr.r = tr
 tr.c = tr
 tr.d = tr
-tr.r = tr
-class track(base_element_void): pass
-track.c = track
-track.d = track
-track.r = track
-class tt(base_element): pass
+
+
+
+
+
+class tt(base_element):
+    pass
+
+
+tt.r = tt
 tt.c = tt
 tt.d = tt
-tt.r = tt
-class u(base_element): pass
+
+
+
+
+
+class u(base_element):
+    pass
+
+
+u.r = u
 u.c = u
 u.d = u
-u.r = u
-class ul(base_element): pass
+
+
+
+
+
+class ul(base_element):
+    pass
+
+
+ul.r = ul
 ul.c = ul
 ul.d = ul
-ul.r = ul
-class var(base_element): pass
+
+
+
+
+
+class var(base_element):
+    pass
+
+
+var.r = var
 var.c = var
 var.d = var
-var.r = var
-class video(base_element): pass
+
+
+
+
+
+class video(base_element):
+    pass
+
+
+video.r = video
 video.c = video
 video.d = video
-video.r = video
-class wbr(base_element_void): pass
-wbr.c = wbr
-wbr.d = wbr
+
+
+
+
+
+class wbr(base_element):
+    void = True
+
+
 wbr.r = wbr
-# yapf: enable
+
+class img(base_element):
+    void = True
+
+
+img.r = img
+
+class area(base_element):
+    void = True
+
+
+area.r = area
+
+class hr(base_element):
+    void = True
+
+
+hr.r = hr
+
+class param(base_element):
+    void = True
+
+
+param.r = param
+
+class keygen(base_element):
+    void = True
+
+
+keygen.r = keygen
+
+class source(base_element):
+    void = True
+
+
+source.r = source
+
+class base(base_element):
+    void = True
+
+
+base.r = base
+
+class meta(base_element):
+    void = True
+
+
+meta.r = meta
+
+class br(base_element):
+    void = True
+
+
+br.r = br
+
+class track(base_element):
+    void = True
+
+
+track.r = track
+
+class menuitem(base_element):
+    void = True
+
+
+menuitem.r = menuitem
+
+class command(base_element):
+    void = True
+
+
+command.r = command
+
+class embed(base_element):
+    void = True
+
+
+embed.r = embed
+
+class col(base_element):
+    void = True
+
+
+col.r = col
+

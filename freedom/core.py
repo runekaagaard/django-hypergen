@@ -5,6 +5,8 @@ from pyrsistent import pmap, m
 
 
 class Context(threading.local):
+    ctx = pmap()
+    
     def replace(self, **items):
         self.ctx = m(**items)
 
@@ -25,6 +27,12 @@ class Context(threading.local):
         finally:
             self.ctx = ctx
 
+    # def ns(self, mutator=None, **items):
+    #     return Context()(mutator=mutator, **items)
+        
+def namespace(**items):
+    from bunch import Bunch
+    return Bunch(**items)
 
 context = Context()
 

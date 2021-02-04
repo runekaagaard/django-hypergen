@@ -28,17 +28,14 @@ ALL_TAGS = set([
     "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s",
     "samp", "script", "section", "select", "small", "source", "span", "strike",
     "strong", "style", "sub", "summary", "sup", "svg", "table", "tbody", "td",
-    "template", "tfoot", "th", "thead", "time", "title", "tr",
-    "track", "tt", "u", "ul", "var", "video", "wbr"
+    "template", "tfoot", "th", "thead", "time", "title", "tr", "track", "tt",
+    "u", "ul", "var", "video", "wbr", "textarea", "select"
 ])
 VOID_TAGS = set([
     'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'meta', 'param',
     'source', 'track', 'wbr', 'command', 'keygen', 'menuitem'
 ])
-HARDCODED_TAGS = set(["div", "input", "select", "link", "doctype"])
-
-code = open("_hypergen.py").read()
-template = code.split(TEMPLATE)[1]
+HARDCODED_TAGS = set(["input", "doctype"])
 
 
 def protect(x):
@@ -48,27 +45,39 @@ def protect(x):
         return x
 
 
-s = ""
-for tag in sorted(ALL_TAGS - VOID_TAGS - HARDCODED_TAGS):
-    tag = protect(tag)
-    stag = tag.rstrip("_")
-    s += template.replace('"div"',
-                          '"{}"'.format(stag)).replace("div", tag).replace(
-                              "{}__".format(stag), "{}_".format(stag))
+print "# yapf: disable"
+for tag in sorted(ALL_TAGS - HARDCODED_TAGS):
+    cls = "base_element_void" if tag in VOID_TAGS else "base_element"
+    print "class {}({}): pass".format(protect(tag), cls)
+    print "{}.c = {}".format(protect(tag), protect(tag))
+    print "{}.d = {}".format(protect(tag), protect(tag))
+    print "{}.r = {}".format(protect(tag), protect(tag))
+print "# yapf: enable"
 
-code = code.replace(RENDERED, s)
+# code = open("_hypergen.py").read()
+# template = code.split(TEMPLATE)[1]
 
-###
+# s = ""
+# for tag in sorted(ALL_TAGS - VOID_TAGS - HARDCODED_TAGS):
+#     tag = protect(tag)
+#     stag = tag.rstrip("_")
+#     s += template.replace('"div"',
+#                           '"{}"'.format(stag)).replace("div", tag).replace(
+#                               "{}__".format(stag), "{}_".format(stag))
 
-template = code.split(TEMPLATE_VOID)[1]
-s = ""
-for tag in VOID_TAGS - HARDCODED_TAGS:
-    tag = protect(tag)
-    stag = tag.rstrip("_")
-    s += template.replace('"link"',
-                          '"{}"'.format(stag)).replace("link", tag).replace(
-                              "{}__".format(stag), "{}_".format(stag))
+# code = code.replace(RENDERED, s)
 
-code = code.replace(RENDERED_VOID, s)
+# ###
 
-open("hypergen.py", "w").write(code)
+# template = code.split(TEMPLATE_VOID)[1]
+# s = ""
+# for tag in VOID_TAGS - HARDCODED_TAGS:
+#     tag = protect(tag)
+#     stag = tag.rstrip("_")
+#     s += template.replace('"link"',
+#                           '"{}"'.format(stag)).replace("link", tag).replace(
+#                               "{}__".format(stag), "{}_".format(stag))
+
+# code = code.replace(RENDERED_VOID, s)
+
+# open("hypergen.py", "w").write(code)
