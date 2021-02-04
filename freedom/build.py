@@ -49,9 +49,6 @@ print "# yapf: disable"
 for tag in sorted(ALL_TAGS - HARDCODED_TAGS):
     cls = "base_element_void" if tag in VOID_TAGS else "base_element"
     print "class {}({}): pass".format(protect(tag), cls)
-    print "{}.c = {}".format(protect(tag), protect(tag))
-    print "{}.d = {}".format(protect(tag), protect(tag))
-    print "{}.r = {}".format(protect(tag), protect(tag))
 print "# yapf: enable"
 
 # code = open("_hypergen.py").read()
