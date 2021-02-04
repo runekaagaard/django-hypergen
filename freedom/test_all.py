@@ -5,7 +5,7 @@ from django.test.client import RequestFactory
 
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
 from freedom.core import context as c, namespace as ns
-from freedom._hypergen import *
+from freedom.hypergen import *
 
 d = dict
 
@@ -107,7 +107,7 @@ def e(s):
     return h.unescape(s)
 
 
-def test_element():
+def xtest_element():
     with context(hypergen=hypergen_context()):
         div("hello world!")
         assert str(join_html(c.hypergen.into)) == '<div>hello world!</div>'
@@ -145,24 +145,30 @@ def test_live_element():
         def my_callback():
             pass
 
-        with context(is_test=True, hypergen=hypergen_context()):
-            div("hello world!", onclick=(my_callback, 42))
-            assert str(
-                join_html(c.hypergen.into)
-            ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'
+        # with context(is_test=True, hypergen=hypergen_context()):
+        #     div("hello world!", onclick=(my_callback, 42))
+        #     assert str(
+        #         join_html(c.hypergen.into)
+        #     ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'
+
+        # with context(is_test=True, hypergen=hypergen_context()):
+        #     div("hello world!", onclick=(my_callback, [42]))
+        #     assert re.match(
+        #         """<div id="A" onclick="H.cb\(&quot;/path/to/my_callback/&quot;,H.e\['__main__'\]\[[0-9]+\]\)">hello world!</div>""",
+        #         join_html(c.hypergen.into))
 
         with context(is_test=True, hypergen=hypergen_context()):
-            div("hello world!", onclick=(my_callback, [42]))
-            assert re.match(
-                """<div id="A" onclick="H.cb\(&quot;/path/to/my_callback/&quot;,H.e\['__main__'\]\[[0-9]+\]\)">hello world!</div>""",
-                join_html(c.hypergen.into))
-
-        with context(is_test=True, hypergen=hypergen_context()):
+            print "BEGIN"
             a = input_(name="a")
             input_(name="b", onclick=(my_callback, a))
             print "aaaaaaaaaaaaaaaaaaaaaaaaaaa"
             print e(join_html(c.hypergen.into))
             print "bbbbbbbbbbbbbbbbbbbbbbbbbbb"
-            assert str(
-                join_html(c.hypergen.into)
-            ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'
+            # print e(join_html(c.hypergen.into))
+            # print "ccccccccccccccccccccccccccc"
+            # print e(join_html(c.hypergen.into))
+            # print "ddddddddddddddddddddddddddd"
+            assert 2 == 3
+            # assert str(
+            #     join_html(c.hypergen.into)
+            # ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'

@@ -11,21 +11,19 @@ default_app_config = 'freedom.apps.Freedom'
 
 
 def encoder(this, o):
-    from freedom._hypergen import THIS, base_element
+    from freedom.hypergen import THIS, base_element
     if o is THIS:
         return quote(this)
     elif issubclass(type(o), base_element):
-        o.attrs["id_"] = "mynewid"
+        assert o.attrs.get("id_", False), "Missing id_"
         return [
             "_",
             "element_value",
             {
                 "id": o.attrs["id_"],
-                #"id": "todo",
                 "cb_name": o.js_cb.replace("H.cbs.", ""),  # TODO: Generalize.
             }
         ]
-        # return quote(o.meta["this"])
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
         return str(o)
