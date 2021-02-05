@@ -83,6 +83,7 @@ const parseArgs = function(args, data) {
       } else if (Array.isArray(x)) {
         if (x.length === 3 && x[0] === "_") {
           if(x[1] === "element_value") {
+            console.log("EL VAL", x)
             let cb_name = x[2].cb_name
             data.push(H.cbs[cb_name](x[2].id)())
           } else {
@@ -151,6 +152,35 @@ const mergeAttrs = function(target, source){
   })
 }
 
+// DOM element value readers
+export const v = {}
+v.i = function(id) { 
+  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  return parseInt(el.val())
+}
+v.f = function(id) { return 
+  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  return parseFloat(el.val())
+}
+v.s = function(id) { 
+  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  return "" + el.val().trim()
+}
+v.c = function(id) { 
+  const el = isDomEntity(id) ? $(id) : document.getElementById(id) 
+  return el.checked
+}
+v.g = function(id) { 
+  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  var v = el.val()
+  var v1 = parseInt(v)
+  return !isNaN(v1) ? v1 : v
+}
+v.t = function(id) { 
+  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  return "" + el.val().trim()
+}
+
 // Stub solution.
 window.H = (function() {
   // Shims
@@ -159,32 +189,7 @@ window.H = (function() {
   // Callback handlers.
   console.log("RECEIVING", arguments)
   var cbs = {}
-  cbs.i = function(id) { return function() {
-    const el = isDomEntity(id) ? $(id) : $("#" + id) 
-    return parseInt(el.val())
-  }}
-  cbs.f = function(id) { return function() {
-    const el = isDomEntity(id) ? $(id) : $("#" + id) 
-    return parseFloat(el.val())
-  }}
-  cbs.s = function(id) { return function() {
-    const el = isDomEntity(id) ? $(id) : $("#" + id) 
-    return "" + el.val().trim()
-  }}
-  cbs.c = function(id) { return function() {
-    const el = isDomEntity(id) ? $(id) : document.getElementById(id) 
-    return el.checked
-  }}
-  cbs.g = function(id) { return function() {
-    const el = isDomEntity(id) ? $(id) : $("#" + id) 
-    var v = el.val()
-    var v1 = parseInt(v)
-    return !isNaN(v1) ? v1 : v
-  }}
-  cbs.t = function(id) { return function() {
-    const el = isDomEntity(id) ? $(id) : $("#" + id) 
-    return "" + el.val().trim()
-  }}
+  
 
   
   // console..ee

@@ -25,7 +25,7 @@ def encoder(this, o):
             "element_value",
             {
                 "id": o.attrs["id_"].v,
-                "cb_name": o.js_cb.replace("H.cbs.", ""),  # TODO: Generalize.
+                "cb_name": o.js_cb,  # TODO: Generalize.
             }
         ]
     elif isinstance(o, datetime.datetime):
