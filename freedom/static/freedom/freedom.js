@@ -6,8 +6,14 @@ import morphdom from 'morphdom'
 
 import './freedom'
 
-// Commands that can be called from the backend.
+// Shims
+if (typeof Array.isArray === 'undefined') {
+  Array.isArray = function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+  }
+}
 
+// Commands that can be called from the backend.
 export const morph = function(id, html) {
   morphdom(
     document.getElementById(id),
@@ -40,15 +46,60 @@ export const addCallback = function(url, id, eventName, cbArgs, cbKwargs, {debou
   })
 }
 
-// Other stuff.
-
-export const e = function(that, id, eId) {
-  console.log(that, id, eId)
-  console.log("WINDOW ID", H.e[id][eId], H.e)
+// Callback
+var i = 0
+export const callback = function(url, args, kwargs, {debounce=50}={}) {
+  i++
+  var args2 = []
+  parseArgs(args, args2)
+  console.log("REQUEST", url, args, kwargs, debounce)
+  $.ajax({
+    url: url,
+    type: 'POST',
+    data: JSON.stringify({
+      args: args2,
+      kwargs: kwargs,
+      id_prefix: "h" + i + "-",
+    }),
+    contentType: 'application/json; charset=utf-8',
+    dataType: 'json',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    success: function(data) {
+      console.log("RESPONSE", data)
+      if (data === null) return
+      applyCommands(data)
+    },
+  })
 }
-window.e = e
 
-const required = function(module) {
+// Internal
+const parseArgs = function(args, data) {
+    for (var i=0; i<args.length; i++) {
+      var x = args[i]
+      if (typeof x === "function") {
+        data.push(x())  
+      } else if (Array.isArray(x)) {
+        if (x.length === 3 && x[0] === "_") {
+          if(x[1] === "element_value") {
+            let cb_name = x[2].cb_name
+            data.push(H.cbs[cb_name](x[2].id)())
+          } else {
+            throw "Unknown custom data"
+          }
+        } else {
+          var tmp = []
+          parseArgs(x, tmp)
+          data.push(tmp)
+        }
+      } else {
+        data.push(x)
+      }
+    }
+  }
+
+const require_ = function(module) {
   try {
     return require(module)
   } catch(e) {
@@ -57,14 +108,15 @@ const required = function(module) {
 }
 
 const resolvePath = function(path) {
+  console.log("GOING FOR", path)
   const parts = path.split(".")
   let i = -1, obj = null
   for (let part of parts) {
     i++
     if (i === 0) {
       if (window[part] !== undefined) obj = window[part]
-      else if (obj = required(part)) null
-      else if (obj = required("./" + part)) null
+      else if (obj = require_(part)) null
+      else if (obj = require_("./" + part)) null
       else throw "Could not resolve path: " + path
     } else {
       if (obj[part] !== undefined) obj = obj[part]
@@ -74,15 +126,22 @@ const resolvePath = function(path) {
   return obj
 }
 
+const applyCommand = function(path, ...args) {
+    resolvePath(path)(...args)
+}
+window.e = function(that, targetId, dataId) {
+  applyCommand(...H.e[targetId][dataId])
+}
+
 const applyCommands = function(commands) {
   for (let [path, ...args] of commands) {
-    resolvePath(path)(...args)
+    applyCommand(path, ...args)
   }
 }
 window.applyCommands = applyCommands
 
 const isDomEntity = entity => {
-  return typeof entity   === 'object' && entity.nodeType !== undefined
+  return typeof entity === 'object' && entity.nodeType !== undefined
 }
 
 const mergeAttrs = function(target, source){
@@ -95,11 +154,7 @@ const mergeAttrs = function(target, source){
 // Stub solution.
 window.H = (function() {
   // Shims
-  if (typeof Array.isArray === 'undefined') {
-    Array.isArray = function(obj) {
-      return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-  };
+  ;
 
   // Callback handlers.
   console.log("RECEIVING", arguments)
@@ -131,68 +186,11 @@ window.H = (function() {
     return "" + el.val().trim()
   }}
 
-  function parseArgs(args, data) {
-    for (var i=0; i<args.length; i++) {
-      var x = args[i]
-      if (typeof x === "function") {
-        data.push(x())  
-      } else if (Array.isArray(x)) {
-        if (x.length === 3 && x[0] === "_") {
-          if(x[1] === "element_value") {
-            let cb_name = x[2].cb_name
-            data.push(cbs[cb_name](x[2].id)())
-          } else {
-            throw "Unknown custom data"
-          }
-        } else {
-          var tmp = []
-          parseArgs(x, tmp)
-          data.push(tmp)
-        }
-      } else {
-        data.push(x)
-      }
-    }
-  }
+  
   // console..ee
-  var cb = function(url, args, kwargs) {
-    H.i++
-    /* var
-     *   url = arguments[0],
-     *   args = [],
-     *   data = [],
-     *   idPrefix = "h" + H.i + "-"
-
-     * for (var i=1; i<arguments.length; i++) {
-     *   args.push(arguments[i])
-     * }
-     * console.log(args, data)
-     * parseArgs(args, data) */
-    console.log("REQUEST", url, args, kwargs)
-    $.ajax({
-      url: url,
-      type: 'POST',
-      data: JSON.stringify({
-        args: args,
-        kwargs: kwargs,
-        id_prefix: "h" + H.i + "-",
-      }),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      success: function(data) {
-        console.log("RESPONSE", data)
-        if (data === null) return
-        applyCommands(data)
-      },
-    })
-  }
-  cb.i = 0
-
+  
   return {
-    cb: cb,
+    cb: null,
     cbs: cbs,
     i: 0,
     // eventHandlerCache

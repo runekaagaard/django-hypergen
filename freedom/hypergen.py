@@ -67,15 +67,18 @@ def hypergen(func, *args, **kwargs):
             print "Execution time:", time.time() - a
             return HttpResponse(html)
         else:
-            command("freedom.morph", c.hypergen.target_id, html, prepend=True)
+            command("freedom.morph", c.hypergen.target_id, html)
             print "Execution time:", time.time() - a
             return c.hypergen.commands
 
 
 def command(javascript_func_path, *args, **kwargs):
     prepend = kwargs.pop("prepend", False)
+    return_ = kwargs.pop("return_", False)
     item = [javascript_func_path] + list(args) + [kwargs]
-    if prepend:
+    if return_:
+        return item
+    elif prepend:
         c.hypergen.commands.insert(0, item)
     else:
         c.hypergen.commands.append(item)
@@ -153,6 +156,23 @@ def base65_counter():
 
 
 ### Callbacks ###
+def callback_attribute(k, data_id):
+    return join(" ", k, '="', "e(this, '{}',{})".format(
+        c.hypergen.target_id, data_id), '"')
+
+
+def add_callback(cb_func, element, cb_args, cb_kwargs, event_handler_config):
+    element.ensure_id()
+    cmd = command(
+        "freedom.callback",
+        cb_func.hypergen_callback_url,
+        cb_args,
+        cb_kwargs,
+        event_handler_config,
+        return_=True)
+    cmd_id = id(cmd)
+    c.hypergen.event_handler_cache[cmd_id] = cmd
+    return cmd_id
 
 
 def defer_callback(cb_func):
@@ -163,17 +183,8 @@ def defer_callback(cb_func):
         event_handler_config = d(debounce=cb_kwargs.pop("debounce", 0))
 
         def f2(element, attribute_key):
-            element.ensure_id()
-            if attribute_key[0:2] == "on":
-                attribute_key = attribute_key[2:]
-
-            data = [
-                element.js_cb, cb_func.hypergen_callback_url, cb_args,
-                cb_kwargs, event_handler_config
-            ]
-            data_id = id(data)
-            c.hypergen.event_handler_cache[data_id] = data
-            return data_id
+            return add_callback(cb_func, element, cb_args, cb_kwargs,
+                                event_handler_config)
 
         return f2
 
@@ -278,52 +289,15 @@ class base_element(ContextDecorator):
             self.attrs[
                 "id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
 
-    def liveview_attribute(self, args):
-
-        command("freedom.addEventHandler")
-        # func = args[0]
-        # assert callable(func), (
-        #     "First callback argument must be a callable, got "
-        #     "{}.".format(repr(func)))
-        # args = args[1:]
-
-        # args2 = []
-        # for arg in args:
-        #     if type(arg) in NON_SCALARS:
-        #         c.hypergen.event_handler_cache[id(arg)] = arg
-        #         args2.append(
-        #             freedom.quote("H.e['{}'][{}]".format(
-        #                 c.hypergen.target_id, id(arg))))
-        #     else:
-        #         if issubclass(type(arg), base_element):
-        #             if arg.attrs["id_"].v is None:
-        #                 arg.attrs["id_"].v = c.hypergen.id_prefix + next(
-        #                     c.hypergen.id_counter)
-        #         args2.append(arg)
-
-        # print "ARGS2", args2
-
-        return lambda: "H.cb({})".format(
-            freedom.dumps(
-                args,
-                unquote=True,
-                escape=True,
-                this=self))
-
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if callable(v):
-            print "AAA", v, k
+        if c.hypergen.liveview is True and callable(v):
             data_id = v(self, k)
-            return [
-                join(" ", k, '="', "e(this, '{}',{})".format(
-                    c.hypergen.target_id, data_id)), '"'
-            ]
-            print "BBB"
-            return []
-        # elif c.hypergen.liveview is True and k.startswith("on") and type(
-        #         v) in (list, tuple):
-        #     return [" ", k, '="', self.liveview_attribute(v), '"']
+            return [callback_attribute(k, data_id)]
+        elif c.hypergen.liveview is True and k.startswith("on") and type(
+                v) in (list, tuple):
+            data_id = add_callback(v[0], self, v[1:], {}, {})
+            return [callback_attribute(k, data_id)]
         elif type(v) is LazyAttribute:
             return [v]
         elif type(v) is bool:

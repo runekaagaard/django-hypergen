@@ -237,7 +237,7 @@ def test_callback():
         print "CCCCCC"
         print e(join_html(c.hypergen.into))
         print c.hypergen.commands
-        print c.hypergen.event_handler_cache
+        print freedom.dumps(c.hypergen.event_handler_cache)
         print freedom.dumps(c.hypergen.commands)
         print "DONE"
         assert False
