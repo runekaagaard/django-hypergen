@@ -1,11 +1,14 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
+d = dict
 
-import string, sys
+import string, sys, time
 from collections import OrderedDict
+from functools import partial
 from copy import deepcopy
 from types import GeneratorType
 
+from functools import wraps
 from contextlib2 import ContextDecorator
 from django.urls.base import reverse_lazy
 from django.http.response import HttpResponse
@@ -46,29 +49,36 @@ def hypergen_context(**kwargs):
 
 
 def hypergen(func, *args, **kwargs):
+    a = time.time()
     kwargs = deepcopy(kwargs)
     target_id = kwargs.pop("target_id", "__main__")
     with c(hypergen=hypergen_context(target_id=target_id, **kwargs)):
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
-            c.hypergen.commands.append([
-                "./freedom", ["setEventHandlerCache"],
-                [c.hypergen.target_id, c.hypergen.event_handler_cache]
-            ])
+            command("freedom.setEventHandlerCache", c.hypergen.target_id,
+                    c.hypergen.event_handler_cache)
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
-                s = '<script>window.applyCommands({})</script>'.format(
+                s = '<script>$(() => window.applyCommands({}))</script>'.format(
                     freedom.dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
-
+            print "Execution time:", time.time() - a
             return HttpResponse(html)
         else:
-            c.hypergen.commands.append(
-                ["./freedom", ["morph"], [c.hypergen.target_id, html]])
-
+            command("freedom.morph", c.hypergen.target_id, html, prepend=True)
+            print "Execution time:", time.time() - a
             return c.hypergen.commands
+
+
+def command(javascript_func_path, *args, **kwargs):
+    prepend = kwargs.pop("prepend", False)
+    item = [javascript_func_path] + list(args) + [kwargs]
+    if prepend:
+        c.hypergen.commands.insert(0, item)
+    else:
+        c.hypergen.commands.append(item)
 
 
 ### Helpers ###
@@ -142,7 +152,27 @@ def base65_counter():
         yield output
 
 
-### Django ###
+### Callbacks ###
+
+
+def defer_callback(cb_func):
+    assert hasattr(cb_func, "hypergen_callback_url"), "Not a callback func"
+
+    @wraps(cb_func)
+    def f1(*cb_args, **cb_kwargs):
+        event_handler_config = d(debounce=cb_kwargs.pop("debounce", 0))
+
+        def f2(element, attribute_key):
+            element.ensure_id()
+            if attribute_key[0:2] == "on":
+                attribute_key = attribute_key[2:]
+            command("freedom.addCallback", cb_func.hypergen_callback_url,
+                    element.attrs["id_"].v, attribute_key, cb_args, cb_kwargs,
+                    event_handler_config)
+
+        return f2
+
+    return f1
 
 
 def callback(func):
@@ -157,8 +187,9 @@ def callback(func):
             args=[".".join((func.__module__, func.__name__))])
 
     func.hypergen_is_callback = True
+    func.actual_func = func
 
-    return func
+    return defer_callback(func)
 
 
 ### Base dom element ###
@@ -237,47 +268,58 @@ class base_element(ContextDecorator):
 
         return into
 
-    def liveview_attribute(self, args):
+    def ensure_id(self):
         if self.attrs["id_"].v is None:
             self.attrs[
                 "id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
-        func = args[0]
-        assert callable(func), (
-            "First callback argument must be a callable, got "
-            "{}.".format(repr(func)))
-        args = args[1:]
 
-        args2 = []
-        for arg in args:
-            if type(arg) in NON_SCALARS:
-                c.hypergen.event_handler_cache[id(arg)] = arg
-                args2.append(
-                    freedom.quote("H.e['{}'][{}]".format(
-                        c.hypergen.target_id, id(arg))))
-            else:
-                if issubclass(type(arg), base_element):
-                    if arg.attrs["id_"].v is None:
-                        arg.attrs["id_"].v = c.hypergen.id_prefix + next(
-                            c.hypergen.id_counter)
-                args2.append(arg)
+    def liveview_attribute(self, args):
+
+        command("freedom.addEventHandler")
+        # func = args[0]
+        # assert callable(func), (
+        #     "First callback argument must be a callable, got "
+        #     "{}.".format(repr(func)))
+        # args = args[1:]
+
+        # args2 = []
+        # for arg in args:
+        #     if type(arg) in NON_SCALARS:
+        #         c.hypergen.event_handler_cache[id(arg)] = arg
+        #         args2.append(
+        #             freedom.quote("H.e['{}'][{}]".format(
+        #                 c.hypergen.target_id, id(arg))))
+        #     else:
+        #         if issubclass(type(arg), base_element):
+        #             if arg.attrs["id_"].v is None:
+        #                 arg.attrs["id_"].v = c.hypergen.id_prefix + next(
+        #                     c.hypergen.id_counter)
+        #         args2.append(arg)
+
+        # print "ARGS2", args2
 
         return lambda: "H.cb({})".format(
             freedom.dumps(
-                [func.hypergen_callback_url] + list(args2),
+                args,
                 unquote=True,
                 escape=True,
                 this=self))
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if c.hypergen.liveview is True and k.startswith("on") and type(v) in (
-                list, tuple):
-            return [" ", k, '="', self.liveview_attribute(v), '"']
+        if callable(v):
+            print "AAA", v, k
+            v(self, k)
+            print "BBB"
+            return []
+        # elif c.hypergen.liveview is True and k.startswith("on") and type(
+        #         v) in (list, tuple):
+        #     return [" ", k, '="', self.liveview_attribute(v), '"']
         elif type(v) is LazyAttribute:
             return [v]
         elif type(v) is bool:
             if v is True:
-                return [join((" ", k))]
+                return [join(" ", k)]
         elif k == "style" and type(v) in (dict, OrderedDict):
             return [
                 join((" ", k, '="', ";".join(
@@ -453,7 +495,7 @@ class textarea(base_element): pass
 class tfoot(base_element): pass
 class th(base_element): pass
 class thead(base_element): pass
-class time(base_element): pass
+class time_(base_element): pass
 class title(base_element): pass
 class tr(base_element): pass
 class track(base_element_void): pass
@@ -463,4 +505,4 @@ class ul(base_element): pass
 class var(base_element): pass
 class video(base_element): pass
 class wbr(base_element_void): pass
-# yapf: enable
+    # yapf: enable

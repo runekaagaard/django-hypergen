@@ -183,6 +183,10 @@ def test_live_element():
                 '<div class="form form-write"><textarea id="B" placeholder="myplace'
                 '"></textarea></div></div>')
 
+        with context(is_test=True, hypergen=hypergen_context()):
+            input_(autofocus=True)
+            assert join_html(c.hypergen.into) == '<input autofocus/>'
+
 
 def test_live_element2():
     setup()
@@ -216,3 +220,22 @@ def test_live_element2():
             assert str(
                 e(join_html(c.hypergen.into))
             ) == '<h2>Skift Adgangskode</h2><p>Rules:</p><div class="form"><div><ul id="password_verification_smartassness"><div>TODO</div></ul><div class="form"><div class="form-field"><input id="id_new_password" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),"")" placeholder="Adgangskode"/></div><div class="form-field"><input id="A" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),["_","element_value",{"cb_name":"s","id":"id_new_password"}])" placeholder="Gentag Adgangskode"/></div><div class="button disabled">Skift adgangskode</div></div></div></div>'
+
+
+def test_callback():
+    setup()
+    with context(is_test=True, hypergen=hypergen_context()):
+
+        @callback
+        def cb(foo, punk=300):
+            pass
+
+        print "START"
+        print cb(THIS, debounce=500)
+        print "SLUTE"
+        input_(oninput=cb(THIS, punk=200, debounce=500))
+        print "CCCCCC"
+        print e(join_html(c.hypergen.into))
+        print c.hypergen.commands
+        print freedom.dumps(c.hypergen.commands)
+        assert False

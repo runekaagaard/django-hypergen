@@ -13,7 +13,10 @@ default_app_config = 'freedom.apps.Freedom'
 
 def encoder(this, o):
     from freedom.hypergen import THIS, base_element
-    if o is THIS:
+    if hasattr(o, "hypergen_callback_url"):
+        return o.hypergen_callback_url
+    elif o is THIS:
+        return "this"
         return quote("{}(this)".format(this.js_cb))
     elif issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
