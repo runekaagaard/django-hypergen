@@ -166,9 +166,14 @@ def defer_callback(cb_func):
             element.ensure_id()
             if attribute_key[0:2] == "on":
                 attribute_key = attribute_key[2:]
-            command("freedom.addCallback", cb_func.hypergen_callback_url,
-                    element.attrs["id_"].v, attribute_key, cb_args, cb_kwargs,
-                    event_handler_config)
+
+            data = [
+                element.js_cb, cb_func.hypergen_callback_url, cb_args,
+                cb_kwargs, event_handler_config
+            ]
+            data_id = id(data)
+            c.hypergen.event_handler_cache[data_id] = data
+            return data_id
 
         return f2
 
@@ -309,7 +314,11 @@ class base_element(ContextDecorator):
         k = t(k).rstrip("_").replace("_", "-")
         if callable(v):
             print "AAA", v, k
-            v(self, k)
+            data_id = v(self, k)
+            return [
+                join(" ", k, '="', "e(this, '{}',{})".format(
+                    c.hypergen.target_id, data_id)), '"'
+            ]
             print "BBB"
             return []
         # elif c.hypergen.liveview is True and k.startswith("on") and type(

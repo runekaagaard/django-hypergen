@@ -42,6 +42,12 @@ export const addCallback = function(url, id, eventName, cbArgs, cbKwargs, {debou
 
 // Other stuff.
 
+export const e = function(that, id, eId) {
+  console.log(that, id, eId)
+  console.log("WINDOW ID", H.e[id][eId], H.e)
+}
+window.e = e
+
 const required = function(module) {
   try {
     return require(module)
