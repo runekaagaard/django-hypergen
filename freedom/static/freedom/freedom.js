@@ -3,7 +3,6 @@ window.jQuery = $
 window.$ = $
 
 import morphdom from 'morphdom'
-
 import './freedom'
 
 // Shims
@@ -83,9 +82,8 @@ const parseArgs = function(args, data) {
       } else if (Array.isArray(x)) {
         if (x.length === 3 && x[0] === "_") {
           if(x[1] === "element_value") {
-            console.log("EL VAL", x)
-            let cb_name = x[2].cb_name
-            data.push(H.cbs[cb_name](x[2].id)())
+            let func = resolvePath(x[2].cb_name)
+            data.push(func(x[2].id))
           } else {
             throw "Unknown custom data"
           }
@@ -109,7 +107,6 @@ const require_ = function(module) {
 }
 
 const resolvePath = function(path) {
-  console.log("GOING FOR", path)
   const parts = path.split(".")
   let i = -1, obj = null
   for (let part of parts) {
@@ -183,16 +180,9 @@ v.t = function(id) {
 
 // Stub solution.
 window.H = (function() {
-  // Shims
-  ;
-
   // Callback handlers.
   console.log("RECEIVING", arguments)
   var cbs = {}
-  
-
-  
-  // console..ee
   
   return {
     cb: null,

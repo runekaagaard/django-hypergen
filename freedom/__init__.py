@@ -15,17 +15,20 @@ def encoder(this, o):
     from freedom.hypergen import THIS, base_element
     if hasattr(o, "hypergen_callback_url"):
         return o.hypergen_callback_url
-    elif o is THIS:
-        return "this"
-        return quote("{}(this)".format(this.js_cb))
+    # elif o is THIS:
+    #     assert this.get("id_", False), "Missing id_"
+    #     return [
+    #         "_", "element_value", {
+    #             "id": this.attrs["id_"].v,
+    #             "cb_name": this.js_cb,
+    #         }
+    #     ]
     elif issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
         return [
-            "_",
-            "element_value",
-            {
+            "_", "element_value", {
                 "id": o.attrs["id_"].v,
-                "cb_name": o.js_cb,  # TODO: Generalize.
+                "cb_name": o.js_cb,
             }
         ]
     elif isinstance(o, datetime.datetime):
