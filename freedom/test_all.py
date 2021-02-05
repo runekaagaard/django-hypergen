@@ -167,10 +167,7 @@ def test_live_element():
             ) == """<input id="B" name="a"/><input id="A" name="b" onclick="H.cb("/path/to/my_callback/",["_","element_value",{"cb_name":"s","id":"B"}])"/>"""
 
         with context(is_test=True, hypergen=hypergen_context()):
-            el = textarea(
-                placeholder=
-                u"Skriv dit spørgsmål her og du vil få svar hurtigst muligt af en rådgiver."
-            )
+            el = textarea(placeholder=u"myplace")
             with div(class_="message"):
                 with div(class_="action-left"):
                     span(u"Annullér", class_="clickable")
@@ -183,9 +180,8 @@ def test_live_element():
                 '<div class="message"><div class="action-left"><span class="clickable">Annullér</span>'
                 '</div><div class="action-right"><span class="clickable" onclick="H.cb("/path/to/my_callback/'
                 '",["_","element_value",{"cb_name":"s","id":"B"}])" id="A">Send</span></div>'
-                '<div class="form form-write"><textarea id="B" placeholder="Skriv dit spørgsmål her og du '
-                'vil få svar hurtigst muligt af en rådgiver."></textarea></div></div>'
-            )
+                '<div class="form form-write"><textarea id="B" placeholder="myplace'
+                '"></textarea></div></div>')
 
 
 def test_live_element2():
@@ -207,7 +203,7 @@ def test_live_element2():
                 oninput=(my_callback, THIS, el1))
 
             h2(u"Skift Adgangskode")
-            p(u"Indtast din nye adgangskode efter følgende kriterier:")
+            p(u"Rules:")
             with div(class_="form"):
                 with div():
                     with ul(id_="password_verification_smartassness"):
@@ -219,4 +215,4 @@ def test_live_element2():
 
             assert str(
                 e(join_html(c.hypergen.into))
-            ) == '<h2>Skift Adgangskode</h2><p>Indtast din nye adgangskode efter følgende kriterier:</p><div class="form"><div><ul id="password_verification_smartassness"><div>TODO</div></ul><div class="form"><div class="form-field"><input id="id_new_password" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),"")" placeholder="Adgangskode"/></div><div class="form-field"><input id="A" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),["_","element_value",{"cb_name":"s","id":"id_new_password"}])" placeholder="Gentag Adgangskode"/></div><div class="button disabled">Skift adgangskode</div></div></div></div>'
+            ) == '<h2>Skift Adgangskode</h2><p>Rules:</p><div class="form"><div><ul id="password_verification_smartassness"><div>TODO</div></ul><div class="form"><div class="form-field"><input id="id_new_password" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),"")" placeholder="Adgangskode"/></div><div class="form-field"><input id="A" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),["_","element_value",{"cb_name":"s","id":"id_new_password"}])" placeholder="Gentag Adgangskode"/></div><div class="button disabled">Skift adgangskode</div></div></div></div>'
