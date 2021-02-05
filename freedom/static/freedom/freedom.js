@@ -32,17 +32,10 @@ export const morph = function(id, html) {
   )
 }                     
 
+var eventHandlerCache = {}
 export const setEventHandlerCache = function(id, newCache) {
-  H.e[id] = newCache
-  console.log("Setting new state at", id, H.e)
-}
-
-export const addCallback = function(url, id, eventName, cbArgs, cbKwargs, {debounce=50}={}) {
-  console.log("Adding callback", url, id, eventName, cbArgs, cbKwargs, debounce)
-  document.getElementById(id).addEventListener(eventName, () => {
-    H.cb(url, cbArgs, cbKwargs)
-    console.log("GOT EVENT!!!", url, cbArgs, cbKwargs)
-  })
+  eventHandlerCache[id] = newCache
+  console.log("Setting new state at", id, eventHandlerCache)
 }
 
 // Callback
@@ -127,8 +120,8 @@ const resolvePath = function(path) {
 const applyCommand = function(path, ...args) {
     resolvePath(path)(...args)
 }
-window.e = function(that, targetId, dataId) {
-  applyCommand(...H.e[targetId][dataId])
+window.e = function(targetId, dataId) {
+  applyCommand(...eventHandlerCache[targetId][dataId])
 }
 
 const applyCommands = function(commands) {
@@ -177,20 +170,4 @@ v.t = function(id) {
   const el = isDomEntity(id) ? $(id) : $("#" + id) 
   return "" + el.val().trim()
 }
-
-// Stub solution.
-window.H = (function() {
-  // Callback handlers.
-  console.log("RECEIVING", arguments)
-  var cbs = {}
-  
-  return {
-    cb: null,
-    cbs: cbs,
-    i: 0,
-    // eventHandlerCache
-    e: {},
-  }
-})()
-
 

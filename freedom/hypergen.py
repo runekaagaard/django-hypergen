@@ -157,8 +157,8 @@ def base65_counter():
 
 ### Callbacks ###
 def callback_attribute(k, data_id):
-    return join(" ", k, '="', "e(this, '{}',{})".format(
-        c.hypergen.target_id, data_id), '"')
+    return join(" ", k, '="', "e('{}',{})".format(c.hypergen.target_id,
+                                                  data_id), '"')
 
 
 def add_callback(cb_func, element, cb_args, cb_kwargs, event_handler_config):
