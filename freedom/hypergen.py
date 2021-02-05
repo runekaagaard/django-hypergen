@@ -182,6 +182,7 @@ def defer_callback(cb_func):
 
     @wraps(cb_func)
     def f1(*cb_args, **cb_kwargs):
+        # TODO: Add default todos per attribute_keys.
         event_handler_config = d(debounce=cb_kwargs.pop("debounce", 0))
 
         def f2(element, attribute_key):
@@ -307,8 +308,9 @@ class base_element(ContextDecorator):
                 return [join(" ", k)]
         elif k == "style" and type(v) in (dict, OrderedDict):
             return [
-                join((" ", k, '="', ";".join(
-                    t(k1) + ":" + t(v1) for k1, v1 in items(v)), '"'))
+                join(" ", k, '="', ";".join(
+                    t(k1.replace("_", "-")) + ":" + t(v1)
+                    for k1, v1 in items(v)), '"')
             ]
         else:
             return [join(" ", k, '="', t(v), '"')]

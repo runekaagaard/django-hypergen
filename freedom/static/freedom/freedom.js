@@ -40,30 +40,55 @@ export const setEventHandlerCache = function(id, newCache) {
 
 // Callback
 var i = 0
-export const callback = function(url, args, kwargs, {debounce=50}={}) {
+export const callback = function(url, args, kwargs, {debounce=0}={}) {
   i++
   var args2 = []
   parseArgs(args, args2)
   console.log("REQUEST", url, args, kwargs, debounce)
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: JSON.stringify({
-      args: args2,
-      kwargs: kwargs,
-      id_prefix: "h" + i + "-",
-    }),
-    contentType: 'application/json; charset=utf-8',
-    dataType: 'json',
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest'
-    },
-    success: function(data) {
-      console.log("RESPONSE", data)
-      if (data === null) return
-      applyCommands(data)
-    },
-  })
+  let post = function() {
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: JSON.stringify({
+        args: args2,
+        kwargs: kwargs,
+        id_prefix: "h" + i + "-",
+      }),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function(data) {
+        console.log("RESPONSE", data)
+        if (data === null) return
+        applyCommands(data)
+      },
+    })
+  }
+  throttle(post, {delay: debounce, group: url})
+}
+
+// Timing
+var _THROTTLE_GROUPS = {}
+export let throttle = function (func, {delay=0, group='global'}={}) {
+  if (_THROTTLE_GROUPS[group]) {
+    clearTimeout(_THROTTLE_GROUPS[group])
+    _THROTTLE_GROUPS[group] = null
+  }
+
+  _THROTTLE_GROUPS[group] = setTimeout(function () {
+      console.log("THORHORHOR")
+      func()
+      _THROTTLE_GROUPS[group] = null
+    }, delay)
+}
+
+export let cancelThrottle = function(group) {
+  if (_THROTTLE_GROUPS[group]) {
+    clearTimeout(_THROTTLE_GROUPS[group])
+    _THROTTLE_GROUPS[group] = null
+  }
 }
 
 // Internal
