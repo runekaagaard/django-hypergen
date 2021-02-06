@@ -12,12 +12,21 @@ from functools import wraps
 from contextlib2 import ContextDecorator
 from django.urls.base import reverse_lazy
 from django.http.response import HttpResponse
+from django.utils.encoding import force_text
 
 import freedom
 from freedom.utils import insert
 from freedom.core import context as c
 
 ### Python 2+3 compatibility ###
+
+
+def make_string(x):
+    if x is not None:
+        return force_text(x)
+    else:
+        return ""
+
 
 if sys.version_info.major > 2:
     from html import escape
@@ -28,7 +37,7 @@ if sys.version_info.major > 2:
 else:
     from cgi import escape
     letters = string.letters
-    str = unicode
+    str = make_string
 
     def items(x):
         return x.iteritems()
@@ -306,6 +315,8 @@ class base_element(ContextDecorator):
         elif type(v) is bool:
             if v is True:
                 return [join(" ", k)]
+            else:
+                return []
         elif k == "style" and type(v) in (dict, OrderedDict):
             return [
                 join(" ", k, '="', ";".join(
