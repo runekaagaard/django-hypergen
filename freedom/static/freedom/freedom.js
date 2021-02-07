@@ -57,7 +57,8 @@ export const callback = function(url, args, kwargs, {debounce=0}={}) {
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest'
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-Pathname': parent.window.location.pathname,
       },
       success: function(data) {
         console.log("RESPONSE", data)
