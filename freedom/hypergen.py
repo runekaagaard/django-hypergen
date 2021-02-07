@@ -247,9 +247,7 @@ class base_element(ContextDecorator):
         self.i = len(c.hypergen.into)
         self.sep = attrs.pop("sep", "")
 
-        for child in children:
-            if issubclass(type(child), base_element):
-                child.delete()
+        self.delete_children(self.children)
         c.hypergen.into.extend(self.start())
         c.hypergen.into.extend(self.end())
         self.j = len(c.hypergen.into)
@@ -273,6 +271,15 @@ class base_element(ContextDecorator):
     def delete(self):
         for i in range(self.i, self.j):
             c.hypergen.into[i] = DELETED
+
+    def delete_children(self, children):
+        children = list(children)
+        for i in range(0, len(children)):
+            child = children[i]
+            if issubclass(type(child), base_element):
+                child.delete()
+            elif type(child) in (list, tuple):
+                self.delete_children(child)
 
     def format_children(self, children):
         into = []

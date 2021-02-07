@@ -109,6 +109,10 @@ def e(s):
     return h.unescape(s)
 
 
+def f():
+    return re.sub(r'[0-9]{5,}', '1234', join_html(c.hypergen.into))
+
+
 def test_element():
     with context(hypergen=hypergen_context()):
         div("hello world!")
@@ -116,8 +120,7 @@ def test_element():
     with context(hypergen=hypergen_context()):
         with div("a", class_="foo"):
             div("b", x_foo=42)
-        assert str(join_html(c.hypergen.into)
-                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
+        assert f() == '<div class="foo">a<div x-foo="42">b</div></div>'
     with context(hypergen=hypergen_context()):
 
         @div("a", class_="foo")
@@ -125,17 +128,33 @@ def test_element():
             div("b", x_foo=42)
 
         f1()
-        assert str(join_html(c.hypergen.into)
-                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
+        assert f() == '<div class="foo">a<div x-foo="42">b</div></div>'
     with context(hypergen=hypergen_context()):
-        div("a", div("b", x_foo=42), class_="foo")
-        assert str(join_html(c.hypergen.into)
-                   ) == '<div class="foo">a<div x-foo="42">b</div></div>'
+        div("a", None, div("b", x_foo=42), class_="foo")
+        assert f() == '<div class="foo">a<div x-foo="42">b</div></div>'
 
     with context(hypergen=hypergen_context()):
-        div([1, 2], sep="-")
-        # div([1, 2], (x for x in range(3, 4)), style={1: 2})
-        assert str(join_html(c.hypergen.into)) == '<div>1-2</div>'
+        div(None, [1, 2], sep="-")
+        assert f() == '<div>1-2</div>'
+
+    with context(hypergen=hypergen_context()):
+        ul([li([li(y) for y in range(3, 4)]) for x in range(1, 2)])
+        assert f() == "<ul><li><li>3</li></li></ul>"
+
+    # with context(hypergen=hypergen_context()):
+    #     ul([li([li(y) for y in range(3, 4)]) for x in range(1, 2)])
+    #     assert f() == "<ul><li><li>3</li></li></ul>"
+
+    # with context(hypergen=hypergen_context()):
+    #     div([1, 2],
+    #         div(1, 2, div(1, None, 2, ul(list(li(x) for x in range(1, 3))))))
+    #     assert f(
+    #     ) == '<div>12<div>12<div>12<ul><li>1</li><li>2</li></ul></div></div></div>'
+    # with context(hypergen=hypergen_context()):
+    #     li(
+    #         li(li(li(z) for z in range(1, 2)) for y in range(3, 4))
+    #         for x in range(5, 6))
+    #     assert f() == "foo"
 
 
 def test_live_element():
@@ -149,22 +168,19 @@ def test_live_element():
 
         with context(is_test=True, hypergen=hypergen_context()):
             div("hello world!", onclick=(my_callback, 42))
-            assert str(
-                join_html(c.hypergen.into)
-            ) == '<div id="A" onclick="H.cb(&quot;/path/to/my_callback/&quot;,42)">hello world!</div>'
+            assert f(
+            ) == """<div id="A" onclick="e('__main__',1234)">hello world!</div>"""
 
         with context(is_test=True, hypergen=hypergen_context()):
             div("hello world!", onclick=(my_callback, [42]))
-            assert re.match(
-                """<div id="A" onclick="H.cb\(&quot;/path/to/my_callback/&quot;,H.e\['__main__'\]\[[0-9]+\]\)">hello world!</div>""",
-                join_html(c.hypergen.into))
+            assert f(
+            ) == """<div id="A" onclick="e('__main__',1234)">hello world!</div>"""
 
         with context(is_test=True, hypergen=hypergen_context()):
             a = input_(name="a")
             input_(name="b", onclick=(my_callback, a))
-            assert e(
-                join_html(c.hypergen.into)
-            ) == """<input id="B" name="a"/><input id="A" name="b" onclick="H.cb("/path/to/my_callback/",["_","element_value",{"cb_name":"s","id":"B"}])"/>"""
+            assert f(
+            ) == """<input name="a"/><input id="A" name="b" onclick="e('__main__',1234)"/>"""
 
         with context(is_test=True, hypergen=hypergen_context()):
             el = textarea(placeholder=u"myplace")
@@ -176,12 +192,8 @@ def test_live_element():
                         u"Send", class_="clickable", onclick=(my_callback, el))
                 div(el, class_="form form-write")
 
-            assert e(join_html(c.hypergen.into)) == (
-                '<div class="message"><div class="action-left"><span class="clickable">Annullér</span>'
-                '</div><div class="action-right"><span class="clickable" onclick="H.cb("/path/to/my_callback/'
-                '",["_","element_value",{"cb_name":"s","id":"B"}])" id="A">Send</span></div>'
-                '<div class="form form-write"><textarea id="B" placeholder="myplace'
-                '"></textarea></div></div>')
+            assert f(
+            ) == """<div class="message"><div class="action-left"><span class="clickable">Annull\xe9r</span></div><div class="action-right"><span class="clickable" onclick="e('__main__',1234)" id="A">Send</span></div><div class="form form-write"><textarea placeholder="myplace"></textarea></div></div>"""
 
         with context(is_test=True, hypergen=hypergen_context()):
             input_(autofocus=True)
@@ -217,9 +229,8 @@ def test_live_element2():
                         div(el2, class_="form-field")
                         div(u"Skift adgangskode", class_="button disabled")
 
-            assert str(
-                e(join_html(c.hypergen.into))
-            ) == '<h2>Skift Adgangskode</h2><p>Rules:</p><div class="form"><div><ul id="password_verification_smartassness"><div>TODO</div></ul><div class="form"><div class="form-field"><input id="id_new_password" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),"")" placeholder="Adgangskode"/></div><div class="form-field"><input id="A" oninput="H.cb("/path/to/my_callback/",H.cbs.s(this),["_","element_value",{"cb_name":"s","id":"id_new_password"}])" placeholder="Gentag Adgangskode"/></div><div class="button disabled">Skift adgangskode</div></div></div></div>'
+            assert f(
+            ) == """<h2>Skift Adgangskode</h2><p>Rules:</p><div class="form"><div><ul id="password_verification_smartassness"><div>TODO</div></ul><div class="form"><div class="form-field"><input id="id_new_password" oninput="e('__main__',1234)" placeholder="Adgangskode"/></div><div class="form-field"><input id="A" oninput="e('__main__',1234)" placeholder="Gentag Adgangskode"/></div><div class="button disabled">Skift adgangskode</div></div></div></div>"""
 
 
 def test_callback():
@@ -230,14 +241,5 @@ def test_callback():
         def cb(foo, punk=300):
             pass
 
-        print "START"
-        print cb(THIS, debounce=500)
-        print "SLUTE"
-        input_(oninput=cb(THIS, punk=200, debounce=500))
-        print "CCCCCC"
-        print e(join_html(c.hypergen.into))
-        print c.hypergen.commands
-        print freedom.dumps(c.hypergen.event_handler_cache)
-        print freedom.dumps(c.hypergen.commands)
-        print "DONE"
-        assert False
+        element = input_(oninput=cb(THIS, punk=200, debounce=500))
+        assert type(cb("foo", bar=42, debounce=42)(element, "oninput")) is int
