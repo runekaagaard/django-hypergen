@@ -122,6 +122,9 @@ def join_html(html):
                 yield item.as_string()
             elif callable(item):
                 yield item()
+            elif type(item) is GeneratorType:
+                with c(hypergen=hypergen_context()):
+                    yield join_html(item)
             else:
                 yield item
 
@@ -290,8 +293,10 @@ class base_element(ContextDecorator):
                 continue
             elif issubclass(type(x), base_element):
                 into.append(x)
-            elif type(x) in (list, tuple, GeneratorType):
+            elif type(x) in (list, tuple):
                 into.extend(self.format_children(list(x)))
+            elif type(x) in (GeneratorType, ):
+                into.append(x)
             elif callable(x):
                 into.append(x)
             else:

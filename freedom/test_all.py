@@ -141,20 +141,21 @@ def test_element():
         ul([li([li(y) for y in range(3, 4)]) for x in range(1, 2)])
         assert f() == "<ul><li><li>3</li></li></ul>"
 
-    # with context(hypergen=hypergen_context()):
-    #     ul([li([li(y) for y in range(3, 4)]) for x in range(1, 2)])
-    #     assert f() == "<ul><li><li>3</li></li></ul>"
+    with context(hypergen=hypergen_context()):
+        ul(li(li(y) for y in range(3, 4)) for x in range(1, 2))
+        assert f() == "<ul><li><li>3</li></li></ul>"
 
-    # with context(hypergen=hypergen_context()):
-    #     div([1, 2],
-    #         div(1, 2, div(1, None, 2, ul(list(li(x) for x in range(1, 3))))))
-    #     assert f(
-    #     ) == '<div>12<div>12<div>12<ul><li>1</li><li>2</li></ul></div></div></div>'
-    # with context(hypergen=hypergen_context()):
-    #     li(
-    #         li(li(li(z) for z in range(1, 2)) for y in range(3, 4))
-    #         for x in range(5, 6))
-    #     assert f() == "foo"
+    with context(hypergen=hypergen_context()):
+        div([1, 2],
+            div(1, 2, div(1, None, 2, ul(list(li(x) for x in range(1, 3))))))
+        assert f(
+        ) == '<div>12<div>12<div>12<ul><li>1</li><li>2</li></ul></div></div></div>'
+    with context(hypergen=hypergen_context()):
+        li(None, [
+            li(None, (li(li(z) for z in range(1, 2)) for y in range(3, 4)))
+            for x in range(5, 6)
+        ], None)
+        assert f() == "<li><li><li><li>1</li></li></li></li>"
 
 
 def test_live_element():
