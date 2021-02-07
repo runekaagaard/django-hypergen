@@ -15,7 +15,7 @@ args = parser.parse_args()
 
 
 def indent(txt, i):
-    return "".join(["".join(["    " for x in range(i)]), txt])
+    return "".join(["    " * i, txt])
 
 
 def _attr_val(val):
@@ -45,9 +45,9 @@ def _string(tag):
 
 def _params(tag):
     if _string(tag):
-        txt = u'u"{}"'.format(tag.string)
+        txt = u'{}'.format(tag.string) if tag.string is not None else None
         if _attrs(tag):
-            return ', '.join([txt, _attrs(tag)])
+            return ', '.join(x for x in [txt, _attrs(tag)] if x is not None)
         return txt
     return _attrs(tag)
 
@@ -56,7 +56,11 @@ def _c(tag, i):
     if not tag.name:
         return ""
 
-    return indent("with {}.c({}):\n".format(tag.name, _params(tag)), i)
+    p = _params(tag)
+    if p == u"None":
+        p = ""
+
+    return indent("with {}({}):\n".format(tag.name, p), i)
 
 
 def _(tag, i):

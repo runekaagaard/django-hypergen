@@ -453,7 +453,10 @@ class kbd(base_element): pass
 class label(base_element): pass
 class legend(base_element): pass
 class li(base_element): pass
-class link(base_element): pass
+class link(base_element):
+    def __init__(self, href, rel="stylesheet", type_="text/css", **attrs):
+        attrs["href"] = href
+        super(link, self).__init__(rel=rel, type_=type_, **attrs)
 class main(base_element): pass
 class map_(base_element): pass
 class mark(base_element): pass

@@ -78,7 +78,6 @@ export let throttle = function (func, {delay=0, group='global'}={}) {
   }
 
   _THROTTLE_GROUPS[group] = setTimeout(function () {
-      console.log("THORHORHOR")
       func()
       _THROTTLE_GROUPS[group] = null
     }, delay)
@@ -135,7 +134,13 @@ const resolvePath = function(path) {
       else if (obj = require_("./" + part)) null
       else throw "Could not resolve path: " + path
     } else {
-      if (obj[part] !== undefined) obj = obj[part]
+      if (obj[part] !== undefined) {
+        try {
+          obj = obj[part].bind(obj)
+        } catch(e) {
+          obj = obj[part]
+        }
+      }
       else throw "Could not resolve path: " + path
     }
   }
@@ -143,7 +148,9 @@ const resolvePath = function(path) {
 }
 
 const applyCommand = function(path, ...args) {
-    resolvePath(path)(...args)
+  console.log("apply command", path, args)
+  let rpath = resolvePath(path)
+  rpath(...args)
 }
 window.e = function(targetId, dataId) {
   applyCommand(...eventHandlerCache[targetId][dataId])

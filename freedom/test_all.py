@@ -151,11 +151,11 @@ def test_element():
         assert f(
         ) == '<div>12<div>12<div>12<ul><li>1</li><li>2</li></ul></div></div></div>'
     with context(hypergen=hypergen_context()):
-        li(None, [
-            li(None, (li(li(z) for z in range(1, 2)) for y in range(3, 4)))
-            for x in range(5, 6)
+        ul(None, [
+            li(None, (li(li(z) for z in range(1, 2))
+                      for y in range(3, 4)), None) for x in range(5, 6)
         ], None)
-        assert f() == "<li><li><li><li>1</li></li></li></li>"
+        assert f() == "<ul><li><li><li>1</li></li></li></ul>"
 
 
 def test_live_element():
