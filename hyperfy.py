@@ -56,14 +56,21 @@ def _attrs(tag):
             return v
 
     omit = {"data-reactid", "aria-label"}
-    omit_v = set()
+    omit_v = {"link": {"type": "text/css", "rel": "stylesheet"}}
 
     a = []
     for k, v in tag.attrs.items():
+        v3 = v
+        if type(v) in (list, tuple):
+            v3 = "".join(v)
         if k in omit:
             continue
-        if type(v) not in (tuple, list) and v in omit_v:
-            continue
+        x = omit_v.get(tag.name, None)
+        if x:
+            y = x.get(k, None)
+            if y and y == v3:
+                continue
+
         v2 = fmt_v(tag.get(k))
         k = k.strip().replace("-", "_")
         k = protect(k)
