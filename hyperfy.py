@@ -56,25 +56,36 @@ def _attrs(tag):
             return v
 
     omit = {"data-reactid", "aria-label"}
-    omit_v = {"link": {"type": "text/css", "rel": "stylesheet"}}
+    omit_v = {
+        "link": {
+            "type": "text/css",
+            "rel": "stylesheet"
+        },
+        "script": {
+            "type": "text/javascript"
+        }
+    }
 
     a = []
     for k, v in tag.attrs.items():
-        v3 = v
-        if type(v) in (list, tuple):
-            v3 = "".join(v)
+        q = '"'
+        v = fmt_v(v)
         if k in omit:
             continue
         x = omit_v.get(tag.name, None)
         if x:
             y = x.get(k, None)
-            if y and y == v3:
+            if y and y == v:
                 continue
-
-        v2 = fmt_v(tag.get(k))
+        if tag.name in ("link", "script"):
+            if k in ("href", "css"):
+                if v.startswith("/static/"):
+                    v = v.replace("/static/", "")
+                    v = 'static("{}")'.format(v)
+                    q = ""
         k = k.strip().replace("-", "_")
         k = protect(k)
-        a.append('{}="{}"'.format(k, v2))
+        a.append('{}={}{}{}'.format(k, q, v, q))
 
     return ", ".join(a)
 
@@ -120,7 +131,7 @@ def _(tag, i):
 
 def hyperfy(html, i_start=1):
     soup = bs(html, 'html.parser')
-    txt = "def my_hypergen_template():\n"
+    txt = "from django.templatetags.static import static\n\ndef my_hypergen_template():\n"
     for d in soup.descendants:
         e = d.clone()
         indent = len(list(d.parents)) - i_start + 1
