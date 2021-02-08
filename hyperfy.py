@@ -77,8 +77,8 @@ def _attrs(tag):
             y = x.get(k, None)
             if y and y == v:
                 continue
-        if tag.name in ("link", "script"):
-            if k in ("href", "css"):
+        if tag.name in ("link", "script", "meta"):
+            if k in ("href", "css", "content"):
                 if v.startswith("/static/"):
                     v = v.replace("/static/", "")
                     v = 'static("{}")'.format(v)
