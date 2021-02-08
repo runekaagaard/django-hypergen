@@ -261,3 +261,35 @@ def test_callback():
 
         element = input_(oninput=cb(THIS, punk=200, debounce=500))
         assert type(cb("foo", bar=42, debounce=42)(element, "oninput")) is int
+
+
+from contextlib2 import contextmanager
+
+from freedom.utils import wrap3
+
+
+def component(f):
+    def _(*args, **kwargs):
+        with context(into=[], at="hypergen"):
+            f(*args, **kwargs)
+            return context.hypergen.into
+
+    return _
+
+
+def test_components():
+    def f1():
+        div("a")
+
+    @component
+    def f2():
+        div("a")
+
+    with context(is_test=True, hypergen=hypergen_context()):
+        div(1, f1(), 2)
+        assert f() == "<div>a</div><div>12</div>"
+
+    with context(is_test=True, hypergen=hypergen_context()):
+        print "F2 is", f2()
+        div(1, f2(), 2)
+        assert f() == "<div>1<div>a</div>2</div>"
