@@ -1,17 +1,41 @@
 from __future__ import unicode_literals
-
-from bs4 import BeautifulSoup as bs
 import bs4
-import os
 import sys
-
 import argparse
-
 import pyperclip as pc
+from bs4 import BeautifulSoup as bs, Tag, NavigableString
+import keyword
+
+GLOBALS = globals().keys()
+BUILTINS = dir(__builtins__)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file")
 args = parser.parse_args()
+
+
+def protect(x):
+    if x in GLOBALS or x in BUILTINS or x in keyword.kwlist:
+        return x + "_"
+    else:
+        return x
+
+
+def tag_clone(self):
+    copy = type(self)(None, self.builder, self.name, self.namespace,
+                      self.nsprefix)
+    # work around bug where there is no builder set
+    # https://bugs.launchpad.net/beautifulsoup/+bug/1307471
+    copy.attrs = dict(self.attrs)
+    for attr in ('can_be_empty_element', 'hidden'):
+        setattr(copy, attr, getattr(self, attr))
+    for child in self.contents:
+        copy.append(child.clone())
+    return copy
+
+
+Tag.clone = tag_clone
+NavigableString.clone = lambda self: type(self)(self)
 
 
 def indent(txt, i):
@@ -25,27 +49,44 @@ def _attr_val(val):
 
 
 def _attrs(tag):
-    _attr_map = {
-        'class': 'class_',
-        'id': 'id_',
-        'placeholder': 'placeholder',
-        'type': 'type_',
-        'href': 'href'
-    }
-    return ', '.join(
-        map(lambda k: '{}="{}"'.format(_attr_map[k], _attr_val(tag.get(k))),
-            [k for k in _attr_map.keys() if tag.get(k)]))
+    def fmt_v(v):
+        if type(v) in (list, tuple):
+            return " ".join(v)
+        else:
+            return v
+
+    omit = {"data-reactid", "aria-label"}
+    omit_v = set()
+
+    a = []
+    for k, v in tag.attrs.items():
+        if k in omit:
+            continue
+        if type(v) not in (tuple, list) and v in omit_v:
+            continue
+        v2 = fmt_v(tag.get(k))
+        k = k.strip().replace("-", "_")
+        k = protect(k)
+        a.append('{}="{}"'.format(k, v2))
+
+    return ", ".join(a)
 
 
 def _string(tag):
     for child in tag.children:
-        if type(child) == bs4.element.NavigableString:
+        if type(child) in (bs4.element.NavigableString, bs4.element.Script):
             return child.string
 
 
 def _params(tag):
+    def multiline(x):
+        if "\n" in x:
+            return u'"""{}"""'.format(x)
+        else:
+            return u'"{}"'.format(x)
+
     if _string(tag):
-        txt = u'{}'.format(tag.string) if tag.string is not None else None
+        txt = multiline(tag.string) if tag.string is not None else None
         if _attrs(tag):
             return ', '.join(x for x in [txt, _attrs(tag)] if x is not None)
         return txt
@@ -57,28 +98,30 @@ def _c(tag, i):
         return ""
 
     p = _params(tag)
-    if p == u"None":
+    if p is None:
         p = ""
 
-    return indent("with {}({}):\n".format(tag.name, p), i)
+    return indent("with {}({}):\n".format(protect(tag.name), p), i)
 
 
 def _(tag, i):
     if not tag.name:
         return ""
-    return indent("{}({})\n".format(tag.name, _params(tag)), i)
+
+    return indent("{}({})\n".format(protect(tag.name), _params(tag)), i)
 
 
 def hyperfy(html, i_start=1):
     soup = bs(html, 'html.parser')
-    #print(h(soup))
-    txt = ""
+    txt = "def my_hypergen_template():\n"
     for d in soup.descendants:
-        indent = len(list(d.parents)) - i_start
-        if type(d) == bs4.element.Tag:
-            if len(list(d.children)) == 0 or (
-                    len(list(d.children)) == 1
-                    and type(next(d.children)) == bs4.element.NavigableString):
+        e = d.clone()
+        indent = len(list(d.parents)) - i_start + 1
+        if type(e) == bs4.element.Tag:
+            if len(list(e.children)) == 0 or (
+                    len(list(e.children)) == 1 and type(next(e.children)) in [
+                        bs4.element.NavigableString, bs4.element.Script
+                    ]):
                 txt += _(d, indent)
             else:
                 txt += _c(d, indent)

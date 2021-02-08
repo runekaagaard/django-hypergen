@@ -6,7 +6,7 @@ from contextlib2 import ContextDecorator
 from django.test.client import RequestFactory
 
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
-from freedom.core import context as c, namespace as ns
+from freedom.core import context as c
 from freedom.hypergen import *
 
 d = dict
@@ -55,29 +55,27 @@ def test_context():
 
 def test_context_cm():
     def inc(ctx):
-        ctx["i"] = ctx.get("i", 0) + 1
-        return ctx
+        return ctx.set("i", ctx.get("i", 0) + 1)
 
-    with context(inc) as ctx:
-        assert ctx["i"] == 1
+    with context(inc):
+        assert context["i"] == 1
 
-        with context(inc, foo=9) as ctx2:
-            assert ctx2["foo"] == 9
-            assert ctx2["i"] == 2
-            with context(bar=42) as ctx3:
-                assert ctx3["i"] == 2
-                assert ctx3["bar"] == 42
-            assert ctx2["i"] == 2
+        with context(inc, foo=9):
+            assert context["foo"] == 9
+            assert context["i"] == 2
+            with context(bar=42):
+                assert context["i"] == 2
+                assert context["bar"] == 42
+            assert context["i"] == 2
 
-        assert ctx["i"] == 1
-        assert "foo" not in ctx
+        assert context["i"] == 1
+        assert "foo" not in context
 
 
 def test_context_middleware():
     def view(request):
-        with context() as ctx:
-            assert ctx["user"].pk == 1
-            assert ctx["request"].user.pk == 1
+        assert context.user.pk == 1
+        assert context["request"].user.pk == 1
         return HttpResponse()
 
     get_response = lambda request: view(request)
@@ -88,6 +86,25 @@ def test_context_middleware_old():
     middleware = ContextMiddleware()
     middleware.process_request(Request())
     assert context.request.user.pk == 1
+
+
+def test_hypergen_context():
+    def transform(ctx):
+        return ctx.set("hypergen", ctx["hypergen"].set("liveview", False))
+
+    def transform2(hpg):
+        return hpg.set("liveview", 900)
+
+    with context(hypergen=hypergen_context()):
+        assert context["hypergen"]["liveview"] is True
+        with context(transform):
+            assert context["hypergen"]["liveview"] is False
+            with context(transform2, at="hypergen"):
+                assert context["hypergen"]["liveview"] == 900
+            assert context["hypergen"]["liveview"] is False
+
+        assert context["hypergen"]["liveview"] is True
+        assert context.hypergen.liveview is True
 
 
 def setup():

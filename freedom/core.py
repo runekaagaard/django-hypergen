@@ -5,7 +5,9 @@ from pyrsistent import pmap, m
 
 
 class Context(threading.local):
-    ctx = pmap()
+    def __init__(self):
+        self.ctx = pmap()
+        super(Context, self).__init__()
 
     def replace(self, **items):
         self.ctx = m(**items)
@@ -13,45 +15,30 @@ class Context(threading.local):
     def __getattr__(self, k):
         return self.__dict__['ctx'][k]
 
+    def __getitem__(self, k):
+        return self.__dict__['ctx'][k]
+
     def __contains__(self, k):
         return k in self.ctx
 
     @contextmanager
-    def __call__(self, mutator=None, **items):
+    def __call__(self, transformer=None, at=None, **items):
         try:
             ctx = self.ctx
-            if mutator is not None:
-                self.ctx = mutator(evolver(self.ctx)).persistent()
-            self.ctx = self.ctx.update(m(**items))
-            yield self.ctx
+            if at is None:
+                if transformer is not None:
+                    self.ctx = transformer(self.ctx)
+                self.ctx = self.ctx.update(m(**items))
+            else:
+                if transformer is not None:
+                    self.ctx = self.ctx.set(at, transformer(self.ctx[at]))
+                self.ctx = self.ctx.set(at, self.ctx[at].update(m(**items)))
+            yield
         finally:
             self.ctx = ctx
 
-    # def ns(self, mutator=None, **items):
-    #     return Context()(mutator=mutator, **items)
-
-
-def namespace(**items):
-    from bunch import Bunch
-    return Bunch(**items)
-
 
 context = Context()
-
-
-def evolver(data):
-    def get(self, k, v="__NONE__"):
-        try:
-            return self[k]
-        except KeyError:
-            if v != "__NONE__":
-                return v
-            else:
-                raise
-
-    setattr(data._Evolver, 'get', get)
-
-    return data.evolver()
 
 
 def _init_context(request):

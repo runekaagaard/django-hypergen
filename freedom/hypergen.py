@@ -7,9 +7,11 @@ from collections import OrderedDict
 from functools import partial
 from copy import deepcopy
 from types import GeneratorType
-
 from functools import wraps
+
 from contextlib2 import ContextDecorator
+from pyrsistent import m
+
 from django.urls.base import reverse_lazy
 from django.http.response import HttpResponse
 from django.utils.encoding import force_text
@@ -45,8 +47,7 @@ else:
 
 ### Rendering ###
 def hypergen_context(**kwargs):
-    from freedom.core import namespace as ns
-    return ns(
+    return m(
         into=[],
         liveview=True,
         id_counter=base65_counter(),
@@ -54,7 +55,7 @@ def hypergen_context(**kwargs):
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
-        commands=[], )
+        commands=[])
 
 
 def hypergen(func, *args, **kwargs):
@@ -123,7 +124,7 @@ def join_html(html):
             elif callable(item):
                 yield item()
             elif type(item) is GeneratorType:
-                with c(hypergen=hypergen_context()):
+                with c(at="hypergen", into=[]):
                     yield join_html(item)
             else:
                 yield item
