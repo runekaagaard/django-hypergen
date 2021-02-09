@@ -290,7 +290,6 @@ def test_components2():
         comp2()
 
     with context(is_test=True, hypergen=hypergen_context()):
-
         with tr():
             td(comp1())
         assert f() == '<tr><td><input value="a"/></td></tr>'
