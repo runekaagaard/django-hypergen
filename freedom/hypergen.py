@@ -8,6 +8,7 @@ from functools import partial
 from copy import deepcopy
 from types import GeneratorType
 from functools import wraps
+from collections import namedtuple
 
 from contextlib2 import ContextDecorator
 from pyrsistent import m
@@ -121,6 +122,9 @@ def join_html(html):
         for item in html:
             if issubclass(type(item), base_element):
                 yield item.as_string()
+            # elif issubclass(type(item), component):
+            #     print "JOINING", item.into, join_html(item.into)
+            #     yield join_html(item.into)
             elif callable(item):
                 yield item()
             elif type(item) is GeneratorType:
@@ -245,6 +249,7 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         assert "hypergen" in c, "Missing global context: hypergen"
+        print "base_element", self.tag, children, "xxx"
         self.children = children
         self.attrs = attrs
         self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
@@ -285,7 +290,7 @@ class base_element(ContextDecorator):
             elif type(child) in (list, tuple):
                 self.delete_children(child)
 
-    def format_children(self, children):
+    def format_children(self, children, _t=t):
         into = []
         sep = t(self.sep)
 
@@ -295,13 +300,16 @@ class base_element(ContextDecorator):
             elif issubclass(type(x), base_element):
                 into.append(x)
             elif type(x) in (list, tuple):
-                into.extend(self.format_children(list(x)))
+                into.extend(self.format_children(list(x), _t=_t))
             elif type(x) in (GeneratorType, ):
                 into.append(x)
             elif callable(x):
                 into.append(x)
+            elif type(x) is Component:
+                x.delete()
+                into.extend(x.into)
             else:
-                into.append(t(x))
+                into.append(_t(x))
             if sep:
                 into.append(sep)
         if sep and children:
@@ -359,6 +367,206 @@ class base_element(ContextDecorator):
 
 class base_element_void(base_element):
     void = True
+
+
+class Component(object):
+    def __init__(self, into, i, j):
+        self.into = into
+        self.i = i
+        self.j = j
+
+    def delete(self):
+        for i in range(self.i, self.j):
+            c.hypergen.into[i] = DELETED
+
+
+def component(f):
+    def _(*args, **kwargs):
+        with c(into=[], at="hypergen"):
+            f(*args, **kwargs)
+            into = c.hypergen.into
+        i = len(c.hypergen.into)
+        c.hypergen.into.extend(into)
+        j = len(c.hypergen.into)
+        return Component(into, i, j)
+
+    return _
+
+
+class xcomponent(ContextDecorator):
+    def __init__(self, *args, **kwargs):
+        self.into = []
+        print "COMP-INIT", args, kwargs
+        # assert "hypergen" in c, "Missing global context: hypergen"
+        # self.children = children
+        # self.attrs = attrs
+        # self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
+        # self.sep = attrs.pop("sep", "")
+
+        # self.delete_children(self.children)
+        # c.hypergen.into.extend(self.start())
+        # c.hypergen.into.extend(self.end())
+        #self.i = len(c.hypergen.into)
+        super(component, self).__init__(*args, **kwargs)
+
+        #self.j = len(c.hypergen.into)
+        #print "I J", self.i, self.j
+
+    def __call__(self, func, *args, **kwargs):
+        print "COMP-CALL", func
+        self.func = func
+
+        #print "COMP-CALL after super at", args, kwargs, len(c.hypergen.into)
+
+        @wraps(func)
+        def _():
+            print "CALLING _"
+            with c(into=[], at="hypergen"):
+                func()
+                self.into = c.hypergen.into
+
+            return self
+
+        return _
+
+    def __enter__(self):
+        self.i = len(c.hypergen.into)
+        print "COMP-ENTER at", self.i
+        return self
+
+    def __exit__(self, *exc):
+        self.j = len(c.hypergen.into)
+        # self.into = c.hypergen.into[self.i, self.j]
+        self.delete()
+        print "COMP-LEAVE at", self.j
+
+    def delete(self):
+        for i in range(self.i, self.j):
+            c.hypergen.into[i] = DELETED
+
+    # def as_string(self):
+    #     into = self.start()
+    #     into.extend(self.end())
+    #     s = join_html(into)
+    #     return s
+
+    # def delete(self):
+    #     for i in range(self.i, self.j):
+    #         c.hypergen.into[i] = DELETED
+
+    # def delete_children(self, children):
+    #     children = list(children)
+    #     for i in range(0, len(children)):
+    #         child = children[i]
+    #         if issubclass(type(child), base_element):
+    #             child.delete()
+    #         elif type(child) in (list, tuple):
+    #             self.delete_children(child)
+
+    # def format_children(self, children, _t=t):
+    #     into = []
+    #     sep = t(self.sep)
+
+    #     for x in children:
+    #         if x in ("", None):
+    #             continue
+    #         elif issubclass(type(x), base_element):
+    #             into.append(x)
+    #         elif type(x) in (list, tuple):
+    #             into.extend(self.format_children(list(x), _t=_t))
+    #         elif type(x) in (GeneratorType, ):
+    #             into.append(x)
+    #         elif callable(x):
+    #             into.append(x)
+    #         elif type(x) is Safe:
+    #             into.extend(self.format_children(x, _t=lambda x: x))
+    #         else:
+    #             into.append(_t(x))
+    #         if sep:
+    #             into.append(sep)
+    #     if sep and children:
+    #         into.pop()
+
+    #     return into
+
+    # def ensure_id(self):
+    #     if self.attrs["id_"].v is None:
+    #         self.attrs[
+    #             "id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
+
+    # def attribute(self, k, v):
+    #     k = t(k).rstrip("_").replace("_", "-")
+    #     if c.hypergen.liveview is True and callable(v):
+    #         data_id = v(self, k)
+    #         return [callback_attribute(k, data_id)]
+    #     elif c.hypergen.liveview is True and k.startswith("on") and type(
+    #             v) in (list, tuple):
+    #         data_id = add_callback(v[0], self, v[1:], {}, {})
+    #         return [callback_attribute(k, data_id)]
+    #     elif type(v) is LazyAttribute:
+    #         return [v]
+    #     elif type(v) is bool:
+    #         if v is True:
+    #             return [join(" ", k)]
+    #         else:
+    #             return []
+    #     elif k == "style" and type(v) in (dict, OrderedDict):
+    #         return [
+    #             join(" ", k, '="', ";".join(
+    #                 t(k1.replace("_", "-")) + ":" + t(v1)
+    #                 for k1, v1 in items(v)), '"')
+    #         ]
+    #     else:
+    #         return [join(" ", k, '="', t(v), '"')]
+
+    # def start(self):
+    #     into = ["<", self.tag]
+    #     for k, v in items(self.attrs):
+    #         into.extend(self.attribute(k, v))
+
+    #     if self.void:
+    #         into.append(join(("/")))
+    #     into.append(join('>', ))
+    #     into.extend(self.format_children(self.children))
+    #     return into
+
+    # def end(self):
+    #     if not self.void:
+    #         return ["</{}>".format(self.tag)]
+    #     else:
+    #         return [""]
+
+
+def xcomponent(f):
+    @wraps(f)
+    def _(*args, **kwargs):
+        with c(into=[], in_component=True, at="hypergen"):
+            f(*args, **kwargs)
+            into = c.hypergen.into
+
+        print Safe(into)
+        return Safe(into)
+        print "CAUGHT INTO = ", into
+        return "NOW!?"
+        print into
+        print into
+        return
+        print 1, c.hypergen.into
+        with c(into=[], in_component=True, at="hypergen"):
+            print 2, c.hypergen.into
+            f(*args, **kwargs)
+            print 3, c.hypergen.into
+
+        if c.hypergen.get("in_component", False):
+            print "A"
+            with c(into=[], in_component=True, at="hypergen"):
+                f(*args, **kwargs)
+                return Safe(c.hypergen.into)
+        else:
+            print "B"
+            f(*args, **kwargs)
+
+    return _
 
 
 ### Some special dom elements ###
