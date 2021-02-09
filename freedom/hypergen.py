@@ -56,7 +56,8 @@ def hypergen_context(**kwargs):
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
-        commands=[])
+        commands=[],
+        collection={}, )
 
 
 def hypergen(func, *args, **kwargs):
@@ -122,9 +123,6 @@ def join_html(html):
         for item in html:
             if issubclass(type(item), base_element):
                 yield item.as_string()
-            # elif issubclass(type(item), component):
-            #     print "JOINING", item.into, join_html(item.into)
-            #     yield join_html(item.into)
             elif callable(item):
                 yield item()
             elif type(item) is GeneratorType:
@@ -241,6 +239,7 @@ class base_element(ContextDecorator):
     js_cb = "freedom.v.s"
     void = False
     auto_id = False
+    auto_collect = False
 
     def __new__(cls, *args, **kwargs):
         instance = ContextDecorator.__new__(cls)
@@ -249,17 +248,24 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         assert "hypergen" in c, "Missing global context: hypergen"
-        print "base_element", self.tag, children, "xxx"
         self.children = children
         self.attrs = attrs
         self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
         self.i = len(c.hypergen.into)
         self.sep = attrs.pop("sep", "")
+        collect_name = attrs.pop("collect_name", attrs.get("id_", None))
 
         self.delete_children(self.children)
         c.hypergen.into.extend(self.start())
         c.hypergen.into.extend(self.end())
         self.j = len(c.hypergen.into)
+        if self.auto_collect:
+            if type(c.hypergen.collection) is dict:
+                if collect_name is not None:
+                    c.hypergen.collection[collect_name] = self
+            elif type(c.hypergen.collection) is list:
+                c.hypergen.collection.append(self)
+
         super(base_element, self).__init__()
 
     def __enter__(self):
@@ -405,6 +411,7 @@ INPUT_CALLBACK_TYPES = dict(
 
 class input_(base_element_void):
     void = True
+    auto_collect = True
 
     def __init__(self, *children, **attrs):
         self.js_cb = INPUT_CALLBACK_TYPES.get(
