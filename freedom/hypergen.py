@@ -248,24 +248,18 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         assert "hypergen" in c, "Missing global context: hypergen"
+        collect_name = attrs.pop("collect_name", attrs.get("id_", None))
         self.children = children
         self.attrs = attrs
         self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
         self.i = len(c.hypergen.into)
         self.sep = attrs.pop("sep", "")
-        collect_name = attrs.pop("collect_name", attrs.get("id_", None))
 
-        self.delete_children(self.children)
         c.hypergen.into.extend(self.start())
         c.hypergen.into.extend(self.end())
         self.j = len(c.hypergen.into)
-        if self.auto_collect:
-            if type(c.hypergen.collection) is dict:
-                if collect_name is not None:
-                    c.hypergen.collection[collect_name] = self
-            elif type(c.hypergen.collection) is list:
-                c.hypergen.collection.append(self)
 
+        self.collect(collect_name)
         super(base_element, self).__init__()
 
     def __enter__(self):
@@ -277,6 +271,14 @@ class base_element(ContextDecorator):
         if not self.void:
             c.hypergen.into.extend(self.end())
 
+    def collect(self, collect_name):
+        if self.auto_collect:
+            if type(c.hypergen.collection) is dict:
+                if collect_name is not None:
+                    c.hypergen.collection[collect_name] = self
+            elif type(c.hypergen.collection) is list:
+                c.hypergen.collection.append(self)
+
     def as_string(self):
         into = self.start()
         into.extend(self.end())
@@ -287,15 +289,6 @@ class base_element(ContextDecorator):
         for i in range(self.i, self.j):
             c.hypergen.into[i] = DELETED
 
-    def delete_children(self, children):
-        children = list(children)
-        for i in range(0, len(children)):
-            child = children[i]
-            if issubclass(type(child), base_element):
-                child.delete()
-            elif type(child) in (list, tuple):
-                self.delete_children(child)
-
     def format_children(self, children, _t=t):
         into = []
         sep = t(self.sep)
@@ -304,16 +297,17 @@ class base_element(ContextDecorator):
             if x in ("", None):
                 continue
             elif issubclass(type(x), base_element):
+                x.delete()
                 into.append(x)
+            elif type(x) is Component:
+                x.delete()
+                into.extend(x.into)
             elif type(x) in (list, tuple):
                 into.extend(self.format_children(list(x), _t=_t))
             elif type(x) in (GeneratorType, ):
                 into.append(x)
             elif callable(x):
                 into.append(x)
-            elif type(x) is Component:
-                x.delete()
-                into.extend(x.into)
             else:
                 into.append(_t(x))
             if sep:
