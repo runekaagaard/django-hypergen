@@ -234,7 +234,6 @@ DELETED = ""
 
 
 class base_element(ContextDecorator):
-    js_cb = "freedom.v.s"
     void = False
     auto_id = False
     auto_collect = False
@@ -252,6 +251,7 @@ class base_element(ContextDecorator):
         self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
         self.i = len(c.hypergen.into)
         self.sep = attrs.pop("sep", "")
+        self.js_cb = attrs.pop("js_cb", "freedom.v.s")
 
         c.hypergen.into.extend(self.start())
         c.hypergen.into.extend(self.end())
@@ -412,7 +412,7 @@ INPUT_CALLBACK_TYPES = dict(
     month="freedom.v.i",
     number="freedom.v.i",
     range="freedom.v.f",
-    week="freedom.v.i")
+    week="freedom.v.i", )
 
 
 class input_(base_element_void):
@@ -420,9 +420,10 @@ class input_(base_element_void):
     auto_collect = True
 
     def __init__(self, *children, **attrs):
-        self.js_cb = INPUT_CALLBACK_TYPES.get(
-            attrs.get("type_", "text"), "freedom.v.s")
         super(input_, self).__init__(*children, **attrs)
+        self.js_cb = attrs.pop("js_cb",
+                               INPUT_CALLBACK_TYPES.get(
+                                   attrs.get("type_", "text"), "freedom.v.s"))
 
 
 ### Special tags ###

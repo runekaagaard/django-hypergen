@@ -299,3 +299,15 @@ def test_components2():
             with td():
                 comp1()
         assert f() == '<tr><td><input value="a"/></td></tr>'
+
+
+def test_js_cb():
+    with context(is_test=True, hypergen=hypergen_context()):
+        i = input_(
+            type_="hidden",
+            value=200,
+            collect_name="pk",
+            js_cb="freedom.v.i",
+            id_="cch{}".format(200))
+
+    assert i.js_cb == "freedom.v.i"
