@@ -204,3 +204,28 @@ v.t = function(id) {
   return "" + el.val().trim()
 }
 
+const reviver = function(k, v) {
+  if (Array.isArray(v)) {
+    if (v.length === 3 && v[0] === "_") {
+      if(v[1] === "element_value") {
+        return new element(...v[2])
+      }
+    }
+  }
+  return v
+}
+window.reviver = reviver
+
+$.ajaxSetup({
+  converters: {
+    // default was jQuery.parseJSON
+    'text json': data => JSON.parse(data, reviver)
+  }
+})
+
+export const element = function(valueFunc, id) {
+  this.toJSON = function() {
+    return resolvePath(valueFunc)(id)
+  }
+  return this
+}

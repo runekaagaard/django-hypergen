@@ -17,12 +17,7 @@ def encoder(this, o):
         return o.hypergen_callback_url
     elif issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
-        return [
-            "_", "element_value", {
-                "id": o.attrs["id_"].v,
-                "cb_name": o.js_cb,
-            }
-        ]
+        return ["_", "element_value", [o.js_cb, o.attrs["id_"].v]]
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
         return str(o)

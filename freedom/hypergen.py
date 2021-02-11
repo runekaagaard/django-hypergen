@@ -73,7 +73,7 @@ def hypergen(func, *args, **kwargs):
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
-                s = '<script>$(() => window.applyCommands({}))</script>'.format(
+                s = "<script>$(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
                     freedom.dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
             print "Execution time:", time.time() - a
