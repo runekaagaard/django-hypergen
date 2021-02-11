@@ -4,13 +4,11 @@ d = dict
 
 import string, sys, time
 from collections import OrderedDict
-from functools import partial
-from copy import deepcopy
 from types import GeneratorType
 from functools import wraps
-from collections import namedtuple
+from copy import deepcopy
 
-from contextlib2 import ContextDecorator
+from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import m
 
 from django.urls.base import reverse_lazy
@@ -391,6 +389,20 @@ def component(f):
         return Component(into, i, j)
 
     return _
+
+
+@contextmanager
+def collect_list(at, into=None):
+    if into is None:
+        into = {}
+    with c(collection=into, at="hypergen"):
+        yield
+        collection = c.hypergen.collection
+
+    if at not in c.hypergen.collection:
+        c.hypergen.collection[at] = []
+
+    c.hypergen.collection[at].append(collection)
 
 
 ### Some special dom elements ###
