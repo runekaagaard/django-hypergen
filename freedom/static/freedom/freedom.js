@@ -203,6 +203,10 @@ v.t = function(id) {
   const el = isDomEntity(id) ? $(id) : $("#" + id) 
   return "" + el.val().trim()
 }
+v.r = function(id) {
+  const el = isDomEntity(id) ? $(id) : $("#" + id)
+  return "" + $("input:radio[name ='" + el.attr("name") + "']:checked").val()
+}
 
 const reviver = function(k, v) {
   if (Array.isArray(v)) {

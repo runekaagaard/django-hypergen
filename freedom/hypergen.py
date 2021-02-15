@@ -379,6 +379,7 @@ class Component(object):
 
 
 def component(f):
+    @wraps(f)
     def _(*args, **kwargs):
         with c(into=[], at="hypergen"):
             f(*args, **kwargs)
@@ -412,7 +413,8 @@ INPUT_CALLBACK_TYPES = dict(
     month="freedom.v.i",
     number="freedom.v.i",
     range="freedom.v.f",
-    week="freedom.v.i", )
+    week="freedom.v.i",
+    radio="freedom.v.r", )
 
 
 class input_(base_element_void):
