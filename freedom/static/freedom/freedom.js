@@ -24,6 +24,9 @@ export const morph = function(id, html) {
         if((fromEl.nodeName == "INPUT" || fromEl.nodeName == "TEXTAREA") && fromEl === focused) {
           mergeAttrs(fromEl, toEl)
           return false
+        } else if (fromEl.nodeName == "INPUT" && fromEl.type === "file" && fromEl.files.length > 0) {
+          mergeAttrs(fromEl, toEl)
+          return false
         } else {
           return true
         }
