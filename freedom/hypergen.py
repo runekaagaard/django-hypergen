@@ -55,8 +55,7 @@ def hypergen_context(**kwargs):
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
-        commands=[],
-        collection={}, )
+        commands=[])
 
 
 def hypergen(func, *args, **kwargs):
@@ -250,7 +249,6 @@ DELETED = ""
 class base_element(ContextDecorator):
     void = False
     auto_id = False
-    auto_collect = False
 
     def __new__(cls, *args, **kwargs):
         instance = ContextDecorator.__new__(cls)
@@ -259,7 +257,6 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         assert "hypergen" in c, "Missing global context: hypergen"
-        collect_name = attrs.pop("collect_name", attrs.get("id_", None))
         self.children = children
         self.attrs = attrs
         self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
@@ -271,7 +268,6 @@ class base_element(ContextDecorator):
         c.hypergen.into.extend(self.end())
         self.j = len(c.hypergen.into)
 
-        self.collect(collect_name)
         super(base_element, self).__init__()
 
     def __enter__(self):
@@ -282,14 +278,6 @@ class base_element(ContextDecorator):
     def __exit__(self, *exc):
         if not self.void:
             c.hypergen.into.extend(self.end())
-
-    def collect(self, collect_name):
-        if self.auto_collect:
-            if type(c.hypergen.collection) is dict:
-                if collect_name is not None:
-                    c.hypergen.collection[collect_name] = self
-            elif type(c.hypergen.collection) is list:
-                c.hypergen.collection.append(self)
 
     def as_string(self):
         into = self.start()
@@ -406,20 +394,6 @@ def component(f):
     return _
 
 
-@contextmanager
-def collect_list(at, into=None):
-    if into is None:
-        into = {}
-    with c(collection=into, at="hypergen"):
-        yield
-        collection = c.hypergen.collection
-
-    if at not in c.hypergen.collection:
-        c.hypergen.collection[at] = []
-
-    c.hypergen.collection[at].append(collection)
-
-
 ### Some special dom elements ###
 
 INPUT_CALLBACK_TYPES = dict(
@@ -433,7 +407,6 @@ INPUT_CALLBACK_TYPES = dict(
 
 class input_(base_element_void):
     void = True
-    auto_collect = True
 
     def __init__(self, *children, **attrs):
         super(input_, self).__init__(*children, **attrs)
