@@ -99,7 +99,7 @@ def command(javascript_func_path, *args, **kwargs):
 
 @contextmanager
 def appstate(app_name):
-    k = b"h7appstate_{}".format(app_name)
+    k = b"hypergen_appstate_{}".format(app_name)
     appstate = c.request.session.get(k, None)
     if appstate is not None:
         appstate = pickle.loads(appstate.encode('latin1'))
