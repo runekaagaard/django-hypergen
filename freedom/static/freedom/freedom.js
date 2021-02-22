@@ -94,6 +94,11 @@ export let cancelThrottle = function(group) {
   }
 }
 
+// Link
+export let link = function() {
+  
+}
+
 // Internal
 const parseArgs = function(args, data) {
     for (var i=0; i<args.length; i++) {

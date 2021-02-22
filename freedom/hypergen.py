@@ -181,7 +181,7 @@ def base65_counter():
         yield output
 
 
-### Callbacks ###
+### Actions happening on the frontend  ###
 def callback_attribute(k, data_id):
     return join(" ", k, '="', "e('{}',{})".format(c.hypergen.target_id,
                                                   data_id), '"')
@@ -235,6 +235,22 @@ def callback(func):
     func.actual_func = func
 
     return defer_callback(func)
+
+
+def frontend_command(command_path, *cb_args):
+    def f1(element, attribute_key):
+        def fix_this(x):
+            return element if x is THIS else x
+
+        element.ensure_id()
+        cmd = command(
+            command_path, * [fix_this(x) for x in cb_args], return_=True)
+        cmd_id = id(cmd)
+        c.hypergen.event_handler_cache[cmd_id] = cmd
+
+        return cmd_id
+
+    return f1
 
 
 ### Base dom element ###

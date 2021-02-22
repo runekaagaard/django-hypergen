@@ -311,3 +311,41 @@ def test_js_cb():
             id_="cch{}".format(200))
 
     assert i.js_cb == "freedom.v.i"
+
+
+def test_eventhandler_cache():
+    with context(is_test=True, hypergen=hypergen_context()):
+
+        @callback
+        def cb():
+            pass
+
+        input_(onclick=cb(THIS))
+
+        ehc = {
+            i: v
+            for i, v in enumerate(
+                context.hypergen.event_handler_cache.values())
+        }
+
+        assert freedom.dumps(
+            ehc
+        ) == '{"0":["freedom.callback","/path/to/cb/",[["_","element_value",["freedom.v.s","A"]]],{},{"debounce":0},{}]}'
+
+
+def test_frontend_command():
+    with context(is_test=True, hypergen=hypergen_context()):
+
+        @callback
+        def cb():
+            pass
+
+        a(onclick=frontend_command("freedom.xyz", THIS))
+
+        ehc = {
+            i: v
+            for i, v in enumerate(
+                context.hypergen.event_handler_cache.values())
+        }
+        assert freedom.dumps(context.hypergen.event_handler_cache.values(
+        )) == '[["freedom.xyz",["_","element_value",["freedom.v.s","A"]],{}]]'
