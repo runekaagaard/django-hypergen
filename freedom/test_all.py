@@ -341,11 +341,5 @@ def test_frontend_command():
             pass
 
         a(onclick=frontend_command("freedom.xyz", THIS))
-
-        ehc = {
-            i: v
-            for i, v in enumerate(
-                context.hypergen.event_handler_cache.values())
-        }
         assert freedom.dumps(context.hypergen.event_handler_cache.values(
         )) == '[["freedom.xyz",["_","element_value",["freedom.v.s","A"]],{}]]'
