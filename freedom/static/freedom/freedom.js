@@ -193,7 +193,8 @@ v.f = function(id) { return
   const el = isDomEntity(id) ? $(id) : $("#" + id) 
   return parseFloat(el.val())
 }
-v.s = function(id) { 
+v.s = function(id) {
+  console.log("GETTING for id", id)
   const el = isDomEntity(id) ? $(id) : $("#" + id) 
   return "" + el.val().trim()
 }

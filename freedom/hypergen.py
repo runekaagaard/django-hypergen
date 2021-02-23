@@ -46,6 +46,10 @@ else:
 
 
 ### Rendering ###
+def default_wrap_elements(init, self, *children, **attrs):
+    return init(self, *children, **attrs)
+
+
 def hypergen_context(**kwargs):
     return m(
         into=[],
@@ -56,16 +60,14 @@ def hypergen_context(**kwargs):
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
         commands=[],
-        wrap_elements=kwargs["wrap_elements"])
+        wrap_elements=kwargs.get("wrap_elements", default_wrap_elements))
 
 
 def hypergen(func, *args, **kwargs):
     a = time.time()
     kwargs = deepcopy(kwargs)
     target_id = kwargs.pop("target_id", "__main__")
-    wrap_elements = kwargs.pop(
-        "wrap_elements",
-        lambda init, self, *children, **attrs: init(self, *children, **attrs))
+    wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
     with c(hypergen=hypergen_context(
             target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
         func(*args, **kwargs)

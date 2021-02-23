@@ -20,7 +20,10 @@ def encoder(this, o):
         return ["_", "element_value", [o.js_cb, o.attrs["id_"].v]]
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
-        return str(o)
+        return ["_", "datetime", o.isoformat()]
+    elif isinstance(o, datetime.date):
+        assert False, "TODO"
+        return ["_", "date", o.isoformat()]
     elif hasattr(o, "__weakref__"):
         # Lazy strings and urls.
         return str(o)
