@@ -55,14 +55,19 @@ def hypergen_context(**kwargs):
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
-        commands=[])
+        commands=[],
+        wrap_elements=kwargs["wrap_elements"])
 
 
 def hypergen(func, *args, **kwargs):
     a = time.time()
     kwargs = deepcopy(kwargs)
     target_id = kwargs.pop("target_id", "__main__")
-    with c(hypergen=hypergen_context(target_id=target_id, **kwargs)):
+    wrap_elements = kwargs.pop(
+        "wrap_elements",
+        lambda init, self, *children, **attrs: init(self, *children, **attrs))
+    with c(hypergen=hypergen_context(
+            target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
@@ -272,19 +277,22 @@ class base_element(ContextDecorator):
         return instance
 
     def __init__(self, *children, **attrs):
-        assert "hypergen" in c, "Missing global context: hypergen"
-        self.children = children
-        self.attrs = attrs
-        self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
-        self.i = len(c.hypergen.into)
-        self.sep = attrs.pop("sep", "")
-        self.js_cb = attrs.pop("js_cb", "freedom.v.s")
+        def init(self, *children, **attrs):
+            assert "hypergen" in c, "Missing global context: hypergen"
+            self.children = children
+            self.attrs = attrs
+            self.attrs["id_"] = LazyAttribute("id", self.attrs.get(
+                "id_", None))
+            self.i = len(c.hypergen.into)
+            self.sep = attrs.pop("sep", "")
+            self.js_cb = attrs.pop("js_cb", "freedom.v.s")
 
-        c.hypergen.into.extend(self.start())
-        c.hypergen.into.extend(self.end())
-        self.j = len(c.hypergen.into)
+            c.hypergen.into.extend(self.start())
+            c.hypergen.into.extend(self.end())
+            self.j = len(c.hypergen.into)
+            super(base_element, self).__init__()
 
-        super(base_element, self).__init__()
+        c.hypergen.wrap_elements(init, self, *children, **attrs)
 
     def __enter__(self):
         c.hypergen.into.extend(self.start())
