@@ -72,7 +72,7 @@ def hypergen(func, *args, **kwargs):
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
-            command("freedom.setEventHandlerCache", c.hypergen.target_id,
+            command("hypergen.setEventHandlerCache", c.hypergen.target_id,
                     c.hypergen.event_handler_cache)
         if not c.request.is_ajax():
             pos = html.find("</head")
@@ -83,7 +83,7 @@ def hypergen(func, *args, **kwargs):
             print "Execution time:", time.time() - a
             return HttpResponse(html)
         else:
-            command("freedom.morph", c.hypergen.target_id, html)
+            command("hypergen.morph", c.hypergen.target_id, html)
             print "Execution time:", time.time() - a
             return c.hypergen.commands
 
@@ -199,7 +199,7 @@ def add_callback(cb_func, element, cb_args, cb_kwargs, event_handler_config):
 
     element.ensure_id()
     cmd = command(
-        "freedom.callback",
+        "hypergen.callback",
         cb_func.hypergen_callback_url, [fix_this(x) for x in cb_args],
         cb_kwargs,
         event_handler_config,
@@ -288,7 +288,7 @@ class base_element(ContextDecorator):
                 "id_", None))
             self.i = len(c.hypergen.into)
             self.sep = attrs.pop("sep", "")
-            self.js_cb = attrs.pop("js_cb", "freedom.v.s")
+            self.js_cb = attrs.pop("js_cb", "hypergen.v.s")
 
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
@@ -424,12 +424,12 @@ def component(f):
 ### Some special dom elements ###
 
 INPUT_CALLBACK_TYPES = dict(
-    checkbox="freedom.v.c",
-    month="freedom.v.i",
-    number="freedom.v.i",
-    range="freedom.v.f",
-    week="freedom.v.i",
-    radio="freedom.v.r", )
+    checkbox="hypergen.v.c",
+    month="hypergen.v.i",
+    number="hypergen.v.i",
+    range="hypergen.v.f",
+    week="hypergen.v.i",
+    radio="hypergen.v.r", )
 
 
 class input_(base_element_void):
@@ -439,7 +439,7 @@ class input_(base_element_void):
         super(input_, self).__init__(*children, **attrs)
         self.js_cb = attrs.pop("js_cb",
                                INPUT_CALLBACK_TYPES.get(
-                                   attrs.get("type_", "text"), "freedom.v.s"))
+                                   attrs.get("type_", "text"), "hypergen.v.s"))
 
 
 ### Special tags ###

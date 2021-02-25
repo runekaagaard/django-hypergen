@@ -287,10 +287,10 @@ def test_js_cb():
             type_="hidden",
             value=200,
             collect_name="pk",
-            js_cb="freedom.v.i",
+            js_cb="hypergen.v.i",
             id_="cch{}".format(200))
 
-    assert i.js_cb == "freedom.v.i"
+    assert i.js_cb == "hypergen.v.i"
 
 
 def test_eventhandler_cache():
@@ -310,7 +310,7 @@ def test_eventhandler_cache():
 
         assert dumps(
             ehc
-        ) == '{"0":["freedom.callback","/path/to/cb/",[["_","element_value",["freedom.v.s","A"]]],{},{"debounce":0},{}]}'
+        ) == '{"0":["hypergen.callback","/path/to/cb/",[["_","element_value",["hypergen.v.s","A"]]],{},{"debounce":0},{}]}'
 
 
 def test_frontend_command():
@@ -320,6 +320,7 @@ def test_frontend_command():
         def cb():
             pass
 
-        a(onclick=frontend_command("freedom.xyz", THIS))
-        assert dumps(context.hypergen.event_handler_cache.values(
-        )) == '[["freedom.xyz",["_","element_value",["freedom.v.s","A"]],{}]]'
+        a(onclick=frontend_command("hypergen.xyz", THIS))
+        assert dumps(
+            context.hypergen.event_handler_cache.values()
+        ) == '[["hypergen.xyz",["_","element_value",["hypergen.v.s","A"]],{}]]'

@@ -2,7 +2,7 @@
   "name": "freedom",
   "version": "1.0.0",
   "description": "",
-  "main": "freedom.js",
+  "main": "hypergen.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
