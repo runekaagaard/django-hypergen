@@ -54,7 +54,7 @@ def hypergen_context(**kwargs):
         into=[],
         liveview=True,
         id_counter=base65_counter(),
-        id_prefix=(freedom.loads(c.request.body)["id_prefix"]
+        id_prefix=(loads(c.request.body)["id_prefix"]
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
@@ -198,6 +198,7 @@ def add_callback(cb_func, element, cb_args, cb_kwargs, event_handler_config):
         return element if x is THIS else x
 
     element.ensure_id()
+    print "ADDING CALLBACK FOR", cb_func
     cmd = command(
         "hypergen.callback",
         cb_func.hypergen_callback_url, [fix_this(x) for x in cb_args],
@@ -209,40 +210,28 @@ def add_callback(cb_func, element, cb_args, cb_kwargs, event_handler_config):
     return cmd_id
 
 
-def defer_callback(cb_func):
-    assert hasattr(cb_func, "hypergen_callback_url"), "Not a callback func"
+def callback(cb_func):
+    print "WC", cb_func
 
     @wraps(cb_func)
     def f1(*cb_args, **cb_kwargs):
+        print "INSIED f1", cb_args, cb_kwargs
         # TODO: Add default todos per attribute_keys.
         event_handler_config = d(debounce=cb_kwargs.pop("debounce", 0))
 
-        def f2(element, attribute_key):
+        def f3(element, attribute_key):
+            print "INSIED F3"
             return add_callback(cb_func, element, cb_args, cb_kwargs,
                                 event_handler_config)
+
+        def f2(*args, **kwargs):
+            print "INSIED f2", args, kwargs
+
+        f2.hypergen_add_callback = f3
 
         return f2
 
     return f1
-
-
-def callback(func):
-    """
-    Makes a function a callback for django.
-    """
-    if "is_test" in c:
-        func.hypergen_callback_url = "/path/to/{}/".format(func.__name__)
-    else:
-        # TODO
-        func.hypergen_callback_url = "foo"
-        # func.hypergen_callback_url = reverse_lazy(
-        #     "freedom:callback",
-        #     args=[".".join((func.__module__, func.__name__))])
-
-    func.hypergen_is_callback = True
-    func.actual_func = func
-
-    return defer_callback(func)
 
 
 def frontend_command(command_path, *cb_args):
@@ -351,7 +340,11 @@ class base_element(ContextDecorator):
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
+        if c.hypergen.liveview is True and hasattr(v, "hypergen_add_callback"):
+            data_id = v.hypergen_add_callback(self, k)
+            return [callback_attribute(k, data_id)]
         if c.hypergen.liveview is True and callable(v):
+            print "FOUND", v
             data_id = v(self, k)
             return [callback_attribute(k, data_id)]
         elif c.hypergen.liveview is True and k.startswith("on") and type(

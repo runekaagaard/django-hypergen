@@ -1,7 +1,13 @@
+# coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
+d = dict
+
 import threading
 from contextlib2 import contextmanager
 from functools import wraps, update_wrapper
 
+from django.conf.urls import url
+from django.urls.base import reverse_lazy
 from pyrsistent import pmap, m
 
 
@@ -14,7 +20,10 @@ class Context(threading.local):
         self.ctx = m(**items)
 
     def __getattr__(self, k):
-        return self.__dict__['ctx'][k]
+        try:
+            return self.__dict__['ctx'][k]
+        except KeyError:
+            return AttributeError("No such attribute: " + k)
 
     def __getitem__(self, k):
         return self.__dict__['ctx'][k]
@@ -118,7 +127,7 @@ def wrap3(dfunc):
 
     It looks like this:
 
-        @decorator
+        @wrap3
         def mydecorator(func, fargs, fkwargs, *dargs, **dkwargs):
             print "Decorator args, kwargs are", dargs, dkwargs
             func(*fargs, **fkwargs)
@@ -196,3 +205,40 @@ class adict(dict):
             del self[name]
         else:
             raise AttributeError("No such attribute: " + name)
+
+
+_URLS = {}
+
+
+@wrap2
+def autourl(func, *dargs, **dkwargs):
+    namespace = dkwargs.get("namespace", "")
+
+    module = func.__module__
+    if module not in _URLS:
+        _URLS[module] = []
+
+    view_name = "{}__{}".format(module.replace(".", "__"), func.__name__)
+    func.hypergen_view_name = view_name
+    func.hypergen_namespace = namespace
+    func.hypergen_callback_url = reverse_lazy(
+        ":".join((namespace, func.hypergen_view_name)))
+
+    _URLS[module].append(func)
+
+    @wraps(func)
+    def _(*fargs, **fkwargs):
+        return func(*fargs, **fkwargs)
+
+    return _
+
+
+def autourl_patterns(namespace, module):
+    patterns = []
+    for func in _URLS.get(module.__name__, []):
+        patterns.append(
+            url('^{}/$'.format(func.__name__),
+                func,
+                name=func.hypergen_view_name))
+
+    return patterns
