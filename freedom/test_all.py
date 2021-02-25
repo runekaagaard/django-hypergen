@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
+d = dict
 import re
 
 from contextlib2 import ContextDecorator
@@ -8,27 +9,6 @@ from django.test.client import RequestFactory
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
 from freedom.core import context as c
 from freedom.hypergen import *
-
-d = dict
-
-### Python 2+3 compatibility ###
-if sys.version_info.major > 2:
-    from html import escape
-    from html.parser import HTMLParser
-    letters = string.ascii_letters
-
-    def items(x):
-        return x.items()
-
-else:
-    from cgi import escape
-    from HTMLParser import HTMLParser
-
-    letters = string.letters
-    str = unicode
-
-    def items(x):
-        return x.iteritems()
 
 
 class User(object):
@@ -328,7 +308,7 @@ def test_eventhandler_cache():
                 context.hypergen.event_handler_cache.values())
         }
 
-        assert freedom.dumps(
+        assert dumps(
             ehc
         ) == '{"0":["freedom.callback","/path/to/cb/",[["_","element_value",["freedom.v.s","A"]]],{},{"debounce":0},{}]}'
 
@@ -341,5 +321,5 @@ def test_frontend_command():
             pass
 
         a(onclick=frontend_command("freedom.xyz", THIS))
-        assert freedom.dumps(context.hypergen.event_handler_cache.values(
+        assert dumps(context.hypergen.event_handler_cache.values(
         )) == '[["freedom.xyz",["_","element_value",["freedom.v.s","A"]],{}]]'

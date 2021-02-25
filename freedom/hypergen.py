@@ -8,6 +8,7 @@ from types import GeneratorType
 from functools import wraps
 from copy import deepcopy
 import cPickle as pickle
+import datetime, json
 
 from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import m
@@ -17,8 +18,7 @@ from django.http.response import HttpResponse
 from django.utils.encoding import force_text
 
 import freedom
-from freedom.utils import insert
-from freedom.core import context as c
+from freedom.core import context as c, insert
 
 ### Python 2+3 compatibility ###
 
@@ -79,7 +79,7 @@ def hypergen(func, *args, **kwargs):
             pos = html.find("</head")
             if pos != -1:
                 s = "<script>$(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
-                    freedom.dumps(c.hypergen.commands))
+                    dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
             print "Execution time:", time.time() - a
             return HttpResponse(html)
@@ -133,7 +133,7 @@ class LazyAttribute(object):
 
 
 def join(*values):
-    return "".join(str(x) for x in values)
+    return "".join(make_string(x) for x in values)
 
 
 def join_html(html):
@@ -149,7 +149,7 @@ def join_html(html):
             else:
                 yield item
 
-    return "".join(str(x) for x in fmt(html))
+    return "".join(make_string(x) for x in fmt(html))
 
 
 def raw(*children):
@@ -168,7 +168,7 @@ def _sort_attrs(attrs):
 
 
 def t(s, quote=True):
-    return escape(str(s), quote=quote)
+    return escape(make_string(s), quote=quote)
 
 
 def base65_counter():
@@ -574,4 +574,34 @@ class ul(base_element): pass
 class var(base_element): pass
 class video(base_element): pass
 class wbr(base_element_void): pass
-    # yapf: enable
+# yapf: enable
+
+
+# Serialization
+def encoder(o):
+    if hasattr(o, "hypergen_callback_url"):
+        return o.hypergen_callback_url
+    elif issubclass(type(o), base_element):
+        assert o.attrs.get("id_", False), "Missing id_"
+        return ["_", "element_value", [o.js_cb, o.attrs["id_"].v]]
+    elif isinstance(o, datetime.datetime):
+        assert False, "TODO"
+        return ["_", "datetime", o.isoformat()]
+    elif isinstance(o, datetime.date):
+        assert False, "TODO"
+        return ["_", "date", o.isoformat()]
+    elif hasattr(o, "__weakref__"):
+        # Lazy strings and urls.
+        return make_string(o)
+    else:
+        raise TypeError(repr(o) + " is not JSON serializable")
+
+
+def dumps(data, default=encoder, this=None):
+    result = json.dumps(data, default=encoder, separators=(',', ':'))
+
+    return result
+
+
+def loads(data, default=encoder):
+    return json.loads(data)
