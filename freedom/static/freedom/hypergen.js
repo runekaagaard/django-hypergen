@@ -3,7 +3,7 @@ window.jQuery = $
 window.$ = $
 
 import morphdom from 'morphdom'
-import './freedom'
+import './hypergen'
 
 // Shims
 if (typeof Array.isArray === 'undefined') {

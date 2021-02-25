@@ -39,7 +39,6 @@ if sys.version_info.major > 2:
 else:
     from cgi import escape
     letters = string.letters
-    str = make_string
 
     def items(x):
         return x.iteritems()
@@ -234,9 +233,11 @@ def callback(func):
     if "is_test" in c:
         func.hypergen_callback_url = "/path/to/{}/".format(func.__name__)
     else:
-        func.hypergen_callback_url = reverse_lazy(
-            "freedom:callback",
-            args=[".".join((func.__module__, func.__name__))])
+        # TODO
+        func.hypergen_callback_url = "foo"
+        # func.hypergen_callback_url = reverse_lazy(
+        #     "freedom:callback",
+        #     args=[".".join((func.__module__, func.__name__))])
 
     func.hypergen_is_callback = True
     func.actual_func = func
