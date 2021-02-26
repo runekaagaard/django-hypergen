@@ -47,7 +47,7 @@ export const callback = function(url, args, {debounce=0}={}) {
   i++
   var args2 = []
   parseArgs(args, args2)
-  console.log("REQUEST", url, args, kwargs, debounce)
+  console.log("REQUEST", url, args, debounce)
   let post = function() {
     $.ajax({
       url: url,
@@ -61,6 +61,7 @@ export const callback = function(url, args, {debounce=0}={}) {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'X-Pathname': parent.window.location.pathname,
+        'X-CSRFToken': getCookie('csrftoken'),
       },
       success: function(data) {
         console.log("RESPONSE", data)
@@ -228,11 +229,27 @@ const reviver = function(k, v) {
 }
 window.reviver = reviver
 
+const getCookie = function(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 $.ajaxSetup({
   converters: {
     // default was jQuery.parseJSON
     'text json': data => JSON.parse(data, reviver)
-  }
+  },
 })
 
 export const element = function(valueFunc, id) {

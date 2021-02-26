@@ -192,8 +192,13 @@ def base65_counter():
 
 def callback(url_or_autourl_func, *cb_args, **kwargs):
     debounce = kwargs.get("debounce", 0)
-    url = (url_or_autourl_func.hypergen_callback_url
-           if callable(url_or_autourl_func) else url_or_autourl_func)
+    try:
+        url = (url_or_autourl_func.hypergen_callback_url
+               if callable(url_or_autourl_func) else url_or_autourl_func)
+    except AttributeError:
+        print "A function given to callback must be an autocallback, otherwise use an url string."
+        print url_or_autourl_func
+        raise
 
     def to_html(element, k, v):
         def fix_this(x):
