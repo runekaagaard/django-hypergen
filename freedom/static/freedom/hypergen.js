@@ -54,7 +54,6 @@ export const callback = function(url, args, {debounce=0}={}) {
       type: 'POST',
       data: JSON.stringify({
         args: args2,
-        kwargs: kwargs,
         id_prefix: "h" + i + "-",
       }),
       contentType: 'application/json; charset=utf-8',
