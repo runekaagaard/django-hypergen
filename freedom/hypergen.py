@@ -13,12 +13,12 @@ import datetime, json
 from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import m
 
-from django.urls.base import reverse_lazy
+from django.urls import reverse_lazy, resolve
+from django.conf.urls import url
 from django.http.response import HttpResponse
 from django.utils.encoding import force_text
 
-import freedom
-from freedom.core import context as c, insert
+from freedom.core import context as c, insert, wrap2
 
 ### Python 2+3 compatibility ###
 
@@ -567,11 +567,57 @@ def encoder(o):
         raise TypeError(repr(o) + " is not JSON serializable")
 
 
-def dumps(data, default=encoder, this=None):
+def dumps(data, default=encoder):
     result = json.dumps(data, default=encoder, separators=(',', ':'))
 
     return result
 
 
-def loads(data, default=encoder):
+def loads(data):
     return json.loads(data)
+
+
+# Callback auto urls
+
+_URLS = {}
+
+
+@wrap2
+def autocallback(func, *dargs, **dkwargs):
+    namespace = dkwargs.get("namespace", "")
+
+    module = func.__module__
+    if module not in _URLS:
+        _URLS[module] = []
+
+    view_name = "{}__{}".format(module.replace(".", "__"), func.__name__)
+    func.hypergen_namespace = namespace
+    func.hypergen_view_name = view_name
+    func.hypergen_callback_url = reverse_lazy(":".join((namespace, view_name)))
+
+    @wraps(func)
+    def _(request, *fargs, **fkwargs):
+        assert c.request.is_ajax()
+        args = list(fargs)
+        args.extend(loads(request.body)["args"])
+        with c(referer_resolver_match=resolve(
+                c.request.META["HTTP_X_PATHNAME"])):
+            return HttpResponse(
+                dumps(func(request, *args, **fkwargs)),
+                status=200,
+                content_type='application/json')
+
+    _URLS[module].append(_)
+    assert hasattr(_, "hypergen_callback_url")
+    return _
+
+
+def autocallback_url_patterns(namespace, module):
+    patterns = []
+    for func in _URLS.get(module.__name__, []):
+        patterns.append(
+            url('^{}/$'.format(func.__name__),
+                func,
+                name=func.hypergen_view_name))
+
+    return patterns
