@@ -9,6 +9,7 @@ from django.test.client import RequestFactory
 from freedom.core import _init_context, context, context_middleware, ContextMiddleware
 from freedom.core import context as c
 from freedom.hypergen import *
+from freedom.hypergen import callback as cb
 
 
 class User(object):
@@ -25,6 +26,11 @@ class Request(object):
 
 class HttpResponse(object):
     pass
+
+
+def mock_autourl(f):
+    f.hypergen_callback_url = "/path/to/cb/"
+    return f
 
 
 def test_context():
@@ -160,23 +166,24 @@ def test_live_element():
 
     with context(is_test=True):
 
-        @callback
+        @mock_autourl
         def my_callback():
             pass
 
         with context(is_test=True, hypergen=hypergen_context()):
-            div("hello world!", onclick=(my_callback, 42))
+            div("hello world!", onclick=cb("my_url", 42))
             assert f(
             ) == """<div id="A" onclick="e('__main__',1234)">hello world!</div>"""
 
+        return
         with context(is_test=True, hypergen=hypergen_context()):
-            div("hello world!", onclick=(my_callback, [42]))
+            div("hello world!", onclick=cb(my_callback, [42]))
             assert f(
             ) == """<div id="A" onclick="e('__main__',1234)">hello world!</div>"""
 
         with context(is_test=True, hypergen=hypergen_context()):
             a = input_(name="a")
-            input_(name="b", onclick=(my_callback, a))
+            input_(name="b", onclick=cb(my_callback, a))
             assert f(
             ) == """<input name="a"/><input id="A" name="b" onclick="e('__main__',1234)"/>"""
 
@@ -187,7 +194,9 @@ def test_live_element():
                     span(u"Annullér", class_="clickable")
                 with div(class_="action-right"):
                     span(
-                        u"Send", class_="clickable", onclick=(my_callback, el))
+                        u"Send",
+                        class_="clickable",
+                        onclick=cb(my_callback, el))
                 div(el, class_="form form-write")
 
             assert f(
@@ -203,7 +212,7 @@ def test_live_element2():
 
     with context(is_test=True):
 
-        @callback
+        @mock_autourl
         def my_callback():
             pass
 
@@ -211,10 +220,10 @@ def test_live_element2():
             el1 = input_(
                 id_="id_new_password",
                 placeholder="Adgangskode",
-                oninput=(my_callback, THIS, ""))
+                oninput=cb(my_callback, THIS, ""))
             el2 = input_(
                 placeholder="Gentag Adgangskode",
-                oninput=(my_callback, THIS, el1))
+                oninput=cb(my_callback, THIS, el1))
 
             h2(u"Skift Adgangskode")
             p(u"Rules:")
@@ -235,12 +244,13 @@ def test_callback():
     setup()
     with context(is_test=True, hypergen=hypergen_context()):
 
-        @callback
-        def cb(foo, punk=300):
+        @mock_autourl
+        def f1(foo, punk=300):
             pass
 
-        element = input_(oninput=cb(THIS, punk=200, debounce=500))
-        assert type(cb("foo", bar=42, debounce=42)(element, "oninput")) is int
+        element = input_(oninput=cb(f1, THIS, punk=200, debounce=500))
+        assert type(cb("foo", bar=42, debounce=42)
+                    (element, "oninput", 92)) is list
 
 
 def test_components():
@@ -296,11 +306,11 @@ def test_js_cb():
 def test_eventhandler_cache():
     with context(is_test=True, hypergen=hypergen_context()):
 
-        @callback
-        def cb():
+        @mock_autourl
+        def f1():
             pass
 
-        input_(onclick=cb(THIS))
+        input_(onclick=cb(f1, THIS))
 
         ehc = {
             i: v
@@ -313,14 +323,14 @@ def test_eventhandler_cache():
         ) == '{"0":["hypergen.callback","/path/to/cb/",[["_","element_value",["hypergen.v.s","A"]]],{},{"debounce":0},{}]}'
 
 
-def test_frontend_command():
+def test_call_js():
     with context(is_test=True, hypergen=hypergen_context()):
 
-        @callback
-        def cb():
+        @mock_autourl
+        def f1():
             pass
 
-        a(onclick=frontend_command("hypergen.xyz", THIS))
+        a(onclick=call_js("hypergen.xyz", THIS))
         assert dumps(
             context.hypergen.event_handler_cache.values()
         ) == '[["hypergen.xyz",["_","element_value",["hypergen.v.s","A"]],{}]]'

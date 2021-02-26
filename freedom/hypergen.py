@@ -125,7 +125,7 @@ class LazyAttribute(object):
         if not self.v:
             return ""
         else:
-            return ' {}="{}"'.format(self.k, t(self.v))
+            return ' {}="{}"'.format(t(self.k), t(self.v))
 
     def __unicode__(self):
         return self.__str__()
@@ -188,54 +188,36 @@ def base65_counter():
 
 
 ### Actions happening on the frontend  ###
-def callback_attribute(k, data_id):
-    return join(" ", k, '="', "e('{}',{})".format(c.hypergen.target_id,
-                                                  data_id), '"')
 
 
-def add_callback(cb_func, element, cb_args, cb_kwargs, event_handler_config):
-    def fix_this(x):
-        return element if x is THIS else x
+def callback(url_or_autourl_func, *cb_args, **kwargs):
+    debounce = kwargs.get("debounce", 0)
+    url = (url_or_autourl_func.hypergen_callback_url
+           if callable(url_or_autourl_func) else url_or_autourl_func)
 
-    element.ensure_id()
-    print "ADDING CALLBACK FOR", cb_func
-    cmd = command(
-        "hypergen.callback",
-        cb_func.hypergen_callback_url, [fix_this(x) for x in cb_args],
-        cb_kwargs,
-        event_handler_config,
-        return_=True)
-    cmd_id = id(cmd)
-    c.hypergen.event_handler_cache[cmd_id] = cmd
-    return cmd_id
+    def to_html(element, k, v):
+        def fix_this(x):
+            return element if x is THIS else x
 
+        element.ensure_id()
+        cmd = command(
+            "hypergen.callback",
+            url, [fix_this(x) for x in cb_args],
+            d(debounce=debounce),
+            return_=True)
+        cmd_id = id(cmd)
 
-def callback(cb_func):
-    print "WC", cb_func
+        c.hypergen.event_handler_cache[cmd_id] = cmd
+        return [
+            " ",
+            t(k), '="', "e('{}',{})".format(c.hypergen.target_id, cmd_id), '"'
+        ]
 
-    @wraps(cb_func)
-    def f1(*cb_args, **cb_kwargs):
-        print "INSIED f1", cb_args, cb_kwargs
-        # TODO: Add default todos per attribute_keys.
-        event_handler_config = d(debounce=cb_kwargs.pop("debounce", 0))
-
-        def f3(element, attribute_key):
-            print "INSIED F3"
-            return add_callback(cb_func, element, cb_args, cb_kwargs,
-                                event_handler_config)
-
-        def f2(*args, **kwargs):
-            print "INSIED f2", args, kwargs
-
-        f2.hypergen_add_callback = f3
-
-        return f2
-
-    return f1
+    return to_html
 
 
-def frontend_command(command_path, *cb_args):
-    def f1(element, attribute_key):
+def call_js(command_path, *cb_args):
+    def to_html(element, k, v):
         def fix_this(x):
             return element if x is THIS else x
 
@@ -245,9 +227,12 @@ def frontend_command(command_path, *cb_args):
         cmd_id = id(cmd)
         c.hypergen.event_handler_cache[cmd_id] = cmd
 
-        return cmd_id
+        return [
+            " ",
+            t(k), '="', "e('{}',{})".format(c.hypergen.target_id, cmd_id), '"'
+        ]
 
-    return f1
+    return to_html
 
 
 ### Base dom element ###
@@ -340,32 +325,23 @@ class base_element(ContextDecorator):
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if c.hypergen.liveview is True and hasattr(v, "hypergen_add_callback"):
-            data_id = v.hypergen_add_callback(self, k)
-            return [callback_attribute(k, data_id)]
-        if c.hypergen.liveview is True and callable(v):
-            print "FOUND", v
-            data_id = v(self, k)
-            return [callback_attribute(k, data_id)]
-        elif c.hypergen.liveview is True and k.startswith("on") and type(
-                v) in (list, tuple):
-            data_id = add_callback(v[0], self, v[1:], {}, {})
-            return [callback_attribute(k, data_id)]
+        if callable(v):
+            return v(self, k, v)
         elif type(v) is LazyAttribute:
             return [v]
         elif type(v) is bool:
             if v is True:
-                return [join(" ", k)]
+                return [" ", k]
             else:
                 return []
         elif k == "style" and type(v) in (dict, OrderedDict):
             return [
-                join(" ", k, '="', ";".join(
+                " ", k, '="', ";".join(
                     t(k1.replace("_", "-")) + ":" + t(v1)
-                    for k1, v1 in items(v)), '"')
+                    for k1, v1 in items(v)), '"'
             ]
         else:
-            return [join(" ", k, '="', t(v), '"')]
+            return [" ", k, '="', t(v), '"']
 
     def start(self):
         into = ["<", self.tag]
