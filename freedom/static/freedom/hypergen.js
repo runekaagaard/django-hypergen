@@ -43,7 +43,7 @@ export const setEventHandlerCache = function(id, newCache) {
 
 // Callback
 var i = 0
-export const callback = function(url, args, {debounce=0}={}) {
+export const callback = function(url, args, {debounce=0, confirm_=false}={}) {
   i++
   var args2 = []
   parseArgs(args, args2)
@@ -70,19 +70,26 @@ export const callback = function(url, args, {debounce=0}={}) {
       },
     })
   }
-  throttle(post, {delay: debounce, group: url})
+  throttle(post, {delay: debounce, group: url, confirm_})
 }
 
 // Timing
 var _THROTTLE_GROUPS = {}
-export let throttle = function (func, {delay=0, group='global'}={}) {
+export let throttle = function (func, {delay=0, group='global', confirm_=false}={}) {
   if (_THROTTLE_GROUPS[group]) {
     clearTimeout(_THROTTLE_GROUPS[group])
     _THROTTLE_GROUPS[group] = null
   }
 
   _THROTTLE_GROUPS[group] = setTimeout(function () {
-      func()
+      if (confirm_ === false) {
+        func()
+      } else {
+        const confirmed = confirm(confirm_)
+        if (confirmed === true) {
+          func()
+        }
+      }
       _THROTTLE_GROUPS[group] = null
     }, delay)
 }
@@ -172,10 +179,6 @@ const applyCommands = function(commands) {
 }
 window.applyCommands = applyCommands
 
-const isDomEntity = entity => {
-  return typeof entity === 'object' && entity.nodeType !== undefined
-}
-
 const mergeAttrs = function(target, source){
   source.getAttributeNames().forEach(name => {
     let value = source.getAttribute(name)
@@ -186,34 +189,34 @@ const mergeAttrs = function(target, source){
 // DOM element value readers
 export const v = {}
 v.i = function(id) { 
-  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  const el = $(document.getElementById(id)) 
   return parseInt(el.val())
 }
 v.f = function(id) { return 
-  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  const el = $(document.getElementById(id)) 
   return parseFloat(el.val())
 }
 v.s = function(id) {
   console.log("GETTING for id", id)
-  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  const el = $(document.getElementById(id)) 
   return "" + el.val().trim()
 }
 v.c = function(id) { 
-  const el = isDomEntity(id) ? $(id) : document.getElementById(id) 
+  const el = document.getElementById(id) 
   return el.checked
 }
 v.g = function(id) { 
-  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  const el = $(document.getElementById(id)) 
   var v = el.val()
   var v1 = parseInt(v)
   return !isNaN(v1) ? v1 : v
 }
 v.t = function(id) { 
-  const el = isDomEntity(id) ? $(id) : $("#" + id) 
+  const el = $(document.getElementById(id)) 
   return "" + el.val().trim()
 }
 v.r = function(id) {
-  const el = isDomEntity(id) ? $(id) : $("#" + id)
+  const el = $(document.getElementById(id))
   return "" + $("input:radio[name ='" + el.attr("name") + "']:checked").val()
 }
 

@@ -191,7 +191,9 @@ def base65_counter():
 
 
 def callback(url_or_autourl_func, *cb_args, **kwargs):
-    debounce = kwargs.get("debounce", 0)
+    debounce = kwargs.pop("debounce", 0)
+    confirm_ = kwargs.pop("confirm", False)
+    assert not kwargs, "Invalid callback kwarg(s): {}".format(repr(kwargs))
     try:
         url = (url_or_autourl_func.hypergen_callback_url
                if callable(url_or_autourl_func) else url_or_autourl_func)
@@ -208,7 +210,7 @@ def callback(url_or_autourl_func, *cb_args, **kwargs):
         cmd = command(
             "hypergen.callback",
             url, [fix_this(x) for x in cb_args],
-            d(debounce=debounce),
+            d(debounce=debounce, confirm_=confirm_),
             return_=True)
         cmd_id = id(cmd)
 
