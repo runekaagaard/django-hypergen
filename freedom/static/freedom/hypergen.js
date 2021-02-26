@@ -217,7 +217,8 @@ v.t = function(id) {
 }
 v.r = function(id) {
   const el = $(document.getElementById(id))
-  return "" + $("input:radio[name ='" + el.attr("name") + "']:checked").val()
+  const v = $("input:radio[name ='" + el.attr("name") + "']:checked").val()
+  return v === undefined ? null : v
 }
 
 const reviver = function(k, v) {

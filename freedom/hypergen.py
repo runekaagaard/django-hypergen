@@ -574,8 +574,9 @@ def encoder(o):
         raise TypeError(repr(o) + " is not JSON serializable")
 
 
-def dumps(data, default=encoder):
-    result = json.dumps(data, default=encoder, separators=(',', ':'))
+def dumps(data, default=encoder, indent=None):
+    result = json.dumps(
+        data, default=encoder, separators=(',', ':'), indent=indent)
 
     return result
 
