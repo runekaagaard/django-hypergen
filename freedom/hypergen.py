@@ -91,7 +91,7 @@ def hypergen(func, *args, **kwargs):
 def command(javascript_func_path, *args, **kwargs):
     prepend = kwargs.pop("prepend", False)
     return_ = kwargs.pop("return_", False)
-    item = [javascript_func_path] + list(args) + [kwargs]
+    item = [javascript_func_path] + list(args)
     if return_:
         return item
     elif prepend:
