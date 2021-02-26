@@ -43,7 +43,7 @@ export const setEventHandlerCache = function(id, newCache) {
 
 // Callback
 var i = 0
-export const callback = function(url, args, kwargs, {debounce=0}={}) {
+export const callback = function(url, args, {debounce=0}={}) {
   i++
   var args2 = []
   parseArgs(args, args2)

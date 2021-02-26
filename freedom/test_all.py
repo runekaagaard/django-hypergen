@@ -320,7 +320,7 @@ def test_eventhandler_cache():
 
         assert dumps(
             ehc
-        ) == '{"0":["hypergen.callback","/path/to/cb/",[["_","element_value",["hypergen.v.s","A"]]],{},{"debounce":0},{}]}'
+        ) == '{"0":["hypergen.callback","/path/to/cb/",[["_","element_value",["hypergen.v.s","A"]]],{"debounce":0},{}]}'
 
 
 def test_call_js():
