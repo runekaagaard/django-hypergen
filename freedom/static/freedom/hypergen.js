@@ -48,29 +48,19 @@ export const callback = function(url, args, {debounce=0, confirm_=false}={}) {
   var args2 = []
   parseArgs(args, args2)
   console.log("REQUEST", url, args, debounce)
-  let post = function() {
-    $.ajax({
-      url: url,
-      type: 'POST',
-      data: JSON.stringify({
-        args: args2,
-        id_prefix: "h" + i + "-",
-      }),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-Pathname': parent.window.location.pathname,
-        'X-CSRFToken': getCookie('csrftoken'),
-      },
-      success: function(data) {
-        console.log("RESPONSE", data)
-        if (data === null) return
-        applyCommands(data)
-      },
-    })
+  let postIt = function() {
+    let formData = new FormData()
+    formData.append("hypergen_data", JSON.stringify({
+      args: args2,
+      id_prefix: "h" + i + "-",
+    }))
+    post(url, formData, (data) => {
+      console.log("RESPONSE", data)
+      if (data === null) return
+      applyCommands(data)
+    }, (data) => { alert("ERROR: " + data) })
   }
-  throttle(post, {delay: debounce, group: url, confirm_})
+  throttle(postIt, {delay: debounce, group: url, confirm_})
 }
 
 // Timing
@@ -197,7 +187,6 @@ v.f = function(id) { return
   return parseFloat(el.val())
 }
 v.s = function(id) {
-  console.log("GETTING for id", id)
   const el = $(document.getElementById(id)) 
   return "" + el.val().trim()
 }
@@ -249,16 +238,64 @@ const getCookie = function(name) {
     return cookieValue;
 }
 
-$.ajaxSetup({
-  converters: {
-    // default was jQuery.parseJSON
-    'text json': data => JSON.parse(data, reviver)
-  },
-})
-
 export const element = function(valueFunc, id) {
   this.toJSON = function() {
     return resolvePath(valueFunc)(id)
   }
   return this
+}
+
+export const post = function(url, formData, onSuccess, onError) {
+  const xhr = new XMLHttpRequest()
+
+  xhr.upload.onload = () => {
+    console.log(`The upload is completed: ${xhr.status} ${xhr.response}`)
+  }
+
+  xhr.upload.onerror = () => {
+    console.error('Upload failed.')
+    
+  }
+
+  xhr.upload.onabort = () => {
+    console.error('Upload cancelled.')
+  }
+
+  xhr.upload.onprogress = (event) => {
+    // event.loaded returns how many bytes are downloaded
+    // event.total returns the total number of bytes
+    // event.total is only available if server sends `Content-Length` header
+    console.log(`Uploaded ${event.loaded} of ${event.total} bytes`)
+  }
+
+  xhr.onload = () => {
+    var jsonOk = false,
+        data = null
+    try {
+      data = JSON.parse(xhr.responseText, reviver)
+      jsonOk = true
+    } catch(e) {
+      data = xhr.responseText
+      jsonOk = false
+    }
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      onSuccess(data, xhr)
+    } else {
+      onError(data, jsonOk);
+    }
+  }
+
+  xhr.onerror = () => {
+    onError()
+  }
+
+  xhr.onabort = () => {
+    console.error('xhr aborted')
+  }
+
+  xhr.open('POST', url)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  xhr.setRequestHeader('X-Pathname', parent.window.location.pathname);
+  xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+  xhr.send(formData)
 }

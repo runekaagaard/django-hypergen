@@ -54,7 +54,7 @@ def hypergen_context(**kwargs):
         into=[],
         liveview=True,
         id_counter=base65_counter(),
-        id_prefix=(loads(c.request.body)["id_prefix"]
+        id_prefix=(loads(c.request.POST["hypergen_data"])["id_prefix"]
                    if c.request.is_ajax() else ""),
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
@@ -607,7 +607,7 @@ def autocallback(func, *dargs, **dkwargs):
     def _(request, *fargs, **fkwargs):
         assert c.request.is_ajax()
         args = list(fargs)
-        args.extend(loads(request.body)["args"])
+        args.extend(loads(request.POST["hypergen_data"])["args"])
         with c(referer_resolver_match=resolve(
                 c.request.META["HTTP_X_PATHNAME"])):
             return HttpResponse(
