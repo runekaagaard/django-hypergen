@@ -405,7 +405,8 @@ INPUT_CALLBACK_TYPES = dict(
     number="hypergen.v.i",
     range="hypergen.v.f",
     week="hypergen.v.i",
-    radio="hypergen.v.r", )
+    radio="hypergen.v.r",
+    file="hypergen.v.u", )
 
 
 class input_(base_element_void):

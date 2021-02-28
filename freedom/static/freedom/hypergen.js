@@ -44,17 +44,17 @@ export const setEventHandlerCache = function(id, newCache) {
 // Callback
 var i = 0
 export const callback = function(url, args, {debounce=0, confirm_=false}={}) {
-  i++
-  var args2 = []
-  parseArgs(args, args2)
-  console.log("REQUEST", url, args, debounce)
   let postIt = function() {
-    let formData = new FormData()
-    formData.append("hypergen_data", JSON.stringify({
+    console.log("REQUEST", url, args, debounce)
+    i++
+    var args2 = []
+    window.formData = new FormData()
+    parseArgs(args, args2, window.formData)
+    window.formData.append("hypergen_data", JSON.stringify({
       args: args2,
       id_prefix: "h" + i + "-",
     }))
-    post(url, formData, (data) => {
+    post(url, window.formData, (data) => {
       console.log("RESPONSE", data)
       if (data === null) return
       applyCommands(data)
@@ -97,29 +97,31 @@ export let link = function() {
 }
 
 // Internal
-const parseArgs = function(args, data) {
-    for (var i=0; i<args.length; i++) {
-      var x = args[i]
-      if (typeof x === "function") {
-        data.push(x())  
-      } else if (Array.isArray(x)) {
-        if (x.length === 3 && x[0] === "_") {
-          if(x[1] === "element_value") {
-            let func = resolvePath(x[2].cb_name)
-            data.push(func(x[2].id))
-          } else {
-            throw "Unknown custom data"
-          }
+const parseArgs = function(args, data, formData) {
+  console.assert(formData)
+  console.log("FD", formData)
+  for (var i=0; i<args.length; i++) {
+    var x = args[i]
+    if (typeof x === "function") {
+      data.push(x())
+    } else if (Array.isArray(x)) {
+      if (x.length === 3 && x[0] === "_") {
+        if(x[1] === "element_value") {
+          let func = resolvePath(x[2].cb_name)
+          data.push(func(x[2].id, formData))
         } else {
-          var tmp = []
-          parseArgs(x, tmp)
-          data.push(tmp)
+          throw "Unknown custom data"
         }
       } else {
-        data.push(x)
+        var tmp = []
+        parseArgs(x, tmp, formData)
+        data.push(tmp)
       }
+    } else {
+      data.push(x)
     }
   }
+}
 
 const require_ = function(module) {
   try {
@@ -209,6 +211,11 @@ v.r = function(id) {
   const v = $("input:radio[name ='" + el.attr("name") + "']:checked").val()
   return v === undefined ? null : v
 }
+v.u = function(id, formData) {
+  const el = document.getElementById(id)
+  window.formData.append(id, el.files[0])
+  return el.files[0].name
+}
 
 const reviver = function(k, v) {
   if (Array.isArray(v)) {
@@ -247,25 +254,30 @@ export const element = function(valueFunc, id) {
 
 export const post = function(url, formData, onSuccess, onError) {
   const xhr = new XMLHttpRequest()
+  const progressBar = document.getElementById("hypergen-upload-progress-bar")
 
-  xhr.upload.onload = () => {
-    console.log(`The upload is completed: ${xhr.status} ${xhr.response}`)
-  }
+  if (progressBar !== null) {
+    xhr.upload.onload = () => {
+      progressBar.style.visibility = "hidden"
+      console.log(`The upload is completed: ${xhr.status} ${xhr.response}`)
+    }
 
-  xhr.upload.onerror = () => {
-    console.error('Upload failed.')
-    
-  }
+    xhr.upload.onerror = () => {
+      progressBar.style.visibility = "hidden"
+      console.error('Upload failed.')
 
-  xhr.upload.onabort = () => {
-    console.error('Upload cancelled.')
-  }
+    }
 
-  xhr.upload.onprogress = (event) => {
-    // event.loaded returns how many bytes are downloaded
-    // event.total returns the total number of bytes
-    // event.total is only available if server sends `Content-Length` header
-    console.log(`Uploaded ${event.loaded} of ${event.total} bytes`)
+    xhr.upload.onabort = () => {
+      progressBar.style.visibility = "hidden"
+      console.error('Upload cancelled.')
+    }
+
+    xhr.upload.onprogress = (event) => {
+      progressBar.style.visibility = "visible"
+      progressBar.value = event.loaded / event.total
+      console.log(`Uploaded ${event.loaded} of ${event.total} bytes`)
+    }
   }
 
   xhr.onload = () => {
