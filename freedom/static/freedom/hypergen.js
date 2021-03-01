@@ -40,6 +40,11 @@ export const remove = function(id) {
   el.parentNode.removeChild(el);
 }
 
+export const hide = function(id) {
+  let el = document.getElementById(id);
+  el.style.display = "none"
+}
+
 var eventHandlerCache = {}
 export const setEventHandlerCache = function(id, newCache) {
   eventHandlerCache[id] = newCache
