@@ -33,7 +33,12 @@ export const morph = function(id, html) {
       },
     }
   )
-}                     
+}
+
+export const remove = function(id) {
+  let el = document.getElementById(id);
+  el.parentNode.removeChild(el);
+}
 
 var eventHandlerCache = {}
 export const setEventHandlerCache = function(id, newCache) {
@@ -44,7 +49,7 @@ export const setEventHandlerCache = function(id, newCache) {
 // Callback
 var i = 0
 var isBlocked = false
-export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false}={}) {
+export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false}={}) {
   let postIt = function() {
     console.log("REQUEST", url, args, debounce)
     i++
@@ -61,12 +66,14 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
 
     // The element function must have access to the FormData.
     window.hypergenGlobalFormdata = new FormData()
+    window.hypergenUploadFiles = uploadFiles
     let json = JSON.stringify({
       args: args,
       id_prefix: "h" + i + "-",
     })
     let formData = window.hypergenGlobalFormdata
     window.hypergenGlobalFormdata = null
+    window.hypergenUploadFiles = null
 
     formData.append("hypergen_data", json)
     post(url, formData, (data) => {
@@ -169,7 +176,7 @@ const mergeAttrs = function(target, source){
 // DOM element value readers
 export const v = {}
 v.i = function(id) { 
-  const el = $(document.getElementById(id)) 
+  const el = $(document.getElementById(id))
   return parseInt(el.val())
 }
 v.f = function(id) { return 
@@ -201,7 +208,8 @@ v.r = function(id) {
 }
 v.u = function(id, formData) {
   const el = document.getElementById(id)
-  formData.append(id, el.files[0])
+  if (el.files.length !== 1) return null
+  if (window.hypergenUploadFiles === true) formData.append(id, el.files[0])
   return el.files[0].name
 }
 
