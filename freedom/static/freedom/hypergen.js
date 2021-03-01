@@ -47,14 +47,18 @@ export const callback = function(url, args, {debounce=0, confirm_=false}={}) {
   let postIt = function() {
     console.log("REQUEST", url, args, debounce)
     i++
-    var args2 = []
-    window.formData = new FormData()
-    parseArgs(args, args2, window.formData)
-    window.formData.append("hypergen_data", JSON.stringify({
-      args: args2,
+
+    // The element function must have access to the FormData.
+    window.hypergenGlobalFormdata = new FormData()
+    let json = JSON.stringify({
+      args: args,
       id_prefix: "h" + i + "-",
-    }))
-    post(url, window.formData, (data) => {
+    })
+    let formData = window.hypergenGlobalFormdata
+    window.hypergenGlobalFormdata = null
+
+    formData.append("hypergen_data", json)
+    post(url, formData, (data) => {
       console.log("RESPONSE", data)
       if (data === null) return
       applyCommands(data)
@@ -91,37 +95,7 @@ export let cancelThrottle = function(group) {
   }
 }
 
-// Link
-export let link = function() {
-  
-}
-
 // Internal
-const parseArgs = function(args, data, formData) {
-  console.assert(formData)
-  console.log("FD", formData)
-  for (var i=0; i<args.length; i++) {
-    var x = args[i]
-    if (typeof x === "function") {
-      data.push(x())
-    } else if (Array.isArray(x)) {
-      if (x.length === 3 && x[0] === "_") {
-        if(x[1] === "element_value") {
-          let func = resolvePath(x[2].cb_name)
-          data.push(func(x[2].id, formData))
-        } else {
-          throw "Unknown custom data"
-        }
-      } else {
-        var tmp = []
-        parseArgs(x, tmp, formData)
-        data.push(tmp)
-      }
-    } else {
-      data.push(x)
-    }
-  }
-}
 
 const require_ = function(module) {
   try {
@@ -213,7 +187,7 @@ v.r = function(id) {
 }
 v.u = function(id, formData) {
   const el = document.getElementById(id)
-  window.formData.append(id, el.files[0])
+  formData.append(id, el.files[0])
   return el.files[0].name
 }
 
@@ -247,7 +221,7 @@ const getCookie = function(name) {
 
 export const element = function(valueFunc, id) {
   this.toJSON = function() {
-    return resolvePath(valueFunc)(id)
+    return resolvePath(valueFunc)(id, window.hypergenGlobalFormdata)
   }
   return this
 }
