@@ -43,10 +43,21 @@ export const setEventHandlerCache = function(id, newCache) {
 
 // Callback
 var i = 0
-export const callback = function(url, args, {debounce=0, confirm_=false}={}) {
+var isBlocked = false
+export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false}={}) {
   let postIt = function() {
     console.log("REQUEST", url, args, debounce)
     i++
+
+    if (blocks === true) {
+      console.log("BLOCKS")
+      if (isBlocked === true) {
+        console.error("Callback was blocked")
+        return
+      } else {
+        isBlocked = true
+      }
+    }
 
     // The element function must have access to the FormData.
     window.hypergenGlobalFormdata = new FormData()
@@ -60,9 +71,12 @@ export const callback = function(url, args, {debounce=0, confirm_=false}={}) {
     formData.append("hypergen_data", json)
     post(url, formData, (data) => {
       console.log("RESPONSE", data)
-      if (data === null) return
-      applyCommands(data)
-    }, (data) => { alert("ERROR: " + data) })
+      if (data !== null) applyCommands(data)
+      isBlocked = false
+    }, (data) => {
+      alert("ERROR: " + data)
+      isBlocked = false
+    })
   }
   throttle(postIt, {delay: debounce, group: url, confirm_})
 }
