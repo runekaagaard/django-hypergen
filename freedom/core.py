@@ -183,6 +183,14 @@ def skippable():
         pass
 
 
+@contextmanager
+def skip(when):
+    if when:
+        raise SkipException()
+    else:
+        yield
+
+
 class adict(dict):
     def __getattr__(self, name):
         if name in self:
