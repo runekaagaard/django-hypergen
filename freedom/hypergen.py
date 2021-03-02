@@ -541,7 +541,10 @@ class source(base_element_void): pass
 class span(base_element): pass
 class strike(base_element): pass
 class strong(base_element): pass
-class style(base_element): pass
+class style(base_element):
+    def __init__(self, *children, **attrs):
+        attrs["t"] = lambda x: x
+        super(style, self).__init__(*children, **attrs)
 class sub(base_element): pass
 class summary(base_element): pass
 class sup(base_element): pass
