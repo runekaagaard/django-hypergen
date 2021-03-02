@@ -267,6 +267,7 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         def init(self, *children, **attrs):
+            self.t = attrs.pop("t", t)
             assert "hypergen" in c, "Missing global context: hypergen"
             self.children = children
             self.attrs = attrs
@@ -302,7 +303,10 @@ class base_element(ContextDecorator):
         for i in range(self.i, self.j):
             c.hypergen.into[i] = DELETED
 
-    def format_children(self, children, _t=t):
+    def format_children(self, children, _t=None):
+        if _t is None:
+            _t = self.t
+
         into = []
         sep = t(self.sep)
 
@@ -526,7 +530,10 @@ class rt(base_element): pass
 class ruby(base_element): pass
 class s(base_element): pass
 class samp(base_element): pass
-class script(base_element): pass
+class script(base_element):
+    def __init__(self, *children, **attrs):
+        attrs["t"] = lambda x: x
+        super(script, self).__init__(*children, **attrs)
 class section(base_element): pass
 class select(base_element): pass
 class small(base_element): pass
