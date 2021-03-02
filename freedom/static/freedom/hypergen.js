@@ -59,16 +59,6 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     console.log("REQUEST", url, args, debounce)
     i++
 
-    if (blocks === true) {
-      console.log("BLOCKS")
-      if (isBlocked === true) {
-        console.error("Callback was blocked")
-        return
-      } else {
-        isBlocked = true
-      }
-    }
-
     // The element function must have access to the FormData.
     window.hypergenGlobalFormdata = new FormData()
     window.hypergenUploadFiles = uploadFiles
@@ -79,8 +69,17 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     let formData = window.hypergenGlobalFormdata
     window.hypergenGlobalFormdata = null
     window.hypergenUploadFiles = null
-
     formData.append("hypergen_data", json)
+
+    if (blocks === true) {
+      console.log("BLOCKS")
+      if (isBlocked === true) {
+        console.error("Callback was blocked")
+        return
+      } else {
+        isBlocked = true
+      }
+    }
     post(url, formData, (data) => {
       console.log("RESPONSE", data)
       if (data !== null) applyCommands(data)
