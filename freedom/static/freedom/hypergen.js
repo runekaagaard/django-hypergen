@@ -183,8 +183,8 @@ v.i = function(id) {
   const el = $(document.getElementById(id))
   return parseInt(el.val())
 }
-v.f = function(id) { return 
-  const el = $(document.getElementById(id)) 
+v.f = function(id) {
+  const el = $(document.getElementById(id))
   return parseFloat(el.val())
 }
 v.s = function(id) {
