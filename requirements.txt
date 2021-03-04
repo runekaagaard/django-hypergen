@@ -1,5 +1,10 @@
-pyrsistent
-pytest
+# testing
+pytest==6.2.2
 
+# hyperfy
 beautifulsoup4==4.9.3
 pyperclip==1.8.1
+
+# actual code
+contextlib2==0.6.0.post1
+pyrsistent==0.16.1
