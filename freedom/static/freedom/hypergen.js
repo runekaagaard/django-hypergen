@@ -27,8 +27,24 @@ export const morph = function(id, html) {
         } else if (fromEl.nodeName == "INPUT" && fromEl.type === "file" && fromEl.files.length > 0) {
           mergeAttrs(fromEl, toEl)
           return false
+        } else if (fromEl.nodeName === "SCRIPT" && toEl.nodeName === "SCRIPT") {
+            var script = document.createElement('script');
+            //copy over the attributes
+            [...toEl.attributes].forEach( attr => { script.setAttribute(attr.nodeName ,attr.nodeValue) })
+            script.innerHTML = toEl.innerHTML;
+            fromEl.replaceWith(script)
+            return false;
         } else {
           return true
+        }
+      },
+      onNodeAdded: function (node) {
+        if (node.nodeName === 'SCRIPT') {
+          var script = document.createElement('script');
+          //copy over the attributes
+          [...node.attributes].forEach( attr => { script.setAttribute(attr.nodeName ,attr.nodeValue) })
+          script.innerHTML = node.innerHTML;
+          node.replaceWith(script)
         }
       },
     }
