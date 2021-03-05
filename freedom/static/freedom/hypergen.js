@@ -61,6 +61,10 @@ export const hide = function(id) {
   el.style.display = "none"
 }
 
+export const redirect = function(url) {
+  window.location = url
+}
+
 var eventHandlerCache = {}
 export const setEventHandlerCache = function(id, newCache) {
   eventHandlerCache[id] = newCache
