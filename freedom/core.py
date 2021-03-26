@@ -21,7 +21,7 @@ class Context(threading.local):
         try:
             return self.__dict__['ctx'][k]
         except KeyError:
-            return AttributeError("No such attribute: " + k)
+            raise AttributeError("No such attribute: " + k)
 
     def __getitem__(self, k):
         return self.__dict__['ctx'][k]

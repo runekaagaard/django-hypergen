@@ -59,6 +59,7 @@ def hypergen_context(**kwargs):
         event_handler_cache={},
         target_id=kwargs.get("target_id", "__main__"),
         commands=[],
+        ids=set(),
         wrap_elements=kwargs.get("wrap_elements", default_wrap_elements))
 
 
@@ -81,7 +82,7 @@ def hypergen(func, *args, **kwargs):
                     dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
             print "Execution time:", time.time() - a
-            return HttpResponse(html)
+            return html
         else:
             command("hypergen.morph", c.hypergen.target_id, html)
             print "Execution time:", time.time() - a
@@ -222,7 +223,8 @@ def callback(url_or_autourl_func, *cb_args, **kwargs):
         c.hypergen.event_handler_cache[cmd_id] = cmd
         return [
             " ",
-            t(k), '="', "e('{}',{})".format(c.hypergen.target_id, cmd_id), '"'
+            t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id,
+                                                   cmd_id), '"'
         ]
 
     return to_html
@@ -241,7 +243,8 @@ def call_js(command_path, *cb_args):
 
         return [
             " ",
-            t(k), '="', "e('{}',{})".format(c.hypergen.target_id, cmd_id), '"'
+            t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id,
+                                                   cmd_id), '"'
         ]
 
     return to_html
@@ -283,6 +286,11 @@ class base_element(ContextDecorator):
             super(base_element, self).__init__()
 
         c.hypergen.wrap_elements(init, self, *children, **attrs)
+
+        if self.attrs["id_"].v is not None:
+            id_ = self.attrs["id_"].v
+            assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
+            c.hypergen["ids"].add(id_)
 
     def __enter__(self):
         c.hypergen.into.extend(self.start())
@@ -357,6 +365,7 @@ class base_element(ContextDecorator):
                     for k1, v1 in items(v)), '"'
             ]
         else:
+            assert '"' not in v, "How dare you put a \" in my attributes! :)"
             return [" ", k, '="', t(v), '"']
 
     def start(self):
@@ -626,10 +635,7 @@ def autocallback(func, *dargs, **dkwargs):
         args.extend(loads(request.POST["hypergen_data"])["args"])
         with c(referer_resolver_match=resolve(
                 c.request.META["HTTP_X_PATHNAME"])):
-            return HttpResponse(
-                dumps(func(request, *args, **fkwargs)),
-                status=200,
-                content_type='application/json')
+            return func(request, *args, **fkwargs)
 
     _URLS[module].append(_)
     assert hasattr(_, "hypergen_callback_url")

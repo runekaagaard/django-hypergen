@@ -6,5 +6,5 @@ How to develop:
     # or
     sudo npm install -g parcel-bundler
     cd freedom/static/freedom
-    parcel watch freedom.js
+    parcel watch -o hypergen.min.js -d . hypergen.js
     

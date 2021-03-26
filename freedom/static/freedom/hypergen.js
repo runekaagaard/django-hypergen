@@ -65,16 +65,20 @@ export const redirect = function(url) {
   window.location = url
 }
 
-var eventHandlerCache = {}
+window.eventHandlerCache = {}
 export const setEventHandlerCache = function(id, newCache) {
-  eventHandlerCache[id] = newCache
-  console.log("Setting new state at", id, eventHandlerCache)
+  if (window.eventHandlerCache[id] === undefined) {
+    window.eventHandlerCache[id] = {}
+  }
+  window.eventHandlerCache[id] = Object.assign(window.eventHandlerCache[id], newCache)
+  console.log("Setting new state at", id, window.eventHandlerCache)
 }
 
 // Callback
 var i = 0
 var isBlocked = false
-export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false}={}) {
+export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
+                                             params={}, meta={}}={}) {
   let postIt = function() {
     console.log("REQUEST", url, args, debounce)
     i++
@@ -84,6 +88,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     window.hypergenUploadFiles = uploadFiles
     let json = JSON.stringify({
       args: args,
+      meta: meta,
       id_prefix: "h" + i + "-",
     })
     let formData = window.hypergenGlobalFormdata
@@ -107,7 +112,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     }, (data) => {
       alert("ERROR: " + data)
       isBlocked = false
-    })
+    }, params)
   }
   throttle(postIt, {delay: debounce, group: url, confirm_})
 }
@@ -179,8 +184,11 @@ const applyCommand = function(path, ...args) {
   let rpath = resolvePath(path)
   rpath(...args)
 }
-window.e = function(targetId, dataId) {
-  applyCommand(...eventHandlerCache[targetId][dataId])
+window.e = function(event, targetId, dataId) {
+  event.preventDefault()
+  event.stopPropagation()
+  applyCommand(...window.eventHandlerCache[targetId][dataId])
+  
 }
 
 const applyCommands = function(commands) {
@@ -272,7 +280,18 @@ export const element = function(valueFunc, id) {
   return this
 }
 
-export const post = function(url, formData, onSuccess, onError) {
+
+function addParams(url, params) {
+  const ret = []
+  for (let d in params)
+    ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(params[d]))
+  if (ret.length === 0) return url
+  else return url + "?" + ret.join('&')
+}
+
+export const post = function(url, formData, onSuccess, onError, params) {
+  url = addParams(url, params)
+  
   const xhr = new XMLHttpRequest()
   const progressBar = document.getElementById("hypergen-upload-progress-bar")
 
@@ -331,3 +350,11 @@ export const post = function(url, formData, onSuccess, onError) {
   xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
   xhr.send(formData)
 }
+
+window.addEventListener("popstate", function(event) {
+  if (event.state && event.state.callback_url !== undefined) {
+    callback(event.state.callback_url, [], {meta: {is_popstate: true}})
+  } else {
+    window.location = location.href
+  }
+})
