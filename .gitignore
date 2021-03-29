@@ -131,3 +131,4 @@ dmypy.json
 freedom/static/freedom/node_modules/
 .dumbjump
 .python-project
+*flymake.py
