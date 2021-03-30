@@ -16,7 +16,7 @@ from pyrsistent import m
 
 from django.urls import reverse_lazy, resolve
 from django.conf.urls import url
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_text
 
 from freedom.core import context as c, insert, wrap2
@@ -47,25 +47,21 @@ def default_wrap_elements(init, self, *children, **attrs):
     return init(self, *children, **attrs)
 
 def hypergen_context(**kwargs):
-    return m(
-        into=[], liveview=True, id_counter=base65_counter(),
-        id_prefix=(loads(c.request.POST["hypergen_data"])["id_prefix"]
-                   if c.request.is_ajax() else ""), event_handler_cache={},
-        target_id=kwargs.get("target_id", "__main__"), commands=[], ids=set(),
-        wrap_elements=kwargs.get("wrap_elements", default_wrap_elements))
+    return m(into=[], liveview=True, id_counter=base65_counter(),
+        id_prefix=(loads(c.request.POST["hypergen_data"])["id_prefix"] if c.request.is_ajax() else ""),
+        event_handler_cache={}, target_id=kwargs.get("target_id",
+        "__main__"), commands=[], ids=set(), wrap_elements=kwargs.get("wrap_elements", default_wrap_elements))
 
 def hypergen(func, *args, **kwargs):
     a = time.time()
     kwargs = deepcopy(kwargs)
     target_id = kwargs.pop("target_id", "__main__")
     wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
-    with c(hypergen=hypergen_context(target_id=target_id,
-                                     wrap_elements=wrap_elements, **kwargs)):
+    with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
-            command("hypergen.setEventHandlerCache", c.hypergen.target_id,
-                    c.hypergen.event_handler_cache)
+            command("hypergen.setEventHandlerCache", c.hypergen.target_id, c.hypergen.event_handler_cache)
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
@@ -79,13 +75,25 @@ def hypergen(func, *args, **kwargs):
             print "Execution time:", time.time() - a
             return c.hypergen.commands
 
-def hypergen_response(html_or_commands):
-    if not c.request.is_ajax():
-        return HttpResponse(html_or_commands)
+def hypergen_response(html_or_commands_or_http_response):
+    value = html_or_commands_or_http_response
+    if isinstance(value, HttpResponseRedirect):
+        if c.request.is_ajax():
+            return HttpResponse(dumps([["hypergen.redirect", value["Location"]]]), status=200,
+                content_type='application/json')
+        else:
+            return value
+    elif isinstance(value, HttpResponse):
+        if c.request.is_ajax():
+            raise Exception("TODO")
+        else:
+            return value
+    elif type(value) in (list, tuple):
+        return HttpResponse(dumps(value), status=200, content_type='application/json')
+    elif type(value) in (str, unicode):
+        return HttpResponse(value)
     else:
-        assert type(html_or_commands) is list
-        return HttpResponse(dumps(html_or_commands), status=200,
-                            content_type='application/json')
+        raise Exception("Invalid response value")
 
 def hypergen_as_response(func, *args, **kwargs):
     return hypergen_response(hypergen(func, *args, **kwargs))
@@ -155,8 +163,7 @@ def _sort_attrs(attrs):
     if attrs.pop("_sort_attrs", False):
         attrs = OrderedDict((k, attrs[k]) for k in sorted(attrs.keys()))
         if "style" in attrs and type(attrs["style"]) is dict:
-            attrs["style"] = OrderedDict(
-                (k, attrs["style"][k]) for k in sorted(attrs["style"].keys()))
+            attrs["style"] = OrderedDict((k, attrs["style"][k]) for k in sorted(attrs["style"].keys()))
 
     return attrs
 
@@ -189,8 +196,7 @@ def callback(url_or_view, *cb_args, **kwargs):
     assert not kwargs, "Invalid callback kwarg(s): {}".format(repr(kwargs))
     if callable(url_or_view):
         assert hasattr(url_or_view, "reverse") and callable(
-            url_or_view.reverse), "Must have a reverse() attribute {}".format(
-                url_or_view)
+            url_or_view.reverse), "Must have a reverse() attribute {}".format(url_or_view)
         url = url_or_view.reverse()
     else:
         url = url_or_view
@@ -200,17 +206,12 @@ def callback(url_or_view, *cb_args, **kwargs):
             return element if x is THIS else x
 
         element.ensure_id()
-        cmd = command(
-            "hypergen.callback", url, [fix_this(x) for x in cb_args],
-            d(debounce=debounce, confirm_=confirm_, blocks=blocks,
-              uploadFiles=upload_files), return_=True)
+        cmd = command("hypergen.callback", url, [fix_this(x) for x in cb_args],
+            d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files), return_=True)
         cmd_id = id(cmd)
 
         c.hypergen.event_handler_cache[cmd_id] = cmd
-        return [
-            " ",
-            t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id,
-                                                   cmd_id), '"']
+        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id, cmd_id), '"']
 
     return to_html
 
@@ -220,15 +221,11 @@ def call_js(command_path, *cb_args):
             return element if x is THIS else x
 
         element.ensure_id()
-        cmd = command(command_path, *[fix_this(x) for x in cb_args],
-                      return_=True)
+        cmd = command(command_path, *[fix_this(x) for x in cb_args], return_=True)
         cmd_id = id(cmd)
         c.hypergen.event_handler_cache[cmd_id] = cmd
 
-        return [
-            " ",
-            t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id,
-                                                   cmd_id), '"']
+        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id, cmd_id), '"']
 
     return to_html
 
@@ -253,8 +250,7 @@ class base_element(ContextDecorator):
             self.t = attrs.pop("t", t)
             self.children = children
             self.attrs = attrs
-            self.attrs["id_"] = LazyAttribute("id",
-                                              self.attrs.get("id_", None))
+            self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
             self.i = len(c.hypergen.into)
             self.sep = attrs.pop("sep", "")
             self.js_cb = attrs.pop("js_cb", "hypergen.v.s")
@@ -324,8 +320,7 @@ class base_element(ContextDecorator):
 
     def ensure_id(self):
         if self.attrs["id_"].v is None:
-            self.attrs["id_"].v = c.hypergen.id_prefix + next(
-                c.hypergen.id_counter)
+            self.attrs["id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
@@ -339,10 +334,7 @@ class base_element(ContextDecorator):
             else:
                 return []
         elif k == "style" and type(v) in (dict, OrderedDict):
-            return [
-                " ", k, '="', ";".join(
-                    t(k1.replace("_", "-")) + ":" + t(v1)
-                    for k1, v1 in items(v)), '"']
+            return [" ", k, '="', ";".join(t(k1.replace("_", "-")) + ":" + t(v1) for k1, v1 in items(v)), '"']
         else:
             if v is None:
                 v = ""
@@ -409,10 +401,7 @@ class input_(base_element_void):
 
     def __init__(self, *children, **attrs):
         super(input_, self).__init__(*children, **attrs)
-        self.js_cb = attrs.pop(
-            "js_cb",
-            INPUT_CALLBACK_TYPES.get(attrs.get("type_", "text"),
-                                     "hypergen.v.s"))
+        self.js_cb = attrs.pop("js_cb", INPUT_CALLBACK_TYPES.get(attrs.get("type_", "text"), "hypergen.v.s"))
 
 ### Special tags ###
 
@@ -421,7 +410,18 @@ def doctype(type_="html"):
 
 ### GENERATED BY build.py ###
 # yapf: disable
-class a(base_element): pass
+class a(base_element):
+    def __init__(self, *children, **attrs):
+        href = attrs.get("href")
+        if type(href) is StringWithMeta:
+            base_template1 = href.meta.get("base_template", None)
+            if base_template1 is not None:
+                base_template2 = getattr(c, "base_template", None)
+                if base_template1 == base_template2:
+                    # Partial loading is possible.
+                    attrs["onclick"] = callback(href)
+
+        super(a, self).__init__(*children, **attrs)
 
 class abbr(base_element): pass
 
@@ -692,10 +692,23 @@ def encoder(o):
         raise TypeError(repr(o) + " is not JSON serializable")
 
 def dumps(data, default=encoder, indent=None):
-    result = json.dumps(data, default=encoder, separators=(',', ':'),
-                        indent=indent)
+    result = json.dumps(data, default=encoder, separators=(',', ':'), indent=indent)
 
     return result
 
 def loads(data):
     return json.loads(data)
+
+class StringWithMeta(object):
+    def __init__(self, value, meta):
+        self.value = value
+        self.meta = meta
+
+    def __str__(self):
+        return self.value
+
+    def __unicode__(self):
+        return self.value
+
+    def __iter__(self):
+        return iter(self.value)

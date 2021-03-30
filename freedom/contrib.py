@@ -2,22 +2,21 @@
 from __future__ import (absolute_import, division, unicode_literals)
 from functools import wraps
 
-from django.urls.base import reverse_lazy, resolve, reverse
+from django.urls.base import resolve, reverse
 from django.conf.urls import url
 from django.contrib.auth.decorators import permission_required
-from django.http.response import HttpResponse
 
 from freedom.core import context as c, wrap2
-from freedom.hypergen import loads, command, hypergen, hypergen_as_response, hypergen_response, dumps
+from freedom.hypergen import loads, command, hypergen, hypergen_response, StringWithMeta
 
 d = dict
 _URLS = {}
 NO_PERM_REQUIRED = "__NO_PERM_REQUIRED__"
 
-def register_view_for_url(func, namespace, url=None):
+def register_view_for_url(func, namespace, base_template, url=None):
     def _reverse(*view_args, **view_kwargs):
-        return reverse("{}:{}".format(namespace, func.__name__),
-                       args=view_args, kwargs=view_kwargs)
+        return StringWithMeta(reverse("{}:{}".format(namespace, func.__name__), args=view_args, kwargs=view_kwargs),
+            d(base_template=base_template))
 
     func.reverse = _reverse
 
@@ -33,10 +32,8 @@ def register_view_for_url(func, namespace, url=None):
     return func
 
 @wrap2
-def hypergen_view(func, url=None, perm=None, base_template=None,
-                  base_template_args=None, base_template_kwargs=None,
-                  namespace=None, login_url=None, raise_exception=False,
-                  target_id=None):
+def hypergen_view(func, url=None, perm=None, base_template=None, base_template_args=None, base_template_kwargs=None,
+    namespace=None, login_url=None, raise_exception=False, target_id=None):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert base_template is not None, "base_template required"
@@ -51,62 +48,69 @@ def hypergen_view(func, url=None, perm=None, base_template=None,
     @wraps(func)
     def _(request, *fargs, **fkwargs):
         path = c.request.get_full_path()
+        c.base_template = base_template
+
+        func_return = {}
 
         def wrap_base_template(request, *fargs, **fkwargs):
             with base_template(*base_template_args, **base_template_kwargs):
-                func(request, *fargs, **fkwargs)
+                func_return["value"] = func(request, *fargs, **fkwargs)
                 command("history.replaceState", d(callback_url=path), "", path)
 
+        def wrap_view_with_hypergen():
+            func_return["value"] = func(request, *fargs, **fkwargs)
+
         if not c.request.is_ajax():
-            return hypergen_as_response(wrap_base_template, request, *fargs,
-                                        **fkwargs)
+            html = hypergen(wrap_base_template, request, *fargs, **fkwargs)
+            if func_return["value"] is not None:
+                html = func_return["value"]
+            return hypergen_response(html)
         else:
-            fkwargs["target_id"] = target_id
-            commands = hypergen(func, request, *fargs, **fkwargs)
+            commands = hypergen(wrap_view_with_hypergen, target_id=target_id)
+            if func_return["value"] is not None:
+                commands = func_return["value"]
+
             data = loads(c.request.POST["hypergen_data"])
             if not ("meta" in data and "is_popstate" in data["meta"]
-                    and data["meta"]["is_popstate"]):
-                commands.append(
-                    command("history.pushState", d(callback_url=path), "",
-                            path, return_=True))
+                and data["meta"]["is_popstate"]) and type(commands) in (list, tuple):
+                commands.append(command("history.pushState", d(callback_url=path), "", path, return_=True))
             return hypergen_response(commands)
 
     if perm != NO_PERM_REQUIRED:
-        _ = permission_required(perm, login_url=login_url,
-                                raise_exception=raise_exception)(_)
+        _ = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(_)
 
-    return register_view_for_url(_, namespace, url=url)
+    return register_view_for_url(_, namespace, base_template, url=url)
 
 @wrap2
-def hypergen_callback(func, url=None, perm=None, namespace=None,
-                      target_id=None, login_url=None, raise_exception=False):
+def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None, login_url=None,
+    raise_exception=False, base_template=None):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert namespace is not None, "namespace is required"
     assert target_id is not None, "target_id is required"
+    assert base_template is not None, "base_template is required"
 
     @wraps(func)
     def _(request, *fargs, **fkwargs):
-        def wrap_view_with_hypergen(func_return):
+        def wrap_view_with_hypergen(func_return, args):
             func_return["value"] = func(request, *args, **fkwargs)
 
+        assert c.request.method == "POST", "Only POST request are supported"
         assert c.request.is_ajax()
+        c.base_template = base_template
+
         args = list(fargs)
         args.extend(loads(request.POST["hypergen_data"])["args"])
-        with c(referer_resolver_match=resolve(
-                c.request.META["HTTP_X_PATHNAME"])):
+        with c(referer_resolver_match=resolve(c.request.META["HTTP_X_PATHNAME"])):
             func_return = {}
-            commands = hypergen(wrap_view_with_hypergen, func_return,
-                                target_id=target_id)
-            commands = commands if func_return[
-                "value"] is None else func_return["value"]
+            commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id)
+            commands = commands if func_return["value"] is None else func_return["value"]
 
             return hypergen_response(commands)
 
     if perm != NO_PERM_REQUIRED:
-        _ = permission_required(perm, login_url=login_url,
-                                raise_exception=raise_exception)(_)
+        _ = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(_)
 
-    return register_view_for_url(_, namespace, url=url)
+    return register_view_for_url(_, namespace, base_template, url=url)
 
 def hypergen_urls(module):
     patterns = []
