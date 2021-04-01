@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from django.templatetags.static import static
 from freedom.hypergen import *
 from contextlib import contextmanager
@@ -10,10 +12,9 @@ def base_template():
             meta(charset="utf-8")
             meta(name="viewport",
                  content="width=device-width, initial-scale=1")
-            title("Template • TodoMVC")
-            link(href=static("todomvc.css"))
-            # link(href="node_modules/todomvc-app-css/index.css")
-            # link(href="css/app.css")
+            title("Hypergen • TodoMVC")
+            script(src=static("freedom/hypergen.min.js"))
+            link(static("todomvc.css"))
         with body():
             yield
             with section(class_="todoapp"):
@@ -56,8 +57,7 @@ def base_template():
                 with p():
                     a("Sindre Sorhus", href="http://sindresorhus.com")
                 with p():
-                    a("you", href="http://todomvc.com")
+                    a("Django Freedom",
+                      href="https://github.com/runekaagaard/django-freedom")
                 with p():
                     a("TodoMVC", href="http://todomvc.com")
-            script(src="node_modules/todomvc-common/base.js")
-            script(src="js/app.js")
