@@ -8,7 +8,6 @@ from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps
 from copy import deepcopy
-import cPickle as pickle
 import datetime, json
 
 from contextlib2 import ContextDecorator, contextmanager
@@ -32,6 +31,7 @@ def make_string(x):
 if sys.version_info.major > 2:
     from html import escape
     letters = string.ascii_letters
+    unicode = str
 
     def items(x):
         return x.items()
@@ -68,11 +68,11 @@ def hypergen(func, *args, **kwargs):
                 s = "<script>$(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
                     dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
-            print "Execution time:", time.time() - a
+            print("Execution time:", time.time() - a)
             return html
         else:
             command("hypergen.morph", c.hypergen.target_id, html)
-            print "Execution time:", time.time() - a
+            print("Execution time:", time.time() - a)
             return c.hypergen.commands
 
 def hypergen_response(html_or_commands_or_http_response):
@@ -113,6 +113,7 @@ def command(javascript_func_path, *args, **kwargs):
 
 @contextmanager
 def appstate(app_name):
+    import cPickle as pickle
     k = b"hypergen_appstate_{}".format(app_name)
     appstate = c.request.session.get(k, None)
     if appstate is not None:
