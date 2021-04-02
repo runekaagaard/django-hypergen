@@ -78,7 +78,7 @@ export const setEventHandlerCache = function(id, newCache) {
 var i = 0
 var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
-                                             params={}, meta={}}={}) {
+                                             params={}, meta={}, clear=false, elementId=null}={}) {
   let postIt = function() {
     console.log("REQUEST", url, args, debounce)
     i++
@@ -109,9 +109,11 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       console.log("RESPONSE", data)
       if (data !== null) applyCommands(data)
       isBlocked = false
+      if (clear === true) document.getElementById(elementId).value = ""
     }, (data) => {
-      alert("ERROR: " + data)
       isBlocked = false
+      console.error("Hypergen post error occured")
+      document.getElementsByTagName("html")[0].innerHTML = data
     }, params)
   }
   throttle(postIt, {delay: debounce, group: url, confirm_})
@@ -195,7 +197,6 @@ window.e = function(event, targetId, dataId, eventMatches) {
     }
   }
   applyCommand(...window.eventHandlerCache[targetId][dataId])
-  
 }
 
 const applyCommands = function(commands) {

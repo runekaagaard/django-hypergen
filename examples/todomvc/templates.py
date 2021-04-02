@@ -20,12 +20,11 @@ def base():
             with footer(class_="info"):
                 p("Double-click to edit a todo")
                 with p():
-                    a("Sindre Sorhus", href="http://sindresorhus.com")
-                with p():
                     a("Django Freedom", href="https://github.com/runekaagaard/django-freedom")
                 with p():
                     a("TodoMVC", href="http://todomvc.com")
 
+@component
 def todo_item(item):
     from todomvc.views import toggle_is_completed, delete
     with li(class_="completed" if item.is_completed else ""):
@@ -36,29 +35,31 @@ def todo_item(item):
             button(class_="destroy", onclick=cb(delete, item.pk))
         input_(class_="edit", value=item.description)
 
-def content(items, filtering):
-    from todomvc.views import ALL, ACTIVE, COMPLETED, index, add
+def content(items, filtering, all_completed):
+    from todomvc.views import ALL, ACTIVE, COMPLETED, index, add, clear_completed, toggle_all
     with section(class_="todoapp"):
         with header(class_="header"):
             h1("todos")
             input_(id_="new-todo", class_="new-todo", placeholder="What needs to be done?", autofocus=True,
-                onkeyup=cb(add, THIS, event_matches={"key": "Enter"}))
+                onkeyup=cb(add, THIS, event_matches={"key": "Enter"}, clear=True))
+
+        if filtering == ALL and not items:
+            return
+
         with section(class_="main"):
-            input_(id_="toggle-all", class_="toggle-all", type_="checkbox")
+            input_(id_="toggle-all", class_="toggle-all", type_="checkbox", checked=all_completed,
+                onclick=cb(toggle_all, not all_completed))
             label("Mark all as complete", for_="toggle-all")
 
-            with ul(class_="todo-list"):
-                for item in items:
-                    todo_item(item)
+        ul([todo_item(item) for item in items], class_="todo-list")
 
         with footer(class_="footer"):
-            with span(class_="todo-count"):
-                strong("0")
+            span(strong(len(items), "items" if len(items) > 1 else "item", sep=" "), class_="todo-count")
+
             with ul(class_="filters"):
-                with li():
-                    a("All", class_="selected" if filtering == ALL else "", href=index.reverse(ALL))
-                with li():
-                    a("Active", class_="selected" if filtering == ACTIVE else "", href=index.reverse(ACTIVE))
-                with li():
-                    a("Completed", class_="selected" if filtering == COMPLETED else "", href=index.reverse(COMPLETED))
-            button("Clear completed", class_="clear-completed")
+                li(a("All", class_="selected" if filtering == ALL else "", href=index.reverse(ALL)))
+                li(a("Active", class_="selected" if filtering == ACTIVE else "", href=index.reverse(ACTIVE)))
+                li(a("Completed", class_="selected" if filtering == COMPLETED else "", href=index.reverse(COMPLETED)))
+
+            if items.filter(is_completed=True):
+                button("Clear completed", class_="clear-completed", onclick=cb(clear_completed))

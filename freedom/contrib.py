@@ -64,6 +64,8 @@ def hypergen_view(func, url=None, perm=None, base_template=None, base_template_a
     assert target_id is not None, "target_id required"
     assert namespace is not None, "namespace required"
 
+    original_func = func
+
     if base_template_args is None:
         base_template_args = tuple()
     if base_template_kwargs is None:
@@ -106,12 +108,14 @@ def hypergen_view(func, url=None, perm=None, base_template=None, base_template_a
         _ = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(_)
 
     _ = ensure_csrf_cookie(_)
+    _ = register_view_for_url(_, namespace, base_template, url=url)
+    _.original_func = func
 
-    return register_view_for_url(_, namespace, base_template, url=url)
+    return _
 
 @wrap2
 def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None, login_url=None,
-    raise_exception=False, base_template=None, app_name=None, appstate_init=None):
+    raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert namespace is not None, "namespace is required"
     assert target_id is not None, "target_id is required"
@@ -119,9 +123,13 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
 
     @wraps(func)
     def _(request, *fargs, **fkwargs):
+        referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
+
         @appstate(app_name, appstate_init)
         def wrap_view_with_hypergen(func_return, args):
             func_return["value"] = func(request, *args, **fkwargs)
+            if view is not None:
+                view.original_func(request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
 
         assert c.request.method == "POST", "Only POST request are supported"
         assert c.request.is_ajax()
@@ -129,7 +137,7 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
 
         args = list(fargs)
         args.extend(loads(request.POST["hypergen_data"])["args"])
-        with c(referer_resolver_match=resolve(c.request.META["HTTP_X_PATHNAME"])):
+        with c(referer_resolver_match=referer_resolver_match):
             func_return = {}
             commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id)
             commands = commands if func_return["value"] is None else func_return["value"]
@@ -140,8 +148,10 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
         _ = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(_)
 
     _ = ensure_csrf_cookie(_)
+    _ = register_view_for_url(_, namespace, base_template, url=url)
+    _.original_func = func
 
-    return register_view_for_url(_, namespace, base_template, url=url)
+    return _
 
 def hypergen_urls(module):
     patterns = []
