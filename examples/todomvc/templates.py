@@ -19,10 +19,8 @@ def base():
                 yield
             with footer(class_="info"):
                 p("Double-click to edit a todo")
-                with p():
-                    a("Django Freedom", href="https://github.com/runekaagaard/django-freedom")
-                with p():
-                    a("TodoMVC", href="http://todomvc.com")
+                p(a("Django Freedom", href="https://github.com/runekaagaard/django-freedom"))
+                p(a("TodoMVC", href="http://todomvc.com"))
 
 @component
 def todo_item(item):
@@ -43,8 +41,8 @@ def todo_item(item):
                 button(class_="destroy", onclick=cb(delete, item.pk))
         else:
             input_(id_="edit-item", class_="edit", autofocus=True, value=item.description,
-                onkeyup=cb(submit_edit, item.pk, THIS, event_matches={"key": "Enter"},
-                blocks=True), onblur=cb(submit_edit, item.pk, THIS))
+                onkeyup=cb(submit_edit, item.pk, THIS,
+                event_matches={"key": "Enter"}), onblur=cb(submit_edit, item.pk, THIS))
 
 def content(items, filtering, all_completed):
     from todomvc.views import ALL, ACTIVE, COMPLETED, index, add, clear_completed, toggle_all
