@@ -7,14 +7,15 @@ from freedom.core import context as c
 from todomvc import templates
 from todomvc.models import Item
 
+appstate_init = lambda: {
+    "selected": set(),}
+
+HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content",
+    namespace="todomvc", app_name="todomvc", appstate_init=appstate_init)
 ALL, ACTIVE, COMPLETED = "", "active", "completed"
 
-def appstate_init():
-    return {
-        "selected": set(),}
-
 def get_items(filtering):
-    items = Item.objects.all()
+    items = Item.objects.order_by("is_completed", "description").all()
     if filtering == ACTIVE:
         items = items.filter(is_completed=False)
     elif filtering == COMPLETED:
@@ -22,13 +23,11 @@ def get_items(filtering):
 
     return items
 
-@hypergen_view(url=r'^(active|completed|)$', perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content",
-    namespace="todomvc", app_name="todomvc", appstate_init=appstate_init)
+@hypergen_view(url=r'^(active|completed|)$', **HYPERGEN_SETTINGS)
 def index(request, filtering):
     templates.content(get_items(filtering), filtering)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content", namespace="todomvc",
-    app_name="todomvc", appstate_init=appstate_init)
+@hypergen_callback(**HYPERGEN_SETTINGS)
 def add(request, description):
     filtering = c.referer_resolver_match[0]
     description = description.strip()
@@ -38,35 +37,25 @@ def add(request, description):
     Item(description=description).save()
     templates.content(get_items(ALL), filtering)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content", namespace="todomvc",
-    app_name="todomvc", appstate_init=appstate_init)
-def complete(request, pk):
+@hypergen_callback(**HYPERGEN_SETTINGS)
+def toggle_is_completed(request, pk):
     filtering = c.referer_resolver_match[0]
-    Item.objects.filter(pk=pk).update(is_completed=True)
+    item = Item.objects.get(pk=pk)
+    item.is_completed = not item.is_completed
+    item.save()
 
     templates.content(get_items(ALL), filtering)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content", namespace="todomvc",
-    app_name="todomvc", appstate_init=appstate_init)
+@hypergen_callback(**HYPERGEN_SETTINGS)
 def delete(request, pk):
     filtering = c.referer_resolver_match[0]
     Item.objects.filter(pk=pk).delete()
 
     templates.content(get_items(ALL), filtering)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content", namespace="todomvc",
-    app_name="todomvc", appstate_init=appstate_init)
+@hypergen_callback(**HYPERGEN_SETTINGS)
 def clear_completed(request, pk):
     filtering = c.referer_resolver_match[0]
     Item.objects.filter(is_completed=True).delete()
-
-    templates.content(get_items(ALL), filtering)
-
-@hypergen_callback(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content", namespace="todomvc",
-    app_name="todomvc", appstate_init=appstate_init)
-def toggle_one(request, pk):
-    filtering = c.referer_resolver_match[0]
-
-    c.appstate["selected"].add(pk)
 
     templates.content(get_items(ALL), filtering)
