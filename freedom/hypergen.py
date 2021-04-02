@@ -332,6 +332,8 @@ class base_element(ContextDecorator):
                 return []
         elif k == "style" and type(v) in (dict, OrderedDict):
             return [" ", k, '="', ";".join(t(k1.replace("_", "-")) + ":" + t(v1) for k1, v1 in items(v)), '"']
+        elif k == "class" and type(v) in (list, tuple, set):
+            return [" ", k, '="', t(" ".join(v)), '"']
         else:
             if v is None:
                 v = ""

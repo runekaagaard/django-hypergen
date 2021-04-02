@@ -8,7 +8,7 @@ from todomvc import templates
 from todomvc.models import Item
 
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content",
-    namespace="todomvc", app_name="todomvc", appstate_init=lambda: {"selected": set()})
+    namespace="todomvc", app_name="todomvc", appstate_init=lambda: {"edit_item_pk": None})
 ALL, ACTIVE, COMPLETED = "", "active", "completed"
 
 @hypergen_view(url=r'^(active|completed|)$', **HYPERGEN_SETTINGS)
@@ -48,3 +48,14 @@ def clear_completed(request):
 @hypergen_callback(view=index, **HYPERGEN_SETTINGS)
 def toggle_all(request, is_completed):
     Item.objects.update(is_completed=is_completed)
+
+@hypergen_callback(view=index, **HYPERGEN_SETTINGS)
+def start_edit(request, pk):
+    c.appstate["edit_item_pk"] = pk
+
+@hypergen_callback(view=index, **HYPERGEN_SETTINGS)
+def submit_edit(request, pk, description):
+    item = Item.objects.get(pk=pk)
+    item.description = description
+    item.save()
+    c.appstate["edit_item_pk"] = None

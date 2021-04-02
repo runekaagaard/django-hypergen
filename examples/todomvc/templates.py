@@ -26,22 +26,34 @@ def base():
 
 @component
 def todo_item(item):
-    from todomvc.views import toggle_is_completed, delete
-    with li(class_="completed" if item.is_completed else ""):
-        with div(class_="view"):
-            input_(class_="toggle", type_="checkbox", checked=item.is_completed,
-                onclick=cb(toggle_is_completed, item.pk))
-            label(item.description)
-            button(class_="destroy", onclick=cb(delete, item.pk))
-        input_(class_="edit", value=item.description)
+    from todomvc.views import toggle_is_completed, delete, start_edit, submit_edit
+    is_editing = item.pk == c.appstate["edit_item_pk"]
+    classes = []
+    if item.is_completed:
+        classes.append("completed")
+    if is_editing:
+        classes.append("editing")
+
+    with li(class_=classes):
+        if not is_editing:
+            with div(class_="view"):
+                input_(class_="toggle", type_="checkbox", checked=item.is_completed,
+                    onclick=cb(toggle_is_completed, item.pk))
+                label(item.description, ondblclick=cb(start_edit, item.pk))
+                button(class_="destroy", onclick=cb(delete, item.pk))
+        else:
+            input_(id_="edit-item", class_="edit", autofocus=True, value=item.description,
+                onkeyup=cb(submit_edit, item.pk, THIS, event_matches={"key": "Enter"},
+                blocks=True), onblur=cb(submit_edit, item.pk, THIS))
 
 def content(items, filtering, all_completed):
     from todomvc.views import ALL, ACTIVE, COMPLETED, index, add, clear_completed, toggle_all
     with section(class_="todoapp"):
         with header(class_="header"):
             h1("todos")
-            input_(id_="new-todo", class_="new-todo", placeholder="What needs to be done?", autofocus=True,
-                onkeyup=cb(add, THIS, event_matches={"key": "Enter"}, clear=True))
+            input_(id_="new-todo", class_="new-todo", placeholder="What needs to be done?",
+                autofocus=not c.appstate["edit_item_pk"], onkeyup=cb(add, THIS, event_matches={"key": "Enter"},
+                clear=True))
 
         if filtering == ALL and not items:
             return

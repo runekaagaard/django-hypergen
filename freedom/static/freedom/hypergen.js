@@ -49,6 +49,9 @@ export const morph = function(id, html) {
       },
     }
   )
+
+  const autofocus = document.querySelectorAll('[autofocus]')[0]
+  if (autofocus !== undefined) autofocus.focus()
 }
 
 export const remove = function(id) {
@@ -80,17 +83,28 @@ var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
                                              params={}, meta={}, clear=false, elementId=null}={}) {
   let postIt = function() {
+    let json
     console.log("REQUEST", url, args, debounce)
     i++
 
     // The element function must have access to the FormData.
     window.hypergenGlobalFormdata = new FormData()
     window.hypergenUploadFiles = uploadFiles
-    let json = JSON.stringify({
-      args: args,
-      meta: meta,
-      id_prefix: "h" + i + "-",
-    })
+    try {
+      json = JSON.stringify({
+        args: args,
+        meta: meta,
+        id_prefix: "h" + i + "-",
+      })
+    } catch(error) {
+      if (error === MISSING_ELEMENT_EXCEPTION) {
+        console.warn("An element is missing. This can happen if a dom element has multiple event handlers.", url)
+        return
+      } else {
+        throw(error)
+      }
+    }
+    
     let formData = window.hypergenGlobalFormdata
     window.hypergenGlobalFormdata = null
     window.hypergenUploadFiles = null
@@ -213,6 +227,8 @@ const mergeAttrs = function(target, source){
   })
 }
 
+const MISSING_ELEMENT_EXCEPTION = "MISSING_ELEMENT_EXCEPTION" 
+
 // DOM element value readers
 export const v = {}
 v.i = function(id) { 
@@ -221,33 +237,54 @@ v.i = function(id) {
 }
 v.f = function(id) {
   const el = $(document.getElementById(id))
+  if (el.val() === undefined) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
   return parseFloat(el.val())
 }
 v.s = function(id) {
   const el = $(document.getElementById(id)) 
+  if (el.val() === undefined) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
   return "" + el.val().trim()
 }
 v.c = function(id) { 
-  const el = document.getElementById(id) 
+  const el = document.getElementById(id)
+  if (el.val() === undefined) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
   return el.checked
 }
 v.g = function(id) { 
-  const el = $(document.getElementById(id)) 
+  const el = $(document.getElementById(id))
+  if (el.val() === undefined) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
   var v = el.val()
   var v1 = parseInt(v)
   return !isNaN(v1) ? v1 : v
 }
 v.t = function(id) { 
-  const el = $(document.getElementById(id)) 
+  const el = $(document.getElementById(id))
+  if (el.val() === undefined) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
   return "" + el.val().trim()
 }
 v.r = function(id) {
   const el = $(document.getElementById(id))
+  if (el.val() === undefined) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
   const v = $("input:radio[name ='" + el.attr("name") + "']:checked").val()
   return v === undefined ? null : v
 }
 v.u = function(id, formData) {
   const el = document.getElementById(id)
+  if (el.val() === undefined) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
   if (el.files.length !== 1) return null
   if (window.hypergenUploadFiles === true) formData.append(id, el.files[0])
   return el.files[0].name
