@@ -13,17 +13,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file")
 args = parser.parse_args()
 
-
 def protect(x):
     if x in GLOBALS or x in BUILTINS or x in keyword.kwlist:
         return x + "_"
     else:
         return x
 
-
 def tag_clone(self):
-    copy = type(self)(None, self.builder, self.name, self.namespace,
-                      self.nsprefix)
+    copy = type(self)(None, self.builder, self.name, self.namespace, self.nsprefix)
     # work around bug where there is no builder set
     # https://bugs.launchpad.net/beautifulsoup/+bug/1307471
     copy.attrs = dict(self.attrs)
@@ -33,20 +30,16 @@ def tag_clone(self):
         copy.append(child.clone())
     return copy
 
-
 Tag.clone = tag_clone
 NavigableString.clone = lambda self: type(self)(self)
 
-
 def indent(txt, i):
     return "".join(["    " * i, txt])
-
 
 def _attr_val(val):
     if type(val) is list:
         return (" ".join(val))
     return val
-
 
 def _attrs(tag):
     def fmt_v(v):
@@ -56,15 +49,7 @@ def _attrs(tag):
             return v
 
     omit = {"data-reactid", "aria-label"}
-    omit_v = {
-        "link": {
-            "type": "text/css",
-            "rel": "stylesheet"
-        },
-        "script": {
-            "type": "text/javascript"
-        }
-    }
+    omit_v = {"link": {"type": "text/css", "rel": "stylesheet"}, "script": {"type": "text/javascript"}}
 
     a = []
     for k, v in tag.attrs.items():
@@ -89,12 +74,10 @@ def _attrs(tag):
 
     return ", ".join(a)
 
-
 def _string(tag):
     for child in tag.children:
         if type(child) in (bs4.element.NavigableString, bs4.element.Script):
             return child.string
-
 
 def _params(tag):
     def multiline(x):
@@ -110,7 +93,6 @@ def _params(tag):
         return txt
     return _attrs(tag)
 
-
 def _c(tag, i):
     if not tag.name:
         return ""
@@ -121,13 +103,11 @@ def _c(tag, i):
 
     return indent("with {}({}):\n".format(protect(tag.name), p), i)
 
-
 def _(tag, i):
     if not tag.name:
         return ""
 
     return indent("{}({})\n".format(protect(tag.name), _params(tag)), i)
-
 
 def hyperfy(html, i_start=1):
     soup = bs(html, 'html.parser')
@@ -136,17 +116,14 @@ def hyperfy(html, i_start=1):
         e = d.clone()
         indent = len(list(d.parents)) - i_start + 1
         if type(e) == bs4.element.Tag:
-            if len(list(e.children)) == 0 or (
-                    len(list(e.children)) == 1 and type(next(e.children)) in [
-                        bs4.element.NavigableString, bs4.element.Script
-                    ]):
+            if len(list(e.children)) == 0 or (len(list(e.children)) == 1
+                and type(next(e.children)) in [bs4.element.NavigableString, bs4.element.Script]):
                 txt += _(d, indent)
             else:
                 txt += _c(d, indent)
         else:
             pass
     return txt
-
 
 if args.file:
     with open(args.file, "r") as file:

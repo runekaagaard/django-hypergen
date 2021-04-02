@@ -184,9 +184,16 @@ const applyCommand = function(path, ...args) {
   let rpath = resolvePath(path)
   rpath(...args)
 }
-window.e = function(event, targetId, dataId) {
+window.e = function(event, targetId, dataId, eventMatches) {
   event.preventDefault()
   event.stopPropagation()
+  if (!!eventMatches) {
+    for (const k in eventMatches) {
+      if (eventMatches[k] !== event[k]) {
+        return
+      }
+    }
+  }
   applyCommand(...window.eventHandlerCache[targetId][dataId])
   
 }

@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
+
 d = dict
 
 import threading
@@ -7,7 +8,6 @@ from contextlib2 import contextmanager
 from functools import wraps, update_wrapper
 
 from pyrsistent import pmap, m
-
 
 class Context(threading.local):
     def __init__(self):
@@ -45,13 +45,10 @@ class Context(threading.local):
         finally:
             self.ctx = ctx
 
-
 context = Context()
-
 
 def _init_context(request):
     return dict(user=request.user, request=request)
-
 
 def context_middleware(get_response):
     def _(request):
@@ -60,12 +57,10 @@ def context_middleware(get_response):
 
     return _
 
-
 class ContextMiddleware(object):
     def process_request(self, request):
         # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))
-
 
 def wrap2(f):
     """
@@ -96,7 +91,6 @@ def wrap2(f):
         def myfunc2(x, y=19):
             return x + y
     """
-
     def _(*args, **kwargs):
         if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
             f2 = f(args[0])
@@ -112,7 +106,6 @@ def wrap2(f):
             return f3
 
     return _
-
 
 def wrap3(dfunc):
     """
@@ -140,7 +133,6 @@ def wrap3(dfunc):
         def myfunc2(x, y=19):
             return x + y
     """
-
     def _(*xargs, **xkwargs):
         if len(xargs) == 1 and len(xkwargs) == 0 and callable(xargs[0]):
             # Without decorator args, kwargs.
@@ -166,14 +158,11 @@ def wrap3(dfunc):
 
     return _
 
-
 def insert(source_str, insert_str, pos):
     return ''.join((source_str[:pos], insert_str, source_str[pos:]))
 
-
 class SkipException(Exception):
     pass
-
 
 @contextmanager
 def skippable():
@@ -182,7 +171,6 @@ def skippable():
     except SkipException:
         pass
 
-
 @contextmanager
 def skip(when):
     if when:
@@ -190,12 +178,10 @@ def skip(when):
     else:
         yield
 
-
 class adict(dict):
     def __getattr__(self, name):
         if name in self:
-            return self[name] if type(self[name]) is not dict else adict(
-                self[name])
+            return self[name] if type(self[name]) is not dict else adict(self[name])
         else:
             raise AttributeError("No such attribute: " + name)
 

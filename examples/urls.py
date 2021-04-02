@@ -20,4 +20,4 @@ import todomvc.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('todomvc/', include(todomvc.urls)), ]
+    path('todomvc/', include(todomvc.urls, namespace="todomvc")),]

@@ -38,11 +38,11 @@ allow_split_before_dict_value=True
 #     e = 1*2 - 3
 #     f = 1 + 2 + 3 + 4
 #
-arithmetic_precedence_indication=False
+arithmetic_precedence_indication=True
 
 # Number of blank lines surrounding top-level function and class
 # definitions.
-blank_lines_around_top_level_definition=2
+blank_lines_around_top_level_definition=1
 
 # Insert a blank line before a class-level docstring.
 blank_line_before_class_docstring=False
@@ -75,10 +75,10 @@ blank_line_before_nested_class_or_def=False
 #        'key1': 'value1',
 #        'key2': 'value2',
 #    })
-coalesce_brackets=False
+coalesce_brackets=True
 
 # The column limit.
-column_limit=79
+column_limit=118
 
 # The style for continuation alignment. Possible values are:
 #
@@ -89,7 +89,7 @@ column_limit=79
 # - VALIGN-RIGHT: Vertically align continuation lines to multiple of
 #   INDENT_WIDTH columns. Slightly right (one tab or a few spaces) if
 #   cannot vertically align continuation lines with indent characters.
-continuation_align_style=SPACE
+continuation_align_style=FIXED
 
 # Indent width used for line continuations.
 continuation_indent_width=4
@@ -117,7 +117,7 @@ dedent_closing_brackets=False
 disable_ending_comma_heuristic=False
 
 # Place each dictionary entry onto its own line.
-each_dict_entry_on_separate_line=True
+each_dict_entry_on_separate_line=False
 
 # Require multiline dictionary even if it would normally fit on one line.
 # For example:
@@ -167,7 +167,7 @@ indent_closing_brackets=False
 #       'key2': value1 +
 #               value2,
 #   }
-indent_dictionary_value=False
+indent_dictionary_value=True
 
 # The number of columns to use for indentation.
 indent_width=4
@@ -182,7 +182,7 @@ join_multiple_lines=True
 # will be formatted as follows when configured with "*,/":
 #
 #   1 + 2*3 - 4/5
-no_spaces_around_selected_binary_operators=
+no_spaces_around_selected_binary_operators=True
 
 # Use spaces around default or named assigns.
 spaces_around_default_or_named_assign=False
@@ -263,7 +263,7 @@ spaces_before_comment=2
 
 # Insert a space between the ending comma and closing bracket of a list,
 # etc.
-space_between_ending_comma_and_closing_bracket=True
+space_between_ending_comma_and_closing_bracket=False
 
 # Use spaces inside brackets, braces, and parentheses.  For example:
 #

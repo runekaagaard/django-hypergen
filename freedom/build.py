@@ -1,4 +1,5 @@
 import keyword
+
 GLOBALS = globals().keys()
 BUILTINS = dir(__builtins__)
 
@@ -15,35 +16,26 @@ JSON.stringify([...document.getElementsByTagName("td")].filter(x => x.firstEleme
 """
 
 ALL_TAGS = set([
-    "doctype", "a", "abbr", "acronym", "address", "applet", "area", "article",
-    "aside", "audio", "b", "base", "basefont", "bdi", "bdo", "big",
-    "blockquote", "body", "br", "button", "canvas", "caption", "center",
-    "cite", "code", "col", "colgroup", "data", "datalist", "dd", "del",
-    "details", "dfn", "dialog", "dir", "div", "dl", "dt", "em", "embed",
-    "fieldset", "figcaption", "figure", "font", "footer", "form", "frame",
-    "frameset", "h1", "h2", "h3", "h4", "h4", "h5", "h6", "head", "header",
-    "hr", "html", "i", "iframe", "img", "input", "ins", "kbd", "label",
-    "legend", "li", "link", "main", "map", "mark", "meta", "meter", "nav",
-    "noframes", "noscript", "object", "ol", "optgroup", "option", "output",
-    "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s",
-    "samp", "script", "section", "select", "small", "source", "span", "strike",
-    "strong", "style", "sub", "summary", "sup", "svg", "table", "tbody", "td",
-    "template", "tfoot", "th", "thead", "time", "title", "tr", "track", "tt",
-    "u", "ul", "var", "video", "wbr", "textarea", "select"
-])
+    "doctype", "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base",
+    "basefont", "bdi", "bdo", "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite",
+    "code", "col", "colgroup", "data", "datalist", "dd", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt",
+    "em", "embed", "fieldset", "figcaption", "figure", "font", "footer", "form", "frame", "frameset", "h1", "h2",
+    "h3", "h4", "h4", "h5", "h6", "head", "header", "hr", "html", "i", "iframe", "img", "input", "ins", "kbd",
+    "label", "legend", "li", "link", "main", "map", "mark", "meta", "meter", "nav", "noframes", "noscript", "object",
+    "ol", "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s",
+    "samp", "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary",
+    "sup", "svg", "table", "tbody", "td", "template", "tfoot", "th", "thead", "time", "title", "tr", "track", "tt",
+    "u", "ul", "var", "video", "wbr", "textarea", "select"])
 VOID_TAGS = set([
-    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'meta', 'param',
-    'source', 'track', 'wbr', 'command', 'keygen', 'menuitem'
-])
+    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'meta', 'param', 'source', 'track', 'wbr', 'command', 'keygen',
+    'menuitem'])
 HARDCODED_TAGS = set(["input", "doctype"])
-
 
 def protect(x):
     if x in GLOBALS or x in BUILTINS or x in keyword.kwlist:
         return x + "_"
     else:
         return x
-
 
 print "# yapf: disable"
 for tag in sorted(ALL_TAGS - HARDCODED_TAGS):
