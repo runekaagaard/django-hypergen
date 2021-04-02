@@ -2,9 +2,17 @@
 from __future__ import (absolute_import, division, unicode_literals)
 from functools import wraps
 
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+from contextlib2 import contextmanager
+
 from django.urls.base import resolve, reverse
 from django.conf.urls import url
 from django.contrib.auth.decorators import permission_required
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from freedom.core import context as c, wrap2
 from freedom.hypergen import loads, command, hypergen, hypergen_response, StringWithMeta
@@ -31,9 +39,25 @@ def register_view_for_url(func, namespace, base_template, url=None):
 
     return func
 
+@contextmanager
+def appstate(app_name, appstate_init):
+    if app_name is None or appstate_init is None:
+        yield
+        return
+
+    k = "hypergen_appstate_{}".format(app_name)
+    appstate = c.request.session.get(k, None)
+    if appstate is not None:
+        appstate = pickle.loads(appstate.encode('latin1'))
+    else:
+        appstate = appstate_init()
+    with c(appstate=appstate):
+        yield
+        c.request.session[k] = pickle.dumps(c.appstate, pickle.HIGHEST_PROTOCOL).decode('latin1')
+
 @wrap2
 def hypergen_view(func, url=None, perm=None, base_template=None, base_template_args=None, base_template_kwargs=None,
-    namespace=None, login_url=None, raise_exception=False, target_id=None):
+    namespace=None, login_url=None, raise_exception=False, target_id=None, app_name=None, appstate_init=None):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert base_template is not None, "base_template required"
@@ -52,11 +76,13 @@ def hypergen_view(func, url=None, perm=None, base_template=None, base_template_a
 
         func_return = {}
 
+        @appstate(app_name, appstate_init)
         def wrap_base_template(request, *fargs, **fkwargs):
             with base_template(*base_template_args, **base_template_kwargs):
                 func_return["value"] = func(request, *fargs, **fkwargs)
                 command("history.replaceState", d(callback_url=path), "", path)
 
+        @appstate(app_name, appstate_init)
         def wrap_view_with_hypergen():
             func_return["value"] = func(request, *fargs, **fkwargs)
 
@@ -79,11 +105,13 @@ def hypergen_view(func, url=None, perm=None, base_template=None, base_template_a
     if perm != NO_PERM_REQUIRED:
         _ = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(_)
 
+    _ = ensure_csrf_cookie(_)
+
     return register_view_for_url(_, namespace, base_template, url=url)
 
 @wrap2
 def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None, login_url=None,
-    raise_exception=False, base_template=None):
+    raise_exception=False, base_template=None, app_name=None, appstate_init=None):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert namespace is not None, "namespace is required"
     assert target_id is not None, "target_id is required"
@@ -91,6 +119,7 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
 
     @wraps(func)
     def _(request, *fargs, **fkwargs):
+        @appstate(app_name, appstate_init)
         def wrap_view_with_hypergen(func_return, args):
             func_return["value"] = func(request, *args, **fkwargs)
 
@@ -109,6 +138,8 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
 
     if perm != NO_PERM_REQUIRED:
         _ = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(_)
+
+    _ = ensure_csrf_cookie(_)
 
     return register_view_for_url(_, namespace, base_template, url=url)
 

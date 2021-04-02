@@ -27,11 +27,13 @@ def base():
                     a("TodoMVC", href="http://todomvc.com")
 
 def todo_item(item):
+    from todomvc.views import toggle_one, delete
     with li(class_="completed"):
         with div(class_="view"):
-            input_(class_="toggle", type_="checkbox", checked=item.is_completed)
+            input_(class_="toggle", type_="checkbox", checked=item.pk in c.appstate["selected"],
+                onclick=cb(toggle_one, item.pk))
             label(item.description)
-            button(class_="destroy")
+            button(class_="destroy", onclick=cb(delete, item.pk))
         input_(class_="edit", value=item.description)
 
 def content(items, filtering):

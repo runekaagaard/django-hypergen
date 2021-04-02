@@ -110,20 +110,6 @@ def command(javascript_func_path, *args, **kwargs):
         c.hypergen.commands.append(item)
 
 ### Helpers ###
-
-@contextmanager
-def appstate(app_name):
-    import cPickle as pickle
-    k = b"hypergen_appstate_{}".format(app_name)
-    appstate = c.request.session.get(k, None)
-    if appstate is not None:
-        appstate = pickle.loads(appstate.encode('latin1'))
-    else:
-        appstate = {}
-    with c(appstate=appstate):
-        yield
-        c.request.session[k] = pickle.dumps(c.appstate, 2).decode('latin1')
-
 class LazyAttribute(object):
     def __init__(self, k, v):
         self.k = k
@@ -431,372 +417,252 @@ class a(base_element):
 
         super(a, self).__init__(*children, **attrs)
 
-
 class abbr(base_element): pass
-
 
 class acronym(base_element): pass
 
-
 class address(base_element): pass
-
 
 class applet(base_element): pass
 
-
 class area(base_element_void): pass
-
 
 class article(base_element): pass
 
-
 class aside(base_element): pass
-
 
 class audio(base_element): pass
 
-
 class b(base_element): pass
-
 
 class base(base_element_void): pass
 
-
 class basefont(base_element): pass
-
 
 class bdi(base_element): pass
 
-
 class bdo(base_element): pass
-
 
 class big(base_element): pass
 
-
 class blockquote(base_element): pass
-
 
 class body(base_element): pass
 
-
 class br(base_element_void): pass
-
 
 class button(base_element): pass
 
-
 class canvas(base_element): pass
-
 
 class caption(base_element): pass
 
-
 class center(base_element): pass
-
 
 class cite(base_element): pass
 
-
 class code(base_element): pass
-
 
 class col(base_element_void): pass
 
-
 class colgroup(base_element): pass
-
 
 class data(base_element): pass
 
-
 class datalist(base_element): pass
-
 
 class dd(base_element): pass
 
-
 class del_(base_element): pass
-
 
 class details(base_element): pass
 
-
 class dfn(base_element): pass
-
 
 class dialog(base_element): pass
 
-
 class dir_(base_element): pass
-
 
 class div(base_element): pass
 
-
 class dl(base_element): pass
-
 
 class dt(base_element): pass
 
-
 class em(base_element): pass
-
 
 class embed(base_element_void): pass
 
-
 class fieldset(base_element): pass
-
 
 class figcaption(base_element): pass
 
-
 class figure(base_element): pass
-
 
 class font(base_element): pass
 
-
 class footer(base_element): pass
-
 
 class form(base_element): pass
 
-
 class frame(base_element): pass
-
 
 class frameset(base_element): pass
 
-
 class h1(base_element): pass
-
 
 class h2(base_element): pass
 
-
 class h3(base_element): pass
-
 
 class h4(base_element): pass
 
-
 class h5(base_element): pass
-
 
 class h6(base_element): pass
 
-
 class head(base_element): pass
-
 
 class header(base_element): pass
 
-
 class hr(base_element_void): pass
-
 
 class html(base_element): pass
 
-
 class i(base_element): pass
-
 
 class iframe(base_element): pass
 
-
 class img(base_element_void): pass
-
 
 class ins(base_element): pass
 
-
 class kbd(base_element): pass
-
 
 class label(base_element): pass
 
-
 class legend(base_element): pass
 
-
 class li(base_element): pass
-
 
 class link(base_element):
     def __init__(self, href, rel="stylesheet", type_="text/css", **attrs):
         attrs["href"] = href
         super(link, self).__init__(rel=rel, type_=type_, **attrs)
 
-
 class main(base_element): pass
-
 
 class map_(base_element): pass
 
-
 class mark(base_element): pass
-
 
 class meta(base_element_void): pass
 
-
 class meter(base_element): pass
-
 
 class nav(base_element): pass
 
-
 class noframes(base_element): pass
-
 
 class noscript(base_element): pass
 
-
 class object_(base_element): pass
-
 
 class ol(base_element): pass
 
-
 class optgroup(base_element): pass
-
 
 class option(base_element): pass
 
-
 class output(base_element): pass
-
 
 class p(base_element): pass
 
-
 class param(base_element_void): pass
-
 
 class picture(base_element): pass
 
-
 class pre(base_element): pass
-
 
 class progress(base_element): pass
 
-
 class q(base_element): pass
-
 
 class rp(base_element): pass
 
-
 class rt(base_element): pass
-
 
 class ruby(base_element): pass
 
-
 class s(base_element): pass
 
-
 class samp(base_element): pass
-
 
 class script(base_element):
     def __init__(self, *children, **attrs):
         attrs["t"] = lambda x: x
         super(script, self).__init__(*children, **attrs)
 
-
 class section(base_element): pass
-
 
 class select(base_element): pass
 
-
 class small(base_element): pass
-
 
 class source(base_element_void): pass
 
-
 class span(base_element): pass
-
 
 class strike(base_element): pass
 
-
 class strong(base_element): pass
-
 
 class style(base_element):
     def __init__(self, *children, **attrs):
         attrs["t"] = lambda x: x
         super(style, self).__init__(*children, **attrs)
 
-
 class sub(base_element): pass
-
 
 class summary(base_element): pass
 
-
 class sup(base_element): pass
-
 
 class svg(base_element): pass
 
-
 class table(base_element): pass
-
 
 class tbody(base_element): pass
 
-
 class td(base_element): pass
-
 
 class template(base_element): pass
 
-
 class textarea(base_element): pass
-
 
 class tfoot(base_element): pass
 
-
 class th(base_element): pass
-
 
 class thead(base_element): pass
 
-
 class time_(base_element): pass
-
 
 class title(base_element): pass
 
-
 class tr(base_element): pass
-
 
 class track(base_element_void): pass
 
-
 class tt(base_element): pass
-
 
 class u(base_element): pass
 
-
 class ul(base_element): pass
-
 
 class var(base_element): pass
 
-
 class video(base_element): pass
-
 
 class wbr(base_element_void): pass
 # yapf: enable
