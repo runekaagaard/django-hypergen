@@ -113,13 +113,16 @@ def hypergen_view(func, url=None, perm=None, base_template=None, base_template_a
 
     return _
 
+@contextmanager
+def no_base_template(*args, **kwargs):
+    yield
+
 @wrap2
 def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None, login_url=None,
-    raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None):
+    raise_exception=False, base_template=no_base_template, app_name=None, appstate_init=None, view=None):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert namespace is not None, "namespace is required"
-    assert target_id is not None, "target_id is required"
-    assert base_template is not None, "base_template is required"
+    # assert target_id is not None, "target_id is required"
 
     @wraps(func)
     def _(request, *fargs, **fkwargs):

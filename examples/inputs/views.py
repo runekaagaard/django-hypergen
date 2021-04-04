@@ -21,7 +21,7 @@ def inputs(request):
         tr(th(x) for x in ["Input type", "Element", "Server value"])
 
         for type_ in INPUT_TYPES:
-            src, value = "", ""
+            src, value = OMIT, OMIT
             if type_ == "image":
                 src = "https://picsum.photos/80/40"
                 value = "Clicked"
@@ -30,14 +30,12 @@ def inputs(request):
             with tr():
                 td(type_)
                 td(
-                    input_(type_=type_, onclick=cb(submit, THIS, type_), oninput=cb(submit, THIS, type_), value=value,
-                    src=src))
+                    input_(id_=("input", type_), type_=type_, onclick=cb(submit, THIS, type_),
+                    oninput=cb(submit, THIS, type_), value=value, src=src))
                 td(id_=type_)
 
-@hypergen_callback(**HYPERGEN_SETTINGS)
+@hypergen_callback(perm=NO_PERM_REQUIRED, namespace="inputs")
 def submit(request, value, type_):
-    def template():
-        with pre(style={"padding": 0}):
-            raw(repr(value), " (", type(value).__name__, ")")
-
-    return hypergen(template, target_id=type_)
+    c.hypergen = c.hypergen.set("target_id", type_)
+    with pre(style={"padding": 0}):
+        raw(repr(value), " (", type(value).__name__, ")")

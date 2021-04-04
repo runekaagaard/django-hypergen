@@ -22,6 +22,8 @@ from freedom.core import context as c, insert, wrap2
 
 ### Python 2+3 compatibility ###
 
+OMIT = "__OMIT__"
+
 def make_string(x):
     if x is not None:
         return force_text(x)
@@ -59,6 +61,7 @@ def hypergen(func, *args, **kwargs):
     wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
     with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
         func(*args, **kwargs)
+        assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
             command("hypergen.setEventHandlerCache", c.hypergen.target_id, c.hypergen.event_handler_cache)
@@ -247,7 +250,12 @@ class base_element(ContextDecorator):
             self.t = attrs.pop("t", t)
             self.children = children
             self.attrs = attrs
-            self.attrs["id_"] = LazyAttribute("id", self.attrs.get("id_", None))
+
+            id_ = self.attrs.get("id_", None)
+            if type(id_) in (tuple, list):
+                id_ = "-".join(id_)
+            self.attrs["id_"] = LazyAttribute("id", id_)
+
             self.i = len(c.hypergen.into)
             self.sep = attrs.pop("sep", "")
             self.js_cb = attrs.pop("js_cb", "hypergen.v.s")
@@ -321,7 +329,9 @@ class base_element(ContextDecorator):
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if callable(v):
+        if v == OMIT:
+            return []
+        elif callable(v):
             return v(self, k, v)
         elif type(v) is LazyAttribute:
             return [v]
