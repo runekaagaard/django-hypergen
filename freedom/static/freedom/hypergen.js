@@ -251,7 +251,7 @@ v.s = function(id) {
 }
 v.c = function(id) { 
   const el = document.getElementById(id)
-  if (el.val() === undefined) {
+  if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
   return el.checked
