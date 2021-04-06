@@ -1,5 +1,7 @@
 # coding = utf-8
 # pylint: disable=no-value-for-parameter
+from datetime import date, time, datetime
+
 from freedom.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 from freedom.hypergen import *
 from freedom.hypergen import callback as cb
@@ -12,37 +14,53 @@ HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=shared_templates.b
 @hypergen_view(url="$^", **HYPERGEN_SETTINGS)
 def inputs(request):
     INPUT_TYPES = [
-        "button", "checkbox", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
-        "month", "number (int)", "number (float)", "password", "radio", "range", "reset", "search", "submit", "tel",
-        "text", "time", "url", "week"]
+        ("button", d(value="clicked")),
+        ("checkbox", d(checked=True)),
+        ("color", d(value="#bb7777")),
+        ("date", d(value=date(2021, 4, 16))),
+        ("datetime-local", d(value=datetime.datetime(1941, 5, 5, 5, 23))),
+        ("email", d(value="foo@prescriba.com")),
+        ("file", d()),
+        ("hidden", d(value="hidden")),
+        ("image", d(src="https://picsum.photos/80/40", value="clicked")),
+        ("month", d(value=d(year=2099, month=9))),
+        ("number", d(title="number (int)", value=99)),
+        ("number", d(step="any", title="number (float)", value=12.12)),
+        ("password", d(value="1234")),
+        ("radio", d(name="myradio", value=20, checked=True)),
+        ("radio", d(name="myradio", value=21)),
+        ("range", d()),
+        ("reset", d(value="clicked")),
+        ("search", d(value="Who is Rune Kaagaard?")),
+        ("submit", d(value="clicked")),
+        ("tel", d(value="12345678")),
+        ("text", d(value="This is text!")),
+        ("time", d(value=datetime.time(7, 42))),
+        ("url", d(value="https://github.com/runekaagaard/django-freedom/")),
+        ("week", d(value=d(year=1999, week=42))),]
 
     h1("Showing all input types.")
     with table():
-        tr(th(x) for x in ["Input type", "Element", "Server value"])
+        tr(th(x) for x in ["Input type", "Input attributes", "Element", "Server value"])
 
-        for i, type_ in enumerate(INPUT_TYPES):
-            src, value, step = OMIT, OMIT, OMIT
+        for i, pair in enumerate(INPUT_TYPES):
+            type_, attrs = pair
+            title = attrs.pop("title", type_)
             id_ = "server-value-{}".format(i)
-            if "number" in type_:
-                if type_ == "number-float":
-                    step = "any"
-                type_ = "number"
 
-            elif type_ == "image":
-                src = "https://picsum.photos/80/40"
-                value = "Clicked"
-            elif type_ in ["button", "reset", "submit"]:
-                value = "Clicked"
             with tr():
-                td(type_)
+                td(title)
+                td(code(attrs))
                 submit_cb = cb(submit, THIS, id_)
                 td(
                     input_(id_=("element", i), class_="input", type_=type_, onclick=submit_cb, oninput=submit_cb,
-                    value=value, src=src, step=step))
+                    **attrs))
                 td(id_=id_)
 
     script("""
-
+        $(function() {
+            document.querySelectorAll(".input").forEach(el => (el.oninput(new Event("input"))));
+        })
     """)
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, namespace="inputs")

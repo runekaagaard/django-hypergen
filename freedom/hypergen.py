@@ -349,8 +349,10 @@ class base_element(ContextDecorator):
         else:
             if v is None:
                 v = ""
+            else:
+                v = t(v)
             assert '"' not in v, "How dare you put a \" in my attributes! :)"
-            return [" ", k, '="', t(v), '"']
+            return [" ", k, '="', v, '"']
 
     def start(self):
         into = ["<", self.tag]
@@ -399,18 +401,33 @@ def component(f):
 
 INPUT_CALLBACK_TYPES = dict(
     checkbox="hypergen.v.c",
-    month="hypergen.v.i",
-    number="hypergen.v.i",
+    month="hypergen.v.m",
+    number="hypergen.v.n",
     range="hypergen.v.f",
-    week="hypergen.v.i",
+    week="hypergen.v.w",
     radio="hypergen.v.r",
     file="hypergen.v.u",
+    date="hypergen.v.d",
+    time="hypergen.v.t",
 )
+INPUT_CALLBACK_TYPES["datetime-local"] = "hypergen.v.dt"
 
 class input_(base_element_void):
     void = True
 
     def __init__(self, *children, **attrs):
+        type_, value = attrs.get("type_", None), attrs.get("value", None)
+        if type_ == "radio":
+            assert attrs.get("name"), "Name must be set for radio buttons."
+        elif type_ == "datetime-local":
+            if type(value) is datetime.datetime:
+                attrs["value"] = value.strftime("%Y-%m-%dT%H:%M:%S")
+        elif type_ == "month":
+            if type(value) is dict:
+                attrs["value"] = "{:04}-{:02}".format(value["year"], value["month"])
+        elif type_ == "week":
+            if type(value) is dict:
+                attrs["value"] = "{:04}-W{:02}".format(value["year"], value["week"])
         super(input_, self).__init__(*children, **attrs)
         self.js_value_func = attrs.pop("js_value_func",
             INPUT_CALLBACK_TYPES.get(attrs.get("type_", "text"), "hypergen.v.s"))
@@ -708,8 +725,28 @@ def dumps(data, default=encoder, indent=None):
 
     return result
 
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
+
+def decoder(o):
+    _ = o.get("_", None)
+    if _ is None or type(_) is not list or len(_) != 2:
+        return o
+
+    datatype, value = _
+    if datatype == "float":
+        return float(value)
+    elif datatype == "date":
+        return parse_date(value)
+    elif datatype == "datetime":
+        return parse_datetime(value)
+    elif datatype == "time":
+        return parse_time(value)
+    else:
+
+        raise Exception("Unknown datatype, {}".format(datatype))
+
 def loads(data):
-    return json.loads(data)
+    return json.loads(data, object_hook=decoder)
 
 class StringWithMeta(object):
     def __init__(self, value, meta):

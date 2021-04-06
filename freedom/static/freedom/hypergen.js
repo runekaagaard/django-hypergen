@@ -130,7 +130,11 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       document.getElementsByTagName("html")[0].innerHTML = data
     }, params)
   }
-  throttle(postIt, {delay: debounce, group: url, confirm_})
+  if (debounce === 0) {
+    if (confirm_ === false) postIt()
+    else if (confirm(confirm_)) postIt()
+  }
+  else throttle(postIt, {delay: debounce, group: url, confirm_}) 
 }
 
 // Timing
@@ -231,66 +235,103 @@ const MISSING_ELEMENT_EXCEPTION = "MISSING_ELEMENT_EXCEPTION"
 
 // DOM element value readers
 export const v = {}
-v.i = function(id) {
+v.i = function(id) { // integer
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
   return parseInt(el.value)
 }
-v.f = function(id) {
-  const el = $(document.getElementById(id))
-  if (el.val() === undefined) {
+v.f = function(id) { // float
+  const el = document.getElementById(id)
+  if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
-  return parseFloat(el.val())
+  const value = parseFloat(el.value)
+  if (isNaN(value)) return null
+  else return {_: ["float", value]}
 }
-v.s = function(id) {
-  const el = $(document.getElementById(id)) 
-  if (el.val() === undefined) {
+v.n = function(id) { // number. float or integer depending on value of step attribute.
+  const el = document.getElementById(id)
+  if (!el.step) return v.i(id)
+  else if (el.step === "any") return v.f(id)
+  else return Number.isInteger(parseFloat(el.step)) ? v.i(id) : v.f(id)
+}
+v.s = function(id) { // string.
+  const el = document.getElementById(id)
+  if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
-  return "" + el.val().trim()
+  const value = el.value.trim()
+  return value !== "" ? value : null
 }
-v.c = function(id) { 
+v.c = function(id) { // checkbox
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
   return el.checked
 }
-v.g = function(id) { 
-  const el = $(document.getElementById(id))
-  if (el.val() === undefined) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  var v = el.val()
-  var v1 = parseInt(v)
-  return !isNaN(v1) ? v1 : v
-}
-v.t = function(id) { 
-  const el = $(document.getElementById(id))
-  if (el.val() === undefined) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  return "" + el.val().trim()
-}
-v.r = function(id) {
-  const el = $(document.getElementById(id))
-  if (el.val() === undefined) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  const v = $("input:radio[name ='" + el.attr("name") + "']:checked").val()
-  return v === undefined ? null : v
-}
-v.u = function(id, formData) {
+v.r = function(id) { // radio button. Uses name attribute for value.
   const el = document.getElementById(id)
-  if (el.val() === undefined) {
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  const checked = document.querySelector("input[type=radio][name=" + el.name + "]:checked")
+  return checked === null ? null : checked.value
+}
+v.u = function(id, formData) { // file upload
+  const el = document.getElementById(id)
+  if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
   if (el.files.length !== 1) return null
   if (window.hypergenUploadFiles === true) formData.append(id, el.files[0])
   return el.files[0].name
+}
+v.d = function(id) { // date
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  if (!el.value) return null
+  else return {_: ["date", el.value]}
+}
+v.dt = function(id) { // datetime
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  if (!el.value) return null
+  else return {_: ["datetime", el.value]}
+}
+v.t = function(id) { // time
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  if (!el.value) return null
+  else return {_: ["time", el.value]}
+}
+v.m = function(id) { // time
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  if (!el.value) return null
+  const parts = el.value.split("-")
+  return {year: parts[0], month: parts[1]}
+  
+}
+v.w = function(id) { // time
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  if (!el.value) return null
+  const parts = el.value.split("-")
+  return {year: parts[0], week: parts[1]}
+  
 }
 
 const reviver = function(k, v) {
