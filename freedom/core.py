@@ -23,8 +23,17 @@ class Context(threading.local):
         except KeyError:
             raise AttributeError("No such attribute: " + k)
 
+    def __setattr__(self, k, v):
+        if k == "ctx":
+            return super(Context, self).__setattr__(k, v)
+        else:
+            self.ctx = self.ctx.set(k, v)
+
     def __getitem__(self, k):
         return self.__dict__['ctx'][k]
+
+    def __setitem__(self, k, v):
+        raise Exception("TODO")
 
     def __contains__(self, k):
         return k in self.ctx
@@ -68,7 +77,7 @@ def wrap2(f):
         @decorator(with, arguments, and=kwargs)
     or
         @decorator
-    
+
     It does not work for a wrapped function that takes a callback as the only input.
 
     It looks like this:

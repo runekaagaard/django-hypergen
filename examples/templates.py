@@ -8,7 +8,6 @@ SAKURA = "https://unpkg.com/sakura.css/css/sakura.css"
 
 @contextmanager
 def base_template():
-    print("IN BASE TEMPLATE")
     doctype()
     with html():
         with head():
@@ -18,6 +17,5 @@ def base_template():
             link(SAKURA)
 
         with body():
-            # div(a.r("Home", href=url_for("index")))
             with div(id_="content"):
                 yield

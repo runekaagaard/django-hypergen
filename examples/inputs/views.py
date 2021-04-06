@@ -45,9 +45,8 @@ def inputs(request):
 
     """)
 
-@hypergen_callback(view=inputs, **HYPERGEN_SETTINGS)
+@hypergen_callback(perm=NO_PERM_REQUIRED, namespace="inputs")
 def submit(request, value, target_id):
-    return
     c.hypergen = c.hypergen.set("target_id", target_id)
     with pre(style={"padding": 0}):
         raw(repr(value), " (", type(value).__name__, ")")

@@ -59,6 +59,7 @@ def hypergen(func, *args, **kwargs):
     kwargs = deepcopy(kwargs)
     target_id = kwargs.pop("target_id", "__main__")
     wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
+
     with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
         assert not c.hypergen.into, "This should not happen"
         func(*args, **kwargs)
@@ -75,10 +76,8 @@ def hypergen(func, *args, **kwargs):
             print("Execution time:", time.time() - a)
             return html
         else:
-            print("HTML IS", c.hypergen.into)
             command("hypergen.morph", c.hypergen.target_id, html)
             print("Execution time:", time.time() - a)
-            c.hypergen = c.hypergen.set("into", [])  # TODO: Why is this necessary?!?!?!?
             return c.hypergen.commands
 
 def hypergen_response(html_or_commands_or_http_response):
