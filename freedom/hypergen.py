@@ -60,6 +60,7 @@ def hypergen(func, *args, **kwargs):
     target_id = kwargs.pop("target_id", "__main__")
     wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
     with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
+        assert not c.hypergen.into, "This should not happen"
         func(*args, **kwargs)
         assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
@@ -74,8 +75,10 @@ def hypergen(func, *args, **kwargs):
             print("Execution time:", time.time() - a)
             return html
         else:
+            print("HTML IS", c.hypergen.into)
             command("hypergen.morph", c.hypergen.target_id, html)
             print("Execution time:", time.time() - a)
+            c.hypergen = c.hypergen.set("into", [])  # TODO: Why is this necessary?!?!?!?
             return c.hypergen.commands
 
 def hypergen_response(html_or_commands_or_http_response):
@@ -253,12 +256,12 @@ class base_element(ContextDecorator):
 
             id_ = self.attrs.get("id_", None)
             if type(id_) in (tuple, list):
-                id_ = "-".join(id_)
+                id_ = "-".join(str(x) for x in id_)
             self.attrs["id_"] = LazyAttribute("id", id_)
 
             self.i = len(c.hypergen.into)
             self.sep = attrs.pop("sep", "")
-            self.js_cb = attrs.pop("js_cb", "hypergen.v.s")
+            self.js_value_func = attrs.pop("js_value_func", "hypergen.v.s")
 
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
@@ -410,7 +413,8 @@ class input_(base_element_void):
 
     def __init__(self, *children, **attrs):
         super(input_, self).__init__(*children, **attrs)
-        self.js_cb = attrs.pop("js_cb", INPUT_CALLBACK_TYPES.get(attrs.get("type_", "text"), "hypergen.v.s"))
+        self.js_value_func = attrs.pop("js_value_func",
+            INPUT_CALLBACK_TYPES.get(attrs.get("type_", "text"), "hypergen.v.s"))
 
 ### Special tags ###
 
@@ -687,7 +691,7 @@ def encoder(o):
     assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
-        return ["_", "element_value", [o.js_cb, o.attrs["id_"].v]]
+        return ["_", "element_value", [o.js_value_func, o.attrs["id_"].v]]
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
         return ["_", "datetime", o.isoformat()]

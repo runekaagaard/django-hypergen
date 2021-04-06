@@ -119,10 +119,11 @@ def no_base_template(*args, **kwargs):
 
 @wrap2
 def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None, login_url=None,
-    raise_exception=False, base_template=no_base_template, app_name=None, appstate_init=None, view=None):
+    raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert namespace is not None, "namespace is required"
-    # assert target_id is not None, "target_id is required"
+    if base_template is None:
+        base_template = no_base_template
 
     @wraps(func)
     def _(request, *fargs, **fkwargs):

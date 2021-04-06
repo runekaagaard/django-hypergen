@@ -201,7 +201,7 @@ const applyCommand = function(path, ...args) {
   rpath(...args)
 }
 window.e = function(event, targetId, dataId, eventMatches) {
-  event.preventDefault()
+  /*   event.preventDefault() */
   event.stopPropagation()
   if (!!eventMatches) {
     for (const k in eventMatches) {
@@ -231,9 +231,12 @@ const MISSING_ELEMENT_EXCEPTION = "MISSING_ELEMENT_EXCEPTION"
 
 // DOM element value readers
 export const v = {}
-v.i = function(id) { 
-  const el = $(document.getElementById(id))
-  return parseInt(el.val())
+v.i = function(id) {
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  return parseInt(el.value)
 }
 v.f = function(id) {
   const el = $(document.getElementById(id))

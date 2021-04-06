@@ -13,29 +13,41 @@ HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=shared_templates.b
 def inputs(request):
     INPUT_TYPES = [
         "button", "checkbox", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
-        "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url",
-        "week"]
+        "month", "number (int)", "number (float)", "password", "radio", "range", "reset", "search", "submit", "tel",
+        "text", "time", "url", "week"]
 
     h1("Showing all input types.")
     with table():
         tr(th(x) for x in ["Input type", "Element", "Server value"])
 
-        for type_ in INPUT_TYPES:
-            src, value = OMIT, OMIT
-            if type_ == "image":
+        for i, type_ in enumerate(INPUT_TYPES):
+            src, value, step = OMIT, OMIT, OMIT
+            id_ = "server-value-{}".format(i)
+            if "number" in type_:
+                if type_ == "number-float":
+                    step = "any"
+                type_ = "number"
+
+            elif type_ == "image":
                 src = "https://picsum.photos/80/40"
                 value = "Clicked"
             elif type_ in ["button", "reset", "submit"]:
                 value = "Clicked"
             with tr():
                 td(type_)
+                submit_cb = cb(submit, THIS, id_)
                 td(
-                    input_(id_=("input", type_), type_=type_, onclick=cb(submit, THIS, type_),
-                    oninput=cb(submit, THIS, type_), value=value, src=src))
-                td(id_=type_)
+                    input_(id_=("element", i), class_="input", type_=type_, onclick=submit_cb, oninput=submit_cb,
+                    value=value, src=src, step=step))
+                td(id_=id_)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, namespace="inputs")
-def submit(request, value, type_):
-    c.hypergen = c.hypergen.set("target_id", type_)
+    script("""
+
+    """)
+
+@hypergen_callback(view=inputs, **HYPERGEN_SETTINGS)
+def submit(request, value, target_id):
+    return
+    c.hypergen = c.hypergen.set("target_id", target_id)
     with pre(style={"padding": 0}):
         raw(repr(value), " (", type(value).__name__, ")")

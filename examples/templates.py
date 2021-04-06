@@ -8,6 +8,7 @@ SAKURA = "https://unpkg.com/sakura.css/css/sakura.css"
 
 @contextmanager
 def base_template():
+    print("IN BASE TEMPLATE")
     doctype()
     with html():
         with head():

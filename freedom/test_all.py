@@ -255,11 +255,11 @@ def test_components2():
                 comp1()
         assert f() == '<tr><td><input value="a"/></td></tr>'
 
-def test_js_cb():
+def test_js_value_func():
     with context(is_test=True, hypergen=hypergen_context()):
-        i = input_(type_="hidden", value=200, collect_name="pk", js_cb="hypergen.v.i", id_="cch{}".format(200))
+        i = input_(type_="hidden", value=200, collect_name="pk", js_value_func="hypergen.v.i", id_="cch{}".format(200))
 
-    assert i.js_cb == "hypergen.v.i"
+    assert i.js_value_func == "hypergen.v.i"
 
 def test_eventhandler_cache():
     with context(is_test=True, hypergen=hypergen_context()):
