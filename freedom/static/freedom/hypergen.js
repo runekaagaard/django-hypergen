@@ -330,8 +330,7 @@ v.w = function(id) { // time
   }
   if (!el.value) return null
   const parts = el.value.split("-")
-  return {year: parts[0], week: parts[1]}
-  
+  return {year: parts[0], week: parts[1].replace("W", "")}
 }
 
 const reviver = function(k, v) {
