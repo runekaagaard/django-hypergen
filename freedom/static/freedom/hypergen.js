@@ -280,6 +280,14 @@ v.r = function(id) { // radio button. Uses name attribute for value.
   const checked = document.querySelector("input[type=radio][name=" + el.name + "]:checked")
   return checked === null ? null : checked.value
 }
+v.ri = function(id) { // radio button. Uses name attribute for value.
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  const checked = document.querySelector("input[type=radio][name=" + el.name + "]:checked")
+  return checked === null ? null : parseInt(checked.value)
+}
 v.u = function(id, formData) { // file upload
   const el = document.getElementById(id)
   if (el === null) {
@@ -320,7 +328,7 @@ v.m = function(id) { // time
   }
   if (!el.value) return null
   const parts = el.value.split("-")
-  return {year: parts[0], month: parts[1]}
+  return {year: parseInt(parts[0]), month: parseInt(parts[1])}
   
 }
 v.w = function(id) { // time
@@ -330,7 +338,7 @@ v.w = function(id) { // time
   }
   if (!el.value) return null
   const parts = el.value.split("-")
-  return {year: parts[0], week: parts[1].replace("W", "")}
+  return {year: parseInt(parts[0]), week: parseInt(parts[1].replace("W", ""))}
 }
 
 const reviver = function(k, v) {

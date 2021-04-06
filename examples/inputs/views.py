@@ -28,7 +28,7 @@ def inputs(request):
         ("number", d(step="any", title="number (float)", value=12.12)),
         ("password", d(value="1234")),
         ("radio", d(name="myradio", value=20, checked=True)),
-        ("radio", d(name="myradio", value=21)),
+        ("radio", d(name="myradio", value=21, js_value_func="hypergen.v.ri")),
         ("range", d()),
         ("reset", d(value="clicked")),
         ("search", d(value="Who is Rune Kaagaard?")),
@@ -41,7 +41,7 @@ def inputs(request):
 
     h1("Showing all input types.")
     with table():
-        tr(th(x) for x in ["Input type", "Input attributes", "Element", "Server value"])
+        tr(th(x) for x in ["Input type", "Input attributes", "Element", "Server callback value"])
 
         for i, pair in enumerate(INPUT_TYPES):
             type_, attrs = pair

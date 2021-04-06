@@ -1,3 +1,6 @@
+# coding=utf-8
+d = dict
+
 from django.templatetags.static import static
 
 from contextlib import contextmanager
@@ -16,6 +19,6 @@ def base_template():
             link(NORMALISE)
             link(SAKURA)
 
-        with body():
+        with body(style=d(max_width="none")):
             with div(id_="content"):
                 yield
