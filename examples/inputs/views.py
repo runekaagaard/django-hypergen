@@ -37,8 +37,7 @@ def inputs(request):
         ("text", d(value="This is text!")),
         ("time", d(value=datetime.time(7, 42))),
         ("url", d(value="https://github.com/runekaagaard/django-freedom/")),
-        ("week", d(value=d(year=1999, week=42))),
-        ("textarea", d(value="Who is Jeppe Tuxen?")),]
+        ("week", d(value=d(year=1999, week=42))),]
 
     h1("Showing all input types.")
     with table():
@@ -53,10 +52,20 @@ def inputs(request):
                 td(title)
                 td(code(attrs))
                 submit_cb = cb(submit, THIS, id_)
-                td(
-                    input_(id_=("element", i), class_="input", type_=type_, onclick=submit_cb, oninput=submit_cb,
-                    **attrs))
+                td(input_(id_=("element", i), class_="input", type_=type_, oninput=submit_cb, **attrs))
                 td(id_=id_)
+
+        with tr():
+            i += 1
+            id_ = "server-value-{}".format(i)
+            attrs = d()
+            td("select")
+            td(code(attrs))
+            submit_cb = cb(submit, THIS, id_)
+            td(
+                textarea("Who is Jeppe Tuxen?", id_=("element", i), class_="input", type_=type_, oninput=submit_cb,
+                **attrs))
+            td(id_=id_)
 
         with tr():
             i += 1

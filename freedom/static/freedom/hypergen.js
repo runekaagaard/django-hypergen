@@ -232,6 +232,7 @@ const MISSING_ELEMENT_EXCEPTION = "MISSING_ELEMENT_EXCEPTION"
 // coerce functions
 export const coerce = {}
 coerce.no = function(value) {
+  if (value === "") return null
   return value
 }
 coerce.string = function(value) {
@@ -312,7 +313,7 @@ export const element = function(valueFunc, coerceFunc, id) {
   this.toJSON = function() {
     const value = resolvePath(valueFunc)(id, window.hypergenGlobalFormdata)
     if (!!coerceFunc) return resolvePath(coerceFunc)(value)
-    else return value
+    else return coerce.no(value)
   }
   return this
 }
