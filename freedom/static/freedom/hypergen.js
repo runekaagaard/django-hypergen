@@ -1,7 +1,3 @@
-import $ from "jquery";
-window.jQuery = $
-window.$ = $
-
 import morphdom from 'morphdom'
 import './hypergen'
 
@@ -454,3 +450,17 @@ window.addEventListener("popstate", function(event) {
     window.location = location.href
   }
 })
+
+const ready = function(fn) {
+  if (document.readyState != 'loading') {
+    fn();
+  } else if (document.addEventListener) {
+    document.addEventListener('DOMContentLoaded', fn);
+  } else {
+    document.attachEvent('onreadystatechange', function() {
+      if (document.readyState != 'loading')
+        fn();
+    });
+  }
+}
+window.ready = ready

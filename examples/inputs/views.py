@@ -58,7 +58,7 @@ def inputs(request):
                 td(id_=id_)
 
     script("""
-        $(function() {
+        ready(function() {
             document.querySelectorAll(".input").forEach(el => (el.oninput(new Event("input"))));
         })
     """)
