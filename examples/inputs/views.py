@@ -59,7 +59,7 @@ def inputs(request):
             i += 1
             id_ = "server-value-{}".format(i)
             attrs = d()
-            td("select")
+            td("textarea")
             td(code(attrs))
             submit_cb = cb(submit, THIS, id_)
             td(
