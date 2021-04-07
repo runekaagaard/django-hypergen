@@ -229,52 +229,68 @@ const mergeAttrs = function(target, source){
 
 const MISSING_ELEMENT_EXCEPTION = "MISSING_ELEMENT_EXCEPTION" 
 
-// Cast functions
-export const casts = {}
-casts.string = function(value) {
+// coerce functions
+export const coerce = {}
+coerce.no = function(value) {
+  return value
+}
+coerce.string = function(value) {
+  if (value === "") return null
   return value === null ? null : "" + value
 }
-
-// DOM element value readers
-export const v = {}
-v.i = function(id) { // integer
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  return parseInt(el.value)
+coerce.int = function(value) {
+  if (value === "") return null
+  value = parseInt(value)
+  if (isNaN(value)) return null
+  else return value
 }
-v.f = function(id) { // float
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  const value = parseFloat(el.value)
+coerce.float = function(value) {
+  if (value === "") return null
+  value = parseFloat(value)
   if (isNaN(value)) return null
   else return {_: ["float", value]}
 }
-v.n = function(id) { // number. float or integer depending on value of step attribute.
-  const el = document.getElementById(id)
-  if (!el.step) return v.i(id)
-  else if (el.step === "any") return v.f(id)
-  else return Number.isInteger(parseFloat(el.step)) ? v.i(id) : v.f(id)
+coerce.date = function(value) {
+  if (value === "") return null
+  else return {_: ["date", value]}
 }
-v.s = function(id) { // string.
+coerce.datetime = function(value) {
+  if (value === "") return null
+  else return {_: ["datetime", value]}
+}
+coerce.time = function(value) {
+  if (value === "") return null
+  else return {_: ["time", value]}
+}
+coerce.month = function(value) {
+  if (value === "") return null
+  const parts = value.split("-")
+  return {year: parseInt(parts[0]), month: parseInt(parts[1])}
+}
+coerce.week = function(value) {
+  if (value === "") return null
+  const parts = value.split("-")
+  return {year: parseInt(parts[0]), week: parseInt(parts[1].replace("W", ""))}
+}
+
+
+// DOM element value readers
+export const read = {}
+read.value = function(id) {
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
-  const value = el.value.trim()
-  return value !== "" ? value : null
+  return el.value.trim()
 }
-v.c = function(id) { // checkbox
+read.checked = function(id) { // checkbox
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
   }
   return el.checked
 }
-v.r = function(id) { // radio button. Uses name attribute for value.
+read.radio = function(id) { // radio button. Uses name attribute for value.
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
@@ -282,15 +298,7 @@ v.r = function(id) { // radio button. Uses name attribute for value.
   const checked = document.querySelector("input[type=radio][name=" + el.name + "]:checked")
   return checked === null ? null : checked.value
 }
-v.ri = function(id) { // radio button. Uses name attribute for value.
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  const checked = document.querySelector("input[type=radio][name=" + el.name + "]:checked")
-  return checked === null ? null : parseInt(checked.value)
-}
-v.u = function(id, formData) { // file upload
+read.file = function(id, formData) { // file upload
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
@@ -299,54 +307,12 @@ v.u = function(id, formData) { // file upload
   if (window.hypergenUploadFiles === true) formData.append(id, el.files[0])
   return el.files[0].name
 }
-v.d = function(id) { // date
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  if (!el.value) return null
-  else return {_: ["date", el.value]}
-}
-v.dt = function(id) { // datetime
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  if (!el.value) return null
-  else return {_: ["datetime", el.value]}
-}
-v.t = function(id) { // time
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  if (!el.value) return null
-  else return {_: ["time", el.value]}
-}
-v.m = function(id) { // time
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  if (!el.value) return null
-  const parts = el.value.split("-")
-  return {year: parseInt(parts[0]), month: parseInt(parts[1])}
-  
-}
-v.w = function(id) { // week
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  if (!el.value) return null
-  const parts = el.value.split("-")
-  return {year: parseInt(parts[0]), week: parseInt(parts[1].replace("W", ""))}
-}
 
-export const element = function(valueFunc, castFunc, id) {
+export const element = function(valueFunc, coerceFunc, id) {
   this.toJSON = function() {
-    const resolvedCastFunc = resolvePath(castFunc)
-    return resolvedCastFunc(resolvePath(valueFunc)(id, window.hypergenGlobalFormdata))
+    const value = resolvePath(valueFunc)(id, window.hypergenGlobalFormdata)
+    if (!!coerceFunc) return resolvePath(coerceFunc)(value)
+    else return value
   }
   return this
 }

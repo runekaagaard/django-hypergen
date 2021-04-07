@@ -25,10 +25,10 @@ def inputs(request):
         ("image", d(src="https://picsum.photos/80/40", value="clicked")),
         ("month", d(value=d(year=2099, month=9))),
         ("number", d(title="number (int)", value=99)),
-        ("number", d(step="any", title="number (float)", value=12.12)),
+        ("number", d(title="number (float)", value=12.12, js_coerce_func="hypergen.coerce.float")),
         ("password", d(value="1234")),
-        ("radio", d(name="myradio", value=20, checked=True)),
-        ("radio", d(name="myradio", value=21, js_value_func="hypergen.v.ri")),
+        ("radio", d(name="myradio", value=20, checked=True, js_coerce_func="hypergen.coerce.int")),
+        ("radio", d(name="myradio", value=21, js_coerce_func="hypergen.coerce.int")),
         ("range", d()),
         ("reset", d(value="clicked")),
         ("search", d(value="Who is Rune Kaagaard?")),
@@ -61,7 +61,7 @@ def inputs(request):
         with tr():
             i += 1
             id_ = "server-value-{}".format(i)
-            attrs = d()
+            attrs = d(js_coerce_func="hypergen.coerce.int")
             td("select")
             td(code(attrs))
             submit_cb = cb(submit, THIS, id_)

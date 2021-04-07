@@ -260,8 +260,8 @@ class base_element(ContextDecorator):
 
             self.i = len(c.hypergen.into)
             self.sep = attrs.pop("sep", "")
-            self.js_value_func = attrs.pop("js_value_func", "hypergen.v.s")
-            self.js_cast_func = attrs.pop("js_cast_func", "hypergen.casts.string")
+            self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+            self.js_coerce_func = attrs.pop("js_coerce_func", None)
 
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
@@ -400,18 +400,20 @@ def component(f):
 
 ### Some special dom elements ###
 
-INPUT_CALLBACK_TYPES = dict(
-    checkbox="hypergen.v.c",
-    month="hypergen.v.m",
-    number="hypergen.v.n",
-    range="hypergen.v.f",
-    week="hypergen.v.w",
-    radio="hypergen.v.r",
-    file="hypergen.v.u",
-    date="hypergen.v.d",
-    time="hypergen.v.t",
+JS_VALUE_FUNCS = d(
+    checkbox="hypergen.read.checked",
+    radio="hypergen.read.radio",
+    file="hypergen.read.file",
 )
-INPUT_CALLBACK_TYPES["datetime-local"] = "hypergen.v.dt"
+JS_COERCE_FUNCS = dict(
+    month="hypergen.coerce.month",
+    number="hypergen.coerce.int",
+    range="hypergen.coerce.float",
+    week="hypergen.coerce.week",
+    date="hypergen.coerce.date",
+    time="hypergen.coerce.time",
+)
+JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
 
 class input_(base_element_void):
     void = True
@@ -431,7 +433,8 @@ class input_(base_element_void):
                 attrs["value"] = "{:04}-W{:02}".format(value["year"], value["week"])
         super(input_, self).__init__(*children, **attrs)
         self.js_value_func = attrs.pop("js_value_func",
-            INPUT_CALLBACK_TYPES.get(attrs.get("type_", "text"), "hypergen.v.s"))
+            JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
+        self.js_coerce_func = attrs.pop("js_coerce_func", JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
 
 ### Special tags ###
 
@@ -708,7 +711,7 @@ def encoder(o):
     assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
-        return ["_", "element_value", [o.js_value_func, o.js_cast_func, o.attrs["id_"].v]]
+        return ["_", "element_value", [o.js_value_func, o.js_coerce_func, o.attrs["id_"].v]]
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
         return ["_", "datetime", o.isoformat()]
