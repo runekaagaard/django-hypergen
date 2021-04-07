@@ -25,8 +25,7 @@ def index(request, filtering):
 
 @hypergen_callback(view=index, **HYPERGEN_SETTINGS)
 def add(request, description):
-    description = description.strip()
-    if not description:
+    if description is None:
         return [["alert", "Please write something to do"]]
 
     Item(description=description).save()

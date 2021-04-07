@@ -229,6 +229,12 @@ const mergeAttrs = function(target, source){
 
 const MISSING_ELEMENT_EXCEPTION = "MISSING_ELEMENT_EXCEPTION" 
 
+// Cast functions
+export const casts = {}
+casts.string = function(value) {
+  return value === null ? null : "" + value
+}
+
 // DOM element value readers
 export const v = {}
 v.i = function(id) { // integer
@@ -327,7 +333,7 @@ v.m = function(id) { // time
   return {year: parseInt(parts[0]), month: parseInt(parts[1])}
   
 }
-v.w = function(id) { // time
+v.w = function(id) { // week
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
@@ -335,6 +341,14 @@ v.w = function(id) { // time
   if (!el.value) return null
   const parts = el.value.split("-")
   return {year: parseInt(parts[0]), week: parseInt(parts[1].replace("W", ""))}
+}
+
+export const element = function(valueFunc, castFunc, id) {
+  this.toJSON = function() {
+    const resolvedCastFunc = resolvePath(castFunc)
+    return resolvedCastFunc(resolvePath(valueFunc)(id, window.hypergenGlobalFormdata))
+  }
+  return this
 }
 
 const reviver = function(k, v) {
@@ -364,14 +378,6 @@ const getCookie = function(name) {
     }
     return cookieValue;
 }
-
-export const element = function(valueFunc, id) {
-  this.toJSON = function() {
-    return resolvePath(valueFunc)(id, window.hypergenGlobalFormdata)
-  }
-  return this
-}
-
 
 function addParams(url, params) {
   const ret = []

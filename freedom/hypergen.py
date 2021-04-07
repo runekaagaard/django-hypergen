@@ -261,6 +261,7 @@ class base_element(ContextDecorator):
             self.i = len(c.hypergen.into)
             self.sep = attrs.pop("sep", "")
             self.js_value_func = attrs.pop("js_value_func", "hypergen.v.s")
+            self.js_cast_func = attrs.pop("js_cast_func", "hypergen.casts.string")
 
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
@@ -707,7 +708,7 @@ def encoder(o):
     assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
-        return ["_", "element_value", [o.js_value_func, o.attrs["id_"].v]]
+        return ["_", "element_value", [o.js_value_func, o.js_cast_func, o.attrs["id_"].v]]
     elif isinstance(o, datetime.datetime):
         assert False, "TODO"
         return ["_", "datetime", o.isoformat()]

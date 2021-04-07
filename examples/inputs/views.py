@@ -19,7 +19,7 @@ def inputs(request):
         ("color", d(value="#bb7777")),
         ("date", d(value=date(2021, 4, 16))),
         ("datetime-local", d(value=datetime.datetime(1941, 5, 5, 5, 23))),
-        ("email", d(value="foo@prescriba.com")),
+        ("email", d(value="foo@example.com")),
         ("file", d()),
         ("hidden", d(value="hidden")),
         ("image", d(src="https://picsum.photos/80/40", value="clicked")),
@@ -37,7 +37,8 @@ def inputs(request):
         ("text", d(value="This is text!")),
         ("time", d(value=datetime.time(7, 42))),
         ("url", d(value="https://github.com/runekaagaard/django-freedom/")),
-        ("week", d(value=d(year=1999, week=42))),]
+        ("week", d(value=d(year=1999, week=42))),
+        ("textarea", d(value="Who is Jeppe Tuxen?")),]
 
     h1("Showing all input types.")
     with table():
@@ -56,6 +57,18 @@ def inputs(request):
                     input_(id_=("element", i), class_="input", type_=type_, onclick=submit_cb, oninput=submit_cb,
                     **attrs))
                 td(id_=id_)
+
+        with tr():
+            i += 1
+            id_ = "server-value-{}".format(i)
+            attrs = d()
+            td("select")
+            td(code(attrs))
+            submit_cb = cb(submit, THIS, id_)
+            td(
+                select([option(x, value=x, selected=x == 3) for x in range(5)], id_=("element", i), class_="input",
+                type_=type_, onclick=submit_cb, oninput=submit_cb, **attrs))
+            td(id_=id_)
 
     script("""
         ready(function() {
