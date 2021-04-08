@@ -1,0 +1,401 @@
+diff --git a/experiments/core.pyx b/experiments/core.pyx
+index 9409a2c..93a0c46 100644
+--- a/experiments/core.pyx
++++ b/experiments/core.pyx
+@@ -73,24 +73,24 @@ def hypergen(func, *args, **kwargs):
+     wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
+ 
+     with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
+-        assert not c.hypergen.into, "This should not happen"
++        assert not c.hypergen["into"], "This should not happen"
+         func(*args, **kwargs)
+-        assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
+-        html = join_html(c.hypergen.into)
+-        if c.hypergen.event_handler_cache:
+-            command("hypergen.setEventHandlerCache", c.hypergen.target_id, c.hypergen.event_handler_cache)
++        assert c.hypergen["target_id"] is not None, "target_id must be set. Either as an input to a hypergen function or manually"
++        html = join_html(c.hypergen["into"])
++        if c.hypergen["event_handler_cache"]:
++            command("hypergen.setEventHandlerCache", c.hypergen["target_id"], c.hypergen["event_handler_cache"])
+         if not c.request.is_ajax():
+             pos = html.find("</head")
+             if pos != -1:
+                 s = "<script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
+-                    dumps(c.hypergen.commands))
++                    dumps(c.hypergen["commands"]))
+                 html = insert(html, s, pos)
+             print("Execution time:", (time.time() - a) * 1000, "ms")
+             return html
+         else:
+-            command("hypergen.morph", c.hypergen.target_id, html)
++            command("hypergen.morph", c.hypergen["target_id"], html)
+             print("Execution time:", (time.time() - a) * 1000, "ms")
+-            return c.hypergen.commands
++            return c.hypergen["commands"]
+ 
+ def hypergen_response(html_or_commands_or_http_response):
+     value = html_or_commands_or_http_response
+@@ -122,9 +122,9 @@ def command(javascript_func_path, *args, **kwargs):
+     if return_:
+         return item
+     elif prepend:
+-        c.hypergen.commands.insert(0, item)
++        c.hypergen["commands"].insert(0, item)
+     else:
+-        c.hypergen.commands.append(item)
++        c.hypergen["commands"].append(item)
+ 
+ ### Helpers ###
+ class LazyAttribute(object):
+@@ -163,7 +163,7 @@ cdef str join_html(html):
+     return "".join(make_string(x) for x in fmt(html))
+ 
+ def raw(*children):
+-    c.hypergen.into.extend(children)
++    c.hypergen["into"].extend(children)
+ 
+ def _sort_attrs(attrs):
+     # For testing only, subject to change.
+@@ -222,13 +222,13 @@ def callback(url_or_view, *cb_args, **kwargs):
+             elementId=element.attrs["id_"].v), return_=True)
+         cmd_id = id(cmd)
+ 
+-        c.hypergen.event_handler_cache[cmd_id] = cmd
++        c.hypergen["event_handler_cache"][cmd_id] = cmd
+ 
+         if event_matches:
+             em = ", {}".format(escape(dumps(event_matches)))
+         else:
+             em = ""
+-        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen.target_id, cmd_id, em), '"']
++        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen["target_id"], cmd_id, em), '"']
+ 
+     return to_html
+ 
+@@ -240,9 +240,9 @@ def call_js(command_path, *cb_args):
+         element.ensure_id()
+         cmd = command(command_path, *[fix_this(x) for x in cb_args], return_=True)
+         cmd_id = id(cmd)
+-        c.hypergen.event_handler_cache[cmd_id] = cmd
++        c.hypergen["event_handler_cache"][cmd_id] = cmd
+ 
+-        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id, cmd_id), '"']
++        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen["target_id"], cmd_id), '"']
+ 
+     return to_html
+ 
+@@ -275,7 +275,7 @@ class base_element(ContextDecorator):
+                 id_ = "-".join(str(x) for x in id_)
+             self.attrs["id_"] = LazyAttribute("id", id_)
+ 
+-            self.i = len(c.hypergen.into)
++            self.i = len(c.hypergen["into"])
+             self.sep = attrs.pop("sep", "")
+             self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+ 
+@@ -288,9 +288,9 @@ class base_element(ContextDecorator):
+             else:
+                 self.js_coerce_func = attrs.pop("js_coerce_func", None)
+ 
+-            c.hypergen.into.extend(self.start())
+-            c.hypergen.into.extend(self.end())
+-            self.j = len(c.hypergen.into)
++            c.hypergen["into"].extend(self.start())
++            c.hypergen["into"].extend(self.end())
++            self.j = len(c.hypergen["into"])
+             super(base_element, self).__init__()
+ 
+         assert "hypergen" in c, "Element called outside hypergen context."
+@@ -302,13 +302,13 @@ class base_element(ContextDecorator):
+             c.hypergen["ids"].add(id_)
+ 
+     def __enter__(self):
+-        c.hypergen.into.extend(self.start())
++        c.hypergen["into"].extend(self.start())
+         self.delete()
+         return self
+ 
+     def __exit__(self, *exc):
+         if not self.void:
+-            c.hypergen.into.extend(self.end())
++            c.hypergen["into"].extend(self.end())
+ 
+     def as_string(self):
+         into = self.start()
+@@ -318,7 +318,7 @@ class base_element(ContextDecorator):
+ 
+     def delete(self):
+         for i in range(self.i, self.j):
+-            c.hypergen.into[i] = DELETED
++            c.hypergen["into"][i] = DELETED
+ 
+     def format_children(self, list children, _t=None):
+         if _t is None:
+@@ -408,17 +408,17 @@ class Component(object):
+ 
+     def delete(self):
+         for i in range(self.i, self.j):
+-            c.hypergen.into[i] = DELETED
++            c.hypergen["into"][i] = DELETED
+ 
+ def component(f):
+     @wraps(f)
+     def _(*args, **kwargs):
+         with c(into=[], at="hypergen"):
+             f(*args, **kwargs)
+-            into = c.hypergen.into
+-        i = len(c.hypergen.into)
+-        c.hypergen.into.extend(into)
+-        j = len(c.hypergen.into)
++            into = c.hypergen["into"]
++        i = len(c.hypergen["into"])
++        c.hypergen["into"].extend(into)
++        j = len(c.hypergen["into"])
+         return Component(into, i, j)
+ 
+     return _
+diff --git a/experiments/hypergen/DOCUMENTATION.rst b/experiments/hypergen/DOCUMENTATION.rst
+index 6457896..8832689 100644
+--- a/experiments/hypergen/DOCUMENTATION.rst
++++ b/experiments/hypergen/DOCUMENTATION.rst
+@@ -23,7 +23,7 @@ or exactly the same using the convenience wrappers:
+ .. code-block:: python
+                 
+     from hypergen import LiveviewResponse
+-    from hypergen.commands import morph, add_notification
++    from hypergen["commands"] import morph, add_notification
+     
+     @permission_required("myapp.myperm")
+     def my_callback(request):
+@@ -60,8 +60,8 @@ Commands can be executed manually on the client as well with ``execute_commands`
+ Each command is an array on the form ``[NAME, ARG1, ARG2, ..., ARGN, KEYWORD_ARGUMENTS]``, where:
+ 
+ *NAME*
+-    The name of a command function in ``hypergen.commands``. Add your own custom commands to
+-    ``hypergen.commands``.
++    The name of a command function in ``hypergen["commands"]``. Add your own custom ["commands"] to
++    ``hypergen["commands"]``.
+ *ARG1, ARG2, ..., ARGN*
+     Optional positional keyword arguments to the command function.
+ *KEYWORD_ARGUMENTS*
+diff --git a/hypergen/core.py b/hypergen/core.py
+index adbc22d..d01e494 100644
+--- a/hypergen/core.py
++++ b/hypergen/core.py
+@@ -10,7 +10,9 @@ from functools import wraps, update_wrapper
+ from copy import deepcopy
+ 
+ from contextlib2 import ContextDecorator, contextmanager
+-from pyrsistent import pmap, m
++from immutables import Map as pmap
++
++m = pmap
+ 
+ from django.http.response import HttpResponse, HttpResponseRedirect
+ from django.utils.encoding import force_text
+@@ -73,24 +75,25 @@ def hypergen(func, *args, **kwargs):
+     wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
+ 
+     with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
+-        assert not c.hypergen.into, "This should not happen"
++        assert not c.hypergen["into"], "This should not happen"
+         func(*args, **kwargs)
+-        assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
+-        html = join_html(c.hypergen.into)
+-        if c.hypergen.event_handler_cache:
+-            command("hypergen.setEventHandlerCache", c.hypergen.target_id, c.hypergen.event_handler_cache)
++        assert c.hypergen[
++            "target_id"] is not None, "target_id must be set. Either as an input to a hypergen function or manually"
++        html = join_html(c.hypergen["into"])
++        if c.hypergen["event_handler_cache"]:
++            command("hypergen.setEventHandlerCache", c.hypergen["target_id"], c.hypergen["event_handler_cache"])
+         if not c.request.is_ajax():
+             pos = html.find("</head")
+             if pos != -1:
+                 s = "<script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
+-                    dumps(c.hypergen.commands))
++                    dumps(c.hypergen["commands"]))
+                 html = insert(html, s, pos)
+-            print("Execution time:", (time.time() - a) * 1000, "ms")
++            # print("Execution time:", (time.time() - a) * 1000, "ms")
+             return html
+         else:
+-            command("hypergen.morph", c.hypergen.target_id, html)
+-            print("Execution time:", (time.time() - a) * 1000, "ms")
+-            return c.hypergen.commands
++            command("hypergen.morph", c.hypergen["target_id"], html)
++            # print("Execution time:", (time.time() - a) * 1000, "ms")
++            return c.hypergen["commands"]
+ 
+ def hypergen_response(html_or_commands_or_http_response):
+     value = html_or_commands_or_http_response
+@@ -122,9 +125,9 @@ def command(javascript_func_path, *args, **kwargs):
+     if return_:
+         return item
+     elif prepend:
+-        c.hypergen.commands.insert(0, item)
++        c.hypergen["commands"].insert(0, item)
+     else:
+-        c.hypergen.commands.append(item)
++        c.hypergen["commands"].append(item)
+ 
+ ### Helpers ###
+ class LazyAttribute(object):
+@@ -160,7 +163,7 @@ def join_html(html):
+     return "".join(make_string(x) for x in fmt(html))
+ 
+ def raw(*children):
+-    c.hypergen.into.extend(children)
++    c.hypergen["into"].extend(children)
+ 
+ def _sort_attrs(attrs):
+     # For testing only, subject to change.
+@@ -219,13 +222,13 @@ def callback(url_or_view, *cb_args, **kwargs):
+             elementId=element.attrs["id_"].v), return_=True)
+         cmd_id = id(cmd)
+ 
+-        c.hypergen.event_handler_cache[cmd_id] = cmd
++        c.hypergen["event_handler_cache"][cmd_id] = cmd
+ 
+         if event_matches:
+             em = ", {}".format(escape(dumps(event_matches)))
+         else:
+             em = ""
+-        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen.target_id, cmd_id, em), '"']
++        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen["target_id"], cmd_id, em), '"']
+ 
+     return to_html
+ 
+@@ -237,9 +240,9 @@ def call_js(command_path, *cb_args):
+         element.ensure_id()
+         cmd = command(command_path, *[fix_this(x) for x in cb_args], return_=True)
+         cmd_id = id(cmd)
+-        c.hypergen.event_handler_cache[cmd_id] = cmd
++        c.hypergen["event_handler_cache"][cmd_id] = cmd
+ 
+-        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id, cmd_id), '"']
++        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen["target_id"], cmd_id), '"']
+ 
+     return to_html
+ 
+@@ -272,7 +275,7 @@ class base_element(ContextDecorator):
+                 id_ = "-".join(str(x) for x in id_)
+             self.attrs["id_"] = LazyAttribute("id", id_)
+ 
+-            self.i = len(c.hypergen.into)
++            self.i = len(c.hypergen["into"])
+             self.sep = attrs.pop("sep", "")
+             self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+ 
+@@ -285,13 +288,13 @@ class base_element(ContextDecorator):
+             else:
+                 self.js_coerce_func = attrs.pop("js_coerce_func", None)
+ 
+-            c.hypergen.into.extend(self.start())
+-            c.hypergen.into.extend(self.end())
+-            self.j = len(c.hypergen.into)
++            c.hypergen["into"].extend(self.start())
++            c.hypergen["into"].extend(self.end())
++            self.j = len(c.hypergen["into"])
+             super(base_element, self).__init__()
+ 
+         assert "hypergen" in c, "Element called outside hypergen context."
+-        c.hypergen.wrap_elements(init, self, *children, **attrs)
++        c.hypergen["wrap_elements"](init, self, *children, **attrs)
+ 
+         if self.attrs["id_"].v is not None:
+             id_ = self.attrs["id_"].v
+@@ -299,13 +302,13 @@ class base_element(ContextDecorator):
+             c.hypergen["ids"].add(id_)
+ 
+     def __enter__(self):
+-        c.hypergen.into.extend(self.start())
++        c.hypergen["into"].extend(self.start())
+         self.delete()
+         return self
+ 
+     def __exit__(self, *exc):
+         if not self.void:
+-            c.hypergen.into.extend(self.end())
++            c.hypergen["into"].extend(self.end())
+ 
+     def as_string(self):
+         into = self.start()
+@@ -315,7 +318,7 @@ class base_element(ContextDecorator):
+ 
+     def delete(self):
+         for i in range(self.i, self.j):
+-            c.hypergen.into[i] = DELETED
++            c.hypergen["into"][i] = DELETED
+ 
+     def format_children(self, children, _t=None):
+         if _t is None:
+@@ -405,17 +408,17 @@ class Component(object):
+ 
+     def delete(self):
+         for i in range(self.i, self.j):
+-            c.hypergen.into[i] = DELETED
++            c.hypergen["into"][i] = DELETED
+ 
+ def component(f):
+     @wraps(f)
+     def _(*args, **kwargs):
+         with c(into=[], at="hypergen"):
+             f(*args, **kwargs)
+-            into = c.hypergen.into
+-        i = len(c.hypergen.into)
+-        c.hypergen.into.extend(into)
+-        j = len(c.hypergen.into)
++            into = c.hypergen["into"]
++        i = len(c.hypergen["into"])
++        c.hypergen["into"].extend(into)
++        j = len(c.hypergen["into"])
+         return Component(into, i, j)
+ 
+     return _
+diff --git a/hypergen/test_all.py b/hypergen/test_all.py
+index 2aa5dc8..dbdd7dd 100644
+--- a/hypergen/test_all.py
++++ b/hypergen/test_all.py
+@@ -102,12 +102,12 @@ def e(s):
+     return h.unescape(s)
+ 
+ def f():
+-    return re.sub(r'[0-9]{5,}', '1234', join_html(c.hypergen.into))
++    return re.sub(r'[0-9]{5,}', '1234', join_html(c.hypergen["into"]))
+ 
+ def test_element():
+     with context(hypergen=hypergen_context()):
+         div("hello world!")
+-        assert str(join_html(c.hypergen.into)) == '<div>hello world!</div>'
++        assert str(join_html(c.hypergen["into"])) == '<div>hello world!</div>'
+     with context(hypergen=hypergen_context()):
+         with div("a", class_="foo"):
+             div("b", x_foo=42)
+@@ -180,7 +180,7 @@ def test_live_element():
+ 
+         with context(is_test=True, hypergen=hypergen_context()):
+             input_(autofocus=True)
+-            assert join_html(c.hypergen.into) == '<input autofocus/>'
++            assert join_html(c.hypergen["into"]) == '<input autofocus/>'
+ 
+ def test_live_element2():
+     setup()
+@@ -272,7 +272,7 @@ def test_eventhandler_cache():
+ 
+         input_(onclick=cb(f1, THIS))
+ 
+-        ehc = {i: v for i, v in enumerate(context.hypergen.event_handler_cache.values())}
++        ehc = {i: v for i, v in enumerate(context.hypergen["event_handler_cache"].values())}
+ 
+         assert dumps(
+             ehc
+@@ -286,7 +286,7 @@ def test_call_js():
+             pass
+ 
+         a(onclick=call_js("hypergen.xyz", THIS))
+-        assert dumps(context.hypergen.event_handler_cache.values()
++        assert dumps(context.hypergen["event_handler_cache"].values()
+                     ) == '[["hypergen.xyz",["_","element_value",["hypergen.read.value",null,"A"]]]]'
+ 
+ def test_string_with_meta():
