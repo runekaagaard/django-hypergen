@@ -36,7 +36,7 @@ packages, modules and functions are the building blocks of an url. Consider the 
         ...
     mypackage2
 """
-from freedom.hypergen import route
+from hypergen.core import route
 
 hypergen_route = "modulename/<myapp.MyModel:obj>"
 hypergen_route_params = dict(q="Custom Q")

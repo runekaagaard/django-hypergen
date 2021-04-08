@@ -35,7 +35,7 @@ HTML = <div id="content-id">
     <input value="bar" onhover="H.e(H.s.obj_id1)" />
     <button onclick="H.e(H.s.obj_id2)">baz</button>
 </div>
-H.e(["/freedom/callback/track_a_case.views.clicked/",2,"H_H.cbs.s('k')_H","H.s['__main__'][140550927754896]"])
+H.e(["/hypergen/callback/track_a_case.views.clicked/",2,"H_H.cbs.s('k')_H","H.s['__main__'][140550927754896]"])
 ## 1.5 Liveview is done ##
 Python -> Js serialization.
 
