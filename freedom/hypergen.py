@@ -238,6 +238,8 @@ class THIS(object):
 NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
 
+COERCE = {str: None, unicode: None, int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
+
 class base_element(ContextDecorator):
     void = False
     auto_id = False
@@ -261,7 +263,15 @@ class base_element(ContextDecorator):
             self.i = len(c.hypergen.into)
             self.sep = attrs.pop("sep", "")
             self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
-            self.js_coerce_func = attrs.pop("js_coerce_func", None)
+
+            coerce_to = attrs.pop("coerce_to", None)
+            if coerce_to is not None:
+                try:
+                    self.js_coerce_func = COERCE[coerce_to]
+                except KeyError:
+                    raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
+            else:
+                self.js_coerce_func = attrs.pop("js_coerce_func", None)
 
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
@@ -765,3 +775,15 @@ class StringWithMeta(object):
 
     def __iter__(self):
         return iter(self.value)
+
+xxx__all__ = [
+    "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi",
+    "bdo", "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col",
+    "colgroup", "data", "datalist", "dd", "del_", "details", "dfn", "dialog", "dir_", "div", "dl", "doctype", "dt",
+    "em", "embed", "fieldset", "figcaption", "figure", "font", "footer", "form", "frame", "frameset", "h1", "h2",
+    "h3", "h4", "h5", "h6", "head", "header", "hr", "html", "i", "iframe", "img", "input_", "ins", "kbd", "label",
+    "legend", "li", "link", "main", "map_", "mark", "meta", "meter", "nav", "noframes", "noscript", "object_", "ol",
+    "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
+    "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
+    "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
+    "tt", "u", "ul", "var", "video", "wbr", "component"]

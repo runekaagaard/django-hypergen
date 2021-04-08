@@ -37,6 +37,9 @@ def protect(x):
     else:
         return x
 
+print sorted([protect(x) for x in ALL_TAGS])
+assert False
+
 print "# yapf: disable"
 for tag in sorted(ALL_TAGS - HARDCODED_TAGS):
     cls = "base_element_void" if tag in VOID_TAGS else "base_element"

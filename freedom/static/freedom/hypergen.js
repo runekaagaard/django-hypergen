@@ -201,7 +201,7 @@ const applyCommand = function(path, ...args) {
   rpath(...args)
 }
 window.e = function(event, targetId, dataId, eventMatches) {
-  /*   event.preventDefault() */
+  event.preventDefault()
   event.stopPropagation()
   if (!!eventMatches) {
     for (const k in eventMatches) {
@@ -235,7 +235,7 @@ coerce.no = function(value) {
   if (value === "") return null
   return value
 }
-coerce.string = function(value) {
+coerce.str = function(value) {
   if (value === "") return null
   return value === null ? null : "" + value
 }
@@ -277,7 +277,7 @@ coerce.week = function(value) {
 
 // DOM element value readers
 export const read = {}
-read.value = function(id) {
+read.value = function(id) { // value attribute
   const el = document.getElementById(id)
   if (el === null) {
     throw MISSING_ELEMENT_EXCEPTION
