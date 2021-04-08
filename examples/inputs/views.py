@@ -2,10 +2,10 @@
 # pylint: disable=no-value-for-parameter
 from datetime import date, time, datetime
 
-from freedom.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-from freedom.hypergen import *
-from freedom.hypergen import callback as cb
-from freedom.core import context as c
+from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+from hypergen.core import *
+from hypergen.core import callback as cb
+from hypergen.core import context as c
 import templates as shared_templates
 
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content",
@@ -36,7 +36,7 @@ def inputs(request):
         ("tel", d(value="12345678")),
         ("text", d(value="This is text!")),
         ("time", d(value=datetime.time(7, 42))),
-        ("url", d(value="https://github.com/runekaagaard/django-freedom/")),
+        ("url", d(value="https://github.com/runekaagaard/django-hypergen/")),
         ("week", d(value=d(year=1999, week=42))),]
 
     h1("Showing all input types.")

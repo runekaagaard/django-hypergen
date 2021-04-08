@@ -1,8 +1,8 @@
 # coding = utf-8
 # pylint: disable=no-value-for-parameter
 
-from freedom.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-from freedom.core import context as c
+from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+from hypergen.core import context as c
 
 from todomvc import templates
 from todomvc.models import Item

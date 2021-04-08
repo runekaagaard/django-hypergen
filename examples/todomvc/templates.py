@@ -1,8 +1,8 @@
 # coding=utf-8
 
 from django.templatetags.static import static
-from freedom.hypergen import *
-from freedom.hypergen import callback as cb
+from hypergen.core import *
+from hypergen.core import callback as cb
 from contextlib import contextmanager
 
 @contextmanager
@@ -12,14 +12,14 @@ def base():
             meta(charset="utf-8")
             meta(name="viewport", content="width=device-width, initial-scale=1")
             title("Hypergen • TodoMVC")
-            script(src=static("freedom/hypergen.min.js"))
+            script(src=static("hypergen/hypergen.min.js"))
             link(static("todomvc.css"))
         with body():
             with div(id_="content"):
                 yield
             with footer(class_="info"):
                 p("Double-click to edit a todo")
-                p(a("Django Freedom", href="https://github.com/runekaagaard/django-freedom"))
+                p(a("Django Hypergen", href="https://github.com/runekaagaard/django-hypergen"))
                 p(a("TodoMVC", href="http://todomvc.com"))
 
 @component

@@ -1,8 +1,8 @@
 from datetime.datetime import now
 d = dict
 
-from freedom.core import context as c, namespace as ns
-from freedom.hypergen import *
+from hypergen.core import context as c, namespace as ns
+from hypergen.core import *
 
 
 @route(

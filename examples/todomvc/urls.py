@@ -1,4 +1,4 @@
-from freedom.contrib import hypergen_urls
+from hypergen.contrib import hypergen_urls
 from todomvc import views
 
 app_name = 'todomvc'

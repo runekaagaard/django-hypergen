@@ -7,10 +7,10 @@ import re
 from contextlib2 import ContextDecorator
 from django.test.client import RequestFactory
 
-from freedom.core import _init_context, context, context_middleware, ContextMiddleware
-from freedom.core import context as c
-from freedom.hypergen import *
-from freedom.hypergen import callback as cb
+from hypergen.core import _init_context, context, context_middleware, ContextMiddleware
+from hypergen.core import context as c
+from hypergen.core import *
+from hypergen.core import callback as cb
 
 class User(object):
     pk = 1

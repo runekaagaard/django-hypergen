@@ -128,7 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-freedom/static/freedom/node_modules/
+hypergen/static/hypergen/node_modules/
 .dumbjump
 .python-project
 *flymake.py

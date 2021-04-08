@@ -14,8 +14,8 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from freedom.core import context as c, wrap2
-from freedom.hypergen import loads, command, hypergen, hypergen_response, StringWithMeta
+from hypergen.core import context as c, wrap2
+from hypergen.core import loads, command, hypergen, hypergen_response, StringWithMeta
 
 d = dict
 _URLS = {}

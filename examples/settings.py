@@ -36,14 +36,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'freedom',
-    'todomvc',]
+    'hypergen',
+    'todomvc',
+    'inputs',]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware', 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware', 'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware', 'freedom.core.context_middleware']
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 'hypergen.core.context_middleware']
 
 ROOT_URLCONF = 'urls'
 
