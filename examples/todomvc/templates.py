@@ -2,7 +2,7 @@
 
 from django.templatetags.static import static
 from hypergen.core import *
-from hypergen.core import callback as cb
+from hypergen.core import callback as cb, context as c
 from contextlib import contextmanager
 
 @contextmanager

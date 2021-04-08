@@ -107,7 +107,6 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     formData.append("hypergen_data", json)
 
     if (blocks === true) {
-      console.log("BLOCKS")
       if (isBlocked === true) {
         console.error("Callback was blocked")
         return
@@ -120,9 +119,12 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       if (data !== null) applyCommands(data)
       isBlocked = false
       if (clear === true) document.getElementById(elementId).value = ""
-    }, (data) => {
+    }, (data, jsonOk, xhr) => {
       isBlocked = false
       console.error("Hypergen post error occured")
+      if (xhr.getResponseHeader("Content-Type") === "text/plain") {
+        data = "<pre><code>" + data + "</pre></code>"
+      }
       document.getElementsByTagName("html")[0].innerHTML = data
     }, params)
   }
@@ -397,10 +399,11 @@ export const post = function(url, formData, onSuccess, onError, params) {
     if (xhr.readyState == 4 && xhr.status == 200) {
       onSuccess(data, xhr)
     } else {
-      onError(data, jsonOk);
+      onError(data, jsonOk, xhr);
     }
   }
 
+  // TODO
   xhr.onerror = () => {
     onError()
   }

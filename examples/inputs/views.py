@@ -1,6 +1,8 @@
 # coding = utf-8
 # pylint: disable=no-value-for-parameter
-from datetime import date, time, datetime
+d = dict
+
+import datetime
 
 from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 from hypergen.core import *
@@ -17,7 +19,7 @@ def inputs(request):
         ("button", d(value="clicked")),
         ("checkbox", d(checked=True)),
         ("color", d(value="#bb7777")),
-        ("date", d(value=date(2021, 4, 16))),
+        ("date", d(value=datetime.date(2021, 4, 16))),
         ("datetime-local", d(value=datetime.datetime(1941, 5, 5, 5, 23))),
         ("email", d(value="foo@example.com")),
         ("file", d()),

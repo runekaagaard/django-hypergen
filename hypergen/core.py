@@ -20,7 +20,7 @@ from django.conf.urls import url
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_text
 
-xxx__all__ = [
+__all__ = [
     "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi",
     "bdo", "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col",
     "colgroup", "data", "datalist", "dd", "del_", "details", "dfn", "dialog", "dir_", "div", "dl", "doctype", "dt",
@@ -30,7 +30,8 @@ xxx__all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component"]
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "command", "raw", "callback", "call_js", "THIS",
+    "context"]
 
 ### Python 2+3 compatibility ###
 
@@ -228,7 +229,7 @@ def callback(url_or_view, *cb_args, **kwargs):
             em = ", {}".format(escape(dumps(event_matches)))
         else:
             em = ""
-        return [" ", t(k), '="', "e(event, '{}',{}{})".format(c.hypergen.target_id, cmd_id, em), '"']
+        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen.target_id, cmd_id, em), '"']
 
     return to_html
 
@@ -784,13 +785,19 @@ class StringWithMeta(object):
         self.meta = meta
 
     def __str__(self):
-        return self.value
+        return force_text(self.value)
 
     def __unicode__(self):
-        return self.value
+        return force_text(self.value)
 
     def __iter__(self):
         return iter(self.value)
+
+    def __add__(self, other):
+        return self.value + other
+
+    def __iadd__(self, other):
+        return self.value + other
 
 ### Context ###
 
