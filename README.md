@@ -33,3 +33,7 @@ Hypergen is a framework on top of Django that makes it easy to create responsive
     cd hypergen/static/hypergen
     parcel watch -o hypergen.min.js -d . hypergen.js
     
+## Profiling
+
+    rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py runserver 127.0.0.1:8002
+    echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
