@@ -459,7 +459,8 @@ class input_(base_element_void):
         super(input_, self).__init__(*children, **attrs)
         self.js_value_func = attrs.pop("js_value_func",
             JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
-        self.js_coerce_func = attrs.pop("js_coerce_func", JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
+        if self.js_coerce_func is None:
+            self.js_coerce_func = attrs.pop("js_coerce_func", JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
 
 ### Special tags ###
 
