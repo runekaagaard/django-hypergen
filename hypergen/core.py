@@ -3,22 +3,18 @@ from __future__ import (absolute_import, division, unicode_literals)
 
 d = dict
 
-import string, sys, time
+import string, sys, time, threading, datetime, json
 from collections import OrderedDict
 from types import GeneratorType
-from functools import wraps
-from copy import deepcopy
-import datetime, json
 from functools import wraps, update_wrapper
-import threading
+from copy import deepcopy
 
 from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
 
-from django.urls import reverse_lazy, resolve
-from django.conf.urls import url
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_text
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
 
 __all__ = [
     "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi",
@@ -55,7 +51,7 @@ else:
     def items(x):
         return x.iteritems()
 
-### constants ####
+### Constants ####
 
 OMIT = "__OMIT__"
 
@@ -756,8 +752,6 @@ def dumps(data, default=encoder, indent=None):
 
     return result
 
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
-
 def decoder(o):
     _ = o.get("_", None)
     if _ is None or type(_) is not list or len(_) != 2:
@@ -911,93 +905,5 @@ def wrap2(f):
 
     return _
 
-def wrap3(dfunc):
-    """
-    A a decorator decorator, allowing the decorator to be used as:
-        @decorator(with, arguments, and=kwargs)
-    or
-        @decorator
-
-    It does not work for a wrapped function that takes a callback as the only input.
-
-    It looks like this:
-
-        @wrap3
-        def mydecorator(func, fargs, fkwargs, *dargs, **dkwargs):
-            print "Decorator args, kwargs are", dargs, dkwargs
-            func(*fargs, **fkwargs)
-
-
-        @mydecorator
-        def myfunc(x, y=19):
-            return x + y
-
-
-        @mydecorator(42, foo=True)
-        def myfunc2(x, y=19):
-            return x + y
-    """
-    def _(*xargs, **xkwargs):
-        if len(xargs) == 1 and len(xkwargs) == 0 and callable(xargs[0]):
-            # Without decorator args, kwargs.
-            func = xargs[0]
-
-            @wraps(func)
-            def __(*fargs, **fkwargs):
-                dfunc(func, fargs, fkwargs)
-
-            return __
-        else:
-            # With decorator args, kwargs.
-            dargs, dkwargs = xargs, xkwargs
-
-            def __(func):
-                @wraps(func)
-                def ___(*fargs, **fkwargs):
-                    return dfunc(func, fargs, fkwargs, *dargs, **dkwargs)
-
-                return ___
-
-            return __
-
-    return _
-
 def insert(source_str, insert_str, pos):
     return ''.join((source_str[:pos], insert_str, source_str[pos:]))
-
-class SkipException(Exception):
-    pass
-
-@contextmanager
-def skippable():
-    try:
-        yield
-    except SkipException:
-        pass
-
-@contextmanager
-def skip(when):
-    if when:
-        raise SkipException()
-    else:
-        yield
-
-class adict(dict):
-    def __getattr__(self, name):
-        if name in self:
-            return self[name] if type(self[name]) is not dict else adict(self[name])
-        else:
-            raise AttributeError("No such attribute: " + name)
-
-    def __getitem__(self, name):
-        value = super(adict, self).__getitem__(name)
-        return value if value is not dict else adict(value)
-
-    def __setattr__(self, name, value):
-        self[name] = value
-
-    def __delattr__(self, name):
-        if name in self:
-            del self[name]
-        else:
-            raise AttributeError("No such attribute: " + name)
