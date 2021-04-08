@@ -3,11 +3,24 @@ from __future__ import (absolute_import, division, unicode_literals)
 
 d = dict
 
-import threading
-from contextlib2 import contextmanager
+import string, sys, time
+from collections import OrderedDict
+from types import GeneratorType
+from functools import wraps
+from copy import deepcopy
+import datetime, json
 from functools import wraps, update_wrapper
+import threading
 
+from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
+
+from django.urls import reverse_lazy, resolve
+from django.conf.urls import url
+from django.http.response import HttpResponse, HttpResponseRedirect
+from django.utils.encoding import force_text
+
+### Context ###
 
 class Context(threading.local):
     def __init__(self):
@@ -70,6 +83,8 @@ class ContextMiddleware(object):
     def process_request(self, request):
         # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))
+
+### Utilities ###
 
 def wrap2(f):
     """
