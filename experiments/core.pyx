@@ -73,24 +73,24 @@ def hypergen(func, *args, **kwargs):
     wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
 
     with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
-        assert not c.hypergen.into, "This should not happen"
+        assert not c.hypergen["into"], "This should not happen"
         func(*args, **kwargs)
-        assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
-        html = join_html(c.hypergen.into)
-        if c.hypergen.event_handler_cache:
-            command("hypergen.setEventHandlerCache", c.hypergen.target_id, c.hypergen.event_handler_cache)
+        assert c.hypergen["target_id"] is not None, "target_id must be set. Either as an input to a hypergen function or manually"
+        html = join_html(c.hypergen["into"])
+        if c.hypergen["event_handler_cache"]:
+            command("hypergen.setEventHandlerCache", c.hypergen["target_id"], c.hypergen["event_handler_cache"])
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
                 s = "<script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
-                    dumps(c.hypergen.commands))
+                    dumps(c.hypergen["commands"]))
                 html = insert(html, s, pos)
             print("Execution time:", (time.time() - a) * 1000, "ms")
             return html
         else:
-            command("hypergen.morph", c.hypergen.target_id, html)
+            command("hypergen.morph", c.hypergen["target_id"], html)
             print("Execution time:", (time.time() - a) * 1000, "ms")
-            return c.hypergen.commands
+            return c.hypergen["commands"]
 
 def hypergen_response(html_or_commands_or_http_response):
     value = html_or_commands_or_http_response
@@ -122,9 +122,9 @@ def command(javascript_func_path, *args, **kwargs):
     if return_:
         return item
     elif prepend:
-        c.hypergen.commands.insert(0, item)
+        c.hypergen["commands"].insert(0, item)
     else:
-        c.hypergen.commands.append(item)
+        c.hypergen["commands"].append(item)
 
 ### Helpers ###
 class LazyAttribute(object):
@@ -163,7 +163,7 @@ cdef str join_html(html):
     return "".join(make_string(x) for x in fmt(html))
 
 def raw(*children):
-    c.hypergen.into.extend(children)
+    c.hypergen["into"].extend(children)
 
 def _sort_attrs(attrs):
     # For testing only, subject to change.
@@ -222,13 +222,13 @@ def callback(url_or_view, *cb_args, **kwargs):
             elementId=element.attrs["id_"].v), return_=True)
         cmd_id = id(cmd)
 
-        c.hypergen.event_handler_cache[cmd_id] = cmd
+        c.hypergen["event_handler_cache"][cmd_id] = cmd
 
         if event_matches:
             em = ", {}".format(escape(dumps(event_matches)))
         else:
             em = ""
-        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen.target_id, cmd_id, em), '"']
+        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen["target_id"], cmd_id, em), '"']
 
     return to_html
 
@@ -240,9 +240,9 @@ def call_js(command_path, *cb_args):
         element.ensure_id()
         cmd = command(command_path, *[fix_this(x) for x in cb_args], return_=True)
         cmd_id = id(cmd)
-        c.hypergen.event_handler_cache[cmd_id] = cmd
+        c.hypergen["event_handler_cache"][cmd_id] = cmd
 
-        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id, cmd_id), '"']
+        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen["target_id"], cmd_id), '"']
 
     return to_html
 
@@ -275,7 +275,7 @@ class base_element(ContextDecorator):
                 id_ = "-".join(str(x) for x in id_)
             self.attrs["id_"] = LazyAttribute("id", id_)
 
-            self.i = len(c.hypergen.into)
+            self.i = len(c.hypergen["into"])
             self.sep = attrs.pop("sep", "")
             self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
 
@@ -288,9 +288,9 @@ class base_element(ContextDecorator):
             else:
                 self.js_coerce_func = attrs.pop("js_coerce_func", None)
 
-            c.hypergen.into.extend(self.start())
-            c.hypergen.into.extend(self.end())
-            self.j = len(c.hypergen.into)
+            c.hypergen["into"].extend(self.start())
+            c.hypergen["into"].extend(self.end())
+            self.j = len(c.hypergen["into"])
             super(base_element, self).__init__()
 
         assert "hypergen" in c, "Element called outside hypergen context."
@@ -302,13 +302,13 @@ class base_element(ContextDecorator):
             c.hypergen["ids"].add(id_)
 
     def __enter__(self):
-        c.hypergen.into.extend(self.start())
+        c.hypergen["into"].extend(self.start())
         self.delete()
         return self
 
     def __exit__(self, *exc):
         if not self.void:
-            c.hypergen.into.extend(self.end())
+            c.hypergen["into"].extend(self.end())
 
     def as_string(self):
         into = self.start()
@@ -318,7 +318,7 @@ class base_element(ContextDecorator):
 
     def delete(self):
         for i in range(self.i, self.j):
-            c.hypergen.into[i] = DELETED
+            c.hypergen["into"][i] = DELETED
 
     def format_children(self, list children, _t=None):
         if _t is None:
@@ -408,17 +408,17 @@ class Component(object):
 
     def delete(self):
         for i in range(self.i, self.j):
-            c.hypergen.into[i] = DELETED
+            c.hypergen["into"][i] = DELETED
 
 def component(f):
     @wraps(f)
     def _(*args, **kwargs):
         with c(into=[], at="hypergen"):
             f(*args, **kwargs)
-            into = c.hypergen.into
-        i = len(c.hypergen.into)
-        c.hypergen.into.extend(into)
-        j = len(c.hypergen.into)
+            into = c.hypergen["into"]
+        i = len(c.hypergen["into"])
+        c.hypergen["into"].extend(into)
+        j = len(c.hypergen["into"])
         return Component(into, i, j)
 
     return _

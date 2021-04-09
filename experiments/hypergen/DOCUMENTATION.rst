@@ -23,7 +23,7 @@ or exactly the same using the convenience wrappers:
 .. code-block:: python
                 
     from hypergen import LiveviewResponse
-    from hypergen.commands import morph, add_notification
+    from hypergen["commands"] import morph, add_notification
     
     @permission_required("myapp.myperm")
     def my_callback(request):
@@ -60,8 +60,8 @@ Commands can be executed manually on the client as well with ``execute_commands`
 Each command is an array on the form ``[NAME, ARG1, ARG2, ..., ARGN, KEYWORD_ARGUMENTS]``, where:
 
 *NAME*
-    The name of a command function in ``hypergen.commands``. Add your own custom commands to
-    ``hypergen.commands``.
+    The name of a command function in ``hypergen["commands"]``. Add your own custom ["commands"] to
+    ``hypergen["commands"]``.
 *ARG1, ARG2, ..., ARGN*
     Optional positional keyword arguments to the command function.
 *KEYWORD_ARGUMENTS*
