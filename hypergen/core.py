@@ -101,16 +101,16 @@ def hypergen_response(html_or_commands_or_http_response):
         else:
             return value
     elif isinstance(value, HttpResponse):
-        if c.request.is_ajax():
-            raise Exception("TODO")
-        else:
-            return value
+        assert not c.request.is_ajax()
+        return value
     elif type(value) in (list, tuple):
+        assert c.request.is_ajax()
         return HttpResponse(dumps(value), status=200, content_type='application/json')
     elif type(value) in (str, unicode):
+        assert not c.request.is_ajax()
         return HttpResponse(value)
     else:
-        raise Exception("Invalid response value")
+        raise Exception("Invalid response value: {}".format(repr(value)))
 
 def hypergen_as_response(func, *args, **kwargs):
     return hypergen_response(hypergen(func, *args, **kwargs))

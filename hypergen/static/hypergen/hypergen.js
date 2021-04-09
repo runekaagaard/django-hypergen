@@ -121,11 +121,11 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       if (clear === true) document.getElementById(elementId).value = ""
     }, (data, jsonOk, xhr) => {
       isBlocked = false
-      console.error("Hypergen post error occured")
-      if (xhr.getResponseHeader("Content-Type") === "text/plain") {
-        data = "<pre><code>" + data + "</pre></code>"
-      }
-      document.getElementsByTagName("html")[0].innerHTML = data
+      console.error("Hypergen post error occured", data)
+      /* if (xhr.getResponseHeader("Content-Type") === "text/plain") {
+       *   data = "<pre><code>" + data + "</pre></code>"
+       * }
+       * document.getElementsByTagName("html")[0].innerHTML = data */
     }, params)
   }
   if (debounce === 0) {
