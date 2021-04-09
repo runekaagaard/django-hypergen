@@ -14,9 +14,9 @@ Hypergen is a framework on top of Django that makes it easy to create responsive
     python manage.py migrate
     python manage.py runserver
     # open
-    #     http://127.0.0.1:800/todomvc/
+    #     http://127.0.0.1:8000/todomvc/
     # or
-    #     http://127.0.0.1:8002/inputs/
+    #     http://127.0.0.1:8000/inputs/
 
 # Developing
 
