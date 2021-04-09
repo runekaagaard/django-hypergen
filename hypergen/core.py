@@ -112,7 +112,7 @@ def hypergen_response(html_or_commands_or_http_response):
     else:
         raise Exception("Invalid response value: {}".format(repr(value)))
 
-def hypergen_as_response(func, *args, **kwargs):
+def hypergen_to_response(func, *args, **kwargs):
     return hypergen_response(hypergen(func, *args, **kwargs))
 
 def command(javascript_func_path, *args, **kwargs):
