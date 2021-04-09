@@ -134,7 +134,7 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
 
     original_func = func
 
-    # Decorate with permission if required
+    # Decorate with permission if required.
     if perm != NO_PERM_REQUIRED:
         func = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(func)
 
@@ -161,7 +161,6 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
         with c(referer_resolver_match=referer_resolver_match):
             func_return = {}
             commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id)
-            # Return returned value or default
             return commands if func_return["value"] is None else func_return["value"]
 
     _ = register_view_for_url(_, namespace, base_template, url=url)
