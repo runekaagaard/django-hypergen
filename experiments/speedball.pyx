@@ -1,49 +1,48 @@
 # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str
 # distutils: language=c++
-import numpy as np
-cimport numpy as np
+# import numpy as np
+# cimport numpy as np
 
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
-cdef void div(vector[string] &vect, vector[string] ss) nogil:
+from libc.stdlib cimport calloc, free
+from libc.stdio cimport printf
+
+from cymem.cymem cimport Pool
+
+cdef void div(vector[string] &vect, string s) nogil:
     vect.push_back(<char*> '<div>')
-    for s in ss:
-        vect.push_back(s)
-    
+    vect.push_back(s)
     vect.push_back(<char*> '</div>\n')
 
-cdef vector[string] prontotemplate(rows) nogil:
-    cdef vector[string] vect
-    cdef int i, x
-    cdef vector[string] xs
-    
-    xs.push_back(<char*>"fo")
-    xs.push_back(<char*>"fo")
-    xs.push_back(<char*>"fo")
-    xs.push_back(<char*>"fo")
-    xs.push_back(<char*>"fo")
+cdef vector[string] prontotemplate(Item* items, int n) nogil:
+    cdef:
+        vector[string] html
 
-    for i in range(10):
-        div(vect, xs)
+    for item in items[:n]:
+        if not item.is_completed:
+            div(html, <char*> "GET STARTED NOW!")
+        div(html, item.description)
 
-    return vect
+    return html
 
-ctypedef fused sink:
-    char
-    float
-    string
+cdef struct Item:
+    int is_completed
+    string description
 
-cdef packed struct oh_hi:
-    int lucky
-    char unlucky
-
-DEF MAXPOWER = 100000
 
 def speedball():
-    rows = np.array([11, 1, 2])
-    # print (rows.dtype)
-    # cdef np.ndarray hi2u = np.ndarray((MAXPOWER, 3),dtype=[('lucky','i4'),('unlucky','a10')])
-    # cdef oh_hi [:] hi2me = hi2u
-    #cdef int [:] rowsv = rows
-    print("".join(prontotemplate(rows)))
+    cdef Pool mem = Pool()
+    python_items = [
+        {"is_completed": True, "description": "I am the Zohan!"},
+        {"is_completed": False, "description": "Who are you!"},
+        {"is_completed": True, "description": "I am nice!"},
+        {"is_completed": False, "description": "Done with this!"},
+    ]
+    items = <Item*>mem.alloc(len(python_items), sizeof(Item))
+    for i, item in enumerate(python_items):
+         items[i] =Item(item["is_completed"], item["description"])
+
+    print()
+    print("".join(prontotemplate(items, len(python_items))))
