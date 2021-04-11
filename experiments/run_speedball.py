@@ -7,6 +7,7 @@ items = [
     {"is_completed": False, "description": "Døne with this!"},]
 
 html = speedball(items)
-print(type(html))
+print("type:", type(html))
+print("len:", len(html))
 print()
-print(html)
+print(html[:201])
