@@ -21,10 +21,11 @@ cdef struct Item:
 
 cdef struct Hpg:
     string html
-    
-cdef void div(Hpg &hpg, string s, string* attrs) nogil:
+
+cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
     cdef int i, j
-    hpg.html.append('<div')
+    hpg.html.append('<')
+    hpg.html.append(tag)
 
     if attrs[0] != T:
         for i in range(0, 100, 2):
@@ -40,12 +41,21 @@ cdef void div(Hpg &hpg, string s, string* attrs) nogil:
 
     hpg.html.append('>')
     hpg.html.append(s)
-    hpg.html.append('</div>\n')
+    hpg.html.append('<')
+    hpg.html.append(tag)
+    hpg.html.append('/>')
+    hpg.html.append('\n')
+
+cdef void div(Hpg &hpg, string s, string* attrs) nogil:
+    element(<char*>"div", hpg, s, attrs)
+
+cdef void b(Hpg &hpg, string s, string* attrs) nogil:
+    element(<char*>"b", hpg, s, attrs)
     
 cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
     for item in items[:n]:
         if not item.is_completed:
-            div(hpg, <char*> "GET STARTED NOW!", [<s>"class", <s>"my-divø",
+            b(hpg, <char*> "GET STARTED NOW!", [<s>"class", <s>"my-divø",
                                                   <s>"id", <s>"foo92", T])
         div(hpg, item.description, [T])
 
