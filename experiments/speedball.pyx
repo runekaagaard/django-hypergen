@@ -42,8 +42,7 @@ cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
     hpg.html.append(s)
     hpg.html.append('</')
     hpg.html.append(tag)
-    hpg.html.append('>')
-    hpg.html.append('\n')
+    hpg.html.append('>\n')
 
 cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"div", hpg, s, attrs)
@@ -72,7 +71,6 @@ def speedball(python_items):
     for i, item in enumerate(python_items):
          items[i] =Item(item["is_completed"], item["description"])
 
-        
     a = time()
     prontotemplate(hpg, items, len(python_items))
     b = time()
