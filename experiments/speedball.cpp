@@ -878,7 +878,7 @@ typedef void (*__pyx_t_5cymem_5cymem_free_t)(void *);
 struct __pyx_t_9speedball_Item;
 struct __pyx_t_9speedball_Hpg;
 
-/* "speedball.pyx":23
+/* "speedball.pyx":16
  *     string T = <char*>"__TERM__"
  * 
  * cdef struct Item:             # <<<<<<<<<<<<<<
@@ -890,7 +890,7 @@ struct __pyx_t_9speedball_Item {
   std::string description;
 };
 
-/* "speedball.pyx":27
+/* "speedball.pyx":20
  *     string description
  * 
  * cdef struct Hpg:             # <<<<<<<<<<<<<<
@@ -1141,16 +1141,6 @@ static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
 #define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
 #endif
 
-/* PyCFunctionFastCall.proto */
-#if CYTHON_FAST_PYCCALL
-static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
-#else
-#define __Pyx_PyCFunction_FastCall(func, args, nargs)  (assert(0), NULL)
-#endif
-
-/* PyObjectCallOneArg.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
-
 /* TypeImport.proto */
 #ifndef __PYX_HAVE_RT_ImportType_proto
 #define __PYX_HAVE_RT_ImportType_proto
@@ -1320,7 +1310,6 @@ int __pyx_module_is_main_speedball = 0;
 /* Implementation of 'speedball' */
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_enumerate;
-static PyObject *__pyx_builtin_print;
 static const char __pyx_k_i[] = "i";
 static const char __pyx_k_hpg[] = "hpg";
 static const char __pyx_k_mem[] = "mem";
@@ -1330,25 +1319,15 @@ static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_items[] = "items";
-static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
-static const char __pyx_k_I_am_nice[] = "I am nice!";
 static const char __pyx_k_enumerate[] = "enumerate";
 static const char __pyx_k_speedball[] = "speedball";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
-static const char __pyx_k_Who_are_you[] = "Who are you!";
 static const char __pyx_k_description[] = "description";
 static const char __pyx_k_is_completed[] = "is_completed";
 static const char __pyx_k_python_items[] = "python_items";
 static const char __pyx_k_speedball_pyx[] = "speedball.pyx";
-static const char __pyx_k_Done_with_this[] = "Done with this!";
-static const char __pyx_k_I_am_the_Zohan[] = "I am the Zohan!";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
-static const char __pyx_k_cython_wraparound_False_boundsc[] = "\n# cython: wraparound=False, boundscheck=False, cdivision=True\n# cython: profile=False, nonecheck=False, overflowcheck=False\n# cython: cdivision_warnings=False, unraisable_tracebacks=False\n";
-static PyObject *__pyx_kp_s_Done_with_this;
-static PyObject *__pyx_kp_s_I_am_nice;
-static PyObject *__pyx_kp_s_I_am_the_Zohan;
-static PyObject *__pyx_kp_s_Who_are_you;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_description;
 static PyObject *__pyx_n_s_enumerate;
@@ -1361,21 +1340,20 @@ static PyObject *__pyx_n_s_items;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_mem;
 static PyObject *__pyx_n_s_name;
-static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_python_items;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_speedball;
 static PyObject *__pyx_kp_s_speedball_pyx;
 static PyObject *__pyx_n_s_test;
-static PyObject *__pyx_pf_9speedball_speedball(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_9speedball_speedball(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_python_items); /* proto */
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_codeobj__2;
 /* Late includes */
 
-/* "speedball.pyx":30
+/* "speedball.pyx":23
  *     string html
  * 
  * cdef void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1389,7 +1367,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
   int __pyx_t_1;
   int __pyx_t_2;
 
-  /* "speedball.pyx":32
+  /* "speedball.pyx":25
  * cdef void div(Hpg &hpg, string s, string* attrs) nogil:
  *     cdef int i, j
  *     hpg.html.append('<div')             # <<<<<<<<<<<<<<
@@ -1398,7 +1376,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"<div")));
 
-  /* "speedball.pyx":34
+  /* "speedball.pyx":27
  *     hpg.html.append('<div')
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -1408,7 +1386,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
   __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_9speedball_T) != 0);
   if (__pyx_t_1) {
 
-    /* "speedball.pyx":35
+    /* "speedball.pyx":28
  * 
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
@@ -1418,7 +1396,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
     for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
       __pyx_v_i = __pyx_t_2;
 
-      /* "speedball.pyx":36
+      /* "speedball.pyx":29
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):
  *             j = i + 1             # <<<<<<<<<<<<<<
@@ -1427,7 +1405,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
       __pyx_v_j = (__pyx_v_i + 1);
 
-      /* "speedball.pyx":37
+      /* "speedball.pyx":30
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -1437,7 +1415,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
       __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_9speedball_T) != 0);
       if (__pyx_t_1) {
 
-        /* "speedball.pyx":38
+        /* "speedball.pyx":31
  *             j = i + 1
  *             if attrs[i] == T:
  *                 break             # <<<<<<<<<<<<<<
@@ -1446,7 +1424,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
         goto __pyx_L5_break;
 
-        /* "speedball.pyx":37
+        /* "speedball.pyx":30
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -1455,7 +1433,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
       }
 
-      /* "speedball.pyx":40
+      /* "speedball.pyx":33
  *                 break
  *             else:
  *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
@@ -1465,7 +1443,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
       /*else*/ {
         (void)(__pyx_v_hpg.html.append(((char const *)" ")));
 
-        /* "speedball.pyx":41
+        /* "speedball.pyx":34
  *             else:
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
@@ -1474,7 +1452,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
 
-        /* "speedball.pyx":42
+        /* "speedball.pyx":35
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
@@ -1483,7 +1461,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
         (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
 
-        /* "speedball.pyx":43
+        /* "speedball.pyx":36
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
@@ -1492,7 +1470,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
 
-        /* "speedball.pyx":44
+        /* "speedball.pyx":37
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])
  *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
@@ -1504,7 +1482,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
     }
     __pyx_L5_break:;
 
-    /* "speedball.pyx":34
+    /* "speedball.pyx":27
  *     hpg.html.append('<div')
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -1513,7 +1491,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
   }
 
-  /* "speedball.pyx":46
+  /* "speedball.pyx":39
  *                 hpg.html.append('"')
  * 
  *     hpg.html.append('>')             # <<<<<<<<<<<<<<
@@ -1522,7 +1500,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">")));
 
-  /* "speedball.pyx":47
+  /* "speedball.pyx":40
  * 
  *     hpg.html.append('>')
  *     hpg.html.append(s)             # <<<<<<<<<<<<<<
@@ -1531,7 +1509,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_s));
 
-  /* "speedball.pyx":48
+  /* "speedball.pyx":41
  *     hpg.html.append('>')
  *     hpg.html.append(s)
  *     hpg.html.append('</div>\n')             # <<<<<<<<<<<<<<
@@ -1540,7 +1518,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"</div>\n")));
 
-  /* "speedball.pyx":30
+  /* "speedball.pyx":23
  *     string html
  * 
  * cdef void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1551,7 +1529,7 @@ static void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, s
   /* function exit code */
 }
 
-/* "speedball.pyx":50
+/* "speedball.pyx":43
  *     hpg.html.append('</div>\n')
  * 
  * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
@@ -1569,53 +1547,53 @@ static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_H
   std::string __pyx_t_5[5];
   std::string __pyx_t_6[1];
 
-  /* "speedball.pyx":51
+  /* "speedball.pyx":44
  * 
  * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
  *     for item in items[:n]:             # <<<<<<<<<<<<<<
  *         if not item.is_completed:
- *             div(hpg, <char*> "GET STARTED NOW!", [<char*>"class", <char*>"my-div",
+ *             div(hpg, <char*> "GET STARTED NOW!", [<char*> "class", <char*>"my-div",
  */
   __pyx_t_2 = (__pyx_v_items + __pyx_v_n);
   for (__pyx_t_3 = __pyx_v_items; __pyx_t_3 < __pyx_t_2; __pyx_t_3++) {
     __pyx_t_1 = __pyx_t_3;
     __pyx_v_item = (__pyx_t_1[0]);
 
-    /* "speedball.pyx":52
+    /* "speedball.pyx":45
  * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
  *     for item in items[:n]:
  *         if not item.is_completed:             # <<<<<<<<<<<<<<
- *             div(hpg, <char*> "GET STARTED NOW!", [<char*>"class", <char*>"my-div",
+ *             div(hpg, <char*> "GET STARTED NOW!", [<char*> "class", <char*>"my-div",
  *                                                   <char*>"id", <char*>"foo92", T])
  */
     __pyx_t_4 = ((!(__pyx_v_item.is_completed != 0)) != 0);
     if (__pyx_t_4) {
 
-      /* "speedball.pyx":53
+      /* "speedball.pyx":46
  *     for item in items[:n]:
  *         if not item.is_completed:
- *             div(hpg, <char*> "GET STARTED NOW!", [<char*>"class", <char*>"my-div",             # <<<<<<<<<<<<<<
+ *             div(hpg, <char*> "GET STARTED NOW!", [<char*> "class", <char*>"my-div",             # <<<<<<<<<<<<<<
  *                                                   <char*>"id", <char*>"foo92", T])
  *         div(hpg, item.description, [T])
  */
       __pyx_t_5[0] = ((char *)((char *)"class"));
-      __pyx_t_5[1] = ((char *)((char *)"my-div"));
+      __pyx_t_5[1] = ((char *)((char *)"my-div\303\270"));
       __pyx_t_5[2] = ((char *)((char *)"id"));
       __pyx_t_5[3] = ((char *)((char *)"foo92"));
       __pyx_t_5[4] = __pyx_v_9speedball_T;
       __pyx_f_9speedball_div(__pyx_v_hpg, ((char *)((char *)"GET STARTED NOW!")), __pyx_t_5);
 
-      /* "speedball.pyx":52
+      /* "speedball.pyx":45
  * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
  *     for item in items[:n]:
  *         if not item.is_completed:             # <<<<<<<<<<<<<<
- *             div(hpg, <char*> "GET STARTED NOW!", [<char*>"class", <char*>"my-div",
+ *             div(hpg, <char*> "GET STARTED NOW!", [<char*> "class", <char*>"my-div",
  *                                                   <char*>"id", <char*>"foo92", T])
  */
     }
 
-    /* "speedball.pyx":55
- *             div(hpg, <char*> "GET STARTED NOW!", [<char*>"class", <char*>"my-div",
+    /* "speedball.pyx":48
+ *             div(hpg, <char*> "GET STARTED NOW!", [<char*> "class", <char*>"my-div",
  *                                                   <char*>"id", <char*>"foo92", T])
  *         div(hpg, item.description, [T])             # <<<<<<<<<<<<<<
  * 
@@ -1625,7 +1603,7 @@ static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_H
     __pyx_f_9speedball_div(__pyx_v_hpg, __pyx_v_item.description, __pyx_t_6);
   }
 
-  /* "speedball.pyx":50
+  /* "speedball.pyx":43
  *     hpg.html.append('</div>\n')
  * 
  * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
@@ -1638,272 +1616,212 @@ static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_H
   return __pyx_r;
 }
 
-/* "speedball.pyx":58
+/* "speedball.pyx":51
  * 
  * 
- * def speedball():             # <<<<<<<<<<<<<<
- *     cdef Pool mem = Pool()
- *     python_items = [
+ * def speedball(python_items):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         Pool mem = Pool()
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9speedball_1speedball(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_9speedball_1speedball = {"speedball", (PyCFunction)__pyx_pw_9speedball_1speedball, METH_NOARGS, 0};
-static PyObject *__pyx_pw_9speedball_1speedball(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9speedball_1speedball(PyObject *__pyx_self, PyObject *__pyx_v_python_items); /*proto*/
+static PyMethodDef __pyx_mdef_9speedball_1speedball = {"speedball", (PyCFunction)__pyx_pw_9speedball_1speedball, METH_O, 0};
+static PyObject *__pyx_pw_9speedball_1speedball(PyObject *__pyx_self, PyObject *__pyx_v_python_items) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("speedball (wrapper)", 0);
-  __pyx_r = __pyx_pf_9speedball_speedball(__pyx_self);
+  __pyx_r = __pyx_pf_9speedball_speedball(__pyx_self, ((PyObject *)__pyx_v_python_items));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9speedball_speedball(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_9speedball_speedball(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_python_items) {
   struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_mem = 0;
-  PyObject *__pyx_v_python_items = NULL;
+  struct __pyx_t_9speedball_Hpg __pyx_v_hpg;
   struct __pyx_t_9speedball_Item *__pyx_v_items;
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_v_item = NULL;
-  struct __pyx_t_9speedball_Hpg __pyx_v_hpg;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
+  struct __pyx_t_9speedball_Hpg __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  void *__pyx_t_4;
   PyObject *__pyx_t_5 = NULL;
-  Py_ssize_t __pyx_t_6;
-  void *__pyx_t_7;
+  PyObject *(*__pyx_t_6)(PyObject *);
+  PyObject *__pyx_t_7 = NULL;
   struct __pyx_t_9speedball_Item __pyx_t_8;
   int __pyx_t_9;
   std::string __pyx_t_10;
   Py_ssize_t __pyx_t_11;
-  struct __pyx_t_9speedball_Hpg __pyx_t_12;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("speedball", 0);
 
-  /* "speedball.pyx":59
+  /* "speedball.pyx":53
+ * def speedball(python_items):
+ *     cdef:
+ *         Pool mem = Pool()             # <<<<<<<<<<<<<<
+ *         Hpg hpg = Hpg(<char*> "")
  * 
- * def speedball():
- *     cdef Pool mem = Pool()             # <<<<<<<<<<<<<<
- *     python_items = [
- *         {"is_completed": True, "description": "I am the Zohan!"},
  */
-  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_5cymem_5cymem_Pool)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_5cymem_5cymem_Pool)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_mem = ((struct __pyx_obj_5cymem_5cymem_Pool *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "speedball.pyx":61
- *     cdef Pool mem = Pool()
- *     python_items = [
- *         {"is_completed": True, "description": "I am the Zohan!"},             # <<<<<<<<<<<<<<
- *         {"is_completed": False, "description": "Who are you!"},
- *         {"is_completed": True, "description": "I am nice!"},
- */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_is_completed, Py_True) < 0) __PYX_ERR(0, 61, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_description, __pyx_kp_s_I_am_the_Zohan) < 0) __PYX_ERR(0, 61, __pyx_L1_error)
-
-  /* "speedball.pyx":62
- *     python_items = [
- *         {"is_completed": True, "description": "I am the Zohan!"},
- *         {"is_completed": False, "description": "Who are you!"},             # <<<<<<<<<<<<<<
- *         {"is_completed": True, "description": "I am nice!"},
- *         {"is_completed": False, "description": "Done with this!"},
- */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_is_completed, Py_False) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_description, __pyx_kp_s_Who_are_you) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
-
-  /* "speedball.pyx":63
- *         {"is_completed": True, "description": "I am the Zohan!"},
- *         {"is_completed": False, "description": "Who are you!"},
- *         {"is_completed": True, "description": "I am nice!"},             # <<<<<<<<<<<<<<
- *         {"is_completed": False, "description": "Done with this!"},
- *     ]
- */
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 63, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_is_completed, Py_True) < 0) __PYX_ERR(0, 63, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_description, __pyx_kp_s_I_am_nice) < 0) __PYX_ERR(0, 63, __pyx_L1_error)
-
-  /* "speedball.pyx":64
- *         {"is_completed": False, "description": "Who are you!"},
- *         {"is_completed": True, "description": "I am nice!"},
- *         {"is_completed": False, "description": "Done with this!"},             # <<<<<<<<<<<<<<
- *     ]
+  /* "speedball.pyx":54
+ *     cdef:
+ *         Pool mem = Pool()
+ *         Hpg hpg = Hpg(<char*> "")             # <<<<<<<<<<<<<<
+ * 
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
  */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 64, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_is_completed, Py_False) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_description, __pyx_kp_s_Done_with_this) < 0) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_t_2.html = ((char *)((char *)""));
+  __pyx_v_hpg = __pyx_t_2;
 
-  /* "speedball.pyx":60
- * def speedball():
- *     cdef Pool mem = Pool()
- *     python_items = [             # <<<<<<<<<<<<<<
- *         {"is_completed": True, "description": "I am the Zohan!"},
- *         {"is_completed": False, "description": "Who are you!"},
- */
-  __pyx_t_5 = PyList_New(4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 60, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyList_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_2);
-  PyList_SET_ITEM(__pyx_t_5, 1, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_3);
-  PyList_SET_ITEM(__pyx_t_5, 2, __pyx_t_3);
-  __Pyx_GIVEREF(__pyx_t_4);
-  PyList_SET_ITEM(__pyx_t_5, 3, __pyx_t_4);
-  __pyx_t_1 = 0;
-  __pyx_t_2 = 0;
-  __pyx_t_3 = 0;
-  __pyx_t_4 = 0;
-  __pyx_v_python_items = ((PyObject*)__pyx_t_5);
-  __pyx_t_5 = 0;
-
-  /* "speedball.pyx":66
- *         {"is_completed": False, "description": "Done with this!"},
- *     ]
+  /* "speedball.pyx":56
+ *         Hpg hpg = Hpg(<char*> "")
+ * 
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))             # <<<<<<<<<<<<<<
  *     for i, item in enumerate(python_items):
  *          items[i] =Item(item["is_completed"], item["description"])
  */
-  __pyx_t_6 = PyList_GET_SIZE(__pyx_v_python_items); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 66, __pyx_L1_error)
-  __pyx_t_7 = ((struct __pyx_vtabstruct_5cymem_5cymem_Pool *)__pyx_v_mem->__pyx_vtab)->alloc(__pyx_v_mem, __pyx_t_6, (sizeof(struct __pyx_t_9speedball_Item))); if (unlikely(__pyx_t_7 == ((void *)NULL))) __PYX_ERR(0, 66, __pyx_L1_error)
-  __pyx_v_items = ((struct __pyx_t_9speedball_Item *)__pyx_t_7);
+  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_t_4 = ((struct __pyx_vtabstruct_5cymem_5cymem_Pool *)__pyx_v_mem->__pyx_vtab)->alloc(__pyx_v_mem, __pyx_t_3, (sizeof(struct __pyx_t_9speedball_Item))); if (unlikely(__pyx_t_4 == ((void *)NULL))) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_v_items = ((struct __pyx_t_9speedball_Item *)__pyx_t_4);
 
-  /* "speedball.pyx":67
- *     ]
+  /* "speedball.pyx":57
+ * 
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
  *     for i, item in enumerate(python_items):             # <<<<<<<<<<<<<<
  *          items[i] =Item(item["is_completed"], item["description"])
  * 
  */
   __Pyx_INCREF(__pyx_int_0);
-  __pyx_t_5 = __pyx_int_0;
-  __pyx_t_4 = __pyx_v_python_items; __Pyx_INCREF(__pyx_t_4); __pyx_t_6 = 0;
+  __pyx_t_1 = __pyx_int_0;
+  if (likely(PyList_CheckExact(__pyx_v_python_items)) || PyTuple_CheckExact(__pyx_v_python_items)) {
+    __pyx_t_5 = __pyx_v_python_items; __Pyx_INCREF(__pyx_t_5); __pyx_t_3 = 0;
+    __pyx_t_6 = NULL;
+  } else {
+    __pyx_t_3 = -1; __pyx_t_5 = PyObject_GetIter(__pyx_v_python_items); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 57, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = Py_TYPE(__pyx_t_5)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 57, __pyx_L1_error)
+  }
   for (;;) {
-    if (__pyx_t_6 >= PyList_GET_SIZE(__pyx_t_4)) break;
-    #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_3 = PyList_GET_ITEM(__pyx_t_4, __pyx_t_6); __Pyx_INCREF(__pyx_t_3); __pyx_t_6++; if (unlikely(0 < 0)) __PYX_ERR(0, 67, __pyx_L1_error)
-    #else
-    __pyx_t_3 = PySequence_ITEM(__pyx_t_4, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    #endif
-    __Pyx_XDECREF_SET(__pyx_v_item, __pyx_t_3);
-    __pyx_t_3 = 0;
-    __Pyx_INCREF(__pyx_t_5);
-    __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_5);
-    __pyx_t_3 = __Pyx_PyInt_AddObjC(__pyx_t_5, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_5);
-    __pyx_t_5 = __pyx_t_3;
-    __pyx_t_3 = 0;
+    if (likely(!__pyx_t_6)) {
+      if (likely(PyList_CheckExact(__pyx_t_5))) {
+        if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_5)) break;
+        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+        __pyx_t_7 = PyList_GET_ITEM(__pyx_t_5, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 57, __pyx_L1_error)
+        #else
+        __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 57, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        #endif
+      } else {
+        if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_5)) break;
+        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+        __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_5, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 57, __pyx_L1_error)
+        #else
+        __pyx_t_7 = PySequence_ITEM(__pyx_t_5, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 57, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_7);
+        #endif
+      }
+    } else {
+      __pyx_t_7 = __pyx_t_6(__pyx_t_5);
+      if (unlikely(!__pyx_t_7)) {
+        PyObject* exc_type = PyErr_Occurred();
+        if (exc_type) {
+          if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+          else __PYX_ERR(0, 57, __pyx_L1_error)
+        }
+        break;
+      }
+      __Pyx_GOTREF(__pyx_t_7);
+    }
+    __Pyx_XDECREF_SET(__pyx_v_item, __pyx_t_7);
+    __pyx_t_7 = 0;
+    __Pyx_INCREF(__pyx_t_1);
+    __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
+    __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_t_1, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 57, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_1);
+    __pyx_t_1 = __pyx_t_7;
+    __pyx_t_7 = 0;
 
-    /* "speedball.pyx":68
+    /* "speedball.pyx":58
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
  *     for i, item in enumerate(python_items):
  *          items[i] =Item(item["is_completed"], item["description"])             # <<<<<<<<<<<<<<
  * 
- *     cdef Hpg hpg = Hpg(<char*> "")
+ *     prontotemplate(hpg, items, len(python_items))
  */
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_item, __pyx_n_s_is_completed); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 68, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_item, __pyx_n_s_is_completed); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 58, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_8.is_completed = __pyx_t_9;
-    __pyx_t_3 = __Pyx_PyObject_Dict_GetItem(__pyx_v_item, __pyx_n_s_description); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 68, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_10 = __pyx_convert_string_from_py_std__in_string(__pyx_t_3); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_7 = __Pyx_PyObject_Dict_GetItem(__pyx_v_item, __pyx_n_s_description); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 58, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_10 = __pyx_convert_string_from_py_std__in_string(__pyx_t_7); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 58, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_8.description = __pyx_t_10;
-    __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 68, __pyx_L1_error)
+    __pyx_t_11 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_11 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 58, __pyx_L1_error)
     (__pyx_v_items[__pyx_t_11]) = __pyx_t_8;
 
-    /* "speedball.pyx":67
- *     ]
+    /* "speedball.pyx":57
+ * 
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
  *     for i, item in enumerate(python_items):             # <<<<<<<<<<<<<<
  *          items[i] =Item(item["is_completed"], item["description"])
  * 
  */
   }
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "speedball.pyx":70
+  /* "speedball.pyx":60
  *          items[i] =Item(item["is_completed"], item["description"])
  * 
- *     cdef Hpg hpg = Hpg(<char*> "")             # <<<<<<<<<<<<<<
- *     prontotemplate(hpg, items, len(python_items))
- *     print()
- */
-  __pyx_t_12.html = ((char *)((char *)""));
-  __pyx_v_hpg = __pyx_t_12;
-
-  /* "speedball.pyx":71
- * 
- *     cdef Hpg hpg = Hpg(<char*> "")
  *     prontotemplate(hpg, items, len(python_items))             # <<<<<<<<<<<<<<
- *     print()
- *     print(hpg.html)
+ *     return hpg.html
  */
-  __pyx_t_6 = PyList_GET_SIZE(__pyx_v_python_items); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 71, __pyx_L1_error)
-  (void)(__pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_6));
+  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 60, __pyx_L1_error)
+  (void)(__pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_3));
 
-  /* "speedball.pyx":72
- *     cdef Hpg hpg = Hpg(<char*> "")
+  /* "speedball.pyx":61
+ * 
  *     prontotemplate(hpg, items, len(python_items))
- *     print()             # <<<<<<<<<<<<<<
- *     print(hpg.html)
+ *     return hpg.html             # <<<<<<<<<<<<<<
  */
-  __pyx_t_5 = __Pyx_PyObject_CallNoArg(__pyx_builtin_print); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 72, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
 
-  /* "speedball.pyx":73
- *     prontotemplate(hpg, items, len(python_items))
- *     print()
- *     print(hpg.html)             # <<<<<<<<<<<<<<
- */
-  __pyx_t_5 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-
-  /* "speedball.pyx":58
+  /* "speedball.pyx":51
  * 
  * 
- * def speedball():             # <<<<<<<<<<<<<<
- *     cdef Pool mem = Pool()
- *     python_items = [
+ * def speedball(python_items):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         Pool mem = Pool()
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_7);
   __Pyx_AddTraceback("speedball.speedball", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF((PyObject *)__pyx_v_mem);
-  __Pyx_XDECREF(__pyx_v_python_items);
   __Pyx_XDECREF(__pyx_v_i);
   __Pyx_XDECREF(__pyx_v_item);
   __Pyx_XGIVEREF(__pyx_r);
@@ -2243,7 +2161,7 @@ static PyModuleDef_Slot __pyx_moduledef_slots[] = {
 static struct PyModuleDef __pyx_moduledef = {
     PyModuleDef_HEAD_INIT,
     "speedball",
-    __pyx_k_cython_wraparound_False_boundsc, /* m_doc */
+    0, /* m_doc */
   #if CYTHON_PEP489_MULTI_PHASE_INIT
     0, /* m_size */
   #else
@@ -2271,10 +2189,6 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
-  {&__pyx_kp_s_Done_with_this, __pyx_k_Done_with_this, sizeof(__pyx_k_Done_with_this), 0, 0, 1, 0},
-  {&__pyx_kp_s_I_am_nice, __pyx_k_I_am_nice, sizeof(__pyx_k_I_am_nice), 0, 0, 1, 0},
-  {&__pyx_kp_s_I_am_the_Zohan, __pyx_k_I_am_the_Zohan, sizeof(__pyx_k_I_am_the_Zohan), 0, 0, 1, 0},
-  {&__pyx_kp_s_Who_are_you, __pyx_k_Who_are_you, sizeof(__pyx_k_Who_are_you), 0, 0, 1, 0},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_description, __pyx_k_description, sizeof(__pyx_k_description), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
@@ -2287,7 +2201,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_mem, __pyx_k_mem, sizeof(__pyx_k_mem), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
-  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_python_items, __pyx_k_python_items, sizeof(__pyx_k_python_items), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
@@ -2297,9 +2210,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 35, __pyx_L1_error)
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 67, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 72, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 57, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2309,17 +2221,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "speedball.pyx":58
+  /* "speedball.pyx":51
  * 
  * 
- * def speedball():             # <<<<<<<<<<<<<<
- *     cdef Pool mem = Pool()
- *     python_items = [
+ * def speedball(python_items):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         Pool mem = Pool()
  */
-  __pyx_tuple_ = PyTuple_Pack(6, __pyx_n_s_mem, __pyx_n_s_python_items, __pyx_n_s_items, __pyx_n_s_i, __pyx_n_s_item, __pyx_n_s_hpg); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(6, __pyx_n_s_python_items, __pyx_n_s_mem, __pyx_n_s_hpg, __pyx_n_s_items, __pyx_n_s_i, __pyx_n_s_item); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_speedball, 58, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(1, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_speedball, 51, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2578,7 +2490,7 @@ if (!__Pyx_RefNanny) {
   Py_INCREF(__pyx_m);
   #else
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("speedball", __pyx_methods, __pyx_k_cython_wraparound_False_boundsc, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("speedball", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -2624,7 +2536,7 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "speedball.pyx":21
+  /* "speedball.pyx":14
  * 
  * cdef:
  *     string T = <char*>"__TERM__"             # <<<<<<<<<<<<<<
@@ -2633,22 +2545,22 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_9speedball_T = ((char *)((char *)"__TERM__"));
 
-  /* "speedball.pyx":58
+  /* "speedball.pyx":51
  * 
  * 
- * def speedball():             # <<<<<<<<<<<<<<
- *     cdef Pool mem = Pool()
- *     python_items = [
+ * def speedball(python_items):             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         Pool mem = Pool()
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9speedball_1speedball, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9speedball_1speedball, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_speedball, __pyx_t_1) < 0) __PYX_ERR(0, 58, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_speedball, __pyx_t_1) < 0) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "speedball.pyx":1
  * # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str             # <<<<<<<<<<<<<<
- * # distutils: language=c++
- * """
+ * # cython: profile=False, nonecheck=False, overflowcheck=False
+ * # cython: cdivision_warnings=False, unraisable_tracebacks=False
  */
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -3059,69 +2971,6 @@ static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key) {
     }
     Py_INCREF(value);
     return value;
-}
-#endif
-
-/* PyCFunctionFastCall */
-#if CYTHON_FAST_PYCCALL
-static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
-    PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
-    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
-    PyObject *self = PyCFunction_GET_SELF(func);
-    int flags = PyCFunction_GET_FLAGS(func);
-    assert(PyCFunction_Check(func));
-    assert(METH_FASTCALL == (flags & ~(METH_CLASS | METH_STATIC | METH_COEXIST | METH_KEYWORDS | METH_STACKLESS)));
-    assert(nargs >= 0);
-    assert(nargs == 0 || args != NULL);
-    /* _PyCFunction_FastCallDict() must not be called with an exception set,
-       because it may clear it (directly or indirectly) and so the
-       caller loses its exception */
-    assert(!PyErr_Occurred());
-    if ((PY_VERSION_HEX < 0x030700A0) || unlikely(flags & METH_KEYWORDS)) {
-        return (*((__Pyx_PyCFunctionFastWithKeywords)(void*)meth)) (self, args, nargs, NULL);
-    } else {
-        return (*((__Pyx_PyCFunctionFast)(void*)meth)) (self, args, nargs);
-    }
-}
-#endif
-
-/* PyObjectCallOneArg */
-#if CYTHON_COMPILING_IN_CPYTHON
-static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *result;
-    PyObject *args = PyTuple_New(1);
-    if (unlikely(!args)) return NULL;
-    Py_INCREF(arg);
-    PyTuple_SET_ITEM(args, 0, arg);
-    result = __Pyx_PyObject_Call(func, args, NULL);
-    Py_DECREF(args);
-    return result;
-}
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-#if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(func)) {
-        return __Pyx_PyFunction_FastCall(func, &arg, 1);
-    }
-#endif
-    if (likely(PyCFunction_Check(func))) {
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_O)) {
-            return __Pyx_PyObject_CallMethO(func, arg);
-#if CYTHON_FAST_PYCCALL
-        } else if (__Pyx_PyFastCFunction_Check(func)) {
-            return __Pyx_PyCFunction_FastCall(func, &arg, 1);
-#endif
-        }
-    }
-    return __Pyx__PyObject_CallOneArg(func, arg);
-}
-#else
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *result;
-    PyObject *args = PyTuple_Pack(1, arg);
-    if (unlikely(!args)) return NULL;
-    result = __Pyx_PyObject_Call(func, args, NULL);
-    Py_DECREF(args);
-    return result;
 }
 #endif
 
