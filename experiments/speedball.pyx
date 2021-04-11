@@ -10,6 +10,8 @@ from libc.stdio cimport printf
 
 from cymem.cymem cimport Pool
 
+ctypedef char* s
+
 cdef:
     string T = <char*>"__TERM__"
     
@@ -39,19 +41,21 @@ cdef void div(Hpg &hpg, string s, string* attrs) nogil:
     hpg.html.append('>')
     hpg.html.append(s)
     hpg.html.append('</div>\n')
-
+    
 cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
     for item in items[:n]:
         if not item.is_completed:
-            div(hpg, <char*> "GET STARTED NOW!", [<char*> "class", <char*>"my-divø",
-                                                  <char*>"id", <char*>"foo92", T])
+            div(hpg, <char*> "GET STARTED NOW!", [<s>"class", <s>"my-divø",
+                                                  <s>"id", <s>"foo92", T])
         div(hpg, item.description, [T])
 
 
 def speedball(python_items):
     cdef:
         Pool mem = Pool()
-        Hpg hpg = Hpg(<char*> "")
+        Hpg hpg = Hpg(<s>"")
+        int i
+        dict item
         
     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
     for i, item in enumerate(python_items):
