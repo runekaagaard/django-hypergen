@@ -1336,7 +1336,7 @@ static std::string __pyx_v_9speedball_T;
 static void __pyx_f_9speedball_element(std::string, struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
 static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
 static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
-static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &, struct __pyx_t_9speedball_Item *, int); /*proto*/
+static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &, struct __pyx_t_9speedball_Item *, int); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyStr_string_to_py_std__in_string(std::string const &); /*proto*/
@@ -1651,7 +1651,7 @@ static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &__
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"b", hpg, s, attrs)             # <<<<<<<<<<<<<<
  * 
- * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
+ * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
  */
   __pyx_f_9speedball_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
@@ -1669,15 +1669,14 @@ static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &__
 /* "speedball.pyx":53
  *     element(<char*>"b", hpg, s, attrs)
  * 
- * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
+ * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
  *     cdef int i
  *     for i in range(10000):
  */
 
-static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, struct __pyx_t_9speedball_Item *__pyx_v_items, int __pyx_v_n) {
+static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, struct __pyx_t_9speedball_Item *__pyx_v_items, int __pyx_v_n) {
   CYTHON_UNUSED int __pyx_v_i;
   struct __pyx_t_9speedball_Item __pyx_v_item;
-  std::string __pyx_r;
   int __pyx_t_1;
   struct __pyx_t_9speedball_Item *__pyx_t_2;
   struct __pyx_t_9speedball_Item *__pyx_t_3;
@@ -1687,7 +1686,7 @@ static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_H
   std::string __pyx_t_7[1];
 
   /* "speedball.pyx":55
- * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
+ * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
  *     cdef int i
  *     for i in range(10000):             # <<<<<<<<<<<<<<
  *         for item in items[:n]:
@@ -1756,14 +1755,12 @@ static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_H
   /* "speedball.pyx":53
  *     element(<char*>"b", hpg, s, attrs)
  * 
- * cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
+ * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
  *     cdef int i
  *     for i in range(10000):
  */
 
   /* function exit code */
-  __Pyx_pretend_to_initialize(&__pyx_r);
-  return __pyx_r;
 }
 
 /* "speedball.pyx":63
@@ -1972,7 +1969,7 @@ static PyObject *__pyx_pf_9speedball_speedball(CYTHON_UNUSED PyObject *__pyx_sel
  *     print((b - a) * 1000)
  */
   __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 75, __pyx_L1_error)
-  (void)(__pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_3));
+  __pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_3);
 
   /* "speedball.pyx":76
  *     a = time()

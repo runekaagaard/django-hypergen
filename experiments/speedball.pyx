@@ -50,7 +50,7 @@ cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
 cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"b", hpg, s, attrs)
     
-cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
+cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
     cdef int i
     for i in range(10000):
         for item in items[:n]:
@@ -58,7 +58,6 @@ cdef string prontotemplate(Hpg &hpg, Item* items, int n) nogil:
                 b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-divø",
                                                <s>"id", <s>"foo92", T])
             div(hpg, item.description, [T])
-
 
 def speedball(python_items):
     cdef:

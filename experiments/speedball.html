@@ -417,15 +417,12 @@ body.cython { font-family: courier; font-size: 12; }
 </pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">51</span>:     element(&lt;char*&gt;"b", hpg, s, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_9speedball_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 </pre><pre class="cython line score-0">&#xA0;<span class="">52</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">53</span>: cdef string prontotemplate(Hpg &amp;hpg, Item* items, int n) nogil:</pre>
-<pre class='cython code score-0 '>static std::string __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &amp;__pyx_v_hpg, struct __pyx_t_9speedball_Item *__pyx_v_items, int __pyx_v_n) {
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">53</span>: cdef void prontotemplate(Hpg &amp;hpg, Item* items, int n) nogil:</pre>
+<pre class='cython code score-0 '>static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &amp;__pyx_v_hpg, struct __pyx_t_9speedball_Item *__pyx_v_items, int __pyx_v_n) {
   CYTHON_UNUSED int __pyx_v_i;
   struct __pyx_t_9speedball_Item __pyx_v_item;
-  std::string __pyx_r;
 /* … */
   /* function exit code */
-  __Pyx_pretend_to_initialize(&amp;__pyx_r);
-  return __pyx_r;
 }
 </pre><pre class="cython line score-0">&#xA0;<span class="">54</span>:     cdef int i</pre>
 <pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">55</span>:     for i in range(10000):</pre>
@@ -616,7 +613,7 @@ static PyObject *__pyx_pf_9speedball_speedball(CYTHON_UNUSED PyObject *__pyx_sel
   __pyx_t_1 = 0;
 </pre><pre class="cython line score-5" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">75</span>:     prontotemplate(hpg, items, len(python_items))</pre>
 <pre class='cython code score-5 '>  __pyx_t_3 = <span class='py_c_api'>PyObject_Length</span>(__pyx_v_python_items);<span class='error_goto'> if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 75, __pyx_L1_error)</span>
-  (void)(__pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_3));
+  __pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_3);
 </pre><pre class="cython line score-18" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">76</span>:     b = time()</pre>
 <pre class='cython code score-18 '>  <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_t_7, __pyx_n_s_time);<span class='error_goto'> if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 76, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_7);
