@@ -110,6 +110,7 @@ def hypergen_view(func, url=None, perm=None, base_template=no_base_template, bas
                 html = func_return["value"]
             return html
         else:
+            
             commands = hypergen(wrap_view_with_hypergen, target_id=target_id)
             if func_return["value"] is not None:
                 commands = func_return["value"]

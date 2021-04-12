@@ -7,7 +7,6 @@ import string, sys, time, threading, datetime, json
 from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps, update_wrapper
-from copy import deepcopy
 
 from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
@@ -60,20 +59,17 @@ OMIT = "__OMIT__"
 def default_wrap_elements(init, self, *children, **attrs):
     return init(self, *children, **attrs)
 
-def hypergen_context(**kwargs):
+def hypergen_context(data):
     return m(into=[], liveview=True, id_counter=base65_counter(),
         id_prefix=(loads(c.request.POST["hypergen_data"])["id_prefix"] if c.request.is_ajax() else ""),
-        event_handler_cache={}, target_id=kwargs.get("target_id",
-        "__main__"), commands=[], ids=set(), wrap_elements=kwargs.get("wrap_elements", default_wrap_elements))
+        event_handler_cache={}, target_id=data.pop("target_id",
+        "__main__"), commands=[], ids=set(), wrap_elements=data.pop("wrap_elements", default_wrap_elements))
 
 def hypergen(func, *args, **kwargs):
     a = time.time()
-    kwargs = deepcopy(kwargs)
-    target_id = kwargs.pop("target_id", "__main__")
-    wrap_elements = kwargs.pop("wrap_elements", default_wrap_elements)
-
-    with c(hypergen=hypergen_context(target_id=target_id, wrap_elements=wrap_elements, **kwargs)):
+    with c(hypergen=hypergen_context(kwargs)):
         assert not c.hypergen.into, "This should not happen"
+        assert "target_id" not in kwargs, "This should not happen"
         func(*args, **kwargs)
         assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
@@ -92,6 +88,17 @@ def hypergen(func, *args, **kwargs):
             print("Execution time:", (time.time() - a) * 1000, "ms")
             return c.hypergen.commands
 
+def hypergen_to_string(func, *args, **kwargs):
+    a = time.time()
+    with c(hypergen=hypergen_context(kwargs)):
+        assert not c.hypergen.into, "This should not happen"
+        assert "target_id" not in kwargs, "This should not happen"
+        func(*args, **kwargs)
+        html = join_html(c.hypergen.into)
+        print("Execution time:", (time.time() - a) * 1000, "ms")
+
+        return html
+        
 def hypergen_response(html_or_commands_or_http_response):
     value = html_or_commands_or_http_response
     if isinstance(value, HttpResponseRedirect):
