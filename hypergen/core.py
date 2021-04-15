@@ -59,11 +59,17 @@ OMIT = "__OMIT__"
 def default_wrap_elements(init, self, *children, **attrs):
     return init(self, *children, **attrs)
 
-def hypergen_context(data):
-    return m(into=[], liveview=True, id_counter=base65_counter(),
+def hypergen_context(data=None):
+    if data is None:
+        data = {}
+
+    c_ = m(into=[], liveview=True, id_counter=base65_counter(),
         id_prefix=(loads(c.request.POST["hypergen_data"])["id_prefix"] if c.request.is_ajax() else ""),
         event_handler_cache={}, target_id=data.pop("target_id",
         "__main__"), commands=[], ids=set(), wrap_elements=data.pop("wrap_elements", default_wrap_elements))
+
+    assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
+    return c_
 
 def hypergen(func, *args, **kwargs):
     a = time.time()
@@ -98,7 +104,7 @@ def hypergen_to_string(func, *args, **kwargs):
         print("Execution time:", (time.time() - a) * 1000, "ms")
 
         return html
-        
+
 def hypergen_response(html_or_commands_or_http_response):
     value = html_or_commands_or_http_response
     if isinstance(value, HttpResponseRedirect):
@@ -745,6 +751,8 @@ def encoder(o):
     elif hasattr(o, "__weakref__"):
         # Lazy strings and urls.
         return make_string(o)
+    if type(o) is datetime.date:
+        return {"_": ["date", str(o)]}
     else:
         raise TypeError(repr(o) + " is not JSON serializable")
 

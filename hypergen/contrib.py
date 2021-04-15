@@ -13,9 +13,11 @@ from django.urls.base import resolve, reverse
 from django.conf.urls import url
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http.response import HttpResponseRedirect
 
-from hypergen.core import context as c, wrap2
-from hypergen.core import loads, command, hypergen, hypergen_response, StringWithMeta
+from hypergen.core import (context as c, wrap2, default_wrap_elements, loads, command, hypergen, hypergen_response,
+    StringWithMeta)
+from hypergen.core import *
 
 d = dict
 _URLS = {}
@@ -70,7 +72,7 @@ def hypergen_response_decorator(func):
 @wrap2
 def hypergen_view(func, url=None, perm=None, base_template=no_base_template, base_template_args=None,
     base_template_kwargs=None, namespace=None, login_url=None, raise_exception=False, target_id=None, app_name=None,
-    appstate_init=None):
+    appstate_init=None, wrap_elements=default_wrap_elements):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert target_id is not None, "target_id required"
@@ -105,13 +107,13 @@ def hypergen_view(func, url=None, perm=None, base_template=no_base_template, bas
             func_return["value"] = func(request, *fargs, **fkwargs)
 
         if not c.request.is_ajax():
+            fkwargs["wrap_elements"] = wrap_elements
             html = hypergen(wrap_base_template, request, *fargs, **fkwargs)
             if func_return["value"] is not None:
                 html = func_return["value"]
             return html
         else:
-            
-            commands = hypergen(wrap_view_with_hypergen, target_id=target_id)
+            commands = hypergen(wrap_view_with_hypergen, target_id=target_id, wrap_elements=wrap_elements)
             if func_return["value"] is not None:
                 commands = func_return["value"]
 
@@ -129,7 +131,8 @@ def hypergen_view(func, url=None, perm=None, base_template=no_base_template, bas
 
 @wrap2
 def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None, login_url=None,
-    raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None):
+    raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
+    wrap_elements=default_wrap_elements):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert namespace is not None, "namespace is required"
 
@@ -147,10 +150,14 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
 
         @appstate(app_name, appstate_init)
         def wrap_view_with_hypergen(func_return, args):
+            # Run the callback function.
             func_return["value"] = func(request, *args, **fkwargs)
-            if view is not None:
+            if type(func_return["value"]) is not HttpResponseRedirect and view is not None:
                 # Render from a view.
-                view.original_func(request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
+                # Allow the view to issue commands. Eg. notifications.
+                with c(commands=[], at="hypergen"):
+                    view.original_func(request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
+                    func_return["commands"] = c.hypergen.commands
 
         assert c.request.method == "POST", "Only POST request are supported"
         assert c.request.is_ajax()
@@ -161,8 +168,14 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
         args.extend(loads(request.POST["hypergen_data"])["args"])
         with c(referer_resolver_match=referer_resolver_match):
             func_return = {}
-            commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id)
-            return commands if func_return["value"] is None else func_return["value"]
+            commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id,
+                wrap_elements=wrap_elements)
+            # Commands are either default hypergen commands or commands from callback
+            commands = commands if func_return["value"] is None else func_return["value"]
+            # Allow view to add commands
+            if type(commands) is not HttpResponseRedirect:
+                commands.extend(func_return.get("commands", []))
+            return commands
 
     _ = register_view_for_url(_, namespace, base_template, url=url)
     _ = ensure_csrf_cookie(_)
