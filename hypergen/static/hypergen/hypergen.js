@@ -64,13 +64,18 @@ export const redirect = function(url) {
   window.location = url
 }
 
-window.eventHandlerCache = {}
-export const setEventHandlerCache = function(id, newCache) {
-  if (window.eventHandlerCache[id] === undefined) {
-    window.eventHandlerCache[id] = {}
+window.clientState = {}
+export const setClientState = function(at, value) {
+  let clientState = window.clientState
+  for (const path of at.split(".")) {
+    if (clientState.path === undefined) clientState[path] = {}
+    clientState = clientState[path]
+    console.log("THE PATH!!!!!!", path)
   }
-  window.eventHandlerCache[id] = Object.assign(window.eventHandlerCache[id], newCache)
-  console.log("Setting new state at", id, window.eventHandlerCache)
+  console.log("MADE", window.clientState)  
+  Object.assign(clientState, value)
+  console.log("Setting new state for window.clientState", at, "with value", value, "giving",
+              window.clientState)
 }
 
 // Callback
@@ -90,7 +95,6 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       json = JSON.stringify({
         args: args,
         meta: meta,
-        id_prefix: "h" + i + "-",
       })
     } catch(error) {
       if (error === MISSING_ELEMENT_EXCEPTION) {
@@ -202,7 +206,7 @@ const applyCommand = function(path, ...args) {
   let rpath = resolvePath(path)
   rpath(...args)
 }
-window.e = function(event, targetId, dataId, eventMatches) {
+window.e = function(event, callbackKey, eventMatches) {
   event.preventDefault()
   event.stopPropagation()
   if (!!eventMatches) {
@@ -212,7 +216,7 @@ window.e = function(event, targetId, dataId, eventMatches) {
       }
     }
   }
-  applyCommand(...window.eventHandlerCache[targetId][dataId])
+  applyCommand(...window.clientState.hypergen.callbacks[callbackKey])
 }
 
 const applyCommands = function(commands) {

@@ -63,10 +63,8 @@ def hypergen_context(data=None):
     if data is None:
         data = {}
 
-    c_ = m(into=[], liveview=True, id_counter=base65_counter(),
-        id_prefix=(loads(c.request.POST["hypergen_data"])["id_prefix"] if c.request.is_ajax() else ""),
-        event_handler_cache={}, target_id=data.pop("target_id",
-        "__main__"), commands=[], ids=set(), wrap_elements=data.pop("wrap_elements", default_wrap_elements))
+    c_ = m(into=[], event_handler_cache={}, target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
+        wrap_elements=data.pop("wrap_elements", default_wrap_elements))
 
     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
     return c_
@@ -80,7 +78,7 @@ def hypergen(func, *args, **kwargs):
         assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_cache:
-            command("hypergen.setEventHandlerCache", c.hypergen.target_id, c.hypergen.event_handler_cache)
+            command("hypergen.setClientState", 'hypergen.callbacks', c.hypergen.event_handler_cache)
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
@@ -175,33 +173,10 @@ def join_html(html):
 def raw(*children):
     c.hypergen.into.extend(children)
 
-def _sort_attrs(attrs):
-    # For testing only, subject to change.
-    if attrs.pop("_sort_attrs", False):
-        attrs = OrderedDict((k, attrs[k]) for k in sorted(attrs.keys()))
-        if "style" in attrs and type(attrs["style"]) is dict:
-            attrs["style"] = OrderedDict((k, attrs["style"][k]) for k in sorted(attrs["style"].keys()))
-
     return attrs
 
 def t(s, quote=True):
     return escape(make_string(s), quote=quote)
-
-def base65_counter():
-    # THX: https://stackoverflow.com/a/49710563/164449
-    abc = letters + string.digits + "-_:"
-    base = len(abc)
-    i = -1
-    while True:
-        i += 1
-        num = i
-        output = abc[num % base]  # rightmost digit
-
-        while num >= base:
-            num //= base  # move to next digit to the left
-            output = abc[num % base] + output  # this digit
-
-        yield output
 
 ### Actions happening on the frontend  ###
 
@@ -230,7 +205,7 @@ def callback(url_or_view, *cb_args, **kwargs):
             "hypergen.callback", url, [fix_this(x) for x in cb_args],
             d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear,
             elementId=element.attrs["id_"].v), return_=True)
-        cmd_id = id(cmd)
+        cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
 
         c.hypergen.event_handler_cache[cmd_id] = cmd
 
@@ -238,7 +213,7 @@ def callback(url_or_view, *cb_args, **kwargs):
             em = ", {}".format(escape(dumps(event_matches)))
         else:
             em = ""
-        return [" ", t(k), '="', "e(event,'{}',{}{})".format(c.hypergen.target_id, cmd_id, em), '"']
+        return [" ", t(k), '="', "e(event,'{}'{})".format(cmd_id, em), '"']
 
     return to_html
 
@@ -249,10 +224,10 @@ def call_js(command_path, *cb_args):
 
         element.ensure_id()
         cmd = command(command_path, *[fix_this(x) for x in cb_args], return_=True)
-        cmd_id = id(cmd)
+        cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
         c.hypergen.event_handler_cache[cmd_id] = cmd
 
-        return [" ", t(k), '="', "e(event, '{}',{})".format(c.hypergen.target_id, cmd_id), '"']
+        return [" ", t(k), '="', "e(event, '{}')".format(cmd_id), '"']
 
     return to_html
 
@@ -362,8 +337,7 @@ class base_element(ContextDecorator):
         return into
 
     def ensure_id(self):
-        if self.attrs["id_"].v is None:
-            self.attrs["id_"].v = c.hypergen.id_prefix + next(c.hypergen.id_counter)
+        assert self.attrs["id_"].v is not None, "You need to set an ID for {}".format(repr(self))
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")

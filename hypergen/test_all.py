@@ -272,7 +272,7 @@ def test_eventhandler_cache():
 
         input_(onclick=cb(f1, THIS))
 
-        ehc = {i: v for i, v in enumerate(context.hypergen.event_handler_cache.values())}
+        ehc = {i: v for i, v in enumerate(context.hypergen.client_state.values())}
 
         assert dumps(
             ehc
@@ -286,7 +286,7 @@ def test_call_js():
             pass
 
         a(onclick=call_js("hypergen.xyz", THIS))
-        assert dumps(context.hypergen.event_handler_cache.values()
+        assert dumps(context.hypergen.client_state.values()
                     ) == '[["hypergen.xyz",["_","element_value",["hypergen.read.value",null,"A"]]]]'
 
 def test_string_with_meta():
