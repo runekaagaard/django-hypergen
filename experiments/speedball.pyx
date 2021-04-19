@@ -20,6 +20,7 @@ cdef struct Item:
 
 cdef struct Hpg:
     string html
+    
 
 cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
     cdef int i, j
@@ -44,25 +45,46 @@ cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
     hpg.html.append(tag)
     hpg.html.append('>\n')
 
+# cdef string cb(Hpg &hpg, string url) nogil:
+#     hpg.html.append(url)
+#     return <char*> "e(foo)"
+    
 cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"div", hpg, s, attrs)
 
 cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"b", hpg, s, attrs)
+
+cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
+    element(<char*>"b", hpg, s, attrs)
+
+cdef string cb(Hpg &hpg, string id_, string url) nogil:
+    cdef string html
+    html.append("e(event,'")
+    html.append(id_)
+    html.append("')")
+    return html
     
 cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
     cdef int i
     for i in range(10000):
         for item in items[:n]:
             if not item.is_completed:
-                b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-divø",
-                                               <s>"id", <s>"foo92", T])
+                b(hpg, <char*>"GET STARTED NOW!", [<char*>"class", <char*>"my-divø",
+                                               <char*>"id", <char*>"foo92", T])
             div(hpg, item.description, [T])
-
+            id_ = <char*> "my-element-id"
+            element(<char*>"button", hpg, <char*>"HEJ",
+                    [<char*> "id", id_, <char*>"onclick", cb(hpg, id_, <char*>"/myapp/mycallback"), T])
+            
+def mycallback():
+    # reverse url = "/myapp/mycallback"
+    pass
+            
 def speedball(python_items):
     cdef:
         Pool mem = Pool()
-        Hpg hpg = Hpg(<s>"")
+        Hpg hpg = Hpg(<char*>"")
         int i
         dict item
         
@@ -74,4 +96,5 @@ def speedball(python_items):
     prontotemplate(hpg, items, len(python_items))
     b = time()
     print((b - a) * 1000)
-    return hpg.html
+
+    return hpg
