@@ -9,6 +9,9 @@ items = [
 hpg = speedball(items)
 print("type hpg:", type(hpg))
 
+print("type event_handler_callbacks:", type(hpg["event_handler_callbacks"]))
+print("event_handler_callbacks:", hpg["event_handler_callbacks"])
+
 html = hpg["html"]
 print("type html:", type(html))
 print("len:", len(html))
