@@ -173,8 +173,6 @@ def join_html(html):
 def raw(*children):
     c.hypergen.into.extend(children)
 
-    return attrs
-
 def t(s, quote=True):
     return escape(make_string(s), quote=quote)
 
