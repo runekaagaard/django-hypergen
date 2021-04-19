@@ -79,6 +79,7 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args)
     event_handler_callback.append('["')
     event_handler_callback.append(url)
     event_handler_callback.append('",')
+    
     for i in range(100):
         arg = args[i]
         if arg == T:
@@ -125,23 +126,20 @@ cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
         Args args
         string id_
         
-    for i in range(1):
+    for i in range(10000):
         for item in items[:n]:
             if not item.is_completed:
-                b(hpg, <char*>"GET STARTED NOW!", [<char*>"class", <char*>"my-divø",
-                                               <char*>"id", <char*>"foo92", T])
+                b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-divø", <s>"id", <s>"foo92", T])
             div(hpg, item.description, [T])
-            id_ = <char*> "my-element-"
+            id_ = <s> "my-element-"
             id_.append(i2s(item.pk))
             
-            button(
-                hpg,
-                <char*>"I am the champ!",
-                [<char*>"id", id_,
-                 <char*>"onclick",
-                     cb(hpg, id_, <char*>"onclick", <char*>"/todos/delete_item",
-                        [arg_i(item.pk), arg_i(item.pk**4), arg_s(<char*>"The guy is nice!"), T]),
-                 T
+            button(hpg, <s>"I am the champ!", [
+                <s>"id", id_,
+                <s>"onclick",
+                     cb(hpg, id_, <s>"onclick", <s>"/todos/delete_item",
+                        [arg_i(item.pk), arg_i(item.pk**4), arg_s(<s>"The guy is nice!"), T]),
+                T
             ])
 
 # @hypergen_callback(...)
@@ -165,7 +163,7 @@ def speedball(python_items):
     a = time()
     prontotemplate(hpg, items, len(python_items))
     b = time()
-    print((b - a) * 1000)
+    print("runtime", (b - a) * 1000, "ms")
     return {
         "html": hpg.html,
         "event_handler_callbacks": {k: json.loads(v) for k, v in dict(hpg.event_handler_callbacks).items()}
