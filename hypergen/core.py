@@ -63,7 +63,7 @@ def hypergen_context(data=None):
     if data is None:
         data = {}
 
-    c_ = m(into=[], event_handler_cache={}, target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
+    c_ = m(into=[], event_handler_callbacks={}, target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
         wrap_elements=data.pop("wrap_elements", default_wrap_elements))
 
     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
@@ -77,8 +77,8 @@ def hypergen(func, *args, **kwargs):
         func(*args, **kwargs)
         assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
-        if c.hypergen.event_handler_cache:
-            command("hypergen.setClientState", 'hypergen.callbacks', c.hypergen.event_handler_cache)
+        if c.hypergen.event_handler_callbacks:
+            command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
@@ -205,7 +205,7 @@ def callback(url_or_view, *cb_args, **kwargs):
             elementId=element.attrs["id_"].v), return_=True)
         cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
 
-        c.hypergen.event_handler_cache[cmd_id] = cmd
+        c.hypergen.event_handler_callbacks[cmd_id] = cmd
 
         if event_matches:
             em = ", {}".format(escape(dumps(event_matches)))
@@ -223,7 +223,7 @@ def call_js(command_path, *cb_args):
         element.ensure_id()
         cmd = command(command_path, *[fix_this(x) for x in cb_args], return_=True)
         cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
-        c.hypergen.event_handler_cache[cmd_id] = cmd
+        c.hypergen.event_handler_callbacks[cmd_id] = cmd
 
         return [" ", t(k), '="', "e(event, '{}')".format(cmd_id), '"']
 

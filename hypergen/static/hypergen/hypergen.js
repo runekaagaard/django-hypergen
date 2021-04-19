@@ -70,9 +70,7 @@ export const setClientState = function(at, value) {
   for (const path of at.split(".")) {
     if (clientState.path === undefined) clientState[path] = {}
     clientState = clientState[path]
-    console.log("THE PATH!!!!!!", path)
   }
-  console.log("MADE", window.clientState)  
   Object.assign(clientState, value)
   console.log("Setting new state for window.clientState", at, "with value", value, "giving",
               window.clientState)
@@ -216,7 +214,7 @@ window.e = function(event, callbackKey, eventMatches) {
       }
     }
   }
-  applyCommand(...window.clientState.hypergen.callbacks[callbackKey])
+  applyCommand(...window.clientState.hypergen.eventHandlerCallbacks[callbackKey])
 }
 
 const applyCommands = function(commands) {
