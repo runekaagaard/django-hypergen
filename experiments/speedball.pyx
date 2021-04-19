@@ -67,7 +67,7 @@ cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
 cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"b", hpg, s, attrs)
     
-cdef string cb(Hpg &hpg, string id_, string attr_name, string url, Args args) nogil:
+cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args) nogil:
     cdef:
         string html
         string client_state_key
@@ -79,19 +79,17 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, Args args) no
     client_state_key.append("-")
     client_state_key.append(attr_name)
     
-    client_state_key.append(id_)
     html.append("e(event,'")
     html.append(client_state_key)
+    html.append("'")
     
     for i in range(100):
-        arg_i = args.ints[i]
-        if arg_i == T_int:
+        arg = args[i]
+        if arg == T:
             break
-        
-        sprintf(s, "%d", arg_i)
         html.append(",")
-        html.append(<string> s)
-    html.append("')")
+        html.append(arg)
+    html.append(")")
     return html
 
 
@@ -99,6 +97,20 @@ cdef struct Args:
     int* ints
     float* floats
     string* strings
+
+cdef inline string arg_i(int v) nogil:
+    cdef:
+        char s[100]
+    sprintf(s, "%d", v)
+    return <string> s
+
+cdef inline string arg_s(string v) nogil:
+    cdef string s
+    s.append("'")
+    s.append(v)
+    s.append("'")
+    
+    return s
     
 
 cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
@@ -110,24 +122,24 @@ cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
                                                <char*>"id", <char*>"foo92", T])
             div(hpg, item.description, [T])
             id_ = <char*> "my-element-id"
-            args.ints = [42, 92, 200, T_int]
+            
             button(
                 hpg,
-                <char*>"HEJ",
-                [<char*> "id", id_,
+                <char*>"I am the champ!",
+                [<char*>"id", id_,
                  <char*>"onclick",
-                     cb(hpg, id_, <char*>"onclick", <char*>"/todos/delete_item", args),
+                     cb(hpg, id_, <char*>"onclick", <char*>"/todos/delete_item",
+                        [arg_i(item.pk), arg_i(item.pk**4), arg_s(<char*>"The guy is nice!"), T]),
                  T
             ])
 
 # @hypergen_callback(...)
-def delete_item(request, item_id):
+def delete_item(request, item_id, other_id, who_is_nice_Str):
     # reverse url = "/todos/delete_item"
     pass
             
 def speedball(python_items):
-    print ("AAAAAAAAAAAAAAAAAAAAAA")
-    print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
+    print ("----------------------------------------------------------------")
     cdef:
         Pool mem = Pool()
         Hpg hpg = Hpg(<char*>"")
