@@ -879,18 +879,19 @@ typedef void *(*__pyx_t_5cymem_5cymem_malloc_t)(size_t);
 typedef void (*__pyx_t_5cymem_5cymem_free_t)(void *);
 struct __pyx_t_9speedball_Item;
 struct __pyx_t_9speedball_Hpg;
+struct __pyx_t_9speedball_Args;
 
 /* "speedball.pyx":12
  * from time import time
  * 
  * ctypedef char* s             # <<<<<<<<<<<<<<
  * 
- * cdef:
+ * # cdef extern from "string.h":
  */
 typedef char *__pyx_t_9speedball_s;
 
-/* "speedball.pyx":17
- *     string T = <char*>"__TERM__"
+/* "speedball.pyx":29
+ *     int T_int = -1 # TODO: Longer int!
  * 
  * cdef struct Item:             # <<<<<<<<<<<<<<
  *     int is_completed
@@ -899,10 +900,11 @@ typedef char *__pyx_t_9speedball_s;
 struct __pyx_t_9speedball_Item {
   int is_completed;
   std::string description;
+  int pk;
 };
 
-/* "speedball.pyx":21
- *     string description
+/* "speedball.pyx":34
+ *     int pk
  * 
  * cdef struct Hpg:             # <<<<<<<<<<<<<<
  *     string html
@@ -910,6 +912,19 @@ struct __pyx_t_9speedball_Item {
  */
 struct __pyx_t_9speedball_Hpg {
   std::string html;
+};
+
+/* "speedball.pyx":98
+ * 
+ * 
+ * cdef struct Args:             # <<<<<<<<<<<<<<
+ *     int* ints
+ *     float* floats
+ */
+struct __pyx_t_9speedball_Args {
+  int *ints;
+  float *floats;
+  std::string *strings;
 };
 
 /* "cymem/cymem.pxd":4
@@ -1091,6 +1106,25 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject
 /* GetBuiltinName.proto */
 static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 
+/* RaiseArgTupleInvalid.proto */
+static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
+    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
+
+/* RaiseDoubleKeywords.proto */
+static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
+
+/* ParseKeywords.proto */
+static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
+    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
+    const char* function_name);
+
+/* PyObjectCall.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#else
+#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+#endif
+
 /* PyFunctionFastCall.proto */
 #if CYTHON_FAST_PYCALL
 #define __Pyx_PyFunction_FastCall(func, args, nargs)\
@@ -1112,13 +1146,6 @@ static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, 
      (void)(__pyx_pyframe_localsplus_offset = ((size_t)PyFrame_Type.tp_basicsize) - Py_MEMBER_SIZE(PyFrameObject, f_localsplus)))
   #define __Pyx_PyFrame_GetLocalsplus(frame)\
     (assert(__pyx_pyframe_localsplus_offset), (PyObject **)(((char *)(frame)) + __pyx_pyframe_localsplus_offset))
-#endif
-
-/* PyObjectCall.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
-#else
-#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
 #endif
 
 /* PyObjectCallMethO.proto */
@@ -1293,11 +1320,14 @@ static PyObject* __pyx_convert__to_py_struct____pyx_t_9speedball_Hpg(struct __py
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
-/* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
-
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 /* FastTypeChecks.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -1337,10 +1367,12 @@ static PyTypeObject *__pyx_ptype_5cymem_5cymem_Address = 0;
 
 /* Module declarations from 'speedball' */
 static std::string __pyx_v_9speedball_T;
+static int __pyx_v_9speedball_T_int;
 static void __pyx_f_9speedball_element(std::string, struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
 static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
 static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
-static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &, std::string, std::string); /*proto*/
+static CYTHON_INLINE void __pyx_f_9speedball_button(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
+static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &, std::string, std::string, std::string, struct __pyx_t_9speedball_Args); /*proto*/
 static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &, struct __pyx_t_9speedball_Item *, int); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &); /*proto*/
@@ -1354,11 +1386,12 @@ int __pyx_module_is_main_speedball = 0;
 
 /* Implementation of 'speedball' */
 static PyObject *__pyx_builtin_range;
-static PyObject *__pyx_builtin_enumerate;
 static PyObject *__pyx_builtin_print;
+static PyObject *__pyx_builtin_enumerate;
 static const char __pyx_k_a[] = "a";
 static const char __pyx_k_b[] = "b";
 static const char __pyx_k_i[] = "i";
+static const char __pyx_k_pk[] = "pk";
 static const char __pyx_k_hpg[] = "hpg";
 static const char __pyx_k_mem[] = "mem";
 static const char __pyx_k_html[] = "html";
@@ -1371,18 +1404,25 @@ static const char __pyx_k_items[] = "items";
 static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_import[] = "__import__";
+static const char __pyx_k_item_id[] = "item_id";
+static const char __pyx_k_request[] = "request";
 static const char __pyx_k_enumerate[] = "enumerate";
 static const char __pyx_k_speedball[] = "speedball";
-static const char __pyx_k_mycallback[] = "mycallback";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
+static const char __pyx_k_delete_item[] = "delete_item";
 static const char __pyx_k_description[] = "description";
 static const char __pyx_k_is_completed[] = "is_completed";
 static const char __pyx_k_python_items[] = "python_items";
 static const char __pyx_k_speedball_pyx[] = "speedball.pyx";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
+static const char __pyx_k_AAAAAAAAAAAAAAAAAAAAAA[] = "AAAAAAAAAAAAAAAAAAAAAA";
+static const char __pyx_k_BBBBBBBBBBBBBBBBBBBBBBBBBBB[] = "BBBBBBBBBBBBBBBBBBBBBBBBBBB";
+static PyObject *__pyx_n_s_AAAAAAAAAAAAAAAAAAAAAA;
+static PyObject *__pyx_n_s_BBBBBBBBBBBBBBBBBBBBBBBBBBB;
 static PyObject *__pyx_n_s_a;
 static PyObject *__pyx_n_s_b;
 static PyObject *__pyx_n_s_cline_in_traceback;
+static PyObject *__pyx_n_s_delete_item;
 static PyObject *__pyx_n_s_description;
 static PyObject *__pyx_n_s_enumerate;
 static PyObject *__pyx_n_s_hpg;
@@ -1391,28 +1431,33 @@ static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_is_completed;
 static PyObject *__pyx_n_s_item;
+static PyObject *__pyx_n_s_item_id;
 static PyObject *__pyx_n_s_items;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_mem;
-static PyObject *__pyx_n_s_mycallback;
 static PyObject *__pyx_n_s_name;
+static PyObject *__pyx_n_s_pk;
 static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_python_items;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
+static PyObject *__pyx_n_s_request;
 static PyObject *__pyx_n_s_speedball;
 static PyObject *__pyx_kp_s_speedball_pyx;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_time;
-static PyObject *__pyx_pf_9speedball_mycallback(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_9speedball_delete_item(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_request, CYTHON_UNUSED PyObject *__pyx_v_item_id); /* proto */
 static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_python_items); /* proto */
 static PyObject *__pyx_int_1000;
-static PyObject *__pyx_codeobj_;
+static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
-static PyObject *__pyx_codeobj__3;
+static PyObject *__pyx_tuple__3;
+static PyObject *__pyx_tuple__5;
+static PyObject *__pyx_codeobj__4;
+static PyObject *__pyx_codeobj__6;
 /* Late includes */
 
-/* "speedball.pyx":25
+/* "speedball.pyx":38
  * 
  * 
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1426,7 +1471,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
   int __pyx_t_1;
   int __pyx_t_2;
 
-  /* "speedball.pyx":27
+  /* "speedball.pyx":40
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
  *     cdef int i, j
  *     hpg.html.append('<')             # <<<<<<<<<<<<<<
@@ -1435,7 +1480,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"<")));
 
-  /* "speedball.pyx":28
+  /* "speedball.pyx":41
  *     cdef int i, j
  *     hpg.html.append('<')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -1444,7 +1489,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "speedball.pyx":30
+  /* "speedball.pyx":43
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -1454,7 +1499,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
   __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_9speedball_T) != 0);
   if (__pyx_t_1) {
 
-    /* "speedball.pyx":31
+    /* "speedball.pyx":44
  * 
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
@@ -1464,7 +1509,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
     for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
       __pyx_v_i = __pyx_t_2;
 
-      /* "speedball.pyx":32
+      /* "speedball.pyx":45
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):
  *             j = i + 1             # <<<<<<<<<<<<<<
@@ -1473,7 +1518,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
       __pyx_v_j = (__pyx_v_i + 1);
 
-      /* "speedball.pyx":33
+      /* "speedball.pyx":46
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -1483,7 +1528,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
       __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_9speedball_T) != 0);
       if (__pyx_t_1) {
 
-        /* "speedball.pyx":34
+        /* "speedball.pyx":47
  *             j = i + 1
  *             if attrs[i] == T:
  *                 break             # <<<<<<<<<<<<<<
@@ -1492,7 +1537,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
         goto __pyx_L5_break;
 
-        /* "speedball.pyx":33
+        /* "speedball.pyx":46
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -1501,7 +1546,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
       }
 
-      /* "speedball.pyx":36
+      /* "speedball.pyx":49
  *                 break
  *             else:
  *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
@@ -1511,7 +1556,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
       /*else*/ {
         (void)(__pyx_v_hpg.html.append(((char const *)" ")));
 
-        /* "speedball.pyx":37
+        /* "speedball.pyx":50
  *             else:
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
@@ -1520,7 +1565,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
 
-        /* "speedball.pyx":38
+        /* "speedball.pyx":51
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
@@ -1529,7 +1574,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
         (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
 
-        /* "speedball.pyx":39
+        /* "speedball.pyx":52
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
@@ -1538,7 +1583,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
 
-        /* "speedball.pyx":40
+        /* "speedball.pyx":53
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])
  *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
@@ -1550,7 +1595,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
     }
     __pyx_L5_break:;
 
-    /* "speedball.pyx":30
+    /* "speedball.pyx":43
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -1559,7 +1604,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
   }
 
-  /* "speedball.pyx":42
+  /* "speedball.pyx":55
  *                 hpg.html.append('"')
  * 
  *     hpg.html.append('>')             # <<<<<<<<<<<<<<
@@ -1568,7 +1613,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">")));
 
-  /* "speedball.pyx":43
+  /* "speedball.pyx":56
  * 
  *     hpg.html.append('>')
  *     hpg.html.append(s)             # <<<<<<<<<<<<<<
@@ -1577,7 +1622,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_s));
 
-  /* "speedball.pyx":44
+  /* "speedball.pyx":57
  *     hpg.html.append('>')
  *     hpg.html.append(s)
  *     hpg.html.append('</')             # <<<<<<<<<<<<<<
@@ -1586,7 +1631,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"</")));
 
-  /* "speedball.pyx":45
+  /* "speedball.pyx":58
  *     hpg.html.append(s)
  *     hpg.html.append('</')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -1595,16 +1640,16 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "speedball.pyx":46
+  /* "speedball.pyx":59
  *     hpg.html.append('</')
  *     hpg.html.append(tag)
  *     hpg.html.append('>\n')             # <<<<<<<<<<<<<<
  * 
- * # cdef string cb(Hpg &hpg, string url) nogil:
+ * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">\n")));
 
-  /* "speedball.pyx":25
+  /* "speedball.pyx":38
  * 
  * 
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1615,8 +1660,8 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
   /* function exit code */
 }
 
-/* "speedball.pyx":52
- * #     return <char*> "e(foo)"
+/* "speedball.pyx":61
+ *     hpg.html.append('>\n')
  * 
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
  *     element(<char*>"div", hpg, s, attrs)
@@ -1625,7 +1670,7 @@ static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9
 
 static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "speedball.pyx":53
+  /* "speedball.pyx":62
  * 
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"div", hpg, s, attrs)             # <<<<<<<<<<<<<<
@@ -1634,8 +1679,8 @@ static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &
  */
   __pyx_f_9speedball_element(((char *)((char *)"div")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "speedball.pyx":52
- * #     return <char*> "e(foo)"
+  /* "speedball.pyx":61
+ *     hpg.html.append('>\n')
  * 
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
  *     element(<char*>"div", hpg, s, attrs)
@@ -1645,7 +1690,7 @@ static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &
   /* function exit code */
 }
 
-/* "speedball.pyx":55
+/* "speedball.pyx":64
  *     element(<char*>"div", hpg, s, attrs)
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1655,7 +1700,7 @@ static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &
 
 static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "speedball.pyx":56
+  /* "speedball.pyx":65
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"b", hpg, s, attrs)             # <<<<<<<<<<<<<<
@@ -1664,7 +1709,7 @@ static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &__
  */
   __pyx_f_9speedball_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "speedball.pyx":55
+  /* "speedball.pyx":64
  *     element(<char*>"div", hpg, s, attrs)
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1675,7 +1720,7 @@ static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &__
   /* function exit code */
 }
 
-/* "speedball.pyx":58
+/* "speedball.pyx":67
  *     element(<char*>"b", hpg, s, attrs)
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1685,16 +1730,16 @@ static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &__
 
 static CYTHON_INLINE void __pyx_f_9speedball_button(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "speedball.pyx":59
+  /* "speedball.pyx":68
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"b", hpg, s, attrs)             # <<<<<<<<<<<<<<
  * 
- * cdef string cb(Hpg &hpg, string id_, string url) nogil:
+ * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, Args args) nogil:
  */
   __pyx_f_9speedball_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "speedball.pyx":58
+  /* "speedball.pyx":67
  *     element(<char*>"b", hpg, s, attrs)
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -1705,61 +1750,179 @@ static CYTHON_INLINE void __pyx_f_9speedball_button(struct __pyx_t_9speedball_Hp
   /* function exit code */
 }
 
-/* "speedball.pyx":61
+/* "speedball.pyx":70
  *     element(<char*>"b", hpg, s, attrs)
  * 
- * cdef string cb(Hpg &hpg, string id_, string url) nogil:             # <<<<<<<<<<<<<<
- *     cdef string html
- *     html.append("e(event,'")
+ * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, Args args) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         string html
  */
 
-static std::string __pyx_f_9speedball_cb(CYTHON_UNUSED struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_id_, CYTHON_UNUSED std::string __pyx_v_url) {
+static std::string __pyx_f_9speedball_cb(CYTHON_UNUSED struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_id_, std::string __pyx_v_attr_name, CYTHON_UNUSED std::string __pyx_v_url, struct __pyx_t_9speedball_Args __pyx_v_args) {
   std::string __pyx_v_html;
+  std::string __pyx_v_client_state_key;
+  int __pyx_v_i;
+  int __pyx_v_arg_i;
+  char __pyx_v_s[0x64];
   std::string __pyx_r;
+  int __pyx_t_1;
+  int __pyx_t_2;
 
-  /* "speedball.pyx":63
- * cdef string cb(Hpg &hpg, string id_, string url) nogil:
- *     cdef string html
+  /* "speedball.pyx":78
+ *         char s[100]
+ * 
+ *     client_state_key.append(id_)             # <<<<<<<<<<<<<<
+ *     client_state_key.append("-")
+ *     client_state_key.append(attr_name)
+ */
+  (void)(__pyx_v_client_state_key.append(__pyx_v_id_));
+
+  /* "speedball.pyx":79
+ * 
+ *     client_state_key.append(id_)
+ *     client_state_key.append("-")             # <<<<<<<<<<<<<<
+ *     client_state_key.append(attr_name)
+ * 
+ */
+  (void)(__pyx_v_client_state_key.append(((char const *)"-")));
+
+  /* "speedball.pyx":80
+ *     client_state_key.append(id_)
+ *     client_state_key.append("-")
+ *     client_state_key.append(attr_name)             # <<<<<<<<<<<<<<
+ * 
+ *     client_state_key.append(id_)
+ */
+  (void)(__pyx_v_client_state_key.append(__pyx_v_attr_name));
+
+  /* "speedball.pyx":82
+ *     client_state_key.append(attr_name)
+ * 
+ *     client_state_key.append(id_)             # <<<<<<<<<<<<<<
+ *     html.append("e(event,'")
+ *     html.append(client_state_key)
+ */
+  (void)(__pyx_v_client_state_key.append(__pyx_v_id_));
+
+  /* "speedball.pyx":83
+ * 
+ *     client_state_key.append(id_)
  *     html.append("e(event,'")             # <<<<<<<<<<<<<<
- *     html.append(id_)
- *     html.append("')")
+ *     html.append(client_state_key)
+ * 
  */
   (void)(__pyx_v_html.append(((char const *)"e(event,'")));
 
-  /* "speedball.pyx":64
- *     cdef string html
+  /* "speedball.pyx":84
+ *     client_state_key.append(id_)
  *     html.append("e(event,'")
- *     html.append(id_)             # <<<<<<<<<<<<<<
+ *     html.append(client_state_key)             # <<<<<<<<<<<<<<
+ * 
+ *     for i in range(100):
+ */
+  (void)(__pyx_v_html.append(__pyx_v_client_state_key));
+
+  /* "speedball.pyx":86
+ *     html.append(client_state_key)
+ * 
+ *     for i in range(100):             # <<<<<<<<<<<<<<
+ *         arg_i = args.ints[i]
+ *         if arg_i == T_int:
+ */
+  for (__pyx_t_1 = 0; __pyx_t_1 < 0x64; __pyx_t_1+=1) {
+    __pyx_v_i = __pyx_t_1;
+
+    /* "speedball.pyx":87
+ * 
+ *     for i in range(100):
+ *         arg_i = args.ints[i]             # <<<<<<<<<<<<<<
+ *         if arg_i == T_int:
+ *             break
+ */
+    __pyx_v_arg_i = (__pyx_v_args.ints[__pyx_v_i]);
+
+    /* "speedball.pyx":88
+ *     for i in range(100):
+ *         arg_i = args.ints[i]
+ *         if arg_i == T_int:             # <<<<<<<<<<<<<<
+ *             break
+ * 
+ */
+    __pyx_t_2 = ((__pyx_v_arg_i == __pyx_v_9speedball_T_int) != 0);
+    if (__pyx_t_2) {
+
+      /* "speedball.pyx":89
+ *         arg_i = args.ints[i]
+ *         if arg_i == T_int:
+ *             break             # <<<<<<<<<<<<<<
+ * 
+ *         sprintf(s, "%d", arg_i)
+ */
+      goto __pyx_L4_break;
+
+      /* "speedball.pyx":88
+ *     for i in range(100):
+ *         arg_i = args.ints[i]
+ *         if arg_i == T_int:             # <<<<<<<<<<<<<<
+ *             break
+ * 
+ */
+    }
+
+    /* "speedball.pyx":91
+ *             break
+ * 
+ *         sprintf(s, "%d", arg_i)             # <<<<<<<<<<<<<<
+ *         html.append(",")
+ *         html.append(<string> s)
+ */
+    (void)(sprintf(__pyx_v_s, ((char const *)"%d"), __pyx_v_arg_i));
+
+    /* "speedball.pyx":92
+ * 
+ *         sprintf(s, "%d", arg_i)
+ *         html.append(",")             # <<<<<<<<<<<<<<
+ *         html.append(<string> s)
+ *     html.append("')")
+ */
+    (void)(__pyx_v_html.append(((char const *)",")));
+
+    /* "speedball.pyx":93
+ *         sprintf(s, "%d", arg_i)
+ *         html.append(",")
+ *         html.append(<string> s)             # <<<<<<<<<<<<<<
  *     html.append("')")
  *     return html
  */
-  (void)(__pyx_v_html.append(__pyx_v_id_));
+    (void)(__pyx_v_html.append(((std::string)__pyx_v_s)));
+  }
+  __pyx_L4_break:;
 
-  /* "speedball.pyx":65
- *     html.append("e(event,'")
- *     html.append(id_)
+  /* "speedball.pyx":94
+ *         html.append(",")
+ *         html.append(<string> s)
  *     html.append("')")             # <<<<<<<<<<<<<<
  *     return html
  * 
  */
   (void)(__pyx_v_html.append(((char const *)"')")));
 
-  /* "speedball.pyx":66
- *     html.append(id_)
+  /* "speedball.pyx":95
+ *         html.append(<string> s)
  *     html.append("')")
  *     return html             # <<<<<<<<<<<<<<
  * 
- * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
+ * 
  */
   __pyx_r = __pyx_v_html;
   goto __pyx_L0;
 
-  /* "speedball.pyx":61
+  /* "speedball.pyx":70
  *     element(<char*>"b", hpg, s, attrs)
  * 
- * cdef string cb(Hpg &hpg, string id_, string url) nogil:             # <<<<<<<<<<<<<<
- *     cdef string html
- *     html.append("e(event,'")
+ * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, Args args) nogil:             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         string html
  */
 
   /* function exit code */
@@ -1767,40 +1930,42 @@ static std::string __pyx_f_9speedball_cb(CYTHON_UNUSED struct __pyx_t_9speedball
   return __pyx_r;
 }
 
-/* "speedball.pyx":68
- *     return html
+/* "speedball.pyx":104
+ * 
  * 
  * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i
- *     for i in range(10000):
+ *     cdef Args args
+ *     for i in range(1):
  */
 
 static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, struct __pyx_t_9speedball_Item *__pyx_v_items, int __pyx_v_n) {
-  CYTHON_UNUSED int __pyx_v_i;
+  struct __pyx_t_9speedball_Args __pyx_v_args;
+  CYTHON_UNUSED long __pyx_v_i;
   struct __pyx_t_9speedball_Item __pyx_v_item;
   char *__pyx_v_id_;
-  int __pyx_t_1;
+  long __pyx_t_1;
   struct __pyx_t_9speedball_Item *__pyx_t_2;
   struct __pyx_t_9speedball_Item *__pyx_t_3;
   struct __pyx_t_9speedball_Item *__pyx_t_4;
   int __pyx_t_5;
   std::string __pyx_t_6[5];
   std::string __pyx_t_7[1];
-  std::string __pyx_t_8[5];
+  int __pyx_t_8[4];
+  std::string __pyx_t_9[5];
 
-  /* "speedball.pyx":70
+  /* "speedball.pyx":106
  * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
- *     cdef int i
- *     for i in range(10000):             # <<<<<<<<<<<<<<
+ *     cdef Args args
+ *     for i in range(1):             # <<<<<<<<<<<<<<
  *         for item in items[:n]:
  *             if not item.is_completed:
  */
-  for (__pyx_t_1 = 0; __pyx_t_1 < 0x2710; __pyx_t_1+=1) {
+  for (__pyx_t_1 = 0; __pyx_t_1 < 1; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "speedball.pyx":71
- *     cdef int i
- *     for i in range(10000):
+    /* "speedball.pyx":107
+ *     cdef Args args
+ *     for i in range(1):
  *         for item in items[:n]:             # <<<<<<<<<<<<<<
  *             if not item.is_completed:
  *                 b(hpg, <char*>"GET STARTED NOW!", [<char*>"class", <char*>"my-div",
@@ -1810,8 +1975,8 @@ static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__p
       __pyx_t_2 = __pyx_t_4;
       __pyx_v_item = (__pyx_t_2[0]);
 
-      /* "speedball.pyx":72
- *     for i in range(10000):
+      /* "speedball.pyx":108
+ *     for i in range(1):
  *         for item in items[:n]:
  *             if not item.is_completed:             # <<<<<<<<<<<<<<
  *                 b(hpg, <char*>"GET STARTED NOW!", [<char*>"class", <char*>"my-div",
@@ -1820,7 +1985,7 @@ static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__p
       __pyx_t_5 = ((!(__pyx_v_item.is_completed != 0)) != 0);
       if (__pyx_t_5) {
 
-        /* "speedball.pyx":73
+        /* "speedball.pyx":109
  *         for item in items[:n]:
  *             if not item.is_completed:
  *                 b(hpg, <char*>"GET STARTED NOW!", [<char*>"class", <char*>"my-div",             # <<<<<<<<<<<<<<
@@ -1834,8 +1999,8 @@ static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__p
         __pyx_t_6[4] = __pyx_v_9speedball_T;
         __pyx_f_9speedball_b(__pyx_v_hpg, ((char *)((char *)"GET STARTED NOW!")), __pyx_t_6);
 
-        /* "speedball.pyx":72
- *     for i in range(10000):
+        /* "speedball.pyx":108
+ *     for i in range(1):
  *         for item in items[:n]:
  *             if not item.is_completed:             # <<<<<<<<<<<<<<
  *                 b(hpg, <char*>"GET STARTED NOW!", [<char*>"class", <char*>"my-div",
@@ -1843,86 +2008,150 @@ static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__p
  */
       }
 
-      /* "speedball.pyx":75
+      /* "speedball.pyx":111
  *                 b(hpg, <char*>"GET STARTED NOW!", [<char*>"class", <char*>"my-div",
  *                                                <char*>"id", <char*>"foo92", T])
  *             div(hpg, item.description, [T])             # <<<<<<<<<<<<<<
  *             id_ = <char*> "my-element-id"
- *             element(<char*>"button", hpg, <char*>"HEJ",
+ *             args.ints = [42, 92, 200, T_int]
  */
       __pyx_t_7[0] = __pyx_v_9speedball_T;
       __pyx_f_9speedball_div(__pyx_v_hpg, __pyx_v_item.description, __pyx_t_7);
 
-      /* "speedball.pyx":76
+      /* "speedball.pyx":112
  *                                                <char*>"id", <char*>"foo92", T])
  *             div(hpg, item.description, [T])
  *             id_ = <char*> "my-element-id"             # <<<<<<<<<<<<<<
- *             element(<char*>"button", hpg, <char*>"HEJ",
- *                     [<char*> "id", id_, <char*>"onclick", cb(hpg, id_, <char*>"/myapp/mycallback"), T])
+ *             args.ints = [42, 92, 200, T_int]
+ *             button(
  */
       __pyx_v_id_ = ((char *)((char *)"my-element-id"));
 
-      /* "speedball.pyx":78
- *             id_ = <char*> "my-element-id"
- *             element(<char*>"button", hpg, <char*>"HEJ",
- *                     [<char*> "id", id_, <char*>"onclick", cb(hpg, id_, <char*>"/myapp/mycallback"), T])             # <<<<<<<<<<<<<<
- * 
- * def mycallback():
- */
-      __pyx_t_8[0] = ((char *)((char *)"id"));
-      __pyx_t_8[1] = __pyx_v_id_;
-      __pyx_t_8[2] = ((char *)((char *)"onclick"));
-      __pyx_t_8[3] = __pyx_f_9speedball_cb(__pyx_v_hpg, __pyx_v_id_, ((char *)((char *)"/myapp/mycallback")));
-      __pyx_t_8[4] = __pyx_v_9speedball_T;
-
-      /* "speedball.pyx":77
+      /* "speedball.pyx":113
  *             div(hpg, item.description, [T])
  *             id_ = <char*> "my-element-id"
- *             element(<char*>"button", hpg, <char*>"HEJ",             # <<<<<<<<<<<<<<
- *                     [<char*> "id", id_, <char*>"onclick", cb(hpg, id_, <char*>"/myapp/mycallback"), T])
- * 
+ *             args.ints = [42, 92, 200, T_int]             # <<<<<<<<<<<<<<
+ *             button(
+ *                 hpg,
  */
-      __pyx_f_9speedball_element(((char *)((char *)"button")), __pyx_v_hpg, ((char *)((char *)"HEJ")), __pyx_t_8);
+      __pyx_t_8[0] = 42;
+      __pyx_t_8[1] = 92;
+      __pyx_t_8[2] = 0xC8;
+      __pyx_t_8[3] = __pyx_v_9speedball_T_int;
+      __pyx_v_args.ints = __pyx_t_8;
+
+      /* "speedball.pyx":117
+ *                 hpg,
+ *                 <char*>"HEJ",
+ *                 [<char*> "id", id_,             # <<<<<<<<<<<<<<
+ *                  <char*>"onclick",
+ *                      cb(hpg, id_, <char*>"onclick", <char*>"/todos/delete_item", args),
+ */
+      __pyx_t_9[0] = ((char *)((char *)"id"));
+      __pyx_t_9[1] = __pyx_v_id_;
+      __pyx_t_9[2] = ((char *)((char *)"onclick"));
+      __pyx_t_9[3] = __pyx_f_9speedball_cb(__pyx_v_hpg, __pyx_v_id_, ((char *)((char *)"onclick")), ((char *)((char *)"/todos/delete_item")), __pyx_v_args);
+      __pyx_t_9[4] = __pyx_v_9speedball_T;
+
+      /* "speedball.pyx":114
+ *             id_ = <char*> "my-element-id"
+ *             args.ints = [42, 92, 200, T_int]
+ *             button(             # <<<<<<<<<<<<<<
+ *                 hpg,
+ *                 <char*>"HEJ",
+ */
+      __pyx_f_9speedball_button(__pyx_v_hpg, ((char *)((char *)"HEJ")), __pyx_t_9);
     }
   }
 
-  /* "speedball.pyx":68
- *     return html
+  /* "speedball.pyx":104
+ * 
  * 
  * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i
- *     for i in range(10000):
+ *     cdef Args args
+ *     for i in range(1):
  */
 
   /* function exit code */
 }
 
-/* "speedball.pyx":80
- *                     [<char*> "id", id_, <char*>"onclick", cb(hpg, id_, <char*>"/myapp/mycallback"), T])
+/* "speedball.pyx":124
  * 
- * def mycallback():             # <<<<<<<<<<<<<<
- *     # reverse url = "/myapp/mycallback"
+ * # @hypergen_callback(...)
+ * def delete_item(request, item_id):             # <<<<<<<<<<<<<<
+ *     # reverse url = "/todos/delete_item"
  *     pass
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9speedball_1mycallback(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_9speedball_1mycallback = {"mycallback", (PyCFunction)__pyx_pw_9speedball_1mycallback, METH_NOARGS, 0};
-static PyObject *__pyx_pw_9speedball_1mycallback(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9speedball_1delete_item(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_9speedball_1delete_item = {"delete_item", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9speedball_1delete_item, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9speedball_1delete_item(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  CYTHON_UNUSED PyObject *__pyx_v_request = 0;
+  CYTHON_UNUSED PyObject *__pyx_v_item_id = 0;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("mycallback (wrapper)", 0);
-  __pyx_r = __pyx_pf_9speedball_mycallback(__pyx_self);
+  __Pyx_RefNannySetupContext("delete_item (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_request,&__pyx_n_s_item_id,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_request)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_item_id)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("delete_item", 1, 2, 2, 1); __PYX_ERR(0, 124, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "delete_item") < 0)) __PYX_ERR(0, 124, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+    }
+    __pyx_v_request = values[0];
+    __pyx_v_item_id = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("delete_item", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 124, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("speedball.delete_item", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_9speedball_delete_item(__pyx_self, __pyx_v_request, __pyx_v_item_id);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9speedball_mycallback(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_9speedball_delete_item(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_request, CYTHON_UNUSED PyObject *__pyx_v_item_id) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("mycallback", 0);
+  __Pyx_RefNannySetupContext("delete_item", 0);
 
   /* function exit code */
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
@@ -1931,12 +2160,12 @@ static PyObject *__pyx_pf_9speedball_mycallback(CYTHON_UNUSED PyObject *__pyx_se
   return __pyx_r;
 }
 
-/* "speedball.pyx":84
+/* "speedball.pyx":128
  *     pass
  * 
  * def speedball(python_items):             # <<<<<<<<<<<<<<
- *     cdef:
- *         Pool mem = Pool()
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
  */
 
 /* Python wrapper */
@@ -1979,19 +2208,41 @@ static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_se
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("speedball", 0);
 
-  /* "speedball.pyx":86
+  /* "speedball.pyx":129
+ * 
  * def speedball(python_items):
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")             # <<<<<<<<<<<<<<
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
+ *     cdef:
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "speedball.pyx":130
+ * def speedball(python_items):
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         Pool mem = Pool()
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "speedball.pyx":132
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
  *     cdef:
  *         Pool mem = Pool()             # <<<<<<<<<<<<<<
  *         Hpg hpg = Hpg(<char*>"")
  *         int i
  */
-  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_5cymem_5cymem_Pool)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_5cymem_5cymem_Pool)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_mem = ((struct __pyx_obj_5cymem_5cymem_Pool *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "speedball.pyx":87
+  /* "speedball.pyx":133
  *     cdef:
  *         Pool mem = Pool()
  *         Hpg hpg = Hpg(<char*>"")             # <<<<<<<<<<<<<<
@@ -2001,22 +2252,22 @@ static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_se
   __pyx_t_2.html = ((char *)((char *)""));
   __pyx_v_hpg = __pyx_t_2;
 
-  /* "speedball.pyx":91
+  /* "speedball.pyx":137
  *         dict item
  * 
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))             # <<<<<<<<<<<<<<
  *     for i, item in enumerate(python_items):
- *          items[i] =Item(item["is_completed"], item["description"])
+ *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
  */
-  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 91, __pyx_L1_error)
-  __pyx_t_4 = ((struct __pyx_vtabstruct_5cymem_5cymem_Pool *)__pyx_v_mem->__pyx_vtab)->alloc(__pyx_v_mem, __pyx_t_3, (sizeof(struct __pyx_t_9speedball_Item))); if (unlikely(__pyx_t_4 == ((void *)NULL))) __PYX_ERR(0, 91, __pyx_L1_error)
+  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_4 = ((struct __pyx_vtabstruct_5cymem_5cymem_Pool *)__pyx_v_mem->__pyx_vtab)->alloc(__pyx_v_mem, __pyx_t_3, (sizeof(struct __pyx_t_9speedball_Item))); if (unlikely(__pyx_t_4 == ((void *)NULL))) __PYX_ERR(0, 137, __pyx_L1_error)
   __pyx_v_items = ((struct __pyx_t_9speedball_Item *)__pyx_t_4);
 
-  /* "speedball.pyx":92
+  /* "speedball.pyx":138
  * 
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
  *     for i, item in enumerate(python_items):             # <<<<<<<<<<<<<<
- *          items[i] =Item(item["is_completed"], item["description"])
+ *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
  * 
  */
   __pyx_t_5 = 0;
@@ -2024,26 +2275,26 @@ static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_se
     __pyx_t_1 = __pyx_v_python_items; __Pyx_INCREF(__pyx_t_1); __pyx_t_3 = 0;
     __pyx_t_6 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_python_items); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
+    __pyx_t_3 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_python_items); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 138, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 92, __pyx_L1_error)
+    __pyx_t_6 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 138, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_6)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_7 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 92, __pyx_L1_error)
+        __pyx_t_7 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 138, __pyx_L1_error)
         #else
-        __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 92, __pyx_L1_error)
+        __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 138, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 92, __pyx_L1_error)
+        __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 138, __pyx_L1_error)
         #else
-        __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 92, __pyx_L1_error)
+        __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 138, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
         #endif
       }
@@ -2053,63 +2304,72 @@ static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_se
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 92, __pyx_L1_error)
+          else __PYX_ERR(0, 138, __pyx_L1_error)
         }
         break;
       }
       __Pyx_GOTREF(__pyx_t_7);
     }
-    if (!(likely(PyDict_CheckExact(__pyx_t_7))||((__pyx_t_7) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_7)->tp_name), 0))) __PYX_ERR(0, 92, __pyx_L1_error)
+    if (!(likely(PyDict_CheckExact(__pyx_t_7))||((__pyx_t_7) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_7)->tp_name), 0))) __PYX_ERR(0, 138, __pyx_L1_error)
     __Pyx_XDECREF_SET(__pyx_v_item, ((PyObject*)__pyx_t_7));
     __pyx_t_7 = 0;
     __pyx_v_i = __pyx_t_5;
     __pyx_t_5 = (__pyx_t_5 + 1);
 
-    /* "speedball.pyx":93
+    /* "speedball.pyx":139
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
  *     for i, item in enumerate(python_items):
- *          items[i] =Item(item["is_completed"], item["description"])             # <<<<<<<<<<<<<<
+ *          items[i] =Item(item["is_completed"], item["description"], item["pk"])             # <<<<<<<<<<<<<<
  * 
  *     a = time()
  */
     if (unlikely(__pyx_v_item == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 93, __pyx_L1_error)
+      __PYX_ERR(0, 139, __pyx_L1_error)
     }
-    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_is_completed); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 93, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_is_completed); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 93, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_8.is_completed = __pyx_t_9;
     if (unlikely(__pyx_v_item == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 93, __pyx_L1_error)
+      __PYX_ERR(0, 139, __pyx_L1_error)
     }
-    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_description); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 93, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_description); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_10 = __pyx_convert_string_from_py_std__in_string(__pyx_t_7); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 93, __pyx_L1_error)
+    __pyx_t_10 = __pyx_convert_string_from_py_std__in_string(__pyx_t_7); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_8.description = __pyx_t_10;
+    if (unlikely(__pyx_v_item == Py_None)) {
+      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+      __PYX_ERR(0, 139, __pyx_L1_error)
+    }
+    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_pk); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 139, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 139, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __pyx_t_8.pk = __pyx_t_9;
     (__pyx_v_items[__pyx_v_i]) = __pyx_t_8;
 
-    /* "speedball.pyx":92
+    /* "speedball.pyx":138
  * 
  *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
  *     for i, item in enumerate(python_items):             # <<<<<<<<<<<<<<
- *          items[i] =Item(item["is_completed"], item["description"])
+ *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
  * 
  */
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "speedball.pyx":95
- *          items[i] =Item(item["is_completed"], item["description"])
+  /* "speedball.pyx":141
+ *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
  * 
  *     a = time()             # <<<<<<<<<<<<<<
  *     prontotemplate(hpg, items, len(python_items))
  *     b = time()
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_time); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 95, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_time); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 141, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __pyx_t_11 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -2123,30 +2383,30 @@ static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_se
   }
   __pyx_t_1 = (__pyx_t_11) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_11) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 95, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 141, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_v_a = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "speedball.pyx":96
+  /* "speedball.pyx":142
  * 
  *     a = time()
  *     prontotemplate(hpg, items, len(python_items))             # <<<<<<<<<<<<<<
  *     b = time()
  *     print((b - a) * 1000)
  */
-  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 96, __pyx_L1_error)
+  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 142, __pyx_L1_error)
   __pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_3);
 
-  /* "speedball.pyx":97
+  /* "speedball.pyx":143
  *     a = time()
  *     prontotemplate(hpg, items, len(python_items))
  *     b = time()             # <<<<<<<<<<<<<<
  *     print((b - a) * 1000)
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_time); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 97, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_time); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 143, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __pyx_t_11 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -2160,47 +2420,47 @@ static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_se
   }
   __pyx_t_1 = (__pyx_t_11) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_11) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_v_b = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "speedball.pyx":98
+  /* "speedball.pyx":144
  *     prontotemplate(hpg, items, len(python_items))
  *     b = time()
  *     print((b - a) * 1000)             # <<<<<<<<<<<<<<
  * 
  *     return hpg
  */
-  __pyx_t_1 = PyNumber_Subtract(__pyx_v_b, __pyx_v_a); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Subtract(__pyx_v_b, __pyx_v_a); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 144, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = PyNumber_Multiply(__pyx_t_1, __pyx_int_1000); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __pyx_t_7 = PyNumber_Multiply(__pyx_t_1, __pyx_int_1000); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 144, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 144, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "speedball.pyx":100
+  /* "speedball.pyx":146
  *     print((b - a) * 1000)
  * 
  *     return hpg             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert__to_py_struct____pyx_t_9speedball_Hpg(__pyx_v_hpg); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 100, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert__to_py_struct____pyx_t_9speedball_Hpg(__pyx_v_hpg); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 146, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "speedball.pyx":84
+  /* "speedball.pyx":128
  *     pass
  * 
  * def speedball(python_items):             # <<<<<<<<<<<<<<
- *     cdef:
- *         Pool mem = Pool()
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
  */
 
   /* function exit code */
@@ -2580,9 +2840,12 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_n_s_AAAAAAAAAAAAAAAAAAAAAA, __pyx_k_AAAAAAAAAAAAAAAAAAAAAA, sizeof(__pyx_k_AAAAAAAAAAAAAAAAAAAAAA), 0, 0, 1, 1},
+  {&__pyx_n_s_BBBBBBBBBBBBBBBBBBBBBBBBBBB, __pyx_k_BBBBBBBBBBBBBBBBBBBBBBBBBBB, sizeof(__pyx_k_BBBBBBBBBBBBBBBBBBBBBBBBBBB), 0, 0, 1, 1},
   {&__pyx_n_s_a, __pyx_k_a, sizeof(__pyx_k_a), 0, 0, 1, 1},
   {&__pyx_n_s_b, __pyx_k_b, sizeof(__pyx_k_b), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
+  {&__pyx_n_s_delete_item, __pyx_k_delete_item, sizeof(__pyx_k_delete_item), 0, 0, 1, 1},
   {&__pyx_n_s_description, __pyx_k_description, sizeof(__pyx_k_description), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
   {&__pyx_n_s_hpg, __pyx_k_hpg, sizeof(__pyx_k_hpg), 0, 0, 1, 1},
@@ -2591,15 +2854,17 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_is_completed, __pyx_k_is_completed, sizeof(__pyx_k_is_completed), 0, 0, 1, 1},
   {&__pyx_n_s_item, __pyx_k_item, sizeof(__pyx_k_item), 0, 0, 1, 1},
+  {&__pyx_n_s_item_id, __pyx_k_item_id, sizeof(__pyx_k_item_id), 0, 0, 1, 1},
   {&__pyx_n_s_items, __pyx_k_items, sizeof(__pyx_k_items), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_mem, __pyx_k_mem, sizeof(__pyx_k_mem), 0, 0, 1, 1},
-  {&__pyx_n_s_mycallback, __pyx_k_mycallback, sizeof(__pyx_k_mycallback), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
+  {&__pyx_n_s_pk, __pyx_k_pk, sizeof(__pyx_k_pk), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_python_items, __pyx_k_python_items, sizeof(__pyx_k_python_items), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
+  {&__pyx_n_s_request, __pyx_k_request, sizeof(__pyx_k_request), 0, 0, 1, 1},
   {&__pyx_n_s_speedball, __pyx_k_speedball, sizeof(__pyx_k_speedball), 0, 0, 1, 1},
   {&__pyx_kp_s_speedball_pyx, __pyx_k_speedball_pyx, sizeof(__pyx_k_speedball_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
@@ -2607,9 +2872,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 31, __pyx_L1_error)
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 92, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 98, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 44, __pyx_L1_error)
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 138, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2619,26 +2884,51 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "speedball.pyx":80
- *                     [<char*> "id", id_, <char*>"onclick", cb(hpg, id_, <char*>"/myapp/mycallback"), T])
+  /* "speedball.pyx":129
  * 
- * def mycallback():             # <<<<<<<<<<<<<<
- *     # reverse url = "/myapp/mycallback"
- *     pass
+ * def speedball(python_items):
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")             # <<<<<<<<<<<<<<
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
+ *     cdef:
  */
-  __pyx_codeobj_ = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_mycallback, 80, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj_)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_n_s_AAAAAAAAAAAAAAAAAAAAAA); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple_);
+  __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "speedball.pyx":84
- *     pass
- * 
- * def speedball(python_items):             # <<<<<<<<<<<<<<
+  /* "speedball.pyx":130
+ * def speedball(python_items):
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")             # <<<<<<<<<<<<<<
  *     cdef:
  *         Pool mem = Pool()
  */
-  __pyx_tuple__2 = PyTuple_Pack(8, __pyx_n_s_python_items, __pyx_n_s_mem, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_item, __pyx_n_s_items, __pyx_n_s_a, __pyx_n_s_b); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 84, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_n_s_BBBBBBBBBBBBBBBBBBBBBBBBBBB); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 130, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
-  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(1, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__2, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_speedball, 84, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 84, __pyx_L1_error)
+
+  /* "speedball.pyx":124
+ * 
+ * # @hypergen_callback(...)
+ * def delete_item(request, item_id):             # <<<<<<<<<<<<<<
+ *     # reverse url = "/todos/delete_item"
+ *     pass
+ */
+  __pyx_tuple__3 = PyTuple_Pack(2, __pyx_n_s_request, __pyx_n_s_item_id); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 124, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__3);
+  __Pyx_GIVEREF(__pyx_tuple__3);
+  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__3, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_delete_item, 124, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(0, 124, __pyx_L1_error)
+
+  /* "speedball.pyx":128
+ *     pass
+ * 
+ * def speedball(python_items):             # <<<<<<<<<<<<<<
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
+ */
+  __pyx_tuple__5 = PyTuple_Pack(8, __pyx_n_s_python_items, __pyx_n_s_mem, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_item, __pyx_n_s_items, __pyx_n_s_a, __pyx_n_s_b); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(1, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__5, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_speedball, 128, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2964,37 +3254,46 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "speedball.pyx":15
+  /* "speedball.pyx":26
  * 
  * cdef:
  *     string T = <char*>"__TERM__"             # <<<<<<<<<<<<<<
+ *     int T_int = -1 # TODO: Longer int!
  * 
- * cdef struct Item:
  */
   __pyx_v_9speedball_T = ((char *)((char *)"__TERM__"));
 
-  /* "speedball.pyx":80
- *                     [<char*> "id", id_, <char*>"onclick", cb(hpg, id_, <char*>"/myapp/mycallback"), T])
+  /* "speedball.pyx":27
+ * cdef:
+ *     string T = <char*>"__TERM__"
+ *     int T_int = -1 # TODO: Longer int!             # <<<<<<<<<<<<<<
  * 
- * def mycallback():             # <<<<<<<<<<<<<<
- *     # reverse url = "/myapp/mycallback"
+ * cdef struct Item:
+ */
+  __pyx_v_9speedball_T_int = -1;
+
+  /* "speedball.pyx":124
+ * 
+ * # @hypergen_callback(...)
+ * def delete_item(request, item_id):             # <<<<<<<<<<<<<<
+ *     # reverse url = "/todos/delete_item"
  *     pass
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9speedball_1mycallback, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9speedball_1delete_item, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 124, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_mycallback, __pyx_t_2) < 0) __PYX_ERR(0, 80, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_delete_item, __pyx_t_2) < 0) __PYX_ERR(0, 124, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "speedball.pyx":84
+  /* "speedball.pyx":128
  *     pass
  * 
  * def speedball(python_items):             # <<<<<<<<<<<<<<
- *     cdef:
- *         Pool mem = Pool()
+ *     print ("AAAAAAAAAAAAAAAAAAAAAA")
+ *     print ("BBBBBBBBBBBBBBBBBBBBBBBBBBB")
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9speedball_3speedball, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9speedball_3speedball, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_speedball, __pyx_t_2) < 0) __PYX_ERR(0, 84, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_speedball, __pyx_t_2) < 0) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "speedball.pyx":1
@@ -3085,6 +3384,168 @@ static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
     }
     return result;
 }
+
+/* RaiseArgTupleInvalid */
+static void __Pyx_RaiseArgtupleInvalid(
+    const char* func_name,
+    int exact,
+    Py_ssize_t num_min,
+    Py_ssize_t num_max,
+    Py_ssize_t num_found)
+{
+    Py_ssize_t num_expected;
+    const char *more_or_less;
+    if (num_found < num_min) {
+        num_expected = num_min;
+        more_or_less = "at least";
+    } else {
+        num_expected = num_max;
+        more_or_less = "at most";
+    }
+    if (exact) {
+        more_or_less = "exactly";
+    }
+    PyErr_Format(PyExc_TypeError,
+                 "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
+                 func_name, more_or_less, num_expected,
+                 (num_expected == 1) ? "" : "s", num_found);
+}
+
+/* RaiseDoubleKeywords */
+static void __Pyx_RaiseDoubleKeywordsError(
+    const char* func_name,
+    PyObject* kw_name)
+{
+    PyErr_Format(PyExc_TypeError,
+        #if PY_MAJOR_VERSION >= 3
+        "%s() got multiple values for keyword argument '%U'", func_name, kw_name);
+        #else
+        "%s() got multiple values for keyword argument '%s'", func_name,
+        PyString_AsString(kw_name));
+        #endif
+}
+
+/* ParseKeywords */
+static int __Pyx_ParseOptionalKeywords(
+    PyObject *kwds,
+    PyObject **argnames[],
+    PyObject *kwds2,
+    PyObject *values[],
+    Py_ssize_t num_pos_args,
+    const char* function_name)
+{
+    PyObject *key = 0, *value = 0;
+    Py_ssize_t pos = 0;
+    PyObject*** name;
+    PyObject*** first_kw_arg = argnames + num_pos_args;
+    while (PyDict_Next(kwds, &pos, &key, &value)) {
+        name = first_kw_arg;
+        while (*name && (**name != key)) name++;
+        if (*name) {
+            values[name-argnames] = value;
+            continue;
+        }
+        name = first_kw_arg;
+        #if PY_MAJOR_VERSION < 3
+        if (likely(PyString_Check(key))) {
+            while (*name) {
+                if ((CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**name) == PyString_GET_SIZE(key))
+                        && _PyString_Eq(**name, key)) {
+                    values[name-argnames] = value;
+                    break;
+                }
+                name++;
+            }
+            if (*name) continue;
+            else {
+                PyObject*** argname = argnames;
+                while (argname != first_kw_arg) {
+                    if ((**argname == key) || (
+                            (CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**argname) == PyString_GET_SIZE(key))
+                             && _PyString_Eq(**argname, key))) {
+                        goto arg_passed_twice;
+                    }
+                    argname++;
+                }
+            }
+        } else
+        #endif
+        if (likely(PyUnicode_Check(key))) {
+            while (*name) {
+                int cmp = (**name == key) ? 0 :
+                #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
+                    (__Pyx_PyUnicode_GET_LENGTH(**name) != __Pyx_PyUnicode_GET_LENGTH(key)) ? 1 :
+                #endif
+                    PyUnicode_Compare(**name, key);
+                if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
+                if (cmp == 0) {
+                    values[name-argnames] = value;
+                    break;
+                }
+                name++;
+            }
+            if (*name) continue;
+            else {
+                PyObject*** argname = argnames;
+                while (argname != first_kw_arg) {
+                    int cmp = (**argname == key) ? 0 :
+                    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
+                        (__Pyx_PyUnicode_GET_LENGTH(**argname) != __Pyx_PyUnicode_GET_LENGTH(key)) ? 1 :
+                    #endif
+                        PyUnicode_Compare(**argname, key);
+                    if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
+                    if (cmp == 0) goto arg_passed_twice;
+                    argname++;
+                }
+            }
+        } else
+            goto invalid_keyword_type;
+        if (kwds2) {
+            if (unlikely(PyDict_SetItem(kwds2, key, value))) goto bad;
+        } else {
+            goto invalid_keyword;
+        }
+    }
+    return 0;
+arg_passed_twice:
+    __Pyx_RaiseDoubleKeywordsError(function_name, key);
+    goto bad;
+invalid_keyword_type:
+    PyErr_Format(PyExc_TypeError,
+        "%.200s() keywords must be strings", function_name);
+    goto bad;
+invalid_keyword:
+    PyErr_Format(PyExc_TypeError,
+    #if PY_MAJOR_VERSION < 3
+        "%.200s() got an unexpected keyword argument '%.200s'",
+        function_name, PyString_AsString(key));
+    #else
+        "%s() got an unexpected keyword argument '%U'",
+        function_name, key);
+    #endif
+bad:
+    return -1;
+}
+
+/* PyObjectCall */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
 
 /* PyFunctionFastCall */
 #if CYTHON_FAST_PYCALL
@@ -3203,26 +3664,6 @@ done:
     return result;
 }
 #endif
-#endif
-
-/* PyObjectCall */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
 #endif
 
 /* PyObjectCallMethO */
@@ -4037,44 +4478,6 @@ raise_neg_overflow:
     return (int) -1;
 }
 
-/* CIntToPy */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-    const long neg_one = (long) -1, const_zero = (long) 0;
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic pop
-#endif
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(long) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-#endif
-        }
-    } else {
-        if (sizeof(long) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-#endif
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(long),
-                                     little, !is_unsigned);
-    }
-}
-
 /* CIntFromPy */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {
 #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
@@ -4269,6 +4672,82 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to long");
     return (long) -1;
+}
+
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const int neg_one = (int) -1, const_zero = (int) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(int) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(int) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(int),
+                                     little, !is_unsigned);
+    }
+}
+
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const long neg_one = (long) -1, const_zero = (long) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(long),
+                                     little, !is_unsigned);
+    }
 }
 
 /* FastTypeChecks */
