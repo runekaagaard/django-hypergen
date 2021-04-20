@@ -5,12 +5,12 @@
     "distutils": {
         "depends": [],
         "language": "c++",
-        "name": "speedball",
+        "name": "hypergen.ultragen",
         "sources": [
-            "speedball.pyx"
+            "hypergen/ultragen.pyx"
         ]
     },
-    "module_name": "speedball"
+    "module_name": "hypergen.ultragen"
 }
 END: Cython Metadata */
 
@@ -632,15 +632,14 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__speedball
-#define __PYX_HAVE_API__speedball
+#define __PYX_HAVE__hypergen__ultragen
+#define __PYX_HAVE_API__hypergen__ultragen
 /* Early includes */
+#include <string.h>
 #include "ios"
 #include "new"
 #include "stdexcept"
 #include "typeinfo"
-#include <vector>
-#include <string.h>
 #include <string>
 #include <utility>
 
@@ -655,7 +654,6 @@ static CYTHON_INLINE float __PYX_NAN() {
     #endif
     
 #include <unordered_map>
-#include <stdlib.h>
 #include <stdio.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -865,9 +863,9 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "speedball.pyx",
+  "hypergen/ultragen.pyx",
   "stringsource",
-  "cymem.pxd",
+  "venv/lib/python3.9/site-packages/cymem/cymem.pxd",
 };
 
 /*--- Type declarations ---*/
@@ -890,53 +888,39 @@ typedef void *(*__pyx_t_5cymem_5cymem_malloc_t)(size_t);
  * cdef class PyMalloc:
  */
 typedef void (*__pyx_t_5cymem_5cymem_free_t)(void *);
-struct __pyx_t_9speedball_Item;
-struct __pyx_t_9speedball_Hpg;
-struct __pyx_t_9speedball_CbOpts;
-struct __pyx_t_9speedball_Args;
+struct __pyx_t_8hypergen_8ultragen_Hpg;
+struct __pyx_t_8hypergen_8ultragen_CbOpts;
+struct __pyx_t_8hypergen_8ultragen_ArgElOpts;
 
-/* "speedball.pyx":14
- * from time import time
+/* "hypergen/ultragen.pyx":10
+ * from cymem.cymem cimport Pool
  * 
- * ctypedef char* s             # <<<<<<<<<<<<<<
+ * ctypedef char* s # Shortcut for char*             # <<<<<<<<<<<<<<
  * 
  * cdef:
  */
-typedef char *__pyx_t_9speedball_s;
+typedef char *__pyx_t_8hypergen_8ultragen_s;
 
-/* "speedball.pyx":20
- *     int T_int = -1 # TODO: Longer int!
+/* "hypergen/ultragen.pxd":3
+ * from libcpp.string cimport string
  * 
- * cdef struct Item:             # <<<<<<<<<<<<<<
- *     int is_completed
- *     string description
+ * cdef struct Hpg             # <<<<<<<<<<<<<<
+ * cdef Hpg make_hpg()
+ * cdef struct CbOpts
  */
-struct __pyx_t_9speedball_Item {
-  int is_completed;
-  std::string description;
-  int pk;
-};
-
-/* "speedball.pyx":25
- *     int pk
- * 
- * cdef struct Hpg:             # <<<<<<<<<<<<<<
- *     string html
- *     unordered_map [string, string] event_handler_callbacks
- */
-struct __pyx_t_9speedball_Hpg {
+struct __pyx_t_8hypergen_8ultragen_Hpg {
   std::string html;
   std::unordered_map<std::string,std::string>  event_handler_callbacks;
 };
 
-/* "speedball.pyx":30
- * 
- * 
- * cdef struct CbOpts:             # <<<<<<<<<<<<<<
- *     int blocks
- *     string confirm_
+/* "hypergen/ultragen.pxd":5
+ * cdef struct Hpg
+ * cdef Hpg make_hpg()
+ * cdef struct CbOpts             # <<<<<<<<<<<<<<
+ * cdef CbOpts make_cb_opts(string id_) nogil
+ * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil
  */
-struct __pyx_t_9speedball_CbOpts {
+struct __pyx_t_8hypergen_8ultragen_CbOpts {
   int blocks;
   std::string confirm_;
   int debounce;
@@ -945,17 +929,16 @@ struct __pyx_t_9speedball_CbOpts {
   int upload_files;
 };
 
-/* "speedball.pyx":133
- * 
- * 
- * cdef struct Args:             # <<<<<<<<<<<<<<
- *     int* ints
- *     float* floats
+/* "hypergen/ultragen.pxd":11
+ * cdef string arg_i(int v) nogil
+ * cdef string arg_s(string v) nogil
+ * cdef struct ArgElOpts             # <<<<<<<<<<<<<<
+ * cdef string arg_el(string id_, ArgElOpts opts) nogil
+ * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil
  */
-struct __pyx_t_9speedball_Args {
-  int *ints;
-  float *floats;
-  std::string *strings;
+struct __pyx_t_8hypergen_8ultragen_ArgElOpts {
+  std::string value_func;
+  std::string coerce_func;
 };
 
 /* "cymem/cymem.pxd":4
@@ -1137,24 +1120,49 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject
 /* GetBuiltinName.proto */
 static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 
-/* RaiseArgTupleInvalid.proto */
-static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
-    Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
-
-/* RaiseDoubleKeywords.proto */
-static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
-
-/* ParseKeywords.proto */
-static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
-    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
-    const char* function_name);
-
-/* PyObjectCall.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+/* PyThreadStateGet.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
+#define __Pyx_PyThreadState_assign  __pyx_tstate = __Pyx_PyThreadState_Current;
+#define __Pyx_PyErr_Occurred()  __pyx_tstate->curexc_type
 #else
-#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+#define __Pyx_PyThreadState_declare
+#define __Pyx_PyThreadState_assign
+#define __Pyx_PyErr_Occurred()  PyErr_Occurred()
 #endif
+
+/* PyErrFetchRestore.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyErr_Clear() __Pyx_ErrRestore(NULL, NULL, NULL)
+#define __Pyx_ErrRestoreWithState(type, value, tb)  __Pyx_ErrRestoreInState(PyThreadState_GET(), type, value, tb)
+#define __Pyx_ErrFetchWithState(type, value, tb)    __Pyx_ErrFetchInState(PyThreadState_GET(), type, value, tb)
+#define __Pyx_ErrRestore(type, value, tb)  __Pyx_ErrRestoreInState(__pyx_tstate, type, value, tb)
+#define __Pyx_ErrFetch(type, value, tb)    __Pyx_ErrFetchInState(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#if CYTHON_COMPILING_IN_CPYTHON
+#define __Pyx_PyErr_SetNone(exc) (Py_INCREF(exc), __Pyx_ErrRestore((exc), NULL, NULL))
+#else
+#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
+#endif
+#else
+#define __Pyx_PyErr_Clear() PyErr_Clear()
+#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
+#define __Pyx_ErrRestoreWithState(type, value, tb)  PyErr_Restore(type, value, tb)
+#define __Pyx_ErrFetchWithState(type, value, tb)  PyErr_Fetch(type, value, tb)
+#define __Pyx_ErrRestoreInState(tstate, type, value, tb)  PyErr_Restore(type, value, tb)
+#define __Pyx_ErrFetchInState(tstate, type, value, tb)  PyErr_Fetch(type, value, tb)
+#define __Pyx_ErrRestore(type, value, tb)  PyErr_Restore(type, value, tb)
+#define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
+#endif
+
+/* WriteUnraisableException.proto */
+static void __Pyx_WriteUnraisable(const char *name, int clineno,
+                                  int lineno, const char *filename,
+                                  int full_traceback, int nogil);
+
+/* IterFinish.proto */
+static CYTHON_INLINE int __Pyx_IterFinish(void);
 
 /* PyFunctionFastCall.proto */
 #if CYTHON_FAST_PYCALL
@@ -1179,6 +1187,13 @@ static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, 
     (assert(__pyx_pyframe_localsplus_offset), (PyObject **)(((char *)(frame)) + __pyx_pyframe_localsplus_offset))
 #endif
 
+/* PyObjectCall.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
+#else
+#define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
+#endif
+
 /* PyObjectCallMethO.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
@@ -1191,64 +1206,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
 #define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
 #endif
 
-/* DictGetItem.proto */
-#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
-static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
-#define __Pyx_PyObject_Dict_GetItem(obj, name)\
-    (likely(PyDict_CheckExact(obj)) ?\
-     __Pyx_PyDict_GetItem(obj, name) : PyObject_GetItem(obj, name))
-#else
-#define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
-#define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
-#endif
-
-/* PyDictVersioning.proto */
-#if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
-#define __PYX_DICT_VERSION_INIT  ((PY_UINT64_T) -1)
-#define __PYX_GET_DICT_VERSION(dict)  (((PyDictObject*)(dict))->ma_version_tag)
-#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)\
-    (version_var) = __PYX_GET_DICT_VERSION(dict);\
-    (cache_var) = (value);
-#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP) {\
-    static PY_UINT64_T __pyx_dict_version = 0;\
-    static PyObject *__pyx_dict_cached_value = NULL;\
-    if (likely(__PYX_GET_DICT_VERSION(DICT) == __pyx_dict_version)) {\
-        (VAR) = __pyx_dict_cached_value;\
-    } else {\
-        (VAR) = __pyx_dict_cached_value = (LOOKUP);\
-        __pyx_dict_version = __PYX_GET_DICT_VERSION(DICT);\
-    }\
-}
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj);
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj);
-static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version);
-#else
-#define __PYX_GET_DICT_VERSION(dict)  (0)
-#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)
-#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP)  (VAR) = (LOOKUP);
-#endif
-
-/* GetModuleGlobalName.proto */
-#if CYTHON_USE_DICT_VERSIONS
-#define __Pyx_GetModuleGlobalName(var, name)  {\
-    static PY_UINT64_T __pyx_dict_version = 0;\
-    static PyObject *__pyx_dict_cached_value = NULL;\
-    (var) = (likely(__pyx_dict_version == __PYX_GET_DICT_VERSION(__pyx_d))) ?\
-        (likely(__pyx_dict_cached_value) ? __Pyx_NewRef(__pyx_dict_cached_value) : __Pyx_GetBuiltinName(name)) :\
-        __Pyx__GetModuleGlobalName(name, &__pyx_dict_version, &__pyx_dict_cached_value);\
-}
-#define __Pyx_GetModuleGlobalNameUncached(var, name)  {\
-    PY_UINT64_T __pyx_dict_version;\
-    PyObject *__pyx_dict_cached_value;\
-    (var) = __Pyx__GetModuleGlobalName(name, &__pyx_dict_version, &__pyx_dict_cached_value);\
-}
-static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_version, PyObject **dict_cached_value);
-#else
-#define __Pyx_GetModuleGlobalName(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
-#define __Pyx_GetModuleGlobalNameUncached(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
-static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name);
-#endif
-
 /* PyCFunctionFastCall.proto */
 #if CYTHON_FAST_PYCCALL
 static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
@@ -1258,9 +1215,6 @@ static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObje
 
 /* PyObjectCallOneArg.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
-
-/* IterFinish.proto */
-static CYTHON_INLINE int __Pyx_IterFinish(void);
 
 /* PyObjectGetMethod.proto */
 static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **method);
@@ -1301,8 +1255,51 @@ static CYTHON_INLINE PyObject* __Pyx_dict_iterator(PyObject* dict, int is_dict, 
 static CYTHON_INLINE int __Pyx_dict_iter_next(PyObject* dict_or_iter, Py_ssize_t orig_length, Py_ssize_t* ppos,
                                               PyObject** pkey, PyObject** pvalue, PyObject** pitem, int is_dict);
 
-/* PyObjectCall2Args.proto */
-static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
+/* DictGetItem.proto */
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
+#define __Pyx_PyObject_Dict_GetItem(obj, name)\
+    (likely(PyDict_CheckExact(obj)) ?\
+     __Pyx_PyDict_GetItem(obj, name) : PyObject_GetItem(obj, name))
+#else
+#define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
+#define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
+#endif
+
+/* GetTopmostException.proto */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
+#endif
+
+/* SaveResetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+#else
+#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
+#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
+#endif
+
+/* PyErrExceptionMatches.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
+static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err);
+#else
+#define __Pyx_PyErr_ExceptionMatches(err)  PyErr_ExceptionMatches(err)
+#endif
+
+/* GetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
+#endif
+
+/* RaiseException.proto */
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
 /* TypeImport.proto */
 #ifndef __PYX_HAVE_RT_ImportType_proto
@@ -1318,46 +1315,30 @@ static PyTypeObject *__Pyx_ImportType(PyObject* module, const char *module_name,
 /* GetVTable.proto */
 static void* __Pyx_GetVtable(PyObject *dict);
 
-/* Import.proto */
-static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
-
-/* ImportFrom.proto */
-static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name);
-
-/* PyThreadStateGet.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
-#define __Pyx_PyThreadState_assign  __pyx_tstate = __Pyx_PyThreadState_Current;
-#define __Pyx_PyErr_Occurred()  __pyx_tstate->curexc_type
+/* PyDictVersioning.proto */
+#if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
+#define __PYX_DICT_VERSION_INIT  ((PY_UINT64_T) -1)
+#define __PYX_GET_DICT_VERSION(dict)  (((PyDictObject*)(dict))->ma_version_tag)
+#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)\
+    (version_var) = __PYX_GET_DICT_VERSION(dict);\
+    (cache_var) = (value);
+#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP) {\
+    static PY_UINT64_T __pyx_dict_version = 0;\
+    static PyObject *__pyx_dict_cached_value = NULL;\
+    if (likely(__PYX_GET_DICT_VERSION(DICT) == __pyx_dict_version)) {\
+        (VAR) = __pyx_dict_cached_value;\
+    } else {\
+        (VAR) = __pyx_dict_cached_value = (LOOKUP);\
+        __pyx_dict_version = __PYX_GET_DICT_VERSION(DICT);\
+    }\
+}
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj);
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj);
+static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version);
 #else
-#define __Pyx_PyThreadState_declare
-#define __Pyx_PyThreadState_assign
-#define __Pyx_PyErr_Occurred()  PyErr_Occurred()
-#endif
-
-/* PyErrFetchRestore.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_PyErr_Clear() __Pyx_ErrRestore(NULL, NULL, NULL)
-#define __Pyx_ErrRestoreWithState(type, value, tb)  __Pyx_ErrRestoreInState(PyThreadState_GET(), type, value, tb)
-#define __Pyx_ErrFetchWithState(type, value, tb)    __Pyx_ErrFetchInState(PyThreadState_GET(), type, value, tb)
-#define __Pyx_ErrRestore(type, value, tb)  __Pyx_ErrRestoreInState(__pyx_tstate, type, value, tb)
-#define __Pyx_ErrFetch(type, value, tb)    __Pyx_ErrFetchInState(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
-static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#if CYTHON_COMPILING_IN_CPYTHON
-#define __Pyx_PyErr_SetNone(exc) (Py_INCREF(exc), __Pyx_ErrRestore((exc), NULL, NULL))
-#else
-#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
-#endif
-#else
-#define __Pyx_PyErr_Clear() PyErr_Clear()
-#define __Pyx_PyErr_SetNone(exc) PyErr_SetNone(exc)
-#define __Pyx_ErrRestoreWithState(type, value, tb)  PyErr_Restore(type, value, tb)
-#define __Pyx_ErrFetchWithState(type, value, tb)  PyErr_Fetch(type, value, tb)
-#define __Pyx_ErrRestoreInState(tstate, type, value, tb)  PyErr_Restore(type, value, tb)
-#define __Pyx_ErrFetchInState(tstate, type, value, tb)  PyErr_Fetch(type, value, tb)
-#define __Pyx_ErrRestore(type, value, tb)  PyErr_Restore(type, value, tb)
-#define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
+#define __PYX_GET_DICT_VERSION(dict)  (0)
+#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)
+#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP)  (VAR) = (LOOKUP);
 #endif
 
 /* CLineInTraceback.proto */
@@ -1391,17 +1372,14 @@ static void __Pyx_AddTraceback(const char *funcname, int c_line,
 #define __Pyx_HAS_GCC_DIAGNOSTIC
 #endif
 
-/* None.proto */
-static CYTHON_INLINE long __Pyx_pow_long(long, long);
-
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
-/* CIntFromPy.proto */
-static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
-
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
 
 /* FastTypeChecks.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
@@ -1419,11 +1397,12 @@ static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObj
 /* CheckBinaryVersion.proto */
 static int __Pyx_check_binary_version(void);
 
+/* FunctionExport.proto */
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig);
+
 /* InitStrings.proto */
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
-
-/* Module declarations from 'libcpp.vector' */
 
 /* Module declarations from 'libc.string' */
 
@@ -1433,8 +1412,6 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 /* Module declarations from 'libcpp.unordered_map' */
 
-/* Module declarations from 'libc.stdlib' */
-
 /* Module declarations from 'libc.stdio' */
 
 /* Module declarations from 'cymem.cymem' */
@@ -1443,20 +1420,10 @@ static PyTypeObject *__pyx_ptype_5cymem_5cymem_PyFree = 0;
 static PyTypeObject *__pyx_ptype_5cymem_5cymem_Pool = 0;
 static PyTypeObject *__pyx_ptype_5cymem_5cymem_Address = 0;
 
-/* Module declarations from 'speedball' */
-static std::string __pyx_v_9speedball_T;
-static int __pyx_v_9speedball_T_int;
-static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::string); /*proto*/
-static void __pyx_f_9speedball_element(std::string, struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
-static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
-static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
-static CYTHON_INLINE void __pyx_f_9speedball_button(struct __pyx_t_9speedball_Hpg &, std::string, std::string *); /*proto*/
-static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &, std::string, std::string, std::string, std::string *, struct __pyx_t_9speedball_CbOpts); /*proto*/
-static std::string __pyx_f_9speedball_i2s(int); /*proto*/
-static std::string __pyx_f_9speedball_arg_i(int); /*proto*/
-static std::string __pyx_f_9speedball_arg_s(std::string); /*proto*/
-static std::string __pyx_f_9speedball_arg_el(std::string); /*proto*/
-static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &, struct __pyx_t_9speedball_Item *, int); /*proto*/
+/* Module declarations from 'hypergen.ultragen' */
+static std::string __pyx_v_8hypergen_8ultragen_T;
+static std::string __pyx_f_8hypergen_8ultragen_i2s(int); /*proto*/
+static void __pyx_f_8hypergen_8ultragen_element(std::string, struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyStr_string_to_py_std__in_string(std::string const &); /*proto*/
@@ -1464,99 +1431,122 @@ static CYTHON_INLINE PyObject *__pyx_convert_PyBytes_string_to_py_std__in_string
 static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_std__in_string(std::string const &); /*proto*/
 static PyObject *__pyx_convert_unordered_map_to_py_std_3a__3a_string____std_3a__3a_string(std::unordered_map<std::string,std::string>  const &); /*proto*/
 static std::string __pyx_convert_string_from_py_std__in_string(PyObject *); /*proto*/
-#define __Pyx_MODULE_NAME "speedball"
-extern int __pyx_module_is_main_speedball;
-int __pyx_module_is_main_speedball = 0;
+static std::unordered_map<std::string,std::string>  __pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string(PyObject *); /*proto*/
+static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(PyObject *); /*proto*/
+#define __Pyx_MODULE_NAME "hypergen.ultragen"
+extern int __pyx_module_is_main_hypergen__ultragen;
+int __pyx_module_is_main_hypergen__ultragen = 0;
 
-/* Implementation of 'speedball' */
+/* Implementation of 'hypergen.ultragen' */
 static PyObject *__pyx_builtin_range;
-static PyObject *__pyx_builtin_print;
-static PyObject *__pyx_builtin_enumerate;
-static const char __pyx_k_[] = "----------------------------------------------------------------";
-static const char __pyx_k_a[] = "a";
-static const char __pyx_k_b[] = "b";
-static const char __pyx_k_i[] = "i";
-static const char __pyx_k_k[] = "k";
-static const char __pyx_k_v[] = "v";
-static const char __pyx_k_ms[] = "ms";
-static const char __pyx_k_pk[] = "pk";
-static const char __pyx_k_hpg[] = "hpg";
-static const char __pyx_k_mem[] = "mem";
+static PyObject *__pyx_builtin_TypeError;
+static PyObject *__pyx_builtin_KeyError;
+static PyObject *__pyx_builtin_ValueError;
 static const char __pyx_k_html[] = "html";
-static const char __pyx_k_item[] = "item";
-static const char __pyx_k_json[] = "json";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_test[] = "__test__";
-static const char __pyx_k_time[] = "time";
-static const char __pyx_k_items[] = "items";
-static const char __pyx_k_loads[] = "loads";
-static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
-static const char __pyx_k_import[] = "__import__";
-static const char __pyx_k_item_id[] = "item_id";
-static const char __pyx_k_request[] = "request";
-static const char __pyx_k_runtime[] = "runtime";
-static const char __pyx_k_other_id[] = "other_id";
-static const char __pyx_k_enumerate[] = "enumerate";
-static const char __pyx_k_speedball[] = "speedball";
+static const char __pyx_k_KeyError[] = "KeyError";
+static const char __pyx_k_TypeError[] = "TypeError";
+static const char __pyx_k_iteritems[] = "iteritems";
+static const char __pyx_k_ValueError[] = "ValueError";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
-static const char __pyx_k_delete_item[] = "delete_item";
-static const char __pyx_k_description[] = "description";
-static const char __pyx_k_is_completed[] = "is_completed";
-static const char __pyx_k_python_items[] = "python_items";
-static const char __pyx_k_speedball_pyx[] = "speedball.pyx";
-static const char __pyx_k_who_is_nice_Str[] = "who_is_nice_Str";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_event_handler_callbacks[] = "event_handler_callbacks";
-static PyObject *__pyx_kp_s_;
-static PyObject *__pyx_n_s_a;
-static PyObject *__pyx_n_s_b;
+static const char __pyx_k_No_value_specified_for_struct_at[] = "No value specified for struct attribute 'html'";
+static const char __pyx_k_No_value_specified_for_struct_at_2[] = "No value specified for struct attribute 'event_handler_callbacks'";
+static PyObject *__pyx_n_s_KeyError;
+static PyObject *__pyx_kp_s_No_value_specified_for_struct_at;
+static PyObject *__pyx_kp_s_No_value_specified_for_struct_at_2;
+static PyObject *__pyx_n_s_TypeError;
+static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_cline_in_traceback;
-static PyObject *__pyx_n_s_delete_item;
-static PyObject *__pyx_n_s_description;
-static PyObject *__pyx_n_s_enumerate;
 static PyObject *__pyx_n_s_event_handler_callbacks;
-static PyObject *__pyx_n_s_hpg;
 static PyObject *__pyx_n_s_html;
-static PyObject *__pyx_n_s_i;
-static PyObject *__pyx_n_s_import;
-static PyObject *__pyx_n_s_is_completed;
-static PyObject *__pyx_n_s_item;
-static PyObject *__pyx_n_s_item_id;
-static PyObject *__pyx_n_s_items;
-static PyObject *__pyx_n_s_json;
-static PyObject *__pyx_n_s_k;
-static PyObject *__pyx_n_s_loads;
+static PyObject *__pyx_n_s_iteritems;
 static PyObject *__pyx_n_s_main;
-static PyObject *__pyx_n_s_mem;
-static PyObject *__pyx_n_s_ms;
 static PyObject *__pyx_n_s_name;
-static PyObject *__pyx_n_s_other_id;
-static PyObject *__pyx_n_s_pk;
-static PyObject *__pyx_n_s_print;
-static PyObject *__pyx_n_s_python_items;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
-static PyObject *__pyx_n_s_request;
-static PyObject *__pyx_n_s_runtime;
-static PyObject *__pyx_n_s_speedball;
-static PyObject *__pyx_kp_s_speedball_pyx;
 static PyObject *__pyx_n_s_test;
-static PyObject *__pyx_n_s_time;
-static PyObject *__pyx_n_s_v;
-static PyObject *__pyx_n_s_who_is_nice_Str;
-static PyObject *__pyx_pf_9speedball_delete_item(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_request, CYTHON_UNUSED PyObject *__pyx_v_item_id, CYTHON_UNUSED PyObject *__pyx_v_other_id, CYTHON_UNUSED PyObject *__pyx_v_who_is_nice_Str); /* proto */
-static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_python_items); /* proto */
-static PyObject *__pyx_int_1000;
+static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
-static PyObject *__pyx_tuple__3;
-static PyObject *__pyx_tuple__5;
-static PyObject *__pyx_codeobj__4;
-static PyObject *__pyx_codeobj__6;
 /* Late includes */
 
-/* "speedball.pyx":38
+/* "hypergen/ultragen.pyx":20
+ *     unordered_map [string, string] event_handler_callbacks
+ * 
+ * cdef Hpg make_hpg():             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         unordered_map [string, string] event_handler_callbacks
+ */
+
+static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_f_8hypergen_8ultragen_make_hpg(void) {
+  std::unordered_map<std::string,std::string>  __pyx_v_event_handler_callbacks;
+  PyObject *__pyx_v_hpg = 0;
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_t_3;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("make_hpg", 0);
+
+  /* "hypergen/ultragen.pyx":23
+ *     cdef:
+ *         unordered_map [string, string] event_handler_callbacks
+ *         hpg = Hpg(<char*>"", event_handler_callbacks)             # <<<<<<<<<<<<<<
+ * 
+ *     return hpg
+ */
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyUnicode_FromString(((char *)((char *)""))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_html, __pyx_t_2) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __pyx_convert_unordered_map_to_py_std_3a__3a_string____std_3a__3a_string(__pyx_v_event_handler_callbacks); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_event_handler_callbacks, __pyx_t_2) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_hpg = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "hypergen/ultragen.pyx":25
+ *         hpg = Hpg(<char*>"", event_handler_callbacks)
+ * 
+ *     return hpg             # <<<<<<<<<<<<<<
+ * 
+ * # Callback options
+ */
+  __pyx_t_3 = __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(__pyx_v_hpg); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 25, __pyx_L1_error)
+  __pyx_r = __pyx_t_3;
+  goto __pyx_L0;
+
+  /* "hypergen/ultragen.pyx":20
+ *     unordered_map [string, string] event_handler_callbacks
+ * 
+ * cdef Hpg make_hpg():             # <<<<<<<<<<<<<<
+ *     cdef:
+ *         unordered_map [string, string] event_handler_callbacks
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_WriteUnraisable("hypergen.ultragen.make_hpg", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __Pyx_pretend_to_initialize(&__pyx_r);
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_hpg);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "hypergen/ultragen.pyx":36
  *     int upload_files
  * 
  * cdef CbOpts make_cb_opts(string id_) nogil:             # <<<<<<<<<<<<<<
@@ -1564,11 +1554,11 @@ static PyObject *__pyx_codeobj__6;
  *     opts.blocks = False
  */
 
-static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::string __pyx_v_id_) {
-  struct __pyx_t_9speedball_CbOpts __pyx_v_opts;
-  struct __pyx_t_9speedball_CbOpts __pyx_r;
+static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_make_cb_opts(std::string __pyx_v_id_) {
+  struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_v_opts;
+  struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_r;
 
-  /* "speedball.pyx":40
+  /* "hypergen/ultragen.pyx":38
  * cdef CbOpts make_cb_opts(string id_) nogil:
  *     cdef CbOpts opts
  *     opts.blocks = False             # <<<<<<<<<<<<<<
@@ -1577,7 +1567,7 @@ static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::str
  */
   __pyx_v_opts.blocks = 0;
 
-  /* "speedball.pyx":41
+  /* "hypergen/ultragen.pyx":39
  *     cdef CbOpts opts
  *     opts.blocks = False
  *     opts.confirm_ = <char*>""             # <<<<<<<<<<<<<<
@@ -1586,7 +1576,7 @@ static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::str
  */
   __pyx_v_opts.confirm_ = ((char *)((char *)""));
 
-  /* "speedball.pyx":42
+  /* "hypergen/ultragen.pyx":40
  *     opts.blocks = False
  *     opts.confirm_ = <char*>""
  *     opts.debounce = 0             # <<<<<<<<<<<<<<
@@ -1595,7 +1585,7 @@ static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::str
  */
   __pyx_v_opts.debounce = 0;
 
-  /* "speedball.pyx":43
+  /* "hypergen/ultragen.pyx":41
  *     opts.confirm_ = <char*>""
  *     opts.debounce = 0
  *     opts.clear = False             # <<<<<<<<<<<<<<
@@ -1604,7 +1594,7 @@ static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::str
  */
   __pyx_v_opts.clear = 0;
 
-  /* "speedball.pyx":44
+  /* "hypergen/ultragen.pyx":42
  *     opts.debounce = 0
  *     opts.clear = False
  *     opts.element_id = id_             # <<<<<<<<<<<<<<
@@ -1613,7 +1603,7 @@ static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::str
  */
   __pyx_v_opts.element_id = __pyx_v_id_;
 
-  /* "speedball.pyx":45
+  /* "hypergen/ultragen.pyx":43
  *     opts.clear = False
  *     opts.element_id = id_
  *     opts.upload_files = False             # <<<<<<<<<<<<<<
@@ -1622,17 +1612,17 @@ static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::str
  */
   __pyx_v_opts.upload_files = 0;
 
-  /* "speedball.pyx":47
+  /* "hypergen/ultragen.pyx":45
  *     opts.upload_files = False
  * 
  *     return opts             # <<<<<<<<<<<<<<
  * 
- * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
+ * # Server callback
  */
   __pyx_r = __pyx_v_opts;
   goto __pyx_L0;
 
-  /* "speedball.pyx":38
+  /* "hypergen/ultragen.pyx":36
  *     int upload_files
  * 
  * cdef CbOpts make_cb_opts(string id_) nogil:             # <<<<<<<<<<<<<<
@@ -1645,308 +1635,15 @@ static struct __pyx_t_9speedball_CbOpts __pyx_f_9speedball_make_cb_opts(std::str
   return __pyx_r;
 }
 
-/* "speedball.pyx":49
- *     return opts
+/* "hypergen/ultragen.pyx":48
  * 
- * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i, j
- *     hpg.html.append('<')
- */
-
-static void __pyx_f_9speedball_element(std::string __pyx_v_tag, struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
-  int __pyx_v_i;
-  int __pyx_v_j;
-  int __pyx_t_1;
-  int __pyx_t_2;
-
-  /* "speedball.pyx":51
- * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
- *     cdef int i, j
- *     hpg.html.append('<')             # <<<<<<<<<<<<<<
- *     hpg.html.append(tag)
- * 
- */
-  (void)(__pyx_v_hpg.html.append(((char const *)"<")));
-
-  /* "speedball.pyx":52
- *     cdef int i, j
- *     hpg.html.append('<')
- *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
- * 
- *     if attrs[0] != T:
- */
-  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
-
-  /* "speedball.pyx":54
- *     hpg.html.append(tag)
- * 
- *     if attrs[0] != T:             # <<<<<<<<<<<<<<
- *         for i in range(0, 100, 2):
- *             j = i + 1
- */
-  __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_9speedball_T) != 0);
-  if (__pyx_t_1) {
-
-    /* "speedball.pyx":55
- * 
- *     if attrs[0] != T:
- *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
- *             j = i + 1
- *             if attrs[i] == T:
- */
-    for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
-      __pyx_v_i = __pyx_t_2;
-
-      /* "speedball.pyx":56
- *     if attrs[0] != T:
- *         for i in range(0, 100, 2):
- *             j = i + 1             # <<<<<<<<<<<<<<
- *             if attrs[i] == T:
- *                 break
- */
-      __pyx_v_j = (__pyx_v_i + 1);
-
-      /* "speedball.pyx":57
- *         for i in range(0, 100, 2):
- *             j = i + 1
- *             if attrs[i] == T:             # <<<<<<<<<<<<<<
- *                 break
- *             else:
- */
-      __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_9speedball_T) != 0);
-      if (__pyx_t_1) {
-
-        /* "speedball.pyx":58
- *             j = i + 1
- *             if attrs[i] == T:
- *                 break             # <<<<<<<<<<<<<<
- *             else:
- *                 hpg.html.append(" ")
- */
-        goto __pyx_L5_break;
-
-        /* "speedball.pyx":57
- *         for i in range(0, 100, 2):
- *             j = i + 1
- *             if attrs[i] == T:             # <<<<<<<<<<<<<<
- *                 break
- *             else:
- */
-      }
-
-      /* "speedball.pyx":60
- *                 break
- *             else:
- *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
- *                 hpg.html.append(attrs[i])
- *                 hpg.html.append('="')
- */
-      /*else*/ {
-        (void)(__pyx_v_hpg.html.append(((char const *)" ")));
-
-        /* "speedball.pyx":61
- *             else:
- *                 hpg.html.append(" ")
- *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
- *                 hpg.html.append('="')
- *                 hpg.html.append(attrs[j])
- */
-        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
-
-        /* "speedball.pyx":62
- *                 hpg.html.append(" ")
- *                 hpg.html.append(attrs[i])
- *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
- *                 hpg.html.append(attrs[j])
- *                 hpg.html.append('"')
- */
-        (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
-
-        /* "speedball.pyx":63
- *                 hpg.html.append(attrs[i])
- *                 hpg.html.append('="')
- *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
- *                 hpg.html.append('"')
- * 
- */
-        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
-
-        /* "speedball.pyx":64
- *                 hpg.html.append('="')
- *                 hpg.html.append(attrs[j])
- *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
- * 
- *     hpg.html.append('>')
- */
-        (void)(__pyx_v_hpg.html.append(((char const *)"\"")));
-      }
-    }
-    __pyx_L5_break:;
-
-    /* "speedball.pyx":54
- *     hpg.html.append(tag)
- * 
- *     if attrs[0] != T:             # <<<<<<<<<<<<<<
- *         for i in range(0, 100, 2):
- *             j = i + 1
- */
-  }
-
-  /* "speedball.pyx":66
- *                 hpg.html.append('"')
- * 
- *     hpg.html.append('>')             # <<<<<<<<<<<<<<
- *     hpg.html.append(s)
- *     hpg.html.append('</')
- */
-  (void)(__pyx_v_hpg.html.append(((char const *)">")));
-
-  /* "speedball.pyx":67
- * 
- *     hpg.html.append('>')
- *     hpg.html.append(s)             # <<<<<<<<<<<<<<
- *     hpg.html.append('</')
- *     hpg.html.append(tag)
- */
-  (void)(__pyx_v_hpg.html.append(__pyx_v_s));
-
-  /* "speedball.pyx":68
- *     hpg.html.append('>')
- *     hpg.html.append(s)
- *     hpg.html.append('</')             # <<<<<<<<<<<<<<
- *     hpg.html.append(tag)
- *     hpg.html.append('>\n')
- */
-  (void)(__pyx_v_hpg.html.append(((char const *)"</")));
-
-  /* "speedball.pyx":69
- *     hpg.html.append(s)
- *     hpg.html.append('</')
- *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
- *     hpg.html.append('>\n')
- * 
- */
-  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
-
-  /* "speedball.pyx":70
- *     hpg.html.append('</')
- *     hpg.html.append(tag)
- *     hpg.html.append('>\n')             # <<<<<<<<<<<<<<
- * 
- * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
- */
-  (void)(__pyx_v_hpg.html.append(((char const *)">\n")));
-
-  /* "speedball.pyx":49
- *     return opts
- * 
- * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i, j
- *     hpg.html.append('<')
- */
-
-  /* function exit code */
-}
-
-/* "speedball.pyx":72
- *     hpg.html.append('>\n')
- * 
- * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     element(<char*>"div", hpg, s, attrs)
- * 
- */
-
-static CYTHON_INLINE void __pyx_f_9speedball_div(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
-
-  /* "speedball.pyx":73
- * 
- * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
- *     element(<char*>"div", hpg, s, attrs)             # <<<<<<<<<<<<<<
- * 
- * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
- */
-  __pyx_f_9speedball_element(((char *)((char *)"div")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-
-  /* "speedball.pyx":72
- *     hpg.html.append('>\n')
- * 
- * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     element(<char*>"div", hpg, s, attrs)
- * 
- */
-
-  /* function exit code */
-}
-
-/* "speedball.pyx":75
- *     element(<char*>"div", hpg, s, attrs)
- * 
- * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     element(<char*>"b", hpg, s, attrs)
- * 
- */
-
-static CYTHON_INLINE void __pyx_f_9speedball_b(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
-
-  /* "speedball.pyx":76
- * 
- * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
- *     element(<char*>"b", hpg, s, attrs)             # <<<<<<<<<<<<<<
- * 
- * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
- */
-  __pyx_f_9speedball_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-
-  /* "speedball.pyx":75
- *     element(<char*>"div", hpg, s, attrs)
- * 
- * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     element(<char*>"b", hpg, s, attrs)
- * 
- */
-
-  /* function exit code */
-}
-
-/* "speedball.pyx":78
- *     element(<char*>"b", hpg, s, attrs)
- * 
- * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     element(<char*>"button", hpg, s, attrs)
- * 
- */
-
-static CYTHON_INLINE void __pyx_f_9speedball_button(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
-
-  /* "speedball.pyx":79
- * 
- * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
- *     element(<char*>"button", hpg, s, attrs)             # <<<<<<<<<<<<<<
- * 
- * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:
- */
-  __pyx_f_9speedball_element(((char *)((char *)"button")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-
-  /* "speedball.pyx":78
- *     element(<char*>"b", hpg, s, attrs)
- * 
- * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     element(<char*>"button", hpg, s, attrs)
- * 
- */
-
-  /* function exit code */
-}
-
-/* "speedball.pyx":81
- *     element(<char*>"button", hpg, s, attrs)
- * 
+ * # Server callback
  * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
  *         string html
  */
 
-static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, std::string __pyx_v_id_, std::string __pyx_v_attr_name, std::string __pyx_v_url, std::string *__pyx_v_args, struct __pyx_t_9speedball_CbOpts __pyx_v_cb_opts) {
+static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_id_, std::string __pyx_v_attr_name, std::string __pyx_v_url, std::string *__pyx_v_args, struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_v_cb_opts) {
   std::string __pyx_v_html;
   std::string __pyx_v_client_state_key;
   std::string __pyx_v_event_handler_callback;
@@ -1959,7 +1656,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
   __Pyx_FakeReference<std::string> __pyx_t_4;
   __Pyx_FakeReference<std::string> __pyx_t_5;
 
-  /* "speedball.pyx":90
+  /* "hypergen/ultragen.pyx":57
  *         char s[100]
  * 
  *     client_state_key.append(id_)             # <<<<<<<<<<<<<<
@@ -1968,7 +1665,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_client_state_key.append(__pyx_v_id_));
 
-  /* "speedball.pyx":91
+  /* "hypergen/ultragen.pyx":58
  * 
  *     client_state_key.append(id_)
  *     client_state_key.append("__")             # <<<<<<<<<<<<<<
@@ -1977,7 +1674,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_client_state_key.append(((char const *)"__")));
 
-  /* "speedball.pyx":92
+  /* "hypergen/ultragen.pyx":59
  *     client_state_key.append(id_)
  *     client_state_key.append("__")
  *     client_state_key.append(attr_name)             # <<<<<<<<<<<<<<
@@ -1986,7 +1683,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_client_state_key.append(__pyx_v_attr_name));
 
-  /* "speedball.pyx":94
+  /* "hypergen/ultragen.pyx":61
  *     client_state_key.append(attr_name)
  * 
  *     html.append("e(event,'")             # <<<<<<<<<<<<<<
@@ -1995,7 +1692,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_html.append(((char const *)"e(event,'")));
 
-  /* "speedball.pyx":95
+  /* "hypergen/ultragen.pyx":62
  * 
  *     html.append("e(event,'")
  *     html.append(client_state_key)             # <<<<<<<<<<<<<<
@@ -2004,7 +1701,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_html.append(__pyx_v_client_state_key));
 
-  /* "speedball.pyx":96
+  /* "hypergen/ultragen.pyx":63
  *     html.append("e(event,'")
  *     html.append(client_state_key)
  *     html.append("')")             # <<<<<<<<<<<<<<
@@ -2013,7 +1710,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_html.append(((char const *)"')")));
 
-  /* "speedball.pyx":98
+  /* "hypergen/ultragen.pyx":65
  *     html.append("')")
  * 
  *     event_handler_callback.append('["')             # <<<<<<<<<<<<<<
@@ -2022,7 +1719,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"[\"")));
 
-  /* "speedball.pyx":99
+  /* "hypergen/ultragen.pyx":66
  * 
  *     event_handler_callback.append('["')
  *     event_handler_callback.append(url)             # <<<<<<<<<<<<<<
@@ -2031,7 +1728,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(__pyx_v_url));
 
-  /* "speedball.pyx":100
+  /* "hypergen/ultragen.pyx":67
  *     event_handler_callback.append('["')
  *     event_handler_callback.append(url)
  *     event_handler_callback.append('",')             # <<<<<<<<<<<<<<
@@ -2040,7 +1737,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"\",")));
 
-  /* "speedball.pyx":102
+  /* "hypergen/ultragen.pyx":69
  *     event_handler_callback.append('",')
  * 
  *     event_handler_callback.append('[')             # <<<<<<<<<<<<<<
@@ -2049,7 +1746,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"[")));
 
-  /* "speedball.pyx":103
+  /* "hypergen/ultragen.pyx":70
  * 
  *     event_handler_callback.append('[')
  *     for i in range(100):             # <<<<<<<<<<<<<<
@@ -2059,7 +1756,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
   for (__pyx_t_1 = 0; __pyx_t_1 < 0x64; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "speedball.pyx":104
+    /* "hypergen/ultragen.pyx":71
  *     event_handler_callback.append('[')
  *     for i in range(100):
  *         arg = args[i]             # <<<<<<<<<<<<<<
@@ -2068,17 +1765,17 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     __pyx_v_arg = (__pyx_v_args[__pyx_v_i]);
 
-    /* "speedball.pyx":105
+    /* "hypergen/ultragen.pyx":72
  *     for i in range(100):
  *         arg = args[i]
  *         if arg == T:             # <<<<<<<<<<<<<<
  *             break
  *         if i != 0:
  */
-    __pyx_t_2 = ((__pyx_v_arg == __pyx_v_9speedball_T) != 0);
+    __pyx_t_2 = ((__pyx_v_arg == __pyx_v_8hypergen_8ultragen_T) != 0);
     if (__pyx_t_2) {
 
-      /* "speedball.pyx":106
+      /* "hypergen/ultragen.pyx":73
  *         arg = args[i]
  *         if arg == T:
  *             break             # <<<<<<<<<<<<<<
@@ -2087,7 +1784,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
       goto __pyx_L4_break;
 
-      /* "speedball.pyx":105
+      /* "hypergen/ultragen.pyx":72
  *     for i in range(100):
  *         arg = args[i]
  *         if arg == T:             # <<<<<<<<<<<<<<
@@ -2096,7 +1793,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     }
 
-    /* "speedball.pyx":107
+    /* "hypergen/ultragen.pyx":74
  *         if arg == T:
  *             break
  *         if i != 0:             # <<<<<<<<<<<<<<
@@ -2106,7 +1803,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
     __pyx_t_2 = ((__pyx_v_i != 0) != 0);
     if (__pyx_t_2) {
 
-      /* "speedball.pyx":108
+      /* "hypergen/ultragen.pyx":75
  *             break
  *         if i != 0:
  *             event_handler_callback.append(",")             # <<<<<<<<<<<<<<
@@ -2115,7 +1812,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
       (void)(__pyx_v_event_handler_callback.append(((char const *)",")));
 
-      /* "speedball.pyx":107
+      /* "hypergen/ultragen.pyx":74
  *         if arg == T:
  *             break
  *         if i != 0:             # <<<<<<<<<<<<<<
@@ -2124,7 +1821,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     }
 
-    /* "speedball.pyx":109
+    /* "hypergen/ultragen.pyx":76
  *         if i != 0:
  *             event_handler_callback.append(",")
  *         event_handler_callback.append(arg)             # <<<<<<<<<<<<<<
@@ -2135,7 +1832,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
   }
   __pyx_L4_break:;
 
-  /* "speedball.pyx":110
+  /* "hypergen/ultragen.pyx":77
  *             event_handler_callback.append(",")
  *         event_handler_callback.append(arg)
  *     event_handler_callback.append(']')             # <<<<<<<<<<<<<<
@@ -2144,7 +1841,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"]")));
 
-  /* "speedball.pyx":112
+  /* "hypergen/ultragen.pyx":79
  *     event_handler_callback.append(']')
  * 
  *     event_handler_callback.append(', {')             # <<<<<<<<<<<<<<
@@ -2153,7 +1850,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)", {")));
 
-    /* "speedball.pyx":113
+    /* "hypergen/ultragen.pyx":80
  * 
  *     event_handler_callback.append(', {')
  *     event_handler_callback.append('"blocks":')             # <<<<<<<<<<<<<<
@@ -2162,7 +1859,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)"\"blocks\":")));
 
-    /* "speedball.pyx":114
+    /* "hypergen/ultragen.pyx":81
  *     event_handler_callback.append(', {')
  *     event_handler_callback.append('"blocks":')
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2175,7 +1872,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
       __pyx_t_3 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "speedball.pyx":115
+    /* "hypergen/ultragen.pyx":82
  *     event_handler_callback.append('"blocks":')
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"debounce":')             # <<<<<<<<<<<<<<
@@ -2184,16 +1881,16 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"debounce\":")));
 
-    /* "speedball.pyx":116
+    /* "hypergen/ultragen.pyx":83
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"debounce":')
  *     event_handler_callback.append(i2s(cb_opts.debounce))             # <<<<<<<<<<<<<<
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  */
-    (void)(__pyx_v_event_handler_callback.append(__pyx_f_9speedball_i2s(__pyx_v_cb_opts.debounce)));
+    (void)(__pyx_v_event_handler_callback.append(__pyx_f_8hypergen_8ultragen_i2s(__pyx_v_cb_opts.debounce)));
 
-    /* "speedball.pyx":117
+    /* "hypergen/ultragen.pyx":84
  *     event_handler_callback.append(',"debounce":')
  *     event_handler_callback.append(i2s(cb_opts.debounce))
  *     event_handler_callback.append(',"clear":')             # <<<<<<<<<<<<<<
@@ -2202,7 +1899,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"clear\":")));
 
-    /* "speedball.pyx":118
+    /* "hypergen/ultragen.pyx":85
  *     event_handler_callback.append(i2s(cb_opts.debounce))
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2215,7 +1912,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
       __pyx_t_4 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "speedball.pyx":119
+    /* "hypergen/ultragen.pyx":86
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"elementId":"')             # <<<<<<<<<<<<<<
@@ -2224,7 +1921,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"elementId\":\"")));
 
-    /* "speedball.pyx":120
+    /* "hypergen/ultragen.pyx":87
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"elementId":"')
  *     event_handler_callback.append(id_)             # <<<<<<<<<<<<<<
@@ -2233,7 +1930,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     (void)(__pyx_v_event_handler_callback.append(__pyx_v_id_));
 
-    /* "speedball.pyx":121
+    /* "hypergen/ultragen.pyx":88
  *     event_handler_callback.append(',"elementId":"')
  *     event_handler_callback.append(id_)
  *     event_handler_callback.append('"')             # <<<<<<<<<<<<<<
@@ -2242,7 +1939,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)"\"")));
 
-    /* "speedball.pyx":122
+    /* "hypergen/ultragen.pyx":89
  *     event_handler_callback.append(id_)
  *     event_handler_callback.append('"')
  *     event_handler_callback.append(',"uploadFiles":')             # <<<<<<<<<<<<<<
@@ -2251,7 +1948,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"uploadFiles\":")));
 
-    /* "speedball.pyx":123
+    /* "hypergen/ultragen.pyx":90
  *     event_handler_callback.append('"')
  *     event_handler_callback.append(',"uploadFiles":')
  *     event_handler_callback.append("true") if cb_opts.upload_files is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2264,7 +1961,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
       __pyx_t_5 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "speedball.pyx":125
+    /* "hypergen/ultragen.pyx":92
  *     event_handler_callback.append("true") if cb_opts.upload_files is True else event_handler_callback.append("false")
  * 
  *     event_handler_callback.append('}')             # <<<<<<<<<<<<<<
@@ -2273,7 +1970,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"}")));
 
-  /* "speedball.pyx":126
+  /* "hypergen/ultragen.pyx":93
  * 
  *     event_handler_callback.append('}')
  *     event_handler_callback.append("]")             # <<<<<<<<<<<<<<
@@ -2282,7 +1979,7 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"]")));
 
-  /* "speedball.pyx":128
+  /* "hypergen/ultragen.pyx":95
  *     event_handler_callback.append("]")
  * 
  *     hpg.event_handler_callbacks[client_state_key] = event_handler_callback             # <<<<<<<<<<<<<<
@@ -2291,19 +1988,19 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
  */
   (__pyx_v_hpg.event_handler_callbacks[__pyx_v_client_state_key]) = __pyx_v_event_handler_callback;
 
-  /* "speedball.pyx":130
+  /* "hypergen/ultragen.pyx":97
  *     hpg.event_handler_callbacks[client_state_key] = event_handler_callback
  * 
  *     return html             # <<<<<<<<<<<<<<
  * 
- * 
+ * # Cast functions for callback arguments
  */
   __pyx_r = __pyx_v_html;
   goto __pyx_L0;
 
-  /* "speedball.pyx":81
- *     element(<char*>"button", hpg, s, attrs)
+  /* "hypergen/ultragen.pyx":48
  * 
+ * # Server callback
  * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
  *         string html
@@ -2314,19 +2011,19 @@ static std::string __pyx_f_9speedball_cb(struct __pyx_t_9speedball_Hpg &__pyx_v_
   return __pyx_r;
 }
 
-/* "speedball.pyx":138
- *     string* strings
+/* "hypergen/ultragen.pyx":101
+ * # Cast functions for callback arguments
  * 
  * cdef string i2s(int v) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
  *         char s[100]
  */
 
-static std::string __pyx_f_9speedball_i2s(int __pyx_v_v) {
+static std::string __pyx_f_8hypergen_8ultragen_i2s(int __pyx_v_v) {
   char __pyx_v_s[0x64];
   std::string __pyx_r;
 
-  /* "speedball.pyx":141
+  /* "hypergen/ultragen.pyx":104
  *     cdef:
  *         char s[100]
  *     sprintf(s, "%d", v)             # <<<<<<<<<<<<<<
@@ -2335,7 +2032,7 @@ static std::string __pyx_f_9speedball_i2s(int __pyx_v_v) {
  */
   (void)(sprintf(__pyx_v_s, ((char const *)"%d"), __pyx_v_v));
 
-  /* "speedball.pyx":142
+  /* "hypergen/ultragen.pyx":105
  *         char s[100]
  *     sprintf(s, "%d", v)
  *     return <string> s             # <<<<<<<<<<<<<<
@@ -2345,8 +2042,8 @@ static std::string __pyx_f_9speedball_i2s(int __pyx_v_v) {
   __pyx_r = ((std::string)__pyx_v_s);
   goto __pyx_L0;
 
-  /* "speedball.pyx":138
- *     string* strings
+  /* "hypergen/ultragen.pyx":101
+ * # Cast functions for callback arguments
  * 
  * cdef string i2s(int v) nogil:             # <<<<<<<<<<<<<<
  *     cdef:
@@ -2358,7 +2055,7 @@ static std::string __pyx_f_9speedball_i2s(int __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "speedball.pyx":145
+/* "hypergen/ultragen.pyx":108
  * 
  * 
  * cdef string arg_i(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2366,11 +2063,11 @@ static std::string __pyx_f_9speedball_i2s(int __pyx_v_v) {
  *         char s[100]
  */
 
-static std::string __pyx_f_9speedball_arg_i(int __pyx_v_v) {
+static std::string __pyx_f_8hypergen_8ultragen_arg_i(int __pyx_v_v) {
   char __pyx_v_s[0x64];
   std::string __pyx_r;
 
-  /* "speedball.pyx":148
+  /* "hypergen/ultragen.pyx":111
  *     cdef:
  *         char s[100]
  *     sprintf(s, "%d", v)             # <<<<<<<<<<<<<<
@@ -2379,7 +2076,7 @@ static std::string __pyx_f_9speedball_arg_i(int __pyx_v_v) {
  */
   (void)(sprintf(__pyx_v_s, ((char const *)"%d"), __pyx_v_v));
 
-  /* "speedball.pyx":149
+  /* "hypergen/ultragen.pyx":112
  *         char s[100]
  *     sprintf(s, "%d", v)
  *     return <string> s             # <<<<<<<<<<<<<<
@@ -2389,7 +2086,7 @@ static std::string __pyx_f_9speedball_arg_i(int __pyx_v_v) {
   __pyx_r = ((std::string)__pyx_v_s);
   goto __pyx_L0;
 
-  /* "speedball.pyx":145
+  /* "hypergen/ultragen.pyx":108
  * 
  * 
  * cdef string arg_i(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2402,7 +2099,7 @@ static std::string __pyx_f_9speedball_arg_i(int __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "speedball.pyx":151
+/* "hypergen/ultragen.pyx":114
  *     return <string> s
  * 
  * cdef string arg_s(string v) nogil:             # <<<<<<<<<<<<<<
@@ -2410,11 +2107,11 @@ static std::string __pyx_f_9speedball_arg_i(int __pyx_v_v) {
  *     s.append('"')
  */
 
-static std::string __pyx_f_9speedball_arg_s(std::string __pyx_v_v) {
+static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
   std::string __pyx_v_s;
   std::string __pyx_r;
 
-  /* "speedball.pyx":153
+  /* "hypergen/ultragen.pyx":116
  * cdef string arg_s(string v) nogil:
  *     cdef string s
  *     s.append('"')             # <<<<<<<<<<<<<<
@@ -2423,7 +2120,7 @@ static std::string __pyx_f_9speedball_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(((char const *)"\"")));
 
-  /* "speedball.pyx":154
+  /* "hypergen/ultragen.pyx":117
  *     cdef string s
  *     s.append('"')
  *     s.append(v)             # <<<<<<<<<<<<<<
@@ -2432,7 +2129,7 @@ static std::string __pyx_f_9speedball_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(__pyx_v_v));
 
-  /* "speedball.pyx":155
+  /* "hypergen/ultragen.pyx":118
  *     s.append('"')
  *     s.append(v)
  *     s.append('"')             # <<<<<<<<<<<<<<
@@ -2441,17 +2138,17 @@ static std::string __pyx_f_9speedball_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(((char const *)"\"")));
 
-  /* "speedball.pyx":157
+  /* "hypergen/ultragen.pyx":120
  *     s.append('"')
  * 
  *     return s             # <<<<<<<<<<<<<<
  * 
- * cdef string arg_el(string id_) nogil:
+ * cdef struct ArgElOpts:
  */
   __pyx_r = __pyx_v_s;
   goto __pyx_L0;
 
-  /* "speedball.pyx":151
+  /* "hypergen/ultragen.pyx":114
  *     return <string> s
  * 
  * cdef string arg_s(string v) nogil:             # <<<<<<<<<<<<<<
@@ -2464,20 +2161,20 @@ static std::string __pyx_f_9speedball_arg_s(std::string __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "speedball.pyx":159
- *     return s
+/* "hypergen/ultragen.pyx":126
+ *     string coerce_func
  * 
- * cdef string arg_el(string id_) nogil:             # <<<<<<<<<<<<<<
+ * cdef string arg_el(string id_, ArgElOpts opts) nogil:             # <<<<<<<<<<<<<<
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  */
 
-static std::string __pyx_f_9speedball_arg_el(std::string __pyx_v_id_) {
+static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUSED struct __pyx_t_8hypergen_8ultragen_ArgElOpts __pyx_v_opts) {
   std::string __pyx_v_s;
   std::string __pyx_r;
 
-  /* "speedball.pyx":161
- * cdef string arg_el(string id_) nogil:
+  /* "hypergen/ultragen.pyx":128
+ * cdef string arg_el(string id_, ArgElOpts opts) nogil:
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')             # <<<<<<<<<<<<<<
  *     s.append(id_)
@@ -2485,7 +2182,7 @@ static std::string __pyx_f_9speedball_arg_el(std::string __pyx_v_id_) {
  */
   (void)(__pyx_v_s.append(((char const *)"[\"_\",\"element_value\",[\"hypergen.read.value\", null, \"")));
 
-  /* "speedball.pyx":162
+  /* "hypergen/ultragen.pyx":129
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  *     s.append(id_)             # <<<<<<<<<<<<<<
@@ -2494,7 +2191,7 @@ static std::string __pyx_f_9speedball_arg_el(std::string __pyx_v_id_) {
  */
   (void)(__pyx_v_s.append(__pyx_v_id_));
 
-  /* "speedball.pyx":163
+  /* "hypergen/ultragen.pyx":130
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  *     s.append(id_)
  *     s.append('"]]')             # <<<<<<<<<<<<<<
@@ -2503,20 +2200,20 @@ static std::string __pyx_f_9speedball_arg_el(std::string __pyx_v_id_) {
  */
   (void)(__pyx_v_s.append(((char const *)"\"]]")));
 
-  /* "speedball.pyx":165
+  /* "hypergen/ultragen.pyx":132
  *     s.append('"]]')
  * 
  *     return s             # <<<<<<<<<<<<<<
  * 
- * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:
+ * # Base HTML element
  */
   __pyx_r = __pyx_v_s;
   goto __pyx_L0;
 
-  /* "speedball.pyx":159
- *     return s
+  /* "hypergen/ultragen.pyx":126
+ *     string coerce_func
  * 
- * cdef string arg_el(string id_) nogil:             # <<<<<<<<<<<<<<
+ * cdef string arg_el(string id_, ArgElOpts opts) nogil:             # <<<<<<<<<<<<<<
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  */
@@ -2526,699 +2223,353 @@ static std::string __pyx_f_9speedball_arg_el(std::string __pyx_v_id_) {
   return __pyx_r;
 }
 
-/* "speedball.pyx":167
- *     return s
+/* "hypergen/ultragen.pyx":135
  * 
- * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         Args args
+ * # Base HTML element
+ * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int i, j
+ *     hpg.html.append('<')
  */
 
-static void __pyx_f_9speedball_prontotemplate(struct __pyx_t_9speedball_Hpg &__pyx_v_hpg, struct __pyx_t_9speedball_Item *__pyx_v_items, int __pyx_v_n) {
-  std::string __pyx_v_id_;
-  struct __pyx_t_9speedball_CbOpts __pyx_v_cb_opts;
-  CYTHON_UNUSED long __pyx_v_i;
-  struct __pyx_t_9speedball_Item __pyx_v_item;
-  CYTHON_UNUSED struct __pyx_t_9speedball_CbOpts __pyx_v_cb_otps;
-  long __pyx_t_1;
-  struct __pyx_t_9speedball_Item *__pyx_t_2;
-  struct __pyx_t_9speedball_Item *__pyx_t_3;
-  struct __pyx_t_9speedball_Item *__pyx_t_4;
-  int __pyx_t_5;
-  std::string __pyx_t_6[5];
-  std::string __pyx_t_7[1];
-  std::string __pyx_t_8[5];
-  std::string __pyx_t_9[5];
-
-  /* "speedball.pyx":173
- *         CbOpts cb_opts
- * 
- *     for i in range(10000):             # <<<<<<<<<<<<<<
- *         for item in items[:n]:
- *             if not item.is_completed:
- */
-  for (__pyx_t_1 = 0; __pyx_t_1 < 0x2710; __pyx_t_1+=1) {
-    __pyx_v_i = __pyx_t_1;
-
-    /* "speedball.pyx":174
- * 
- *     for i in range(10000):
- *         for item in items[:n]:             # <<<<<<<<<<<<<<
- *             if not item.is_completed:
- *                 b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-div", <s>"id", <s>"foo92", T])
- */
-    __pyx_t_3 = (__pyx_v_items + __pyx_v_n);
-    for (__pyx_t_4 = __pyx_v_items; __pyx_t_4 < __pyx_t_3; __pyx_t_4++) {
-      __pyx_t_2 = __pyx_t_4;
-      __pyx_v_item = (__pyx_t_2[0]);
-
-      /* "speedball.pyx":175
- *     for i in range(10000):
- *         for item in items[:n]:
- *             if not item.is_completed:             # <<<<<<<<<<<<<<
- *                 b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-div", <s>"id", <s>"foo92", T])
- *             div(hpg, item.description, [T])
- */
-      __pyx_t_5 = ((!(__pyx_v_item.is_completed != 0)) != 0);
-      if (__pyx_t_5) {
-
-        /* "speedball.pyx":176
- *         for item in items[:n]:
- *             if not item.is_completed:
- *                 b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-div", <s>"id", <s>"foo92", T])             # <<<<<<<<<<<<<<
- *             div(hpg, item.description, [T])
- *             id_ = <s> "my-element-"
- */
-        __pyx_t_6[0] = ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"class"));
-        __pyx_t_6[1] = ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"my-div\303\270"));
-        __pyx_t_6[2] = ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"id"));
-        __pyx_t_6[3] = ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"foo92"));
-        __pyx_t_6[4] = __pyx_v_9speedball_T;
-        __pyx_f_9speedball_b(__pyx_v_hpg, ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"GET STARTED NOW!")), __pyx_t_6);
-
-        /* "speedball.pyx":175
- *     for i in range(10000):
- *         for item in items[:n]:
- *             if not item.is_completed:             # <<<<<<<<<<<<<<
- *                 b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-div", <s>"id", <s>"foo92", T])
- *             div(hpg, item.description, [T])
- */
-      }
-
-      /* "speedball.pyx":177
- *             if not item.is_completed:
- *                 b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-div", <s>"id", <s>"foo92", T])
- *             div(hpg, item.description, [T])             # <<<<<<<<<<<<<<
- *             id_ = <s> "my-element-"
- *             id_.append(i2s(item.pk))
- */
-      __pyx_t_7[0] = __pyx_v_9speedball_T;
-      __pyx_f_9speedball_div(__pyx_v_hpg, __pyx_v_item.description, __pyx_t_7);
-
-      /* "speedball.pyx":178
- *                 b(hpg, <s>"GET STARTED NOW!", [<s>"class", <s>"my-div", <s>"id", <s>"foo92", T])
- *             div(hpg, item.description, [T])
- *             id_ = <s> "my-element-"             # <<<<<<<<<<<<<<
- *             id_.append(i2s(item.pk))
- * 
- */
-      __pyx_v_id_ = ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"my-element-"));
-
-      /* "speedball.pyx":179
- *             div(hpg, item.description, [T])
- *             id_ = <s> "my-element-"
- *             id_.append(i2s(item.pk))             # <<<<<<<<<<<<<<
- * 
- *             cb_otps = make_cb_opts(id_)
- */
-      (void)(__pyx_v_id_.append(__pyx_f_9speedball_i2s(__pyx_v_item.pk)));
-
-      /* "speedball.pyx":181
- *             id_.append(i2s(item.pk))
- * 
- *             cb_otps = make_cb_opts(id_)             # <<<<<<<<<<<<<<
- *             cb_opts.blocks = True
- *             cb_opts.clear = True
- */
-      __pyx_v_cb_otps = __pyx_f_9speedball_make_cb_opts(__pyx_v_id_);
-
-      /* "speedball.pyx":182
- * 
- *             cb_otps = make_cb_opts(id_)
- *             cb_opts.blocks = True             # <<<<<<<<<<<<<<
- *             cb_opts.clear = True
- *             button(hpg, <s>"I am the champ!", [
- */
-      __pyx_v_cb_opts.blocks = 1;
-
-      /* "speedball.pyx":183
- *             cb_otps = make_cb_opts(id_)
- *             cb_opts.blocks = True
- *             cb_opts.clear = True             # <<<<<<<<<<<<<<
- *             button(hpg, <s>"I am the champ!", [
- *                 <s>"id", id_,
- */
-      __pyx_v_cb_opts.clear = 1;
-
-      /* "speedball.pyx":188
- *                 <s>"onclick",
- *                      cb(hpg, id_, <s>"onclick", <s>"/todos/delete_item",
- *                         [arg_el(id_), arg_i(item.pk), arg_i(item.pk**4), arg_s(<s>"The guy is nice!"), T],             # <<<<<<<<<<<<<<
- *                         cb_opts
- *                         ),
- */
-      __pyx_t_8[0] = __pyx_f_9speedball_arg_el(__pyx_v_id_);
-      __pyx_t_8[1] = __pyx_f_9speedball_arg_i(__pyx_v_item.pk);
-      __pyx_t_8[2] = __pyx_f_9speedball_arg_i(__Pyx_pow_long(((long)__pyx_v_item.pk), 4));
-      __pyx_t_8[3] = __pyx_f_9speedball_arg_s(((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"The guy is nice!")));
-      __pyx_t_8[4] = __pyx_v_9speedball_T;
-
-      /* "speedball.pyx":184
- *             cb_opts.blocks = True
- *             cb_opts.clear = True
- *             button(hpg, <s>"I am the champ!", [             # <<<<<<<<<<<<<<
- *                 <s>"id", id_,
- *                 <s>"onclick",
- */
-      __pyx_t_9[0] = ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"id"));
-      __pyx_t_9[1] = __pyx_v_id_;
-      __pyx_t_9[2] = ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"onclick"));
-      __pyx_t_9[3] = __pyx_f_9speedball_cb(__pyx_v_hpg, __pyx_v_id_, ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"onclick")), ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"/todos/delete_item")), __pyx_t_8, __pyx_v_cb_opts);
-      __pyx_t_9[4] = __pyx_v_9speedball_T;
-      __pyx_f_9speedball_button(__pyx_v_hpg, ((__pyx_t_9speedball_s)((__pyx_t_9speedball_s)"I am the champ!")), __pyx_t_9);
-    }
-  }
-
-  /* "speedball.pyx":167
- *     return s
- * 
- * cdef void prontotemplate(Hpg &hpg, Item* items, int n) nogil:             # <<<<<<<<<<<<<<
- *     cdef:
- *         Args args
- */
-
-  /* function exit code */
-}
-
-/* "speedball.pyx":195
- * 
- * # @hypergen_callback(...)
- * def delete_item(request, item_id, other_id, who_is_nice_Str):             # <<<<<<<<<<<<<<
- *     # reverse url = "/todos/delete_item"
- *     pass
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_9speedball_1delete_item(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_9speedball_1delete_item = {"delete_item", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9speedball_1delete_item, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9speedball_1delete_item(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  CYTHON_UNUSED PyObject *__pyx_v_request = 0;
-  CYTHON_UNUSED PyObject *__pyx_v_item_id = 0;
-  CYTHON_UNUSED PyObject *__pyx_v_other_id = 0;
-  CYTHON_UNUSED PyObject *__pyx_v_who_is_nice_Str = 0;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("delete_item (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_request,&__pyx_n_s_item_id,&__pyx_n_s_other_id,&__pyx_n_s_who_is_nice_Str,0};
-    PyObject* values[4] = {0,0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-        CYTHON_FALLTHROUGH;
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        CYTHON_FALLTHROUGH;
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_request)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_item_id)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("delete_item", 1, 4, 4, 1); __PYX_ERR(0, 195, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  2:
-        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_other_id)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("delete_item", 1, 4, 4, 2); __PYX_ERR(0, 195, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  3:
-        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_who_is_nice_Str)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("delete_item", 1, 4, 4, 3); __PYX_ERR(0, 195, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "delete_item") < 0)) __PYX_ERR(0, 195, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
-    }
-    __pyx_v_request = values[0];
-    __pyx_v_item_id = values[1];
-    __pyx_v_other_id = values[2];
-    __pyx_v_who_is_nice_Str = values[3];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("delete_item", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 195, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("speedball.delete_item", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9speedball_delete_item(__pyx_self, __pyx_v_request, __pyx_v_item_id, __pyx_v_other_id, __pyx_v_who_is_nice_Str);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_9speedball_delete_item(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_request, CYTHON_UNUSED PyObject *__pyx_v_item_id, CYTHON_UNUSED PyObject *__pyx_v_other_id, CYTHON_UNUSED PyObject *__pyx_v_who_is_nice_Str) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("delete_item", 0);
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "speedball.pyx":199
- *     pass
- * 
- * def speedball(python_items):             # <<<<<<<<<<<<<<
- *     print ("----------------------------------------------------------------")
- *     cdef:
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_9speedball_3speedball(PyObject *__pyx_self, PyObject *__pyx_v_python_items); /*proto*/
-static PyMethodDef __pyx_mdef_9speedball_3speedball = {"speedball", (PyCFunction)__pyx_pw_9speedball_3speedball, METH_O, 0};
-static PyObject *__pyx_pw_9speedball_3speedball(PyObject *__pyx_self, PyObject *__pyx_v_python_items) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("speedball (wrapper)", 0);
-  __pyx_r = __pyx_pf_9speedball_2speedball(__pyx_self, ((PyObject *)__pyx_v_python_items));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_9speedball_2speedball(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_python_items) {
-  std::unordered_map<std::string,std::string>  __pyx_v_event_handler_callbacks;
-  struct __pyx_obj_5cymem_5cymem_Pool *__pyx_v_mem = 0;
-  struct __pyx_t_9speedball_Hpg __pyx_v_hpg;
+static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
   int __pyx_v_i;
-  PyObject *__pyx_v_item = 0;
-  struct __pyx_t_9speedball_Item *__pyx_v_items;
-  PyObject *__pyx_v_a = NULL;
-  PyObject *__pyx_v_b = NULL;
-  PyObject *__pyx_7genexpr__pyx_v_k = NULL;
-  PyObject *__pyx_7genexpr__pyx_v_v = NULL;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  struct __pyx_t_9speedball_Hpg __pyx_t_2;
-  Py_ssize_t __pyx_t_3;
-  void *__pyx_t_4;
-  int __pyx_t_5;
-  PyObject *(*__pyx_t_6)(PyObject *);
-  PyObject *__pyx_t_7 = NULL;
-  struct __pyx_t_9speedball_Item __pyx_t_8;
-  int __pyx_t_9;
-  std::string __pyx_t_10;
-  PyObject *__pyx_t_11 = NULL;
-  Py_ssize_t __pyx_t_12;
-  PyObject *__pyx_t_13 = NULL;
-  PyObject *__pyx_t_14 = NULL;
-  PyObject *__pyx_t_15 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("speedball", 0);
+  int __pyx_v_j;
+  int __pyx_t_1;
+  int __pyx_t_2;
 
-  /* "speedball.pyx":200
- * 
- * def speedball(python_items):
- *     print ("----------------------------------------------------------------")             # <<<<<<<<<<<<<<
- *     cdef:
- *         unordered_map [string, string] event_handler_callbacks
- */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "speedball.pyx":203
- *     cdef:
- *         unordered_map [string, string] event_handler_callbacks
- *         Pool mem = Pool()             # <<<<<<<<<<<<<<
- *         Hpg hpg = Hpg(<char*>"", event_handler_callbacks)
- *         int i
- */
-  __pyx_t_1 = __Pyx_PyObject_CallNoArg(((PyObject *)__pyx_ptype_5cymem_5cymem_Pool)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_mem = ((struct __pyx_obj_5cymem_5cymem_Pool *)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "speedball.pyx":204
- *         unordered_map [string, string] event_handler_callbacks
- *         Pool mem = Pool()
- *         Hpg hpg = Hpg(<char*>"", event_handler_callbacks)             # <<<<<<<<<<<<<<
- *         int i
- *         dict item
- */
-  __pyx_t_2.html = ((char *)((char *)""));
-  __pyx_t_2.event_handler_callbacks = __pyx_v_event_handler_callbacks;
-  __pyx_v_hpg = __pyx_t_2;
-
-  /* "speedball.pyx":208
- *         dict item
- * 
- *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))             # <<<<<<<<<<<<<<
- *     for i, item in enumerate(python_items):
- *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
- */
-  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 208, __pyx_L1_error)
-  __pyx_t_4 = ((struct __pyx_vtabstruct_5cymem_5cymem_Pool *)__pyx_v_mem->__pyx_vtab)->alloc(__pyx_v_mem, __pyx_t_3, (sizeof(struct __pyx_t_9speedball_Item))); if (unlikely(__pyx_t_4 == ((void *)NULL))) __PYX_ERR(0, 208, __pyx_L1_error)
-  __pyx_v_items = ((struct __pyx_t_9speedball_Item *)__pyx_t_4);
-
-  /* "speedball.pyx":209
- * 
- *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
- *     for i, item in enumerate(python_items):             # <<<<<<<<<<<<<<
- *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
+  /* "hypergen/ultragen.pyx":137
+ * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
+ *     cdef int i, j
+ *     hpg.html.append('<')             # <<<<<<<<<<<<<<
+ *     hpg.html.append(tag)
  * 
  */
-  __pyx_t_5 = 0;
-  if (likely(PyList_CheckExact(__pyx_v_python_items)) || PyTuple_CheckExact(__pyx_v_python_items)) {
-    __pyx_t_1 = __pyx_v_python_items; __Pyx_INCREF(__pyx_t_1); __pyx_t_3 = 0;
-    __pyx_t_6 = NULL;
-  } else {
-    __pyx_t_3 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_python_items); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 209, __pyx_L1_error)
-  }
-  for (;;) {
-    if (likely(!__pyx_t_6)) {
-      if (likely(PyList_CheckExact(__pyx_t_1))) {
-        if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_1)) break;
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_7 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 209, __pyx_L1_error)
-        #else
-        __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 209, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
-        #endif
-      } else {
-        if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_7 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_3); __Pyx_INCREF(__pyx_t_7); __pyx_t_3++; if (unlikely(0 < 0)) __PYX_ERR(0, 209, __pyx_L1_error)
-        #else
-        __pyx_t_7 = PySequence_ITEM(__pyx_t_1, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 209, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
-        #endif
+  (void)(__pyx_v_hpg.html.append(((char const *)"<")));
+
+  /* "hypergen/ultragen.pyx":138
+ *     cdef int i, j
+ *     hpg.html.append('<')
+ *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
+ * 
+ *     if attrs[0] != T:
+ */
+  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
+
+  /* "hypergen/ultragen.pyx":140
+ *     hpg.html.append(tag)
+ * 
+ *     if attrs[0] != T:             # <<<<<<<<<<<<<<
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
+ */
+  __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8hypergen_8ultragen_T) != 0);
+  if (__pyx_t_1) {
+
+    /* "hypergen/ultragen.pyx":141
+ * 
+ *     if attrs[0] != T:
+ *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
+ *             j = i + 1
+ *             if attrs[i] == T:
+ */
+    for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
+      __pyx_v_i = __pyx_t_2;
+
+      /* "hypergen/ultragen.pyx":142
+ *     if attrs[0] != T:
+ *         for i in range(0, 100, 2):
+ *             j = i + 1             # <<<<<<<<<<<<<<
+ *             if attrs[i] == T:
+ *                 break
+ */
+      __pyx_v_j = (__pyx_v_i + 1);
+
+      /* "hypergen/ultragen.pyx":143
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
+ *             if attrs[i] == T:             # <<<<<<<<<<<<<<
+ *                 break
+ *             else:
+ */
+      __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8hypergen_8ultragen_T) != 0);
+      if (__pyx_t_1) {
+
+        /* "hypergen/ultragen.pyx":144
+ *             j = i + 1
+ *             if attrs[i] == T:
+ *                 break             # <<<<<<<<<<<<<<
+ *             else:
+ *                 hpg.html.append(" ")
+ */
+        goto __pyx_L5_break;
+
+        /* "hypergen/ultragen.pyx":143
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
+ *             if attrs[i] == T:             # <<<<<<<<<<<<<<
+ *                 break
+ *             else:
+ */
       }
-    } else {
-      __pyx_t_7 = __pyx_t_6(__pyx_t_1);
-      if (unlikely(!__pyx_t_7)) {
-        PyObject* exc_type = PyErr_Occurred();
-        if (exc_type) {
-          if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 209, __pyx_L1_error)
-        }
-        break;
+
+      /* "hypergen/ultragen.pyx":146
+ *                 break
+ *             else:
+ *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
+ *                 hpg.html.append(attrs[i])
+ *                 hpg.html.append('="')
+ */
+      /*else*/ {
+        (void)(__pyx_v_hpg.html.append(((char const *)" ")));
+
+        /* "hypergen/ultragen.pyx":147
+ *             else:
+ *                 hpg.html.append(" ")
+ *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
+ *                 hpg.html.append('="')
+ *                 hpg.html.append(attrs[j])
+ */
+        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
+
+        /* "hypergen/ultragen.pyx":148
+ *                 hpg.html.append(" ")
+ *                 hpg.html.append(attrs[i])
+ *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
+ *                 hpg.html.append(attrs[j])
+ *                 hpg.html.append('"')
+ */
+        (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
+
+        /* "hypergen/ultragen.pyx":149
+ *                 hpg.html.append(attrs[i])
+ *                 hpg.html.append('="')
+ *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
+ *                 hpg.html.append('"')
+ * 
+ */
+        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
+
+        /* "hypergen/ultragen.pyx":150
+ *                 hpg.html.append('="')
+ *                 hpg.html.append(attrs[j])
+ *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
+ * 
+ *     hpg.html.append('>')
+ */
+        (void)(__pyx_v_hpg.html.append(((char const *)"\"")));
       }
-      __Pyx_GOTREF(__pyx_t_7);
     }
-    if (!(likely(PyDict_CheckExact(__pyx_t_7))||((__pyx_t_7) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_t_7)->tp_name), 0))) __PYX_ERR(0, 209, __pyx_L1_error)
-    __Pyx_XDECREF_SET(__pyx_v_item, ((PyObject*)__pyx_t_7));
-    __pyx_t_7 = 0;
-    __pyx_v_i = __pyx_t_5;
-    __pyx_t_5 = (__pyx_t_5 + 1);
+    __pyx_L5_break:;
 
-    /* "speedball.pyx":210
- *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
- *     for i, item in enumerate(python_items):
- *          items[i] =Item(item["is_completed"], item["description"], item["pk"])             # <<<<<<<<<<<<<<
+    /* "hypergen/ultragen.pyx":140
+ *     hpg.html.append(tag)
  * 
- *     a = time()
- */
-    if (unlikely(__pyx_v_item == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 210, __pyx_L1_error)
-    }
-    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_is_completed); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 210, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 210, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_8.is_completed = __pyx_t_9;
-    if (unlikely(__pyx_v_item == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 210, __pyx_L1_error)
-    }
-    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_description); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 210, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_10 = __pyx_convert_string_from_py_std__in_string(__pyx_t_7); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 210, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_8.description = __pyx_t_10;
-    if (unlikely(__pyx_v_item == Py_None)) {
-      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 210, __pyx_L1_error)
-    }
-    __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_v_item, __pyx_n_s_pk); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 210, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_t_7); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 210, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_8.pk = __pyx_t_9;
-    (__pyx_v_items[__pyx_v_i]) = __pyx_t_8;
-
-    /* "speedball.pyx":209
- * 
- *     items = <Item*>mem.alloc(len(python_items), sizeof(Item))
- *     for i, item in enumerate(python_items):             # <<<<<<<<<<<<<<
- *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
- * 
+ *     if attrs[0] != T:             # <<<<<<<<<<<<<<
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
  */
   }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "speedball.pyx":212
- *          items[i] =Item(item["is_completed"], item["description"], item["pk"])
+  /* "hypergen/ultragen.pyx":152
+ *                 hpg.html.append('"')
  * 
- *     a = time()             # <<<<<<<<<<<<<<
- *     prontotemplate(hpg, items, len(python_items))
- *     b = time()
+ *     hpg.html.append('>')             # <<<<<<<<<<<<<<
+ *     hpg.html.append(s)
+ *     hpg.html.append('</')
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_time); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 212, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_11 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
-    __pyx_t_11 = PyMethod_GET_SELF(__pyx_t_7);
-    if (likely(__pyx_t_11)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-      __Pyx_INCREF(__pyx_t_11);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_7, function);
-    }
-  }
-  __pyx_t_1 = (__pyx_t_11) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_11) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_v_a = __pyx_t_1;
-  __pyx_t_1 = 0;
+  (void)(__pyx_v_hpg.html.append(((char const *)">")));
 
-  /* "speedball.pyx":213
+  /* "hypergen/ultragen.pyx":153
  * 
- *     a = time()
- *     prontotemplate(hpg, items, len(python_items))             # <<<<<<<<<<<<<<
- *     b = time()
- *     print("runtime", (b - a) * 1000, "ms")
+ *     hpg.html.append('>')
+ *     hpg.html.append(s)             # <<<<<<<<<<<<<<
+ *     hpg.html.append('</')
+ *     hpg.html.append(tag)
  */
-  __pyx_t_3 = PyObject_Length(__pyx_v_python_items); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 213, __pyx_L1_error)
-  __pyx_f_9speedball_prontotemplate(__pyx_v_hpg, __pyx_v_items, __pyx_t_3);
+  (void)(__pyx_v_hpg.html.append(__pyx_v_s));
 
-  /* "speedball.pyx":214
- *     a = time()
- *     prontotemplate(hpg, items, len(python_items))
- *     b = time()             # <<<<<<<<<<<<<<
- *     print("runtime", (b - a) * 1000, "ms")
- *     return {
+  /* "hypergen/ultragen.pyx":154
+ *     hpg.html.append('>')
+ *     hpg.html.append(s)
+ *     hpg.html.append('</')             # <<<<<<<<<<<<<<
+ *     hpg.html.append(tag)
+ *     hpg.html.append('>\n')
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_time); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 214, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_11 = NULL;
-  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
-    __pyx_t_11 = PyMethod_GET_SELF(__pyx_t_7);
-    if (likely(__pyx_t_11)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
-      __Pyx_INCREF(__pyx_t_11);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_7, function);
-    }
-  }
-  __pyx_t_1 = (__pyx_t_11) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_11) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_v_b = __pyx_t_1;
-  __pyx_t_1 = 0;
+  (void)(__pyx_v_hpg.html.append(((char const *)"</")));
 
-  /* "speedball.pyx":215
- *     prontotemplate(hpg, items, len(python_items))
- *     b = time()
- *     print("runtime", (b - a) * 1000, "ms")             # <<<<<<<<<<<<<<
- *     return {
- *         "html": hpg.html,
- */
-  __pyx_t_1 = PyNumber_Subtract(__pyx_v_b, __pyx_v_a); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 215, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = PyNumber_Multiply(__pyx_t_1, __pyx_int_1000); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 215, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 215, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_n_s_runtime);
-  __Pyx_GIVEREF(__pyx_n_s_runtime);
-  PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_runtime);
-  __Pyx_GIVEREF(__pyx_t_7);
-  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_7);
-  __Pyx_INCREF(__pyx_n_s_ms);
-  __Pyx_GIVEREF(__pyx_n_s_ms);
-  PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_n_s_ms);
-  __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_1, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 215, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-
-  /* "speedball.pyx":216
- *     b = time()
- *     print("runtime", (b - a) * 1000, "ms")
- *     return {             # <<<<<<<<<<<<<<
- *         "html": hpg.html,
- *         "event_handler_callbacks": {k: json.loads(v) for k, v in dict(hpg.event_handler_callbacks).items()}
- */
-  __Pyx_XDECREF(__pyx_r);
-
-  /* "speedball.pyx":217
- *     print("runtime", (b - a) * 1000, "ms")
- *     return {
- *         "html": hpg.html,             # <<<<<<<<<<<<<<
- *         "event_handler_callbacks": {k: json.loads(v) for k, v in dict(hpg.event_handler_callbacks).items()}
- *     }
- */
-  __pyx_t_7 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 217, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 217, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_html, __pyx_t_1) < 0) __PYX_ERR(0, 217, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  { /* enter inner scope */
-
-    /* "speedball.pyx":218
- *     return {
- *         "html": hpg.html,
- *         "event_handler_callbacks": {k: json.loads(v) for k, v in dict(hpg.event_handler_callbacks).items()}             # <<<<<<<<<<<<<<
- *     }
- */
-    __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L7_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = 0;
-    __pyx_t_13 = __pyx_convert_unordered_map_to_py_std_3a__3a_string____std_3a__3a_string(__pyx_v_hpg.event_handler_callbacks); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 218, __pyx_L7_error)
-    __Pyx_GOTREF(__pyx_t_13);
-    __pyx_t_14 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyDict_Type)), __pyx_t_13); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 218, __pyx_L7_error)
-    __Pyx_GOTREF(__pyx_t_14);
-    __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-    __pyx_t_13 = __Pyx_dict_iterator(__pyx_t_14, 1, __pyx_n_s_items, (&__pyx_t_12), (&__pyx_t_5)); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 218, __pyx_L7_error)
-    __Pyx_GOTREF(__pyx_t_13);
-    __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-    __Pyx_XDECREF(__pyx_t_11);
-    __pyx_t_11 = __pyx_t_13;
-    __pyx_t_13 = 0;
-    while (1) {
-      __pyx_t_9 = __Pyx_dict_iter_next(__pyx_t_11, __pyx_t_12, &__pyx_t_3, &__pyx_t_13, &__pyx_t_14, NULL, __pyx_t_5);
-      if (unlikely(__pyx_t_9 == 0)) break;
-      if (unlikely(__pyx_t_9 == -1)) __PYX_ERR(0, 218, __pyx_L7_error)
-      __Pyx_GOTREF(__pyx_t_13);
-      __Pyx_GOTREF(__pyx_t_14);
-      __Pyx_XDECREF_SET(__pyx_7genexpr__pyx_v_k, __pyx_t_13);
-      __pyx_t_13 = 0;
-      __Pyx_XDECREF_SET(__pyx_7genexpr__pyx_v_v, __pyx_t_14);
-      __pyx_t_14 = 0;
-      __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_json); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 218, __pyx_L7_error)
-      __Pyx_GOTREF(__pyx_t_13);
-      __pyx_t_15 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_loads); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 218, __pyx_L7_error)
-      __Pyx_GOTREF(__pyx_t_15);
-      __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-      __pyx_t_13 = NULL;
-      if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_15))) {
-        __pyx_t_13 = PyMethod_GET_SELF(__pyx_t_15);
-        if (likely(__pyx_t_13)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_15);
-          __Pyx_INCREF(__pyx_t_13);
-          __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_15, function);
-        }
-      }
-      __pyx_t_14 = (__pyx_t_13) ? __Pyx_PyObject_Call2Args(__pyx_t_15, __pyx_t_13, __pyx_7genexpr__pyx_v_v) : __Pyx_PyObject_CallOneArg(__pyx_t_15, __pyx_7genexpr__pyx_v_v);
-      __Pyx_XDECREF(__pyx_t_13); __pyx_t_13 = 0;
-      if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 218, __pyx_L7_error)
-      __Pyx_GOTREF(__pyx_t_14);
-      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
-      if (unlikely(PyDict_SetItem(__pyx_t_1, (PyObject*)__pyx_7genexpr__pyx_v_k, (PyObject*)__pyx_t_14))) __PYX_ERR(0, 218, __pyx_L7_error)
-      __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-    __Pyx_XDECREF(__pyx_7genexpr__pyx_v_k); __pyx_7genexpr__pyx_v_k = 0;
-    __Pyx_XDECREF(__pyx_7genexpr__pyx_v_v); __pyx_7genexpr__pyx_v_v = 0;
-    goto __pyx_L10_exit_scope;
-    __pyx_L7_error:;
-    __Pyx_XDECREF(__pyx_7genexpr__pyx_v_k); __pyx_7genexpr__pyx_v_k = 0;
-    __Pyx_XDECREF(__pyx_7genexpr__pyx_v_v); __pyx_7genexpr__pyx_v_v = 0;
-    goto __pyx_L1_error;
-    __pyx_L10_exit_scope:;
-  } /* exit inner scope */
-  if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_event_handler_callbacks, __pyx_t_1) < 0) __PYX_ERR(0, 217, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_r = __pyx_t_7;
-  __pyx_t_7 = 0;
-  goto __pyx_L0;
-
-  /* "speedball.pyx":199
- *     pass
+  /* "hypergen/ultragen.pyx":155
+ *     hpg.html.append(s)
+ *     hpg.html.append('</')
+ *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
+ *     hpg.html.append('>\n')
  * 
- * def speedball(python_items):             # <<<<<<<<<<<<<<
- *     print ("----------------------------------------------------------------")
- *     cdef:
+ */
+  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
+
+  /* "hypergen/ultragen.pyx":156
+ *     hpg.html.append('</')
+ *     hpg.html.append(tag)
+ *     hpg.html.append('>\n')             # <<<<<<<<<<<<<<
+ * 
+ * # HTML elements
+ */
+  (void)(__pyx_v_hpg.html.append(((char const *)">\n")));
+
+  /* "hypergen/ultragen.pyx":135
+ * 
+ * # Base HTML element
+ * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int i, j
+ *     hpg.html.append('<')
  */
 
   /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_11);
-  __Pyx_XDECREF(__pyx_t_13);
-  __Pyx_XDECREF(__pyx_t_14);
-  __Pyx_XDECREF(__pyx_t_15);
-  __Pyx_AddTraceback("speedball.speedball", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XDECREF((PyObject *)__pyx_v_mem);
-  __Pyx_XDECREF(__pyx_v_item);
-  __Pyx_XDECREF(__pyx_v_a);
-  __Pyx_XDECREF(__pyx_v_b);
-  __Pyx_XDECREF(__pyx_7genexpr__pyx_v_k);
-  __Pyx_XDECREF(__pyx_7genexpr__pyx_v_v);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
+}
+
+/* "hypergen/ultragen.pyx":159
+ * 
+ * # HTML elements
+ * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"div", hpg, s, attrs)
+ * 
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_div(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+
+  /* "hypergen/ultragen.pyx":160
+ * # HTML elements
+ * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
+ *     element(<char*>"div", hpg, s, attrs)             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
+ */
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"div")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":159
+ * 
+ * # HTML elements
+ * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"div", hpg, s, attrs)
+ * 
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":162
+ *     element(<char*>"div", hpg, s, attrs)
+ * 
+ * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"b", hpg, s, attrs)
+ * 
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_b(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+
+  /* "hypergen/ultragen.pyx":163
+ * 
+ * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
+ *     element(<char*>"b", hpg, s, attrs)             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
+ */
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":162
+ *     element(<char*>"div", hpg, s, attrs)
+ * 
+ * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"b", hpg, s, attrs)
+ * 
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":165
+ *     element(<char*>"b", hpg, s, attrs)
+ * 
+ * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"button", hpg, s, attrs)
+ * 
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_button(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+
+  /* "hypergen/ultragen.pyx":166
+ * 
+ * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
+ *     element(<char*>"button", hpg, s, attrs)             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
+ */
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"button")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":165
+ *     element(<char*>"b", hpg, s, attrs)
+ * 
+ * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"button", hpg, s, attrs)
+ * 
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":168
+ *     element(<char*>"button", hpg, s, attrs)
+ * 
+ * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"tr", hpg, s, attrs)
+ * 
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+
+  /* "hypergen/ultragen.pyx":169
+ * 
+ * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
+ *     element(<char*>"tr", hpg, s, attrs)             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
+ */
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":168
+ *     element(<char*>"button", hpg, s, attrs)
+ * 
+ * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"tr", hpg, s, attrs)
+ * 
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":171
+ *     element(<char*>"tr", hpg, s, attrs)
+ * 
+ * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"tr", hpg, s, attrs)
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_td(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+
+  /* "hypergen/ultragen.pyx":172
+ * 
+ * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
+ *     element(<char*>"tr", hpg, s, attrs)             # <<<<<<<<<<<<<<
+ */
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":171
+ *     element(<char*>"tr", hpg, s, attrs)
+ * 
+ * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"tr", hpg, s, attrs)
+ */
+
+  /* function exit code */
 }
 
 /* "string.to_py":31
@@ -3656,6 +3007,414 @@ static std::string __pyx_convert_string_from_py_std__in_string(PyObject *__pyx_v
   return __pyx_r;
 }
 
+/* "map.from_py":174
+ * 
+ * @cname("__pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string")
+ * cdef map[X,Y] __pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string(object o) except *:             # <<<<<<<<<<<<<<
+ *     cdef dict d = o
+ *     cdef map[X,Y] m
+ */
+
+static std::unordered_map<std::string,std::string>  __pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string(PyObject *__pyx_v_o) {
+  PyObject *__pyx_v_d = 0;
+  std::unordered_map<std::string,std::string>  __pyx_v_m;
+  PyObject *__pyx_v_key = NULL;
+  PyObject *__pyx_v_value = NULL;
+  std::unordered_map<std::string,std::string>  __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  Py_ssize_t __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  int __pyx_t_4;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  int __pyx_t_7;
+  std::string __pyx_t_8;
+  std::string __pyx_t_9;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string", 0);
+
+  /* "map.from_py":175
+ * @cname("__pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string")
+ * cdef map[X,Y] __pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string(object o) except *:
+ *     cdef dict d = o             # <<<<<<<<<<<<<<
+ *     cdef map[X,Y] m
+ *     for key, value in d.iteritems():
+ */
+  if (!(likely(PyDict_CheckExact(__pyx_v_o))||((__pyx_v_o) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "dict", Py_TYPE(__pyx_v_o)->tp_name), 0))) __PYX_ERR(1, 175, __pyx_L1_error)
+  __pyx_t_1 = __pyx_v_o;
+  __Pyx_INCREF(__pyx_t_1);
+  __pyx_v_d = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "map.from_py":177
+ *     cdef dict d = o
+ *     cdef map[X,Y] m
+ *     for key, value in d.iteritems():             # <<<<<<<<<<<<<<
+ *         m.insert(pair[X,Y](<X>key, <Y>value))
+ *     return m
+ */
+  __pyx_t_2 = 0;
+  if (unlikely(__pyx_v_d == Py_None)) {
+    PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "iteritems");
+    __PYX_ERR(1, 177, __pyx_L1_error)
+  }
+  __pyx_t_5 = __Pyx_dict_iterator(__pyx_v_d, 1, __pyx_n_s_iteritems, (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 177, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_1);
+  __pyx_t_1 = __pyx_t_5;
+  __pyx_t_5 = 0;
+  while (1) {
+    __pyx_t_7 = __Pyx_dict_iter_next(__pyx_t_1, __pyx_t_3, &__pyx_t_2, &__pyx_t_5, &__pyx_t_6, NULL, __pyx_t_4);
+    if (unlikely(__pyx_t_7 == 0)) break;
+    if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(1, 177, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_5);
+    __pyx_t_5 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_6);
+    __pyx_t_6 = 0;
+
+    /* "map.from_py":178
+ *     cdef map[X,Y] m
+ *     for key, value in d.iteritems():
+ *         m.insert(pair[X,Y](<X>key, <Y>value))             # <<<<<<<<<<<<<<
+ *     return m
+ * 
+ */
+    __pyx_t_8 = __pyx_convert_string_from_py_std__in_string(__pyx_v_key); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 178, __pyx_L1_error)
+    __pyx_t_9 = __pyx_convert_string_from_py_std__in_string(__pyx_v_value); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 178, __pyx_L1_error)
+    __pyx_v_m.insert(std::pair<std::string,std::string> (((std::string)__pyx_t_8), ((std::string)__pyx_t_9)));
+  }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "map.from_py":179
+ *     for key, value in d.iteritems():
+ *         m.insert(pair[X,Y](<X>key, <Y>value))
+ *     return m             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_m;
+  goto __pyx_L0;
+
+  /* "map.from_py":174
+ * 
+ * @cname("__pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string")
+ * cdef map[X,Y] __pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string(object o) except *:             # <<<<<<<<<<<<<<
+ *     cdef dict d = o
+ *     cdef map[X,Y] m
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_AddTraceback("map.from_py.__pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_pretend_to_initialize(&__pyx_r);
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_d);
+  __Pyx_XDECREF(__pyx_v_key);
+  __Pyx_XDECREF(__pyx_v_value);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "FromPyStructUtility":11
+ * 
+ * @cname("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg")
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
+ *     cdef struct_type result
+ *     if not PyMapping_Check(obj):
+ */
+
+static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(PyObject *__pyx_v_obj) {
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_v_result;
+  PyObject *__pyx_v_value = NULL;
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_r;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  std::string __pyx_t_10;
+  std::unordered_map<std::string,std::string>  __pyx_t_11;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", 0);
+
+  /* "FromPyStructUtility":13
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:
+ *     cdef struct_type result
+ *     if not PyMapping_Check(obj):             # <<<<<<<<<<<<<<
+ *         PyErr_Format(TypeError, b"Expected %.16s, got %.200s", b"a mapping", Py_TYPE(obj).tp_name)
+ * 
+ */
+  __pyx_t_1 = ((!(PyMapping_Check(__pyx_v_obj) != 0)) != 0);
+  if (__pyx_t_1) {
+
+    /* "FromPyStructUtility":14
+ *     cdef struct_type result
+ *     if not PyMapping_Check(obj):
+ *         PyErr_Format(TypeError, b"Expected %.16s, got %.200s", b"a mapping", Py_TYPE(obj).tp_name)             # <<<<<<<<<<<<<<
+ * 
+ *     try:
+ */
+    __pyx_t_2 = PyErr_Format(__pyx_builtin_TypeError, ((char const *)"Expected %.16s, got %.200s"), ((char *)"a mapping"), Py_TYPE(__pyx_v_obj)->tp_name); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 14, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "FromPyStructUtility":13
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:
+ *     cdef struct_type result
+ *     if not PyMapping_Check(obj):             # <<<<<<<<<<<<<<
+ *         PyErr_Format(TypeError, b"Expected %.16s, got %.200s", b"a mapping", Py_TYPE(obj).tp_name)
+ * 
+ */
+  }
+
+  /* "FromPyStructUtility":16
+ *         PyErr_Format(TypeError, b"Expected %.16s, got %.200s", b"a mapping", Py_TYPE(obj).tp_name)
+ * 
+ *     try:             # <<<<<<<<<<<<<<
+ *         value = obj['html']
+ *     except KeyError:
+ */
+  {
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_3, &__pyx_t_4, &__pyx_t_5);
+    __Pyx_XGOTREF(__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_5);
+    /*try:*/ {
+
+      /* "FromPyStructUtility":17
+ * 
+ *     try:
+ *         value = obj['html']             # <<<<<<<<<<<<<<
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'html'")
+ */
+      __pyx_t_2 = __Pyx_PyObject_Dict_GetItem(__pyx_v_obj, __pyx_n_s_html); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 17, __pyx_L4_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_v_value = __pyx_t_2;
+      __pyx_t_2 = 0;
+
+      /* "FromPyStructUtility":16
+ *         PyErr_Format(TypeError, b"Expected %.16s, got %.200s", b"a mapping", Py_TYPE(obj).tp_name)
+ * 
+ *     try:             # <<<<<<<<<<<<<<
+ *         value = obj['html']
+ *     except KeyError:
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    goto __pyx_L9_try_end;
+    __pyx_L4_error:;
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "FromPyStructUtility":18
+ *     try:
+ *         value = obj['html']
+ *     except KeyError:             # <<<<<<<<<<<<<<
+ *         raise ValueError("No value specified for struct attribute 'html'")
+ *     result.html = value
+ */
+    __pyx_t_6 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_KeyError);
+    if (__pyx_t_6) {
+      __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_7, &__pyx_t_8) < 0) __PYX_ERR(1, 18, __pyx_L6_except_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_GOTREF(__pyx_t_8);
+
+      /* "FromPyStructUtility":19
+ *         value = obj['html']
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'html'")             # <<<<<<<<<<<<<<
+ *     result.html = value
+ *     try:
+ */
+      __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 19, __pyx_L6_except_error)
+      __Pyx_GOTREF(__pyx_t_9);
+      __Pyx_Raise(__pyx_t_9, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __PYX_ERR(1, 19, __pyx_L6_except_error)
+    }
+    goto __pyx_L6_except_error;
+    __pyx_L6_except_error:;
+
+    /* "FromPyStructUtility":16
+ *         PyErr_Format(TypeError, b"Expected %.16s, got %.200s", b"a mapping", Py_TYPE(obj).tp_name)
+ * 
+ *     try:             # <<<<<<<<<<<<<<
+ *         value = obj['html']
+ *     except KeyError:
+ */
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_ExceptionReset(__pyx_t_3, __pyx_t_4, __pyx_t_5);
+    goto __pyx_L1_error;
+    __pyx_L9_try_end:;
+  }
+
+  /* "FromPyStructUtility":20
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'html'")
+ *     result.html = value             # <<<<<<<<<<<<<<
+ *     try:
+ *         value = obj['event_handler_callbacks']
+ */
+  __pyx_t_10 = __pyx_convert_string_from_py_std__in_string(__pyx_v_value); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 20, __pyx_L1_error)
+  __pyx_v_result.html = __pyx_t_10;
+
+  /* "FromPyStructUtility":21
+ *         raise ValueError("No value specified for struct attribute 'html'")
+ *     result.html = value
+ *     try:             # <<<<<<<<<<<<<<
+ *         value = obj['event_handler_callbacks']
+ *     except KeyError:
+ */
+  {
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ExceptionSave(&__pyx_t_5, &__pyx_t_4, &__pyx_t_3);
+    __Pyx_XGOTREF(__pyx_t_5);
+    __Pyx_XGOTREF(__pyx_t_4);
+    __Pyx_XGOTREF(__pyx_t_3);
+    /*try:*/ {
+
+      /* "FromPyStructUtility":22
+ *     result.html = value
+ *     try:
+ *         value = obj['event_handler_callbacks']             # <<<<<<<<<<<<<<
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'event_handler_callbacks'")
+ */
+      __pyx_t_8 = __Pyx_PyObject_Dict_GetItem(__pyx_v_obj, __pyx_n_s_event_handler_callbacks); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 22, __pyx_L12_error)
+      __Pyx_GOTREF(__pyx_t_8);
+      __Pyx_DECREF_SET(__pyx_v_value, __pyx_t_8);
+      __pyx_t_8 = 0;
+
+      /* "FromPyStructUtility":21
+ *         raise ValueError("No value specified for struct attribute 'html'")
+ *     result.html = value
+ *     try:             # <<<<<<<<<<<<<<
+ *         value = obj['event_handler_callbacks']
+ *     except KeyError:
+ */
+    }
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    goto __pyx_L17_try_end;
+    __pyx_L12_error:;
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+
+    /* "FromPyStructUtility":23
+ *     try:
+ *         value = obj['event_handler_callbacks']
+ *     except KeyError:             # <<<<<<<<<<<<<<
+ *         raise ValueError("No value specified for struct attribute 'event_handler_callbacks'")
+ *     result.event_handler_callbacks = value
+ */
+    __pyx_t_6 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_KeyError);
+    if (__pyx_t_6) {
+      __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_7, &__pyx_t_2) < 0) __PYX_ERR(1, 23, __pyx_L14_except_error)
+      __Pyx_GOTREF(__pyx_t_8);
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_GOTREF(__pyx_t_2);
+
+      /* "FromPyStructUtility":24
+ *         value = obj['event_handler_callbacks']
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'event_handler_callbacks'")             # <<<<<<<<<<<<<<
+ *     result.event_handler_callbacks = value
+ *     return result
+ */
+      __pyx_t_9 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(1, 24, __pyx_L14_except_error)
+      __Pyx_GOTREF(__pyx_t_9);
+      __Pyx_Raise(__pyx_t_9, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __PYX_ERR(1, 24, __pyx_L14_except_error)
+    }
+    goto __pyx_L14_except_error;
+    __pyx_L14_except_error:;
+
+    /* "FromPyStructUtility":21
+ *         raise ValueError("No value specified for struct attribute 'html'")
+ *     result.html = value
+ *     try:             # <<<<<<<<<<<<<<
+ *         value = obj['event_handler_callbacks']
+ *     except KeyError:
+ */
+    __Pyx_XGIVEREF(__pyx_t_5);
+    __Pyx_XGIVEREF(__pyx_t_4);
+    __Pyx_XGIVEREF(__pyx_t_3);
+    __Pyx_ExceptionReset(__pyx_t_5, __pyx_t_4, __pyx_t_3);
+    goto __pyx_L1_error;
+    __pyx_L17_try_end:;
+  }
+
+  /* "FromPyStructUtility":25
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'event_handler_callbacks'")
+ *     result.event_handler_callbacks = value             # <<<<<<<<<<<<<<
+ *     return result
+ * 
+ */
+  __pyx_t_11 = __pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string(__pyx_v_value); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 25, __pyx_L1_error)
+  __pyx_v_result.event_handler_callbacks = __pyx_t_11;
+
+  /* "FromPyStructUtility":26
+ *         raise ValueError("No value specified for struct attribute 'event_handler_callbacks'")
+ *     result.event_handler_callbacks = value
+ *     return result             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = __pyx_v_result;
+  goto __pyx_L0;
+
+  /* "FromPyStructUtility":11
+ * 
+ * @cname("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg")
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
+ *     cdef struct_type result
+ *     if not PyMapping_Check(obj):
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_9);
+  __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_pretend_to_initialize(&__pyx_r);
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_value);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
 static PyMethodDef __pyx_methods[] = {
   {0, 0, 0, 0}
 };
@@ -3663,17 +3422,17 @@ static PyMethodDef __pyx_methods[] = {
 #if PY_MAJOR_VERSION >= 3
 #if CYTHON_PEP489_MULTI_PHASE_INIT
 static PyObject* __pyx_pymod_create(PyObject *spec, PyModuleDef *def); /*proto*/
-static int __pyx_pymod_exec_speedball(PyObject* module); /*proto*/
+static int __pyx_pymod_exec_ultragen(PyObject* module); /*proto*/
 static PyModuleDef_Slot __pyx_moduledef_slots[] = {
   {Py_mod_create, (void*)__pyx_pymod_create},
-  {Py_mod_exec, (void*)__pyx_pymod_exec_speedball},
+  {Py_mod_exec, (void*)__pyx_pymod_exec_ultragen},
   {0, NULL}
 };
 #endif
 
 static struct PyModuleDef __pyx_moduledef = {
     PyModuleDef_HEAD_INIT,
-    "speedball",
+    "ultragen",
     0, /* m_doc */
   #if CYTHON_PEP489_MULTI_PHASE_INIT
     0, /* m_size */
@@ -3702,49 +3461,27 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
-  {&__pyx_kp_s_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 0},
-  {&__pyx_n_s_a, __pyx_k_a, sizeof(__pyx_k_a), 0, 0, 1, 1},
-  {&__pyx_n_s_b, __pyx_k_b, sizeof(__pyx_k_b), 0, 0, 1, 1},
+  {&__pyx_n_s_KeyError, __pyx_k_KeyError, sizeof(__pyx_k_KeyError), 0, 0, 1, 1},
+  {&__pyx_kp_s_No_value_specified_for_struct_at, __pyx_k_No_value_specified_for_struct_at, sizeof(__pyx_k_No_value_specified_for_struct_at), 0, 0, 1, 0},
+  {&__pyx_kp_s_No_value_specified_for_struct_at_2, __pyx_k_No_value_specified_for_struct_at_2, sizeof(__pyx_k_No_value_specified_for_struct_at_2), 0, 0, 1, 0},
+  {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
+  {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
-  {&__pyx_n_s_delete_item, __pyx_k_delete_item, sizeof(__pyx_k_delete_item), 0, 0, 1, 1},
-  {&__pyx_n_s_description, __pyx_k_description, sizeof(__pyx_k_description), 0, 0, 1, 1},
-  {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
   {&__pyx_n_s_event_handler_callbacks, __pyx_k_event_handler_callbacks, sizeof(__pyx_k_event_handler_callbacks), 0, 0, 1, 1},
-  {&__pyx_n_s_hpg, __pyx_k_hpg, sizeof(__pyx_k_hpg), 0, 0, 1, 1},
   {&__pyx_n_s_html, __pyx_k_html, sizeof(__pyx_k_html), 0, 0, 1, 1},
-  {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
-  {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
-  {&__pyx_n_s_is_completed, __pyx_k_is_completed, sizeof(__pyx_k_is_completed), 0, 0, 1, 1},
-  {&__pyx_n_s_item, __pyx_k_item, sizeof(__pyx_k_item), 0, 0, 1, 1},
-  {&__pyx_n_s_item_id, __pyx_k_item_id, sizeof(__pyx_k_item_id), 0, 0, 1, 1},
-  {&__pyx_n_s_items, __pyx_k_items, sizeof(__pyx_k_items), 0, 0, 1, 1},
-  {&__pyx_n_s_json, __pyx_k_json, sizeof(__pyx_k_json), 0, 0, 1, 1},
-  {&__pyx_n_s_k, __pyx_k_k, sizeof(__pyx_k_k), 0, 0, 1, 1},
-  {&__pyx_n_s_loads, __pyx_k_loads, sizeof(__pyx_k_loads), 0, 0, 1, 1},
+  {&__pyx_n_s_iteritems, __pyx_k_iteritems, sizeof(__pyx_k_iteritems), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
-  {&__pyx_n_s_mem, __pyx_k_mem, sizeof(__pyx_k_mem), 0, 0, 1, 1},
-  {&__pyx_n_s_ms, __pyx_k_ms, sizeof(__pyx_k_ms), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
-  {&__pyx_n_s_other_id, __pyx_k_other_id, sizeof(__pyx_k_other_id), 0, 0, 1, 1},
-  {&__pyx_n_s_pk, __pyx_k_pk, sizeof(__pyx_k_pk), 0, 0, 1, 1},
-  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
-  {&__pyx_n_s_python_items, __pyx_k_python_items, sizeof(__pyx_k_python_items), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
-  {&__pyx_n_s_request, __pyx_k_request, sizeof(__pyx_k_request), 0, 0, 1, 1},
-  {&__pyx_n_s_runtime, __pyx_k_runtime, sizeof(__pyx_k_runtime), 0, 0, 1, 1},
-  {&__pyx_n_s_speedball, __pyx_k_speedball, sizeof(__pyx_k_speedball), 0, 0, 1, 1},
-  {&__pyx_kp_s_speedball_pyx, __pyx_k_speedball_pyx, sizeof(__pyx_k_speedball_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
-  {&__pyx_n_s_time, __pyx_k_time, sizeof(__pyx_k_time), 0, 0, 1, 1},
-  {&__pyx_n_s_v, __pyx_k_v, sizeof(__pyx_k_v), 0, 0, 1, 1},
-  {&__pyx_n_s_who_is_nice_Str, __pyx_k_who_is_nice_Str, sizeof(__pyx_k_who_is_nice_Str), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 55, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 200, __pyx_L1_error)
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) __PYX_ERR(0, 209, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 14, __pyx_L1_error)
+  __pyx_builtin_KeyError = __Pyx_GetBuiltinName(__pyx_n_s_KeyError); if (!__pyx_builtin_KeyError) __PYX_ERR(1, 18, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 19, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -3754,40 +3491,27 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "speedball.pyx":200
- * 
- * def speedball(python_items):
- *     print ("----------------------------------------------------------------")             # <<<<<<<<<<<<<<
- *     cdef:
- *         unordered_map [string, string] event_handler_callbacks
+  /* "FromPyStructUtility":19
+ *         value = obj['html']
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'html'")             # <<<<<<<<<<<<<<
+ *     result.html = value
+ *     try:
  */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_s_); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 200, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_No_value_specified_for_struct_at); if (unlikely(!__pyx_tuple_)) __PYX_ERR(1, 19, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple_);
+  __Pyx_GIVEREF(__pyx_tuple_);
+
+  /* "FromPyStructUtility":24
+ *         value = obj['event_handler_callbacks']
+ *     except KeyError:
+ *         raise ValueError("No value specified for struct attribute 'event_handler_callbacks'")             # <<<<<<<<<<<<<<
+ *     result.event_handler_callbacks = value
+ *     return result
+ */
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_s_No_value_specified_for_struct_at_2); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(1, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
-
-  /* "speedball.pyx":195
- * 
- * # @hypergen_callback(...)
- * def delete_item(request, item_id, other_id, who_is_nice_Str):             # <<<<<<<<<<<<<<
- *     # reverse url = "/todos/delete_item"
- *     pass
- */
-  __pyx_tuple__3 = PyTuple_Pack(4, __pyx_n_s_request, __pyx_n_s_item_id, __pyx_n_s_other_id, __pyx_n_s_who_is_nice_Str); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 195, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__3);
-  __Pyx_GIVEREF(__pyx_tuple__3);
-  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(4, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__3, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_delete_item, 195, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(0, 195, __pyx_L1_error)
-
-  /* "speedball.pyx":199
- *     pass
- * 
- * def speedball(python_items):             # <<<<<<<<<<<<<<
- *     print ("----------------------------------------------------------------")
- *     cdef:
- */
-  __pyx_tuple__5 = PyTuple_Pack(11, __pyx_n_s_python_items, __pyx_n_s_event_handler_callbacks, __pyx_n_s_mem, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_item, __pyx_n_s_items, __pyx_n_s_a, __pyx_n_s_b, __pyx_n_s_k, __pyx_n_s_v); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 199, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
-  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(1, 0, 11, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__5, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_speedball_pyx, __pyx_n_s_speedball, 199, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 199, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -3797,7 +3521,6 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 
 static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  __pyx_int_1000 = PyInt_FromLong(1000); if (unlikely(!__pyx_int_1000)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -3829,10 +3552,29 @@ static int __Pyx_modinit_variable_export_code(void) {
 
 static int __Pyx_modinit_function_export_code(void) {
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_function_export_code", 0);
   /*--- Function export code ---*/
+  if (__Pyx_ExportFunction("make_hpg", (void (*)(void))__pyx_f_8hypergen_8ultragen_make_hpg, "struct __pyx_t_8hypergen_8ultragen_Hpg (void)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("make_cb_opts", (void (*)(void))__pyx_f_8hypergen_8ultragen_make_cb_opts, "struct __pyx_t_8hypergen_8ultragen_CbOpts (std::string)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("cb", (void (*)(void))__pyx_f_8hypergen_8ultragen_cb, "std::string (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string, std::string, std::string *, struct __pyx_t_8hypergen_8ultragen_CbOpts)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("i2s", (void (*)(void))__pyx_f_8hypergen_8ultragen_i2s, "std::string (int)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("arg_i", (void (*)(void))__pyx_f_8hypergen_8ultragen_arg_i, "std::string (int)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("arg_s", (void (*)(void))__pyx_f_8hypergen_8ultragen_arg_s, "std::string (std::string)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("arg_el", (void (*)(void))__pyx_f_8hypergen_8ultragen_arg_el, "std::string (std::string, struct __pyx_t_8hypergen_8ultragen_ArgElOpts)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("element", (void (*)(void))__pyx_f_8hypergen_8ultragen_element, "void (std::string, struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("div", (void (*)(void))__pyx_f_8hypergen_8ultragen_div, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("b", (void (*)(void))__pyx_f_8hypergen_8ultragen_b, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("button", (void (*)(void))__pyx_f_8hypergen_8ultragen_button, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("tr", (void (*)(void))__pyx_f_8hypergen_8ultragen_tr, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("td", (void (*)(void))__pyx_f_8hypergen_8ultragen_td, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
+  __pyx_L1_error:;
+  __Pyx_RefNannyFinishContext();
+  return -1;
 }
 
 static int __Pyx_modinit_type_init_code(void) {
@@ -3908,11 +3650,11 @@ static int __Pyx_modinit_function_import_code(void) {
 
 
 #if PY_MAJOR_VERSION < 3
-__Pyx_PyMODINIT_FUNC initspeedball(void) CYTHON_SMALL_CODE; /*proto*/
-__Pyx_PyMODINIT_FUNC initspeedball(void)
+__Pyx_PyMODINIT_FUNC initultragen(void) CYTHON_SMALL_CODE; /*proto*/
+__Pyx_PyMODINIT_FUNC initultragen(void)
 #else
-__Pyx_PyMODINIT_FUNC PyInit_speedball(void) CYTHON_SMALL_CODE; /*proto*/
-__Pyx_PyMODINIT_FUNC PyInit_speedball(void)
+__Pyx_PyMODINIT_FUNC PyInit_ultragen(void) CYTHON_SMALL_CODE; /*proto*/
+__Pyx_PyMODINIT_FUNC PyInit_ultragen(void)
 #if CYTHON_PEP489_MULTI_PHASE_INIT
 {
   return PyModuleDef_Init(&__pyx_moduledef);
@@ -3979,12 +3721,11 @@ bad:
 }
 
 
-static CYTHON_SMALL_CODE int __pyx_pymod_exec_speedball(PyObject *__pyx_pyinit_module)
+static CYTHON_SMALL_CODE int __pyx_pymod_exec_ultragen(PyObject *__pyx_pyinit_module)
 #endif
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -3992,7 +3733,7 @@ static CYTHON_SMALL_CODE int __pyx_pymod_exec_speedball(PyObject *__pyx_pyinit_m
   #if CYTHON_PEP489_MULTI_PHASE_INIT
   if (__pyx_m) {
     if (__pyx_m == __pyx_pyinit_module) return 0;
-    PyErr_SetString(PyExc_RuntimeError, "Module 'speedball' has already been imported. Re-initialisation is not supported.");
+    PyErr_SetString(PyExc_RuntimeError, "Module 'ultragen' has already been imported. Re-initialisation is not supported.");
     return -1;
   }
   #elif PY_MAJOR_VERSION >= 3
@@ -4007,7 +3748,7 @@ if (!__Pyx_RefNanny) {
       Py_FatalError("failed to import 'refnanny' module");
 }
 #endif
-  __Pyx_RefNannySetupContext("__Pyx_PyMODINIT_FUNC PyInit_speedball(void)", 0);
+  __Pyx_RefNannySetupContext("__Pyx_PyMODINIT_FUNC PyInit_ultragen(void)", 0);
   if (__Pyx_check_binary_version() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #ifdef __Pxy_PyFrame_Initialize_Offsets
   __Pxy_PyFrame_Initialize_Offsets();
@@ -4046,7 +3787,7 @@ if (!__Pyx_RefNanny) {
   Py_INCREF(__pyx_m);
   #else
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("speedball", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("ultragen", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -4064,14 +3805,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_speedball) {
+  if (__pyx_module_is_main_hypergen__ultragen) {
     if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name, __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "speedball")) {
-      if (unlikely(PyDict_SetItemString(modules, "speedball", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "hypergen.ultragen")) {
+      if (unlikely(PyDict_SetItemString(modules, "hypergen.ultragen", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -4082,7 +3823,7 @@ if (!__Pyx_RefNanny) {
   /*--- Global type/function init code ---*/
   (void)__Pyx_modinit_global_init_code();
   (void)__Pyx_modinit_variable_export_code();
-  (void)__Pyx_modinit_function_export_code();
+  if (unlikely(__Pyx_modinit_function_export_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
   (void)__Pyx_modinit_type_init_code();
   if (unlikely(__Pyx_modinit_type_import_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
   (void)__Pyx_modinit_variable_import_code();
@@ -4092,97 +3833,31 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "speedball.pyx":3
- * # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str
- * # distutils: language=c++
- * import json             # <<<<<<<<<<<<<<
- * from libcpp.vector cimport vector
- * from libcpp.string cimport string
- */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_json, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_json, __pyx_t_1) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "speedball.pyx":12
- * 
- * from cymem.cymem cimport Pool
- * from time import time             # <<<<<<<<<<<<<<
- * 
- * ctypedef char* s
- */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(__pyx_n_s_time);
-  __Pyx_GIVEREF(__pyx_n_s_time);
-  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_time);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_time, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_time, __pyx_t_1) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "speedball.pyx":17
+  /* "hypergen/ultragen.pyx":13
  * 
  * cdef:
- *     string T = <char*>"__TERM__"             # <<<<<<<<<<<<<<
- *     int T_int = -1 # TODO: Longer int!
+ *     string T = <char*>"__TERM__" # Terminate list of strings             # <<<<<<<<<<<<<<
  * 
+ * # Hypergen state passed around to everything
  */
-  __pyx_v_9speedball_T = ((char *)((char *)"__TERM__"));
+  __pyx_v_8hypergen_8ultragen_T = ((char *)((char *)"__TERM__"));
 
-  /* "speedball.pyx":18
- * cdef:
- *     string T = <char*>"__TERM__"
- *     int T_int = -1 # TODO: Longer int!             # <<<<<<<<<<<<<<
- * 
- * cdef struct Item:
- */
-  __pyx_v_9speedball_T_int = -1;
-
-  /* "speedball.pyx":195
- * 
- * # @hypergen_callback(...)
- * def delete_item(request, item_id, other_id, who_is_nice_Str):             # <<<<<<<<<<<<<<
- *     # reverse url = "/todos/delete_item"
- *     pass
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9speedball_1delete_item, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 195, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_delete_item, __pyx_t_2) < 0) __PYX_ERR(0, 195, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "speedball.pyx":199
- *     pass
- * 
- * def speedball(python_items):             # <<<<<<<<<<<<<<
- *     print ("----------------------------------------------------------------")
- *     cdef:
- */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_9speedball_3speedball, NULL, __pyx_n_s_speedball); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_speedball, __pyx_t_2) < 0) __PYX_ERR(0, 199, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-  /* "speedball.pyx":1
+  /* "hypergen/ultragen.pyx":1
  * # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str             # <<<<<<<<<<<<<<
  * # distutils: language=c++
- * import json
+ * from libcpp.string cimport string
  */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "string.from_py":13
+  /* "FromPyStructUtility":11
  * 
- * @cname("__pyx_convert_string_from_py_std__in_string")
- * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t length = 0
- *     cdef const char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
+ * @cname("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg")
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
+ *     cdef struct_type result
+ *     if not PyMapping_Check(obj):
  */
 
   /*--- Wrapped vars code ---*/
@@ -4190,14 +3865,13 @@ if (!__Pyx_RefNanny) {
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init speedball", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init hypergen.ultragen", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_CLEAR(__pyx_m);
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init speedball");
+    PyErr_SetString(PyExc_ImportError, "init hypergen.ultragen");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -4256,167 +3930,106 @@ static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
     return result;
 }
 
-/* RaiseArgTupleInvalid */
-static void __Pyx_RaiseArgtupleInvalid(
-    const char* func_name,
-    int exact,
-    Py_ssize_t num_min,
-    Py_ssize_t num_max,
-    Py_ssize_t num_found)
-{
-    Py_ssize_t num_expected;
-    const char *more_or_less;
-    if (num_found < num_min) {
-        num_expected = num_min;
-        more_or_less = "at least";
+/* PyErrFetchRestore */
+#if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    tmp_type = tstate->curexc_type;
+    tmp_value = tstate->curexc_value;
+    tmp_tb = tstate->curexc_traceback;
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    *type = tstate->curexc_type;
+    *value = tstate->curexc_value;
+    *tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+}
+#endif
+
+/* WriteUnraisableException */
+static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
+                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
+                                  int full_traceback, CYTHON_UNUSED int nogil) {
+    PyObject *old_exc, *old_val, *old_tb;
+    PyObject *ctx;
+    __Pyx_PyThreadState_declare
+#ifdef WITH_THREAD
+    PyGILState_STATE state;
+    if (nogil)
+        state = PyGILState_Ensure();
+#ifdef _MSC_VER
+    else state = (PyGILState_STATE)-1;
+#endif
+#endif
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
+    if (full_traceback) {
+        Py_XINCREF(old_exc);
+        Py_XINCREF(old_val);
+        Py_XINCREF(old_tb);
+        __Pyx_ErrRestore(old_exc, old_val, old_tb);
+        PyErr_PrintEx(1);
+    }
+    #if PY_MAJOR_VERSION < 3
+    ctx = PyString_FromString(name);
+    #else
+    ctx = PyUnicode_FromString(name);
+    #endif
+    __Pyx_ErrRestore(old_exc, old_val, old_tb);
+    if (!ctx) {
+        PyErr_WriteUnraisable(Py_None);
     } else {
-        num_expected = num_max;
-        more_or_less = "at most";
+        PyErr_WriteUnraisable(ctx);
+        Py_DECREF(ctx);
     }
-    if (exact) {
-        more_or_less = "exactly";
-    }
-    PyErr_Format(PyExc_TypeError,
-                 "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
-                 func_name, more_or_less, num_expected,
-                 (num_expected == 1) ? "" : "s", num_found);
+#ifdef WITH_THREAD
+    if (nogil)
+        PyGILState_Release(state);
+#endif
 }
 
-/* RaiseDoubleKeywords */
-static void __Pyx_RaiseDoubleKeywordsError(
-    const char* func_name,
-    PyObject* kw_name)
-{
-    PyErr_Format(PyExc_TypeError,
-        #if PY_MAJOR_VERSION >= 3
-        "%s() got multiple values for keyword argument '%U'", func_name, kw_name);
-        #else
-        "%s() got multiple values for keyword argument '%s'", func_name,
-        PyString_AsString(kw_name));
-        #endif
-}
-
-/* ParseKeywords */
-static int __Pyx_ParseOptionalKeywords(
-    PyObject *kwds,
-    PyObject **argnames[],
-    PyObject *kwds2,
-    PyObject *values[],
-    Py_ssize_t num_pos_args,
-    const char* function_name)
-{
-    PyObject *key = 0, *value = 0;
-    Py_ssize_t pos = 0;
-    PyObject*** name;
-    PyObject*** first_kw_arg = argnames + num_pos_args;
-    while (PyDict_Next(kwds, &pos, &key, &value)) {
-        name = first_kw_arg;
-        while (*name && (**name != key)) name++;
-        if (*name) {
-            values[name-argnames] = value;
-            continue;
-        }
-        name = first_kw_arg;
-        #if PY_MAJOR_VERSION < 3
-        if (likely(PyString_Check(key))) {
-            while (*name) {
-                if ((CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**name) == PyString_GET_SIZE(key))
-                        && _PyString_Eq(**name, key)) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    if ((**argname == key) || (
-                            (CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**argname) == PyString_GET_SIZE(key))
-                             && _PyString_Eq(**argname, key))) {
-                        goto arg_passed_twice;
-                    }
-                    argname++;
-                }
-            }
-        } else
-        #endif
-        if (likely(PyUnicode_Check(key))) {
-            while (*name) {
-                int cmp = (**name == key) ? 0 :
-                #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                    (__Pyx_PyUnicode_GET_LENGTH(**name) != __Pyx_PyUnicode_GET_LENGTH(key)) ? 1 :
-                #endif
-                    PyUnicode_Compare(**name, key);
-                if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                if (cmp == 0) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    int cmp = (**argname == key) ? 0 :
-                    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                        (__Pyx_PyUnicode_GET_LENGTH(**argname) != __Pyx_PyUnicode_GET_LENGTH(key)) ? 1 :
-                    #endif
-                        PyUnicode_Compare(**argname, key);
-                    if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                    if (cmp == 0) goto arg_passed_twice;
-                    argname++;
-                }
-            }
-        } else
-            goto invalid_keyword_type;
-        if (kwds2) {
-            if (unlikely(PyDict_SetItem(kwds2, key, value))) goto bad;
+/* IterFinish */
+static CYTHON_INLINE int __Pyx_IterFinish(void) {
+#if CYTHON_FAST_THREAD_STATE
+    PyThreadState *tstate = __Pyx_PyThreadState_Current;
+    PyObject* exc_type = tstate->curexc_type;
+    if (unlikely(exc_type)) {
+        if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) {
+            PyObject *exc_value, *exc_tb;
+            exc_value = tstate->curexc_value;
+            exc_tb = tstate->curexc_traceback;
+            tstate->curexc_type = 0;
+            tstate->curexc_value = 0;
+            tstate->curexc_traceback = 0;
+            Py_DECREF(exc_type);
+            Py_XDECREF(exc_value);
+            Py_XDECREF(exc_tb);
+            return 0;
         } else {
-            goto invalid_keyword;
+            return -1;
         }
     }
     return 0;
-arg_passed_twice:
-    __Pyx_RaiseDoubleKeywordsError(function_name, key);
-    goto bad;
-invalid_keyword_type:
-    PyErr_Format(PyExc_TypeError,
-        "%.200s() keywords must be strings", function_name);
-    goto bad;
-invalid_keyword:
-    PyErr_Format(PyExc_TypeError,
-    #if PY_MAJOR_VERSION < 3
-        "%.200s() got an unexpected keyword argument '%.200s'",
-        function_name, PyString_AsString(key));
-    #else
-        "%s() got an unexpected keyword argument '%U'",
-        function_name, key);
-    #endif
-bad:
-    return -1;
-}
-
-/* PyObjectCall */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
+#else
+    if (unlikely(PyErr_Occurred())) {
+        if (likely(PyErr_ExceptionMatches(PyExc_StopIteration))) {
+            PyErr_Clear();
+            return 0;
+        } else {
+            return -1;
+        }
     }
-    return result;
-}
+    return 0;
 #endif
+}
 
 /* PyFunctionFastCall */
 #if CYTHON_FAST_PYCALL
@@ -4537,6 +4150,26 @@ done:
 #endif
 #endif
 
+/* PyObjectCall */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
 /* PyObjectCallMethO */
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
@@ -4578,91 +4211,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
     return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
 }
 #endif
-
-/* DictGetItem */
-#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
-static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key) {
-    PyObject *value;
-    value = PyDict_GetItemWithError(d, key);
-    if (unlikely(!value)) {
-        if (!PyErr_Occurred()) {
-            if (unlikely(PyTuple_Check(key))) {
-                PyObject* args = PyTuple_Pack(1, key);
-                if (likely(args)) {
-                    PyErr_SetObject(PyExc_KeyError, args);
-                    Py_DECREF(args);
-                }
-            } else {
-                PyErr_SetObject(PyExc_KeyError, key);
-            }
-        }
-        return NULL;
-    }
-    Py_INCREF(value);
-    return value;
-}
-#endif
-
-/* PyDictVersioning */
-#if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj) {
-    PyObject *dict = Py_TYPE(obj)->tp_dict;
-    return likely(dict) ? __PYX_GET_DICT_VERSION(dict) : 0;
-}
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj) {
-    PyObject **dictptr = NULL;
-    Py_ssize_t offset = Py_TYPE(obj)->tp_dictoffset;
-    if (offset) {
-#if CYTHON_COMPILING_IN_CPYTHON
-        dictptr = (likely(offset > 0)) ? (PyObject **) ((char *)obj + offset) : _PyObject_GetDictPtr(obj);
-#else
-        dictptr = _PyObject_GetDictPtr(obj);
-#endif
-    }
-    return (dictptr && *dictptr) ? __PYX_GET_DICT_VERSION(*dictptr) : 0;
-}
-static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version) {
-    PyObject *dict = Py_TYPE(obj)->tp_dict;
-    if (unlikely(!dict) || unlikely(tp_dict_version != __PYX_GET_DICT_VERSION(dict)))
-        return 0;
-    return obj_dict_version == __Pyx_get_object_dict_version(obj);
-}
-#endif
-
-/* GetModuleGlobalName */
-#if CYTHON_USE_DICT_VERSIONS
-static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_version, PyObject **dict_cached_value)
-#else
-static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name)
-#endif
-{
-    PyObject *result;
-#if !CYTHON_AVOID_BORROWED_REFS
-#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030500A1
-    result = _PyDict_GetItem_KnownHash(__pyx_d, name, ((PyASCIIObject *) name)->hash);
-    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
-    if (likely(result)) {
-        return __Pyx_NewRef(result);
-    } else if (unlikely(PyErr_Occurred())) {
-        return NULL;
-    }
-#else
-    result = PyDict_GetItem(__pyx_d, name);
-    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
-    if (likely(result)) {
-        return __Pyx_NewRef(result);
-    }
-#endif
-#else
-    result = PyObject_GetItem(__pyx_d, name);
-    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
-    if (likely(result)) {
-        return __Pyx_NewRef(result);
-    }
-    PyErr_Clear();
-#endif
-    return __Pyx_GetBuiltinName(name);
-}
 
 /* PyCFunctionFastCall */
 #if CYTHON_FAST_PYCCALL
@@ -4726,41 +4274,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
     return result;
 }
 #endif
-
-/* IterFinish */
-static CYTHON_INLINE int __Pyx_IterFinish(void) {
-#if CYTHON_FAST_THREAD_STATE
-    PyThreadState *tstate = __Pyx_PyThreadState_Current;
-    PyObject* exc_type = tstate->curexc_type;
-    if (unlikely(exc_type)) {
-        if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) {
-            PyObject *exc_value, *exc_tb;
-            exc_value = tstate->curexc_value;
-            exc_tb = tstate->curexc_traceback;
-            tstate->curexc_type = 0;
-            tstate->curexc_value = 0;
-            tstate->curexc_traceback = 0;
-            Py_DECREF(exc_type);
-            Py_XDECREF(exc_value);
-            Py_XDECREF(exc_tb);
-            return 0;
-        } else {
-            return -1;
-        }
-    }
-    return 0;
-#else
-    if (unlikely(PyErr_Occurred())) {
-        if (likely(PyErr_ExceptionMatches(PyExc_StopIteration))) {
-            PyErr_Clear();
-            return 0;
-        } else {
-            return -1;
-        }
-    }
-    return 0;
-#endif
-}
 
 /* PyObjectGetMethod */
 static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **method) {
@@ -5080,34 +4593,343 @@ static CYTHON_INLINE int __Pyx_dict_iter_next(
     return 1;
 }
 
-/* PyObjectCall2Args */
-static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {
-    PyObject *args, *result = NULL;
-    #if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(function)) {
-        PyObject *args[2] = {arg1, arg2};
-        return __Pyx_PyFunction_FastCall(function, args, 2);
+/* DictGetItem */
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key) {
+    PyObject *value;
+    value = PyDict_GetItemWithError(d, key);
+    if (unlikely(!value)) {
+        if (!PyErr_Occurred()) {
+            if (unlikely(PyTuple_Check(key))) {
+                PyObject* args = PyTuple_Pack(1, key);
+                if (likely(args)) {
+                    PyErr_SetObject(PyExc_KeyError, args);
+                    Py_DECREF(args);
+                }
+            } else {
+                PyErr_SetObject(PyExc_KeyError, key);
+            }
+        }
+        return NULL;
     }
-    #endif
-    #if CYTHON_FAST_PYCCALL
-    if (__Pyx_PyFastCFunction_Check(function)) {
-        PyObject *args[2] = {arg1, arg2};
-        return __Pyx_PyCFunction_FastCall(function, args, 2);
-    }
-    #endif
-    args = PyTuple_New(2);
-    if (unlikely(!args)) goto done;
-    Py_INCREF(arg1);
-    PyTuple_SET_ITEM(args, 0, arg1);
-    Py_INCREF(arg2);
-    PyTuple_SET_ITEM(args, 1, arg2);
-    Py_INCREF(function);
-    result = __Pyx_PyObject_Call(function, args, NULL);
-    Py_DECREF(args);
-    Py_DECREF(function);
-done:
-    return result;
+    Py_INCREF(value);
+    return value;
 }
+#endif
+
+/* GetTopmostException */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem *
+__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
+{
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
+           exc_info->previous_item != NULL)
+    {
+        exc_info = exc_info->previous_item;
+    }
+    return exc_info;
+}
+#endif
+
+/* SaveResetException */
+#if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
+    *type = exc_info->exc_type;
+    *value = exc_info->exc_value;
+    *tb = exc_info->exc_traceback;
+    #else
+    *type = tstate->exc_type;
+    *value = tstate->exc_value;
+    *tb = tstate->exc_traceback;
+    #endif
+    Py_XINCREF(*type);
+    Py_XINCREF(*value);
+    Py_XINCREF(*tb);
+}
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    tmp_type = exc_info->exc_type;
+    tmp_value = exc_info->exc_value;
+    tmp_tb = exc_info->exc_traceback;
+    exc_info->exc_type = type;
+    exc_info->exc_value = value;
+    exc_info->exc_traceback = tb;
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = type;
+    tstate->exc_value = value;
+    tstate->exc_traceback = tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+#endif
+
+/* PyErrExceptionMatches */
+#if CYTHON_FAST_THREAD_STATE
+static int __Pyx_PyErr_ExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
+    Py_ssize_t i, n;
+    n = PyTuple_GET_SIZE(tuple);
+#if PY_MAJOR_VERSION >= 3
+    for (i=0; i<n; i++) {
+        if (exc_type == PyTuple_GET_ITEM(tuple, i)) return 1;
+    }
+#endif
+    for (i=0; i<n; i++) {
+        if (__Pyx_PyErr_GivenExceptionMatches(exc_type, PyTuple_GET_ITEM(tuple, i))) return 1;
+    }
+    return 0;
+}
+static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err) {
+    PyObject *exc_type = tstate->curexc_type;
+    if (exc_type == err) return 1;
+    if (unlikely(!exc_type)) return 0;
+    if (unlikely(PyTuple_Check(err)))
+        return __Pyx_PyErr_ExceptionMatchesTuple(exc_type, err);
+    return __Pyx_PyErr_GivenExceptionMatches(exc_type, err);
+}
+#endif
+
+/* GetException */
+#if CYTHON_FAST_THREAD_STATE
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
+#endif
+{
+    PyObject *local_type, *local_value, *local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    local_type = tstate->curexc_type;
+    local_value = tstate->curexc_value;
+    local_tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+#else
+    PyErr_Fetch(&local_type, &local_value, &local_tb);
+#endif
+    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
+#if CYTHON_FAST_THREAD_STATE
+    if (unlikely(tstate->curexc_type))
+#else
+    if (unlikely(PyErr_Occurred()))
+#endif
+        goto bad;
+    #if PY_MAJOR_VERSION >= 3
+    if (local_tb) {
+        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
+            goto bad;
+    }
+    #endif
+    Py_XINCREF(local_tb);
+    Py_XINCREF(local_type);
+    Py_XINCREF(local_value);
+    *type = local_type;
+    *value = local_value;
+    *tb = local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    #if CYTHON_USE_EXC_INFO_STACK
+    {
+        _PyErr_StackItem *exc_info = tstate->exc_info;
+        tmp_type = exc_info->exc_type;
+        tmp_value = exc_info->exc_value;
+        tmp_tb = exc_info->exc_traceback;
+        exc_info->exc_type = local_type;
+        exc_info->exc_value = local_value;
+        exc_info->exc_traceback = local_tb;
+    }
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = local_type;
+    tstate->exc_value = local_value;
+    tstate->exc_traceback = local_tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+#else
+    PyErr_SetExcInfo(local_type, local_value, local_tb);
+#endif
+    return 0;
+bad:
+    *type = 0;
+    *value = 0;
+    *tb = 0;
+    Py_XDECREF(local_type);
+    Py_XDECREF(local_value);
+    Py_XDECREF(local_tb);
+    return -1;
+}
+
+/* RaiseException */
+#if PY_MAJOR_VERSION < 3
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb,
+                        CYTHON_UNUSED PyObject *cause) {
+    __Pyx_PyThreadState_declare
+    Py_XINCREF(type);
+    if (!value || value == Py_None)
+        value = NULL;
+    else
+        Py_INCREF(value);
+    if (!tb || tb == Py_None)
+        tb = NULL;
+    else {
+        Py_INCREF(tb);
+        if (!PyTraceBack_Check(tb)) {
+            PyErr_SetString(PyExc_TypeError,
+                "raise: arg 3 must be a traceback or None");
+            goto raise_error;
+        }
+    }
+    if (PyType_Check(type)) {
+#if CYTHON_COMPILING_IN_PYPY
+        if (!value) {
+            Py_INCREF(Py_None);
+            value = Py_None;
+        }
+#endif
+        PyErr_NormalizeException(&type, &value, &tb);
+    } else {
+        if (value) {
+            PyErr_SetString(PyExc_TypeError,
+                "instance exception may not have a separate value");
+            goto raise_error;
+        }
+        value = type;
+        type = (PyObject*) Py_TYPE(type);
+        Py_INCREF(type);
+        if (!PyType_IsSubtype((PyTypeObject *)type, (PyTypeObject *)PyExc_BaseException)) {
+            PyErr_SetString(PyExc_TypeError,
+                "raise: exception class must be a subclass of BaseException");
+            goto raise_error;
+        }
+    }
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrRestore(type, value, tb);
+    return;
+raise_error:
+    Py_XDECREF(value);
+    Py_XDECREF(type);
+    Py_XDECREF(tb);
+    return;
+}
+#else
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause) {
+    PyObject* owned_instance = NULL;
+    if (tb == Py_None) {
+        tb = 0;
+    } else if (tb && !PyTraceBack_Check(tb)) {
+        PyErr_SetString(PyExc_TypeError,
+            "raise: arg 3 must be a traceback or None");
+        goto bad;
+    }
+    if (value == Py_None)
+        value = 0;
+    if (PyExceptionInstance_Check(type)) {
+        if (value) {
+            PyErr_SetString(PyExc_TypeError,
+                "instance exception may not have a separate value");
+            goto bad;
+        }
+        value = type;
+        type = (PyObject*) Py_TYPE(value);
+    } else if (PyExceptionClass_Check(type)) {
+        PyObject *instance_class = NULL;
+        if (value && PyExceptionInstance_Check(value)) {
+            instance_class = (PyObject*) Py_TYPE(value);
+            if (instance_class != type) {
+                int is_subclass = PyObject_IsSubclass(instance_class, type);
+                if (!is_subclass) {
+                    instance_class = NULL;
+                } else if (unlikely(is_subclass == -1)) {
+                    goto bad;
+                } else {
+                    type = instance_class;
+                }
+            }
+        }
+        if (!instance_class) {
+            PyObject *args;
+            if (!value)
+                args = PyTuple_New(0);
+            else if (PyTuple_Check(value)) {
+                Py_INCREF(value);
+                args = value;
+            } else
+                args = PyTuple_Pack(1, value);
+            if (!args)
+                goto bad;
+            owned_instance = PyObject_Call(type, args, NULL);
+            Py_DECREF(args);
+            if (!owned_instance)
+                goto bad;
+            value = owned_instance;
+            if (!PyExceptionInstance_Check(value)) {
+                PyErr_Format(PyExc_TypeError,
+                             "calling %R should have returned an instance of "
+                             "BaseException, not %R",
+                             type, Py_TYPE(value));
+                goto bad;
+            }
+        }
+    } else {
+        PyErr_SetString(PyExc_TypeError,
+            "raise: exception class must be a subclass of BaseException");
+        goto bad;
+    }
+    if (cause) {
+        PyObject *fixed_cause;
+        if (cause == Py_None) {
+            fixed_cause = NULL;
+        } else if (PyExceptionClass_Check(cause)) {
+            fixed_cause = PyObject_CallObject(cause, NULL);
+            if (fixed_cause == NULL)
+                goto bad;
+        } else if (PyExceptionInstance_Check(cause)) {
+            fixed_cause = cause;
+            Py_INCREF(fixed_cause);
+        } else {
+            PyErr_SetString(PyExc_TypeError,
+                            "exception causes must derive from "
+                            "BaseException");
+            goto bad;
+        }
+        PyException_SetCause(value, fixed_cause);
+    }
+    PyErr_SetObject(type, value);
+    if (tb) {
+#if CYTHON_COMPILING_IN_PYPY
+        PyObject *tmp_type, *tmp_value, *tmp_tb;
+        PyErr_Fetch(&tmp_type, &tmp_value, &tmp_tb);
+        Py_INCREF(tb);
+        PyErr_Restore(tmp_type, tmp_value, tb);
+        Py_XDECREF(tmp_tb);
+#else
+        PyThreadState *tstate = __Pyx_PyThreadState_Current;
+        PyObject* tmp_tb = tstate->curexc_traceback;
+        if (tb != tmp_tb) {
+            Py_INCREF(tb);
+            tstate->curexc_traceback = tb;
+            Py_XDECREF(tmp_tb);
+        }
+#endif
+    }
+bad:
+    Py_XDECREF(owned_instance);
+    return;
+}
+#endif
 
 /* TypeImport */
 #ifndef __PYX_HAVE_RT_ImportType
@@ -5190,106 +5012,29 @@ bad:
     return NULL;
 }
 
-/* Import */
-static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
-    PyObject *empty_list = 0;
-    PyObject *module = 0;
-    PyObject *global_dict = 0;
-    PyObject *empty_dict = 0;
-    PyObject *list;
-    #if PY_MAJOR_VERSION < 3
-    PyObject *py_import;
-    py_import = __Pyx_PyObject_GetAttrStr(__pyx_b, __pyx_n_s_import);
-    if (!py_import)
-        goto bad;
-    #endif
-    if (from_list)
-        list = from_list;
-    else {
-        empty_list = PyList_New(0);
-        if (!empty_list)
-            goto bad;
-        list = empty_list;
-    }
-    global_dict = PyModule_GetDict(__pyx_m);
-    if (!global_dict)
-        goto bad;
-    empty_dict = PyDict_New();
-    if (!empty_dict)
-        goto bad;
-    {
-        #if PY_MAJOR_VERSION >= 3
-        if (level == -1) {
-            if ((1) && (strchr(__Pyx_MODULE_NAME, '.'))) {
-                module = PyImport_ImportModuleLevelObject(
-                    name, global_dict, empty_dict, list, 1);
-                if (!module) {
-                    if (!PyErr_ExceptionMatches(PyExc_ImportError))
-                        goto bad;
-                    PyErr_Clear();
-                }
-            }
-            level = 0;
-        }
-        #endif
-        if (!module) {
-            #if PY_MAJOR_VERSION < 3
-            PyObject *py_level = PyInt_FromLong(level);
-            if (!py_level)
-                goto bad;
-            module = PyObject_CallFunctionObjArgs(py_import,
-                name, global_dict, empty_dict, list, py_level, (PyObject *)NULL);
-            Py_DECREF(py_level);
-            #else
-            module = PyImport_ImportModuleLevelObject(
-                name, global_dict, empty_dict, list, level);
-            #endif
-        }
-    }
-bad:
-    #if PY_MAJOR_VERSION < 3
-    Py_XDECREF(py_import);
-    #endif
-    Py_XDECREF(empty_list);
-    Py_XDECREF(empty_dict);
-    return module;
+/* PyDictVersioning */
+#if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj) {
+    PyObject *dict = Py_TYPE(obj)->tp_dict;
+    return likely(dict) ? __PYX_GET_DICT_VERSION(dict) : 0;
 }
-
-/* ImportFrom */
-static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
-    PyObject* value = __Pyx_PyObject_GetAttrStr(module, name);
-    if (unlikely(!value) && PyErr_ExceptionMatches(PyExc_AttributeError)) {
-        PyErr_Format(PyExc_ImportError,
-        #if PY_MAJOR_VERSION < 3
-            "cannot import name %.230s", PyString_AS_STRING(name));
-        #else
-            "cannot import name %S", name);
-        #endif
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj) {
+    PyObject **dictptr = NULL;
+    Py_ssize_t offset = Py_TYPE(obj)->tp_dictoffset;
+    if (offset) {
+#if CYTHON_COMPILING_IN_CPYTHON
+        dictptr = (likely(offset > 0)) ? (PyObject **) ((char *)obj + offset) : _PyObject_GetDictPtr(obj);
+#else
+        dictptr = _PyObject_GetDictPtr(obj);
+#endif
     }
-    return value;
+    return (dictptr && *dictptr) ? __PYX_GET_DICT_VERSION(*dictptr) : 0;
 }
-
-/* PyErrFetchRestore */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    tmp_type = tstate->curexc_type;
-    tmp_value = tstate->curexc_value;
-    tmp_tb = tstate->curexc_traceback;
-    tstate->curexc_type = type;
-    tstate->curexc_value = value;
-    tstate->curexc_traceback = tb;
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    *type = tstate->curexc_type;
-    *value = tstate->curexc_value;
-    *tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
+static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version) {
+    PyObject *dict = Py_TYPE(obj)->tp_dict;
+    if (unlikely(!dict) || unlikely(tp_dict_version != __PYX_GET_DICT_VERSION(dict)))
+        return 0;
+    return obj_dict_version == __Pyx_get_object_dict_version(obj);
 }
 #endif
 
@@ -5522,33 +5267,6 @@ bad:
         return (target_type) value;\
     }
 
-/* None */
-static CYTHON_INLINE long __Pyx_pow_long(long b, long e) {
-    long t = b;
-    switch (e) {
-        case 3:
-            t *= b;
-        CYTHON_FALLTHROUGH;
-        case 2:
-            t *= b;
-        CYTHON_FALLTHROUGH;
-        case 1:
-            return t;
-        case 0:
-            return 1;
-    }
-    #if 1
-    if (unlikely(e<0)) return 0;
-    #endif
-    t = 1;
-    while (likely(e)) {
-        t *= (b * (e&1)) | ((~e)&1);
-        b *= b;
-        e >>= 1;
-    }
-    return t;
-}
-
 /* CIntFromPy */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {
 #ifdef __Pyx_HAS_GCC_DIAGNOSTIC
@@ -5743,6 +5461,44 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to int");
     return (int) -1;
+}
+
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const long neg_one = (long) -1, const_zero = (long) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(long),
+                                     little, !is_unsigned);
+    }
 }
 
 /* CIntFromPy */
@@ -5941,44 +5697,6 @@ raise_neg_overflow:
     return (long) -1;
 }
 
-/* CIntToPy */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-    const long neg_one = (long) -1, const_zero = (long) 0;
-#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
-#pragma GCC diagnostic pop
-#endif
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(long) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(long) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-#endif
-        }
-    } else {
-        if (sizeof(long) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-#ifdef HAVE_LONG_LONG
-        } else if (sizeof(long) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-#endif
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(long),
-                                     little, !is_unsigned);
-    }
-}
-
 /* FastTypeChecks */
 #if CYTHON_COMPILING_IN_CPYTHON
 static int __Pyx_InBases(PyTypeObject *a, PyTypeObject *b) {
@@ -6093,6 +5811,43 @@ static int __Pyx_check_binary_version(void) {
         return PyErr_WarnEx(NULL, message, 1);
     }
     return 0;
+}
+
+/* FunctionExport */
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig) {
+    PyObject *d = 0;
+    PyObject *cobj = 0;
+    union {
+        void (*fp)(void);
+        void *p;
+    } tmp;
+    d = PyObject_GetAttrString(__pyx_m, (char *)"__pyx_capi__");
+    if (!d) {
+        PyErr_Clear();
+        d = PyDict_New();
+        if (!d)
+            goto bad;
+        Py_INCREF(d);
+        if (PyModule_AddObject(__pyx_m, (char *)"__pyx_capi__", d) < 0)
+            goto bad;
+    }
+    tmp.fp = f;
+#if PY_VERSION_HEX >= 0x02070000
+    cobj = PyCapsule_New(tmp.p, sig, 0);
+#else
+    cobj = PyCObject_FromVoidPtrAndDesc(tmp.p, (void *)sig, 0);
+#endif
+    if (!cobj)
+        goto bad;
+    if (PyDict_SetItemString(d, name, cobj) < 0)
+        goto bad;
+    Py_DECREF(cobj);
+    Py_DECREF(d);
+    return 0;
+bad:
+    Py_XDECREF(cobj);
+    Py_XDECREF(d);
+    return -1;
 }
 
 /* InitStrings */
