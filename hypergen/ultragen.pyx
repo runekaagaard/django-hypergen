@@ -170,3 +170,6 @@ cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
 
 cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"tr", hpg, s, attrs)
+
+cpdef string ok():
+    return <char*> "OK"

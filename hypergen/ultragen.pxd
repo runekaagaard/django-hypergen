@@ -16,3 +16,4 @@ cdef void b(Hpg &hpg, string s, string* attrs) nogil
 cdef void button(Hpg &hpg, string s, string* attrs) nogil
 cdef void tr(Hpg &hpg, string s, string* attrs) nogil
 cdef void td(Hpg &hpg, string s, string* attrs) nogil
+cdef string ok()
