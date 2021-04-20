@@ -11,9 +11,10 @@ from contextlib2 import contextmanager
 
 from django.urls.base import resolve, reverse
 from django.conf.urls import url
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http.response import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 
 from hypergen.core import (context as c, wrap2, default_wrap_elements, loads, command, hypergen, hypergen_response,
     StringWithMeta)
@@ -70,9 +71,9 @@ def hypergen_response_decorator(func):
     return _
 
 @wrap2
-def hypergen_view(func, url=None, perm=None, base_template=no_base_template, base_template_args=None,
-    base_template_kwargs=None, namespace=None, login_url=None, raise_exception=False, target_id=None, app_name=None,
-    appstate_init=None, wrap_elements=default_wrap_elements):
+def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_template=no_base_template,
+    base_template_args=None, base_template_kwargs=None, namespace=None, login_url=None, raise_exception=False,
+    target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert target_id is not None, "target_id required"
@@ -87,7 +88,8 @@ def hypergen_view(func, url=None, perm=None, base_template=no_base_template, bas
 
     # Decorate with permission if required
     if perm != NO_PERM_REQUIRED:
-        func = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(func)
+        func = hypergen_permission_required(perm, only_one_perm_required=only_one_perm_required, login_url=login_url,
+            raise_exception=raise_exception)(func)
 
     @wraps(func)
     @hypergen_response_decorator  # Convert Httpresponseredirect from permission_required to ajax commands.
@@ -130,8 +132,8 @@ def hypergen_view(func, url=None, perm=None, base_template=no_base_template, bas
     return _
 
 @wrap2
-def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None, login_url=None,
-    raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
+def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, namespace=None, target_id=None,
+    login_url=None, raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
     wrap_elements=default_wrap_elements):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     assert namespace is not None, "namespace is required"
@@ -140,7 +142,8 @@ def hypergen_callback(func, url=None, perm=None, namespace=None, target_id=None,
 
     # Decorate with permission if required.
     if perm != NO_PERM_REQUIRED:
-        func = permission_required(perm, login_url=login_url, raise_exception=raise_exception)(func)
+        func = hypergen_permission_required(perm, only_one_perm_required=only_one_perm_required, login_url=login_url,
+            raise_exception=raise_exception)(func)
 
     @wraps(func)
     @hypergen_response_decorator  # Convert Httpresponseredirect from permission_required to ajax commands.
@@ -188,3 +191,43 @@ def hypergen_urls(module):
         patterns.append(url(url_, func, name=func.__name__))
 
     return patterns
+
+def hypergen_permission_required(perm, login_url=None, raise_exception=False, only_one_perm_required=False):
+    """
+    Decorator for views that checks whether a user has a particular permission
+    enabled, redirecting to the log-in page if necessary.
+    If the raise_exception parameter is given the PermissionDenied exception
+    is raised.
+
+    Adds only_one_perm_required parameter on top of Djangos permission_required decorater.
+    Writes a set of matched perms to the global context at c.hypergen.matched_perms.
+    """
+    def check_perms(user):
+        if isinstance(perm, str):
+            perms = (perm,)
+        else:
+            perms = perm
+        # First check if the user has the permission (even anon users)
+        if only_one_perm_required is not True:
+            if user.has_perms(perms):
+                c.hypergen = c.hypergen.set("matched_perms", set(perms))
+                return True
+        else:
+            matched_perms = set()
+            for p in perms:
+                if user.has_perm(p):
+                    matched_perms.add(p)
+
+            if matched_perms:
+                c.hypergen = c.hypergen.set("matched_perms", matched_perms)
+                return True
+
+        c.hypergen = c.hypergen.set("matched_perms", set())
+
+        # In case the 403 handler should be called raise the exception
+        if raise_exception:
+            raise PermissionDenied
+        # As the last resort, show the login form
+        return False
+
+    return user_passes_test(check_perms, login_url=login_url)

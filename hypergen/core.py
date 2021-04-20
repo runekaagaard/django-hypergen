@@ -64,7 +64,7 @@ def hypergen_context(data=None):
         data = {}
 
     c_ = m(into=[], event_handler_callbacks={}, target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
-        wrap_elements=data.pop("wrap_elements", default_wrap_elements))
+        wrap_elements=data.pop("wrap_elements", default_wrap_elements), matched_perms=set())
 
     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
     return c_
