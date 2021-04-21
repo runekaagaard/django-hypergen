@@ -131,27 +131,10 @@ cdef string arg_el(string id_, ArgElOpts opts) nogil:
 
 # Base HTML element
 cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
-    cdef int i, j
-    hpg.html.append('<')
-    hpg.html.append(tag)
-
-    if attrs[0] != T:
-        for i in range(0, 100, 2):
-            j = i + 1
-            if attrs[i] == T:
-                break
-            else:
-                hpg.html.append(" ")
-                hpg.html.append(attrs[i])
-                hpg.html.append('="')
-                hpg.html.append(attrs[j])
-                hpg.html.append('"')
-
-    hpg.html.append('>')
+    element_open(tag, hpg, attrs)
+    
     hpg.html.append(s)
-    hpg.html.append('</')
-    hpg.html.append(tag)
-    hpg.html.append('>\n')
+    element_close(tag, hpg)
 
 cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:
     cdef int i, j

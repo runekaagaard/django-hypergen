@@ -599,156 +599,112 @@ body.cython { font-family: courier; font-size: 12; }
 <pre class="cython line score-0">&#xA0;<span class="">132</span>: # Base HTML element</pre>
 <pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">133</span>: cdef void element(string tag, Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
-  int __pyx_v_i;
-  int __pyx_v_j;
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0">&#xA0;<span class="">134</span>:     cdef int i, j</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">135</span>:     hpg.html.append('&lt;')</pre>
-<pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&lt;")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">136</span>:     hpg.html.append(tag)</pre>
-<pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
-</pre><pre class="cython line score-0">&#xA0;<span class="">137</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">138</span>:     if attrs[0] != T:</pre>
-<pre class='cython code score-0 '>  __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8hypergen_8ultragen_T) != 0);
-  if (__pyx_t_1) {
-/* … */
-  }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">139</span>:         for i in range(0, 100, 2):</pre>
-<pre class='cython code score-0 '>    for (__pyx_t_2 = 0; __pyx_t_2 &lt; 0x64; __pyx_t_2+=2) {
-      __pyx_v_i = __pyx_t_2;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">140</span>:             j = i + 1</pre>
-<pre class='cython code score-0 '>      __pyx_v_j = (__pyx_v_i + 1);
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">141</span>:             if attrs[i] == T:</pre>
-<pre class='cython code score-0 '>      __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8hypergen_8ultragen_T) != 0);
-      if (__pyx_t_1) {
-/* … */
-      }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">142</span>:                 break</pre>
-<pre class='cython code score-0 '>        goto __pyx_L5_break;
-</pre><pre class="cython line score-0">&#xA0;<span class="">143</span>:             else:</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">144</span>:                 hpg.html.append(" ")</pre>
-<pre class='cython code score-0 '>      /*else*/ {
-        (void)(__pyx_v_hpg.html.append(((char const *)" ")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">145</span>:                 hpg.html.append(attrs[i])</pre>
-<pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">146</span>:                 hpg.html.append('="')</pre>
-<pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">147</span>:                 hpg.html.append(attrs[j])</pre>
-<pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">148</span>:                 hpg.html.append('"')</pre>
-<pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append(((char const *)"\"")));
-      }
-    }
-    __pyx_L5_break:;
-</pre><pre class="cython line score-0">&#xA0;<span class="">149</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">150</span>:     hpg.html.append('&gt;')</pre>
-<pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&gt;")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">151</span>:     hpg.html.append(s)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">134</span>:     element_open(tag, hpg, attrs)</pre>
+<pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element_open(__pyx_v_tag, __pyx_v_hpg, __pyx_v_attrs);
+</pre><pre class="cython line score-0">&#xA0;<span class="">135</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">136</span>:     hpg.html.append(s)</pre>
 <pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(__pyx_v_s));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">152</span>:     hpg.html.append('&lt;/')</pre>
-<pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&lt;/")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">153</span>:     hpg.html.append(tag)</pre>
-<pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">154</span>:     hpg.html.append('&gt;\n')</pre>
-<pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&gt;\n")));
-</pre><pre class="cython line score-0">&#xA0;<span class="">155</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">156</span>: cdef void element_open(string tag, Hpg &amp;hpg, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">137</span>:     element_close(tag, hpg)</pre>
+<pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element_close(__pyx_v_tag, __pyx_v_hpg);
+</pre><pre class="cython line score-0">&#xA0;<span class="">138</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">139</span>: cdef void element_open(string tag, Hpg &amp;hpg, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string *__pyx_v_attrs) {
   int __pyx_v_i;
   int __pyx_v_j;
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0">&#xA0;<span class="">157</span>:     cdef int i, j</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">158</span>:     hpg.html.append('&lt;')</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">140</span>:     cdef int i, j</pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">141</span>:     hpg.html.append('&lt;')</pre>
 <pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&lt;")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">159</span>:     hpg.html.append(tag)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">142</span>:     hpg.html.append(tag)</pre>
 <pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
-</pre><pre class="cython line score-0">&#xA0;<span class="">160</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">161</span>:     if attrs[0] != T:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">143</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">144</span>:     if attrs[0] != T:</pre>
 <pre class='cython code score-0 '>  __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8hypergen_8ultragen_T) != 0);
   if (__pyx_t_1) {
 /* … */
   }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">162</span>:         for i in range(0, 100, 2):</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">145</span>:         for i in range(0, 100, 2):</pre>
 <pre class='cython code score-0 '>    for (__pyx_t_2 = 0; __pyx_t_2 &lt; 0x64; __pyx_t_2+=2) {
       __pyx_v_i = __pyx_t_2;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">163</span>:             j = i + 1</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">146</span>:             j = i + 1</pre>
 <pre class='cython code score-0 '>      __pyx_v_j = (__pyx_v_i + 1);
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">164</span>:             if attrs[i] == T:</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">147</span>:             if attrs[i] == T:</pre>
 <pre class='cython code score-0 '>      __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8hypergen_8ultragen_T) != 0);
       if (__pyx_t_1) {
 /* … */
       }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">165</span>:                 break</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">148</span>:                 break</pre>
 <pre class='cython code score-0 '>        goto __pyx_L5_break;
-</pre><pre class="cython line score-0">&#xA0;<span class="">166</span>:             else:</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">167</span>:                 hpg.html.append(" ")</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">149</span>:             else:</pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">150</span>:                 hpg.html.append(" ")</pre>
 <pre class='cython code score-0 '>      /*else*/ {
         (void)(__pyx_v_hpg.html.append(((char const *)" ")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">168</span>:                 hpg.html.append(attrs[i])</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">151</span>:                 hpg.html.append(attrs[i])</pre>
 <pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">169</span>:                 hpg.html.append('="')</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">152</span>:                 hpg.html.append('="')</pre>
 <pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">170</span>:                 hpg.html.append(attrs[j])</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">153</span>:                 hpg.html.append(attrs[j])</pre>
 <pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">171</span>:                 hpg.html.append('"')</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">154</span>:                 hpg.html.append('"')</pre>
 <pre class='cython code score-0 '>        (void)(__pyx_v_hpg.html.append(((char const *)"\"")));
       }
     }
     __pyx_L5_break:;
-</pre><pre class="cython line score-0">&#xA0;<span class="">172</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">173</span>:     hpg.html.append('&gt;')</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">155</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">156</span>:     hpg.html.append('&gt;')</pre>
 <pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&gt;")));
-</pre><pre class="cython line score-0">&#xA0;<span class="">174</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">175</span>: cdef void element_close(string tag, Hpg &amp;hpg) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">157</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">158</span>: cdef void element_close(string tag, Hpg &amp;hpg) nogil:</pre>
 <pre class='cython code score-0 '>static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">176</span>:     hpg.html.append('&lt;/')</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">159</span>:     hpg.html.append('&lt;/')</pre>
 <pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&lt;/")));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">177</span>:     hpg.html.append(tag)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">160</span>:     hpg.html.append(tag)</pre>
 <pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">178</span>:     hpg.html.append('&gt;\n')</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">161</span>:     hpg.html.append('&gt;\n')</pre>
 <pre class='cython code score-0 '>  (void)(__pyx_v_hpg.html.append(((char const *)"&gt;\n")));
-</pre><pre class="cython line score-0">&#xA0;<span class="">179</span>: </pre>
-<pre class="cython line score-0">&#xA0;<span class="">180</span>: # HTML elements</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">181</span>: cdef inline void div(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">162</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">163</span>: # HTML elements</pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">164</span>: cdef inline void div(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_div(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">182</span>:     element(&lt;char*&gt;"div", hpg, s, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">165</span>:     element(&lt;char*&gt;"div", hpg, s, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"div")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-</pre><pre class="cython line score-0">&#xA0;<span class="">183</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">184</span>: cdef inline void h1(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">166</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">167</span>: cdef inline void h1(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_h1(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">185</span>:     element(&lt;char*&gt;"h1", hpg, s, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">168</span>:     element(&lt;char*&gt;"h1", hpg, s, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"h1")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-</pre><pre class="cython line score-0">&#xA0;<span class="">186</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">187</span>: cdef inline void b(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">169</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">170</span>: cdef inline void b(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_b(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">188</span>:     element(&lt;char*&gt;"b", hpg, s, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">171</span>:     element(&lt;char*&gt;"b", hpg, s, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-</pre><pre class="cython line score-0">&#xA0;<span class="">189</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">190</span>: cdef inline void button(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">172</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">173</span>: cdef inline void button(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_button(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">191</span>:     element(&lt;char*&gt;"button", hpg, s, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">174</span>:     element(&lt;char*&gt;"button", hpg, s, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"button")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-</pre><pre class="cython line score-0">&#xA0;<span class="">192</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">193</span>: cdef inline int table_o(Hpg &amp;hpg, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">175</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">176</span>: cdef inline int table_o(Hpg &amp;hpg, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_table_o(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string *__pyx_v_attrs) {
   int __pyx_r;
 /* … */
@@ -756,29 +712,29 @@ body.cython { font-family: courier; font-size: 12; }
   __pyx_L0:;
   return __pyx_r;
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">194</span>:     element_open(&lt;char*&gt;"table", hpg, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">177</span>:     element_open(&lt;char*&gt;"table", hpg, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element_open(((char *)((char *)"table")), __pyx_v_hpg, __pyx_v_attrs);
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">195</span>:     return True</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">178</span>:     return True</pre>
 <pre class='cython code score-0 '>  __pyx_r = 1;
   goto __pyx_L0;
-</pre><pre class="cython line score-0">&#xA0;<span class="">196</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">197</span>: cdef inline void table_c(Hpg &amp;hpg) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">179</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">180</span>: cdef inline void table_c(Hpg &amp;hpg) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_table_c(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">198</span>:     element_close(&lt;char*&gt;"table", hpg)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">181</span>:     element_close(&lt;char*&gt;"table", hpg)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element_close(((char *)((char *)"table")), __pyx_v_hpg);
-</pre><pre class="cython line score-0">&#xA0;<span class="">199</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">200</span>: cdef inline void tr(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">182</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">183</span>: cdef inline void tr(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">201</span>:     element(&lt;char*&gt;"tr", hpg, s, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">184</span>:     element(&lt;char*&gt;"tr", hpg, s, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
-</pre><pre class="cython line score-0">&#xA0;<span class="">202</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">203</span>: cdef inline int tr_o(Hpg &amp;hpg, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">185</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">186</span>: cdef inline int tr_o(Hpg &amp;hpg, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_tr_o(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string *__pyx_v_attrs) {
   int __pyx_r;
 /* … */
@@ -786,25 +742,25 @@ body.cython { font-family: courier; font-size: 12; }
   __pyx_L0:;
   return __pyx_r;
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">204</span>:     element_open(&lt;char*&gt;"tr", hpg, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">187</span>:     element_open(&lt;char*&gt;"tr", hpg, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element_open(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_attrs);
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">205</span>:     return True</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">188</span>:     return True</pre>
 <pre class='cython code score-0 '>  __pyx_r = 1;
   goto __pyx_L0;
-</pre><pre class="cython line score-0">&#xA0;<span class="">206</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">207</span>: cdef inline void tr_c(Hpg &amp;hpg) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">189</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">190</span>: cdef inline void tr_c(Hpg &amp;hpg) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr_c(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">208</span>:     element_close(&lt;char*&gt;"tr", hpg)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">191</span>:     element_close(&lt;char*&gt;"tr", hpg)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element_close(((char *)((char *)"tr")), __pyx_v_hpg);
-</pre><pre class="cython line score-0">&#xA0;<span class="">209</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">210</span>: cdef inline void td(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">192</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">193</span>: cdef inline void td(Hpg &amp;hpg, string s, string* attrs) nogil:</pre>
 <pre class='cython code score-0 '>static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_td(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">211</span>:     element(&lt;char*&gt;"td", hpg, s, attrs)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">194</span>:     element(&lt;char*&gt;"td", hpg, s, attrs)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"td")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 </pre></div></body></html>
