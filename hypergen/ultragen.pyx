@@ -132,7 +132,6 @@ cdef string arg_el(string id_, ArgElOpts opts) nogil:
 # Base HTML element
 cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
     element_open(tag, hpg, attrs)
-    
     hpg.html.append(s)
     element_close(tag, hpg)
 
