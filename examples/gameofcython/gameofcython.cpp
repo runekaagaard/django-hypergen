@@ -832,6 +832,7 @@ static CYTHON_INLINE float __PYX_NAN() {
     #endif
     
 #include <unordered_map>
+#include "stdlib.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -1353,8 +1354,43 @@ static PyObject* __Pyx_PyInt_MultiplyObjC(PyObject *op1, PyObject *op2, long int
     (inplace ? PyNumber_InPlaceMultiply(op1, op2) : PyNumber_Multiply(op1, op2))
 #endif
 
+/* ListAppend.proto */
+#if CYTHON_USE_PYLIST_INTERNALS && CYTHON_ASSUME_SAFE_MACROS
+static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
+    PyListObject* L = (PyListObject*) list;
+    Py_ssize_t len = Py_SIZE(list);
+    if (likely(L->allocated > len) & likely(len > (L->allocated >> 1))) {
+        Py_INCREF(x);
+        PyList_SET_ITEM(list, len, x);
+        __Pyx_SET_SIZE(list, len + 1);
+        return 0;
+    }
+    return PyList_Append(list, x);
+}
+#else
+#define __Pyx_PyList_Append(L,x) PyList_Append(L,x)
+#endif
+
+/* PyObjectCall2Args.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
+
+/* PyObjectCallOneArg.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
+
+/* PyObjectGetMethod.proto */
+static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **method);
+
+/* PyObjectCallMethod1.proto */
+static PyObject* __Pyx_PyObject_CallMethod1(PyObject* obj, PyObject* method_name, PyObject* arg);
+
+/* append.proto */
+static CYTHON_INLINE int __Pyx_PyObject_Append(PyObject* L, PyObject* x);
+
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
+
+/* ImportDottedModule.proto */
+static PyObject *__Pyx_ImportDottedModule(PyObject *name, PyObject *parts_tuple);
 
 /* ImportFrom.proto */
 static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name);
@@ -1486,6 +1522,9 @@ static void __pyx_insert_code_object(int code_line, PyCodeObject* code_object);
 static void __Pyx_AddTraceback(const char *funcname, int c_line,
                                int py_line, const char *filename);
 
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
+
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
@@ -1565,7 +1604,6 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 static std::string *__pyx_vp_8hypergen_8ultragen_T = 0;
 #define __pyx_v_8hypergen_8ultragen_T (*__pyx_vp_8hypergen_8ultragen_T)
 static struct __pyx_t_8hypergen_8ultragen_Hpg (*__pyx_f_8hypergen_8ultragen_make_hpg)(void); /*proto*/
-static std::string (*__pyx_f_8hypergen_8ultragen_i2s)(int); /*proto*/
 static void (*__pyx_f_8hypergen_8ultragen_h1)(struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *); /*proto*/
 static int (*__pyx_f_8hypergen_8ultragen_tr_o)(struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *); /*proto*/
 static void (*__pyx_f_8hypergen_8ultragen_tr_c)(struct __pyx_t_8hypergen_8ultragen_Hpg &); /*proto*/
@@ -1576,7 +1614,14 @@ static void (*__pyx_f_8hypergen_8ultragen_td)(struct __pyx_t_8hypergen_8ultragen
 /* Module declarations from "examples.gameofcython.gameofcython" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
-static void __pyx_f_8examples_12gameofcython_12gameofcython_template(struct __pyx_t_8hypergen_8ultragen_Hpg &); /*proto*/
+static int __pyx_v_8examples_12gameofcython_12gameofcython_WIDTH;
+static int __pyx_v_8examples_12gameofcython_12gameofcython_HEIGHT;
+static int __pyx_v_8examples_12gameofcython_12gameofcython_state[0xC8][0xC8];
+static int __pyx_f_8examples_12gameofcython_12gameofcython_populated(int, int); /*proto*/
+static int __pyx_f_8examples_12gameofcython_12gameofcython_num_neighbours(int, int); /*proto*/
+static void __pyx_f_8examples_12gameofcython_12gameofcython_cstep(void); /*proto*/
+static void __pyx_f_8examples_12gameofcython_12gameofcython_creset(void); /*proto*/
+static void __pyx_f_8examples_12gameofcython_12gameofcython_crender(struct __pyx_t_8hypergen_8ultragen_Hpg &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyStr_string_to_py_std__in_string(std::string const &); /*proto*/
@@ -1593,50 +1638,92 @@ int __pyx_module_is_main_examples__gameofcython__gameofcython = 0;
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_print;
 /* #### Code section: string_decls ### */
+static const char __pyx_k_[] = "\"";
 static const char __pyx_k_a[] = "a";
+static const char __pyx_k_c[] = "c";
 static const char __pyx_k_i[] = "i";
-static const char __pyx_k__3[] = "?";
+static const char __pyx_k_t[] = "t";
+static const char __pyx_k__2[] = "*";
+static const char __pyx_k__7[] = "?";
 static const char __pyx_k_ms[] = "ms";
 static const char __pyx_k_hpg[] = "hpg";
+static const char __pyx_k_json[] = "json";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
+static const char __pyx_k_spec[] = "__spec__";
+static const char __pyx_k_step[] = "step";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_time[] = "time";
+static const char __pyx_k_dumps[] = "dumps";
 static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
+static const char __pyx_k_reset[] = "reset";
+static const char __pyx_k_strip[] = "strip";
+static const char __pyx_k_append[] = "append";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_render[] = "render";
+static const char __pyx_k_context[] = "context";
+static const char __pyx_k_is_ajax[] = "is_ajax";
+static const char __pyx_k_request[] = "request";
 static const char __pyx_k_Duration[] = "Duration:";
+static const char __pyx_k_commands[] = "commands";
+static const char __pyx_k_hypergen[] = "hypergen";
+static const char __pyx_k_fastSetTable[] = "fastSetTable";
+static const char __pyx_k_initializing[] = "_initializing";
+static const char __pyx_k_hypergen_core[] = "hypergen.core";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_examples_gameofcython_gameofcyth[] = "examples/gameofcython/gameofcython.pyx";
 static const char __pyx_k_examples_gameofcython_gameofcyth_2[] = "examples.gameofcython.gameofcython";
 #if !CYTHON_COMPILING_IN_LIMITED_API
+static PyObject *__pyx_kp_s_;
 static PyObject *__pyx_kp_s_Duration;
-static PyObject *__pyx_n_s__3;
+static PyObject *__pyx_n_s__2;
+static PyObject *__pyx_n_s__7;
 static PyObject *__pyx_n_s_a;
+static PyObject *__pyx_n_s_append;
+static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_s_cline_in_traceback;
+static PyObject *__pyx_n_s_commands;
+static PyObject *__pyx_n_s_context;
+static PyObject *__pyx_n_s_dumps;
 static PyObject *__pyx_kp_s_examples_gameofcython_gameofcyth;
 static PyObject *__pyx_n_s_examples_gameofcython_gameofcyth_2;
+static PyObject *__pyx_n_s_fastSetTable;
 static PyObject *__pyx_n_s_hpg;
+static PyObject *__pyx_n_s_hypergen;
+static PyObject *__pyx_n_s_hypergen_core;
 static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_import;
+static PyObject *__pyx_n_s_initializing;
+static PyObject *__pyx_n_s_is_ajax;
+static PyObject *__pyx_n_s_json;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_ms;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_render;
+static PyObject *__pyx_n_s_request;
+static PyObject *__pyx_n_s_reset;
+static PyObject *__pyx_n_s_spec;
+static PyObject *__pyx_n_s_step;
+static PyObject *__pyx_n_s_strip;
+static PyObject *__pyx_n_s_t;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_time;
 #endif
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_step(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_2reset(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_4render(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 static PyObject *__pyx_int_1000;
 #endif
 #if !CYTHON_COMPILING_IN_LIMITED_API
-static PyObject *__pyx_tuple_;
-static PyObject *__pyx_codeobj__2;
+static PyObject *__pyx_tuple__5;
+static PyObject *__pyx_codeobj__3;
+static PyObject *__pyx_codeobj__4;
+static PyObject *__pyx_codeobj__6;
 #endif
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
@@ -1654,26 +1741,47 @@ typedef struct {
   #ifdef __Pyx_FusedFunction_USED
   PyTypeObject *__pyx_FusedFunctionType;
   #endif
+  PyObject *__pyx_kp_s_;
   PyObject *__pyx_kp_s_Duration;
-  PyObject *__pyx_n_s__3;
+  PyObject *__pyx_n_s__2;
+  PyObject *__pyx_n_s__7;
   PyObject *__pyx_n_s_a;
+  PyObject *__pyx_n_s_append;
+  PyObject *__pyx_n_s_c;
   PyObject *__pyx_n_s_cline_in_traceback;
+  PyObject *__pyx_n_s_commands;
+  PyObject *__pyx_n_s_context;
+  PyObject *__pyx_n_s_dumps;
   PyObject *__pyx_kp_s_examples_gameofcython_gameofcyth;
   PyObject *__pyx_n_s_examples_gameofcython_gameofcyth_2;
+  PyObject *__pyx_n_s_fastSetTable;
   PyObject *__pyx_n_s_hpg;
+  PyObject *__pyx_n_s_hypergen;
+  PyObject *__pyx_n_s_hypergen_core;
   PyObject *__pyx_n_s_i;
   PyObject *__pyx_n_s_import;
+  PyObject *__pyx_n_s_initializing;
+  PyObject *__pyx_n_s_is_ajax;
+  PyObject *__pyx_n_s_json;
   PyObject *__pyx_n_s_main;
   PyObject *__pyx_n_s_ms;
   PyObject *__pyx_n_s_name;
   PyObject *__pyx_n_s_print;
   PyObject *__pyx_n_s_range;
   PyObject *__pyx_n_s_render;
+  PyObject *__pyx_n_s_request;
+  PyObject *__pyx_n_s_reset;
+  PyObject *__pyx_n_s_spec;
+  PyObject *__pyx_n_s_step;
+  PyObject *__pyx_n_s_strip;
+  PyObject *__pyx_n_s_t;
   PyObject *__pyx_n_s_test;
   PyObject *__pyx_n_s_time;
   PyObject *__pyx_int_1000;
-  PyObject *__pyx_tuple_;
-  PyObject *__pyx_codeobj__2;
+  PyObject *__pyx_tuple__5;
+  PyObject *__pyx_codeobj__3;
+  PyObject *__pyx_codeobj__4;
+  PyObject *__pyx_codeobj__6;
 } __pyx_mstate;
 
 #ifdef __cplusplus
@@ -1707,26 +1815,47 @@ static int __pyx_m_clear(PyObject *m) {
   #ifdef __Pyx_FusedFunction_USED
   Py_CLEAR(clear_module_state->__pyx_FusedFunctionType);
   #endif
+  Py_CLEAR(clear_module_state->__pyx_kp_s_);
   Py_CLEAR(clear_module_state->__pyx_kp_s_Duration);
-  Py_CLEAR(clear_module_state->__pyx_n_s__3);
+  Py_CLEAR(clear_module_state->__pyx_n_s__2);
+  Py_CLEAR(clear_module_state->__pyx_n_s__7);
   Py_CLEAR(clear_module_state->__pyx_n_s_a);
+  Py_CLEAR(clear_module_state->__pyx_n_s_append);
+  Py_CLEAR(clear_module_state->__pyx_n_s_c);
   Py_CLEAR(clear_module_state->__pyx_n_s_cline_in_traceback);
+  Py_CLEAR(clear_module_state->__pyx_n_s_commands);
+  Py_CLEAR(clear_module_state->__pyx_n_s_context);
+  Py_CLEAR(clear_module_state->__pyx_n_s_dumps);
   Py_CLEAR(clear_module_state->__pyx_kp_s_examples_gameofcython_gameofcyth);
   Py_CLEAR(clear_module_state->__pyx_n_s_examples_gameofcython_gameofcyth_2);
+  Py_CLEAR(clear_module_state->__pyx_n_s_fastSetTable);
   Py_CLEAR(clear_module_state->__pyx_n_s_hpg);
+  Py_CLEAR(clear_module_state->__pyx_n_s_hypergen);
+  Py_CLEAR(clear_module_state->__pyx_n_s_hypergen_core);
   Py_CLEAR(clear_module_state->__pyx_n_s_i);
   Py_CLEAR(clear_module_state->__pyx_n_s_import);
+  Py_CLEAR(clear_module_state->__pyx_n_s_initializing);
+  Py_CLEAR(clear_module_state->__pyx_n_s_is_ajax);
+  Py_CLEAR(clear_module_state->__pyx_n_s_json);
   Py_CLEAR(clear_module_state->__pyx_n_s_main);
   Py_CLEAR(clear_module_state->__pyx_n_s_ms);
   Py_CLEAR(clear_module_state->__pyx_n_s_name);
   Py_CLEAR(clear_module_state->__pyx_n_s_print);
   Py_CLEAR(clear_module_state->__pyx_n_s_range);
   Py_CLEAR(clear_module_state->__pyx_n_s_render);
+  Py_CLEAR(clear_module_state->__pyx_n_s_request);
+  Py_CLEAR(clear_module_state->__pyx_n_s_reset);
+  Py_CLEAR(clear_module_state->__pyx_n_s_spec);
+  Py_CLEAR(clear_module_state->__pyx_n_s_step);
+  Py_CLEAR(clear_module_state->__pyx_n_s_strip);
+  Py_CLEAR(clear_module_state->__pyx_n_s_t);
   Py_CLEAR(clear_module_state->__pyx_n_s_test);
   Py_CLEAR(clear_module_state->__pyx_n_s_time);
   Py_CLEAR(clear_module_state->__pyx_int_1000);
-  Py_CLEAR(clear_module_state->__pyx_tuple_);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__2);
+  Py_CLEAR(clear_module_state->__pyx_tuple__5);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__3);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__4);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__6);
   return 0;
 }
 #endif
@@ -1747,26 +1876,47 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   #ifdef __Pyx_FusedFunction_USED
   Py_VISIT(traverse_module_state->__pyx_FusedFunctionType);
   #endif
+  Py_VISIT(traverse_module_state->__pyx_kp_s_);
   Py_VISIT(traverse_module_state->__pyx_kp_s_Duration);
-  Py_VISIT(traverse_module_state->__pyx_n_s__3);
+  Py_VISIT(traverse_module_state->__pyx_n_s__2);
+  Py_VISIT(traverse_module_state->__pyx_n_s__7);
   Py_VISIT(traverse_module_state->__pyx_n_s_a);
+  Py_VISIT(traverse_module_state->__pyx_n_s_append);
+  Py_VISIT(traverse_module_state->__pyx_n_s_c);
   Py_VISIT(traverse_module_state->__pyx_n_s_cline_in_traceback);
+  Py_VISIT(traverse_module_state->__pyx_n_s_commands);
+  Py_VISIT(traverse_module_state->__pyx_n_s_context);
+  Py_VISIT(traverse_module_state->__pyx_n_s_dumps);
   Py_VISIT(traverse_module_state->__pyx_kp_s_examples_gameofcython_gameofcyth);
   Py_VISIT(traverse_module_state->__pyx_n_s_examples_gameofcython_gameofcyth_2);
+  Py_VISIT(traverse_module_state->__pyx_n_s_fastSetTable);
   Py_VISIT(traverse_module_state->__pyx_n_s_hpg);
+  Py_VISIT(traverse_module_state->__pyx_n_s_hypergen);
+  Py_VISIT(traverse_module_state->__pyx_n_s_hypergen_core);
   Py_VISIT(traverse_module_state->__pyx_n_s_i);
   Py_VISIT(traverse_module_state->__pyx_n_s_import);
+  Py_VISIT(traverse_module_state->__pyx_n_s_initializing);
+  Py_VISIT(traverse_module_state->__pyx_n_s_is_ajax);
+  Py_VISIT(traverse_module_state->__pyx_n_s_json);
   Py_VISIT(traverse_module_state->__pyx_n_s_main);
   Py_VISIT(traverse_module_state->__pyx_n_s_ms);
   Py_VISIT(traverse_module_state->__pyx_n_s_name);
   Py_VISIT(traverse_module_state->__pyx_n_s_print);
   Py_VISIT(traverse_module_state->__pyx_n_s_range);
   Py_VISIT(traverse_module_state->__pyx_n_s_render);
+  Py_VISIT(traverse_module_state->__pyx_n_s_request);
+  Py_VISIT(traverse_module_state->__pyx_n_s_reset);
+  Py_VISIT(traverse_module_state->__pyx_n_s_spec);
+  Py_VISIT(traverse_module_state->__pyx_n_s_step);
+  Py_VISIT(traverse_module_state->__pyx_n_s_strip);
+  Py_VISIT(traverse_module_state->__pyx_n_s_t);
   Py_VISIT(traverse_module_state->__pyx_n_s_test);
   Py_VISIT(traverse_module_state->__pyx_n_s_time);
   Py_VISIT(traverse_module_state->__pyx_int_1000);
-  Py_VISIT(traverse_module_state->__pyx_tuple_);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__2);
+  Py_VISIT(traverse_module_state->__pyx_tuple__5);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__3);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__4);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__6);
   return 0;
 }
 #endif
@@ -1784,111 +1934,626 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #ifdef __Pyx_FusedFunction_USED
 #define __pyx_FusedFunctionType __pyx_mstate_global->__pyx_FusedFunctionType
 #endif
+#define __pyx_kp_s_ __pyx_mstate_global->__pyx_kp_s_
 #define __pyx_kp_s_Duration __pyx_mstate_global->__pyx_kp_s_Duration
-#define __pyx_n_s__3 __pyx_mstate_global->__pyx_n_s__3
+#define __pyx_n_s__2 __pyx_mstate_global->__pyx_n_s__2
+#define __pyx_n_s__7 __pyx_mstate_global->__pyx_n_s__7
 #define __pyx_n_s_a __pyx_mstate_global->__pyx_n_s_a
+#define __pyx_n_s_append __pyx_mstate_global->__pyx_n_s_append
+#define __pyx_n_s_c __pyx_mstate_global->__pyx_n_s_c
 #define __pyx_n_s_cline_in_traceback __pyx_mstate_global->__pyx_n_s_cline_in_traceback
+#define __pyx_n_s_commands __pyx_mstate_global->__pyx_n_s_commands
+#define __pyx_n_s_context __pyx_mstate_global->__pyx_n_s_context
+#define __pyx_n_s_dumps __pyx_mstate_global->__pyx_n_s_dumps
 #define __pyx_kp_s_examples_gameofcython_gameofcyth __pyx_mstate_global->__pyx_kp_s_examples_gameofcython_gameofcyth
 #define __pyx_n_s_examples_gameofcython_gameofcyth_2 __pyx_mstate_global->__pyx_n_s_examples_gameofcython_gameofcyth_2
+#define __pyx_n_s_fastSetTable __pyx_mstate_global->__pyx_n_s_fastSetTable
 #define __pyx_n_s_hpg __pyx_mstate_global->__pyx_n_s_hpg
+#define __pyx_n_s_hypergen __pyx_mstate_global->__pyx_n_s_hypergen
+#define __pyx_n_s_hypergen_core __pyx_mstate_global->__pyx_n_s_hypergen_core
 #define __pyx_n_s_i __pyx_mstate_global->__pyx_n_s_i
 #define __pyx_n_s_import __pyx_mstate_global->__pyx_n_s_import
+#define __pyx_n_s_initializing __pyx_mstate_global->__pyx_n_s_initializing
+#define __pyx_n_s_is_ajax __pyx_mstate_global->__pyx_n_s_is_ajax
+#define __pyx_n_s_json __pyx_mstate_global->__pyx_n_s_json
 #define __pyx_n_s_main __pyx_mstate_global->__pyx_n_s_main
 #define __pyx_n_s_ms __pyx_mstate_global->__pyx_n_s_ms
 #define __pyx_n_s_name __pyx_mstate_global->__pyx_n_s_name
 #define __pyx_n_s_print __pyx_mstate_global->__pyx_n_s_print
 #define __pyx_n_s_range __pyx_mstate_global->__pyx_n_s_range
 #define __pyx_n_s_render __pyx_mstate_global->__pyx_n_s_render
+#define __pyx_n_s_request __pyx_mstate_global->__pyx_n_s_request
+#define __pyx_n_s_reset __pyx_mstate_global->__pyx_n_s_reset
+#define __pyx_n_s_spec __pyx_mstate_global->__pyx_n_s_spec
+#define __pyx_n_s_step __pyx_mstate_global->__pyx_n_s_step
+#define __pyx_n_s_strip __pyx_mstate_global->__pyx_n_s_strip
+#define __pyx_n_s_t __pyx_mstate_global->__pyx_n_s_t
 #define __pyx_n_s_test __pyx_mstate_global->__pyx_n_s_test
 #define __pyx_n_s_time __pyx_mstate_global->__pyx_n_s_time
 #define __pyx_int_1000 __pyx_mstate_global->__pyx_int_1000
-#define __pyx_tuple_ __pyx_mstate_global->__pyx_tuple_
-#define __pyx_codeobj__2 __pyx_mstate_global->__pyx_codeobj__2
+#define __pyx_tuple__5 __pyx_mstate_global->__pyx_tuple__5
+#define __pyx_codeobj__3 __pyx_mstate_global->__pyx_codeobj__3
+#define __pyx_codeobj__4 __pyx_mstate_global->__pyx_codeobj__4
+#define __pyx_codeobj__6 __pyx_mstate_global->__pyx_codeobj__6
 #endif
 /* #### Code section: module_code ### */
 
-/* "examples/gameofcython/gameofcython.pyx":6
- * from hypergen.ultragen cimport *
+/* "examples/gameofcython/gameofcython.pyx":21
+ * cdef int state[W][H]
  * 
- * cdef void template(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i, j
- *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
+ * cdef int populated(int x, int y) nogil:             # <<<<<<<<<<<<<<
+ *     return 0 < y < HEIGHT - 1 and 0 < x < WIDTH - 1 and state[x][y] == 1
+ * 
  */
 
-static void __pyx_f_8examples_12gameofcython_12gameofcython_template(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
-  int __pyx_v_i;
-  int __pyx_v_j;
+static int __pyx_f_8examples_12gameofcython_12gameofcython_populated(int __pyx_v_x, int __pyx_v_y) {
+  int __pyx_r;
+  int __pyx_t_1;
+  int __pyx_t_2;
+
+  /* "examples/gameofcython/gameofcython.pyx":22
+ * 
+ * cdef int populated(int x, int y) nogil:
+ *     return 0 < y < HEIGHT - 1 and 0 < x < WIDTH - 1 and state[x][y] == 1             # <<<<<<<<<<<<<<
+ * 
+ * cdef int num_neighbours(int x, int y) nogil:
+ */
+  __pyx_t_2 = (0 < __pyx_v_y);
+  if (__pyx_t_2) {
+    __pyx_t_2 = (__pyx_v_y < (__pyx_v_8examples_12gameofcython_12gameofcython_HEIGHT - 1));
+  }
+  if (__pyx_t_2) {
+  } else {
+    __pyx_t_1 = __pyx_t_2;
+    goto __pyx_L3_bool_binop_done;
+  }
+  __pyx_t_2 = (0 < __pyx_v_x);
+  if (__pyx_t_2) {
+    __pyx_t_2 = (__pyx_v_x < (__pyx_v_8examples_12gameofcython_12gameofcython_WIDTH - 1));
+  }
+  if (__pyx_t_2) {
+  } else {
+    __pyx_t_1 = __pyx_t_2;
+    goto __pyx_L3_bool_binop_done;
+  }
+  __pyx_t_2 = (((__pyx_v_8examples_12gameofcython_12gameofcython_state[__pyx_v_x])[__pyx_v_y]) == 1);
+  __pyx_t_1 = __pyx_t_2;
+  __pyx_L3_bool_binop_done:;
+  __pyx_r = __pyx_t_1;
+  goto __pyx_L0;
+
+  /* "examples/gameofcython/gameofcython.pyx":21
+ * cdef int state[W][H]
+ * 
+ * cdef int populated(int x, int y) nogil:             # <<<<<<<<<<<<<<
+ *     return 0 < y < HEIGHT - 1 and 0 < x < WIDTH - 1 and state[x][y] == 1
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "examples/gameofcython/gameofcython.pyx":24
+ *     return 0 < y < HEIGHT - 1 and 0 < x < WIDTH - 1 and state[x][y] == 1
+ * 
+ * cdef int num_neighbours(int x, int y) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int num = 0
+ *     if populated(x-1, y-1): num += 1
+ */
+
+static int __pyx_f_8examples_12gameofcython_12gameofcython_num_neighbours(int __pyx_v_x, int __pyx_v_y) {
+  int __pyx_v_num;
+  int __pyx_r;
+  int __pyx_t_1;
+
+  /* "examples/gameofcython/gameofcython.pyx":25
+ * 
+ * cdef int num_neighbours(int x, int y) nogil:
+ *     cdef int num = 0             # <<<<<<<<<<<<<<
+ *     if populated(x-1, y-1): num += 1
+ *     if populated(x, y-1): num += 1
+ */
+  __pyx_v_num = 0;
+
+  /* "examples/gameofcython/gameofcython.pyx":26
+ * cdef int num_neighbours(int x, int y) nogil:
+ *     cdef int num = 0
+ *     if populated(x-1, y-1): num += 1             # <<<<<<<<<<<<<<
+ *     if populated(x, y-1): num += 1
+ *     if populated(x+1, y-1): num += 1
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated((__pyx_v_x - 1), (__pyx_v_y - 1)) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":27
+ *     cdef int num = 0
+ *     if populated(x-1, y-1): num += 1
+ *     if populated(x, y-1): num += 1             # <<<<<<<<<<<<<<
+ *     if populated(x+1, y-1): num += 1
+ *     if populated(x-1, y): num += 1
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated(__pyx_v_x, (__pyx_v_y - 1)) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":28
+ *     if populated(x-1, y-1): num += 1
+ *     if populated(x, y-1): num += 1
+ *     if populated(x+1, y-1): num += 1             # <<<<<<<<<<<<<<
+ *     if populated(x-1, y): num += 1
+ *     if populated(x, y+1): num += 1
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated((__pyx_v_x + 1), (__pyx_v_y - 1)) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":29
+ *     if populated(x, y-1): num += 1
+ *     if populated(x+1, y-1): num += 1
+ *     if populated(x-1, y): num += 1             # <<<<<<<<<<<<<<
+ *     if populated(x, y+1): num += 1
+ *     if populated(x-1, y+1): num += 1
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated((__pyx_v_x - 1), __pyx_v_y) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":30
+ *     if populated(x+1, y-1): num += 1
+ *     if populated(x-1, y): num += 1
+ *     if populated(x, y+1): num += 1             # <<<<<<<<<<<<<<
+ *     if populated(x-1, y+1): num += 1
+ *     if populated(x, y+1): num += 1
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated(__pyx_v_x, (__pyx_v_y + 1)) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":31
+ *     if populated(x-1, y): num += 1
+ *     if populated(x, y+1): num += 1
+ *     if populated(x-1, y+1): num += 1             # <<<<<<<<<<<<<<
+ *     if populated(x, y+1): num += 1
+ *     if populated(x+1, y+1): num += 1
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated((__pyx_v_x - 1), (__pyx_v_y + 1)) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":32
+ *     if populated(x, y+1): num += 1
+ *     if populated(x-1, y+1): num += 1
+ *     if populated(x, y+1): num += 1             # <<<<<<<<<<<<<<
+ *     if populated(x+1, y+1): num += 1
+ * 
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated(__pyx_v_x, (__pyx_v_y + 1)) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":33
+ *     if populated(x-1, y+1): num += 1
+ *     if populated(x, y+1): num += 1
+ *     if populated(x+1, y+1): num += 1             # <<<<<<<<<<<<<<
+ * 
+ *     return num
+ */
+  __pyx_t_1 = (__pyx_f_8examples_12gameofcython_12gameofcython_populated((__pyx_v_x + 1), (__pyx_v_y + 1)) != 0);
+  if (__pyx_t_1) {
+    __pyx_v_num = (__pyx_v_num + 1);
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":35
+ *     if populated(x+1, y+1): num += 1
+ * 
+ *     return num             # <<<<<<<<<<<<<<
+ * 
+ * cdef void cstep() nogil:
+ */
+  __pyx_r = __pyx_v_num;
+  goto __pyx_L0;
+
+  /* "examples/gameofcython/gameofcython.pyx":24
+ *     return 0 < y < HEIGHT - 1 and 0 < x < WIDTH - 1 and state[x][y] == 1
+ * 
+ * cdef int num_neighbours(int x, int y) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int num = 0
+ *     if populated(x-1, y-1): num += 1
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "examples/gameofcython/gameofcython.pyx":37
+ *     return num
+ * 
+ * cdef void cstep() nogil:             # <<<<<<<<<<<<<<
+ *     cdef int x, y, num
+ *     for x in range(WIDTH):
+ */
+
+static void __pyx_f_8examples_12gameofcython_12gameofcython_cstep(void) {
+  int __pyx_v_x;
+  int __pyx_v_y;
+  int __pyx_v_num;
+  int __pyx_t_1;
+  int __pyx_t_2;
+  int __pyx_t_3;
+  int __pyx_t_4;
+  int __pyx_t_5;
+  int __pyx_t_6;
+  int __pyx_t_7;
+  int __pyx_t_8;
+
+  /* "examples/gameofcython/gameofcython.pyx":39
+ * cdef void cstep() nogil:
+ *     cdef int x, y, num
+ *     for x in range(WIDTH):             # <<<<<<<<<<<<<<
+ *         for y in range(HEIGHT):
+ *             num = num_neighbours(x, y)
+ */
+  __pyx_t_1 = __pyx_v_8examples_12gameofcython_12gameofcython_WIDTH;
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_x = __pyx_t_3;
+
+    /* "examples/gameofcython/gameofcython.pyx":40
+ *     cdef int x, y, num
+ *     for x in range(WIDTH):
+ *         for y in range(HEIGHT):             # <<<<<<<<<<<<<<
+ *             num = num_neighbours(x, y)
+ *             if state[x][y] == 1:
+ */
+    __pyx_t_4 = __pyx_v_8examples_12gameofcython_12gameofcython_HEIGHT;
+    __pyx_t_5 = __pyx_t_4;
+    for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      __pyx_v_y = __pyx_t_6;
+
+      /* "examples/gameofcython/gameofcython.pyx":41
+ *     for x in range(WIDTH):
+ *         for y in range(HEIGHT):
+ *             num = num_neighbours(x, y)             # <<<<<<<<<<<<<<
+ *             if state[x][y] == 1:
+ *                 if not (1 < num < 4):
+ */
+      __pyx_v_num = __pyx_f_8examples_12gameofcython_12gameofcython_num_neighbours(__pyx_v_x, __pyx_v_y);
+
+      /* "examples/gameofcython/gameofcython.pyx":42
+ *         for y in range(HEIGHT):
+ *             num = num_neighbours(x, y)
+ *             if state[x][y] == 1:             # <<<<<<<<<<<<<<
+ *                 if not (1 < num < 4):
+ *                     state[x][y] = 0
+ */
+      __pyx_t_7 = ((((__pyx_v_8examples_12gameofcython_12gameofcython_state[__pyx_v_x])[__pyx_v_y]) == 1) != 0);
+      if (__pyx_t_7) {
+
+        /* "examples/gameofcython/gameofcython.pyx":43
+ *             num = num_neighbours(x, y)
+ *             if state[x][y] == 1:
+ *                 if not (1 < num < 4):             # <<<<<<<<<<<<<<
+ *                     state[x][y] = 0
+ *             else:
+ */
+        __pyx_t_7 = (1 < __pyx_v_num);
+        if (__pyx_t_7) {
+          __pyx_t_7 = (__pyx_v_num < 4);
+        }
+        __pyx_t_8 = ((!(__pyx_t_7 != 0)) != 0);
+        if (__pyx_t_8) {
+
+          /* "examples/gameofcython/gameofcython.pyx":44
+ *             if state[x][y] == 1:
+ *                 if not (1 < num < 4):
+ *                     state[x][y] = 0             # <<<<<<<<<<<<<<
+ *             else:
+ *                 if num == 3:
+ */
+          ((__pyx_v_8examples_12gameofcython_12gameofcython_state[__pyx_v_x])[__pyx_v_y]) = 0;
+
+          /* "examples/gameofcython/gameofcython.pyx":43
+ *             num = num_neighbours(x, y)
+ *             if state[x][y] == 1:
+ *                 if not (1 < num < 4):             # <<<<<<<<<<<<<<
+ *                     state[x][y] = 0
+ *             else:
+ */
+        }
+
+        /* "examples/gameofcython/gameofcython.pyx":42
+ *         for y in range(HEIGHT):
+ *             num = num_neighbours(x, y)
+ *             if state[x][y] == 1:             # <<<<<<<<<<<<<<
+ *                 if not (1 < num < 4):
+ *                     state[x][y] = 0
+ */
+        goto __pyx_L7;
+      }
+
+      /* "examples/gameofcython/gameofcython.pyx":46
+ *                     state[x][y] = 0
+ *             else:
+ *                 if num == 3:             # <<<<<<<<<<<<<<
+ *                     state[x][y] = 1
+ * 
+ */
+      /*else*/ {
+        __pyx_t_8 = ((__pyx_v_num == 3) != 0);
+        if (__pyx_t_8) {
+
+          /* "examples/gameofcython/gameofcython.pyx":47
+ *             else:
+ *                 if num == 3:
+ *                     state[x][y] = 1             # <<<<<<<<<<<<<<
+ * 
+ * cdef void creset() nogil:
+ */
+          ((__pyx_v_8examples_12gameofcython_12gameofcython_state[__pyx_v_x])[__pyx_v_y]) = 1;
+
+          /* "examples/gameofcython/gameofcython.pyx":46
+ *                     state[x][y] = 0
+ *             else:
+ *                 if num == 3:             # <<<<<<<<<<<<<<
+ *                     state[x][y] = 1
+ * 
+ */
+        }
+      }
+      __pyx_L7:;
+    }
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":37
+ *     return num
+ * 
+ * cdef void cstep() nogil:             # <<<<<<<<<<<<<<
+ *     cdef int x, y, num
+ *     for x in range(WIDTH):
+ */
+
+  /* function exit code */
+}
+
+/* "examples/gameofcython/gameofcython.pyx":49
+ *                     state[x][y] = 1
+ * 
+ * cdef void creset() nogil:             # <<<<<<<<<<<<<<
+ *     cdef int x, y
+ *     for x in range(0, WIDTH):
+ */
+
+static void __pyx_f_8examples_12gameofcython_12gameofcython_creset(void) {
+  int __pyx_v_x;
+  int __pyx_v_y;
+  int __pyx_t_1;
+  int __pyx_t_2;
+  int __pyx_t_3;
+  int __pyx_t_4;
+  int __pyx_t_5;
+  int __pyx_t_6;
+  int __pyx_t_7;
+
+  /* "examples/gameofcython/gameofcython.pyx":51
+ * cdef void creset() nogil:
+ *     cdef int x, y
+ *     for x in range(0, WIDTH):             # <<<<<<<<<<<<<<
+ *         for y in range(0, HEIGHT):
+ *             if drand48() > 0.50:
+ */
+  __pyx_t_1 = __pyx_v_8examples_12gameofcython_12gameofcython_WIDTH;
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_x = __pyx_t_3;
+
+    /* "examples/gameofcython/gameofcython.pyx":52
+ *     cdef int x, y
+ *     for x in range(0, WIDTH):
+ *         for y in range(0, HEIGHT):             # <<<<<<<<<<<<<<
+ *             if drand48() > 0.50:
+ *                 state[x][y] = 1
+ */
+    __pyx_t_4 = __pyx_v_8examples_12gameofcython_12gameofcython_HEIGHT;
+    __pyx_t_5 = __pyx_t_4;
+    for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      __pyx_v_y = __pyx_t_6;
+
+      /* "examples/gameofcython/gameofcython.pyx":53
+ *     for x in range(0, WIDTH):
+ *         for y in range(0, HEIGHT):
+ *             if drand48() > 0.50:             # <<<<<<<<<<<<<<
+ *                 state[x][y] = 1
+ *             else:
+ */
+      __pyx_t_7 = ((drand48() > 0.50) != 0);
+      if (__pyx_t_7) {
+
+        /* "examples/gameofcython/gameofcython.pyx":54
+ *         for y in range(0, HEIGHT):
+ *             if drand48() > 0.50:
+ *                 state[x][y] = 1             # <<<<<<<<<<<<<<
+ *             else:
+ *                 state[x][y] = 0
+ */
+        ((__pyx_v_8examples_12gameofcython_12gameofcython_state[__pyx_v_x])[__pyx_v_y]) = 1;
+
+        /* "examples/gameofcython/gameofcython.pyx":53
+ *     for x in range(0, WIDTH):
+ *         for y in range(0, HEIGHT):
+ *             if drand48() > 0.50:             # <<<<<<<<<<<<<<
+ *                 state[x][y] = 1
+ *             else:
+ */
+        goto __pyx_L7;
+      }
+
+      /* "examples/gameofcython/gameofcython.pyx":56
+ *                 state[x][y] = 1
+ *             else:
+ *                 state[x][y] = 0             # <<<<<<<<<<<<<<
+ * 
+ * cdef void crender(Hpg &hpg) nogil:
+ */
+      /*else*/ {
+        ((__pyx_v_8examples_12gameofcython_12gameofcython_state[__pyx_v_x])[__pyx_v_y]) = 0;
+      }
+      __pyx_L7:;
+    }
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":49
+ *                     state[x][y] = 1
+ * 
+ * cdef void creset() nogil:             # <<<<<<<<<<<<<<
+ *     cdef int x, y
+ *     for x in range(0, WIDTH):
+ */
+
+  /* function exit code */
+}
+
+/* "examples/gameofcython/gameofcython.pyx":58
+ *                 state[x][y] = 0
+ * 
+ * cdef void crender(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int x, y
+ *     cdef string cls
+ */
+
+static void __pyx_f_8examples_12gameofcython_12gameofcython_crender(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
+  int __pyx_v_x;
+  int __pyx_v_y;
+  std::string __pyx_v_cls;
   std::string __pyx_t_1[1];
   std::string __pyx_t_2[1];
   int __pyx_t_3;
-  std::string __pyx_t_4[1];
+  int __pyx_t_4;
   int __pyx_t_5;
   std::string __pyx_t_6[1];
+  int __pyx_t_7;
+  int __pyx_t_8;
+  int __pyx_t_9;
+  int __pyx_t_10;
+  std::string __pyx_t_11[3];
 
-  /* "examples/gameofcython/gameofcython.pyx":8
- * cdef void template(Hpg &hpg) nogil:
- *     cdef int i, j
+  /* "examples/gameofcython/gameofcython.pyx":61
+ *     cdef int x, y
+ *     cdef string cls
  *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])             # <<<<<<<<<<<<<<
  *     table_o(hpg, [T])
- *     for i in range(50):
+ *     for x in range(WIDTH):
  */
   __pyx_t_1[0] = __pyx_v_8hypergen_8ultragen_T;
   __pyx_f_8hypergen_8ultragen_h1(__pyx_v_hpg, ((__pyx_t_8hypergen_8ultragen_s)((__pyx_t_8hypergen_8ultragen_s)"Game of life rendered in nogil Cython")), __pyx_t_1);
 
-  /* "examples/gameofcython/gameofcython.pyx":9
- *     cdef int i, j
+  /* "examples/gameofcython/gameofcython.pyx":62
+ *     cdef string cls
  *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
  *     table_o(hpg, [T])             # <<<<<<<<<<<<<<
- *     for i in range(50):
+ *     for x in range(WIDTH):
  *         tr_o(hpg, [T])
  */
   __pyx_t_2[0] = __pyx_v_8hypergen_8ultragen_T;
   (void)(__pyx_f_8hypergen_8ultragen_table_o(__pyx_v_hpg, __pyx_t_2));
 
-  /* "examples/gameofcython/gameofcython.pyx":10
+  /* "examples/gameofcython/gameofcython.pyx":63
  *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
  *     table_o(hpg, [T])
- *     for i in range(50):             # <<<<<<<<<<<<<<
+ *     for x in range(WIDTH):             # <<<<<<<<<<<<<<
  *         tr_o(hpg, [T])
- *         for j in range(50):
+ *         for y in range(HEIGHT):
  */
-  for (__pyx_t_3 = 0; __pyx_t_3 < 50; __pyx_t_3+=1) {
-    __pyx_v_i = __pyx_t_3;
+  __pyx_t_3 = __pyx_v_8examples_12gameofcython_12gameofcython_WIDTH;
+  __pyx_t_4 = __pyx_t_3;
+  for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
+    __pyx_v_x = __pyx_t_5;
 
-    /* "examples/gameofcython/gameofcython.pyx":11
+    /* "examples/gameofcython/gameofcython.pyx":64
  *     table_o(hpg, [T])
- *     for i in range(50):
+ *     for x in range(WIDTH):
  *         tr_o(hpg, [T])             # <<<<<<<<<<<<<<
- *         for j in range(50):
- *             td(hpg, i2s(i+j), [T])
+ *         for y in range(HEIGHT):
+ *             cls = <s>""
  */
-    __pyx_t_4[0] = __pyx_v_8hypergen_8ultragen_T;
-    (void)(__pyx_f_8hypergen_8ultragen_tr_o(__pyx_v_hpg, __pyx_t_4));
+    __pyx_t_6[0] = __pyx_v_8hypergen_8ultragen_T;
+    (void)(__pyx_f_8hypergen_8ultragen_tr_o(__pyx_v_hpg, __pyx_t_6));
 
-    /* "examples/gameofcython/gameofcython.pyx":12
- *     for i in range(50):
+    /* "examples/gameofcython/gameofcython.pyx":65
+ *     for x in range(WIDTH):
  *         tr_o(hpg, [T])
- *         for j in range(50):             # <<<<<<<<<<<<<<
- *             td(hpg, i2s(i+j), [T])
+ *         for y in range(HEIGHT):             # <<<<<<<<<<<<<<
+ *             cls = <s>""
+ *             if state[x][y] == 1:
+ */
+    __pyx_t_7 = __pyx_v_8examples_12gameofcython_12gameofcython_HEIGHT;
+    __pyx_t_8 = __pyx_t_7;
+    for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
+      __pyx_v_y = __pyx_t_9;
+
+      /* "examples/gameofcython/gameofcython.pyx":66
+ *         tr_o(hpg, [T])
+ *         for y in range(HEIGHT):
+ *             cls = <s>""             # <<<<<<<<<<<<<<
+ *             if state[x][y] == 1:
+ *                 cls = <s>"black"
+ */
+      __pyx_v_cls = ((__pyx_t_8hypergen_8ultragen_s)((__pyx_t_8hypergen_8ultragen_s)""));
+
+      /* "examples/gameofcython/gameofcython.pyx":67
+ *         for y in range(HEIGHT):
+ *             cls = <s>""
+ *             if state[x][y] == 1:             # <<<<<<<<<<<<<<
+ *                 cls = <s>"black"
+ *             td(hpg, <s>"", [<s>"class", cls, T])
+ */
+      __pyx_t_10 = ((((__pyx_v_8examples_12gameofcython_12gameofcython_state[__pyx_v_x])[__pyx_v_y]) == 1) != 0);
+      if (__pyx_t_10) {
+
+        /* "examples/gameofcython/gameofcython.pyx":68
+ *             cls = <s>""
+ *             if state[x][y] == 1:
+ *                 cls = <s>"black"             # <<<<<<<<<<<<<<
+ *             td(hpg, <s>"", [<s>"class", cls, T])
  *         tr_c(hpg)
  */
-    for (__pyx_t_5 = 0; __pyx_t_5 < 50; __pyx_t_5+=1) {
-      __pyx_v_j = __pyx_t_5;
+        __pyx_v_cls = ((__pyx_t_8hypergen_8ultragen_s)((__pyx_t_8hypergen_8ultragen_s)"black"));
 
-      /* "examples/gameofcython/gameofcython.pyx":13
- *         tr_o(hpg, [T])
- *         for j in range(50):
- *             td(hpg, i2s(i+j), [T])             # <<<<<<<<<<<<<<
+        /* "examples/gameofcython/gameofcython.pyx":67
+ *         for y in range(HEIGHT):
+ *             cls = <s>""
+ *             if state[x][y] == 1:             # <<<<<<<<<<<<<<
+ *                 cls = <s>"black"
+ *             td(hpg, <s>"", [<s>"class", cls, T])
+ */
+      }
+
+      /* "examples/gameofcython/gameofcython.pyx":69
+ *             if state[x][y] == 1:
+ *                 cls = <s>"black"
+ *             td(hpg, <s>"", [<s>"class", cls, T])             # <<<<<<<<<<<<<<
  *         tr_c(hpg)
  *     table_c(hpg)
  */
-      __pyx_t_6[0] = __pyx_v_8hypergen_8ultragen_T;
-      __pyx_f_8hypergen_8ultragen_td(__pyx_v_hpg, __pyx_f_8hypergen_8ultragen_i2s((__pyx_v_i + __pyx_v_j)), __pyx_t_6);
+      __pyx_t_11[0] = ((__pyx_t_8hypergen_8ultragen_s)((__pyx_t_8hypergen_8ultragen_s)"class"));
+      __pyx_t_11[1] = __pyx_v_cls;
+      __pyx_t_11[2] = __pyx_v_8hypergen_8ultragen_T;
+      __pyx_f_8hypergen_8ultragen_td(__pyx_v_hpg, ((__pyx_t_8hypergen_8ultragen_s)((__pyx_t_8hypergen_8ultragen_s)"")), __pyx_t_11);
     }
 
-    /* "examples/gameofcython/gameofcython.pyx":14
- *         for j in range(50):
- *             td(hpg, i2s(i+j), [T])
+    /* "examples/gameofcython/gameofcython.pyx":70
+ *                 cls = <s>"black"
+ *             td(hpg, <s>"", [<s>"class", cls, T])
  *         tr_c(hpg)             # <<<<<<<<<<<<<<
  *     table_c(hpg)
  * 
@@ -1896,28 +2561,132 @@ static void __pyx_f_8examples_12gameofcython_12gameofcython_template(struct __py
     __pyx_f_8hypergen_8ultragen_tr_c(__pyx_v_hpg);
   }
 
-  /* "examples/gameofcython/gameofcython.pyx":15
- *             td(hpg, i2s(i+j), [T])
+  /* "examples/gameofcython/gameofcython.pyx":71
+ *             td(hpg, <s>"", [<s>"class", cls, T])
  *         tr_c(hpg)
  *     table_c(hpg)             # <<<<<<<<<<<<<<
  * 
- * def render():
+ * def step():
  */
   __pyx_f_8hypergen_8ultragen_table_c(__pyx_v_hpg);
 
-  /* "examples/gameofcython/gameofcython.pyx":6
- * from hypergen.ultragen cimport *
+  /* "examples/gameofcython/gameofcython.pyx":58
+ *                 state[x][y] = 0
  * 
- * cdef void template(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i, j
- *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
+ * cdef void crender(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int x, y
+ *     cdef string cls
  */
 
   /* function exit code */
 }
 
-/* "examples/gameofcython/gameofcython.pyx":17
+/* "examples/gameofcython/gameofcython.pyx":73
  *     table_c(hpg)
+ * 
+ * def step():             # <<<<<<<<<<<<<<
+ *     cstep()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_1step(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8examples_12gameofcython_12gameofcython_1step = {"step", (PyCFunction)__pyx_pw_8examples_12gameofcython_12gameofcython_1step, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_1step(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("step (wrapper)", 0);
+  __pyx_r = __pyx_pf_8examples_12gameofcython_12gameofcython_step(__pyx_self);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_step(CYTHON_UNUSED PyObject *__pyx_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("step", 0);
+
+  /* "examples/gameofcython/gameofcython.pyx":74
+ * 
+ * def step():
+ *     cstep()             # <<<<<<<<<<<<<<
+ * 
+ * def reset():
+ */
+  __pyx_f_8examples_12gameofcython_12gameofcython_cstep();
+
+  /* "examples/gameofcython/gameofcython.pyx":73
+ *     table_c(hpg)
+ * 
+ * def step():             # <<<<<<<<<<<<<<
+ *     cstep()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "examples/gameofcython/gameofcython.pyx":76
+ *     cstep()
+ * 
+ * def reset():             # <<<<<<<<<<<<<<
+ *     creset()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_3reset(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8examples_12gameofcython_12gameofcython_3reset = {"reset", (PyCFunction)__pyx_pw_8examples_12gameofcython_12gameofcython_3reset, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_3reset(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("reset (wrapper)", 0);
+  __pyx_r = __pyx_pf_8examples_12gameofcython_12gameofcython_2reset(__pyx_self);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_2reset(CYTHON_UNUSED PyObject *__pyx_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("reset", 0);
+
+  /* "examples/gameofcython/gameofcython.pyx":77
+ * 
+ * def reset():
+ *     creset()             # <<<<<<<<<<<<<<
+ * 
+ * def render():
+ */
+  __pyx_f_8examples_12gameofcython_12gameofcython_creset();
+
+  /* "examples/gameofcython/gameofcython.pyx":76
+ *     cstep()
+ * 
+ * def reset():             # <<<<<<<<<<<<<<
+ *     creset()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "examples/gameofcython/gameofcython.pyx":79
+ *     creset()
  * 
  * def render():             # <<<<<<<<<<<<<<
  *     cdef Hpg hpg = make_hpg()
@@ -1925,21 +2694,21 @@ static void __pyx_f_8examples_12gameofcython_12gameofcython_template(struct __py
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_1render(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_8examples_12gameofcython_12gameofcython_1render = {"render", (PyCFunction)__pyx_pw_8examples_12gameofcython_12gameofcython_1render, METH_NOARGS, 0};
-static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_1render(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_5render(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8examples_12gameofcython_12gameofcython_5render = {"render", (PyCFunction)__pyx_pw_8examples_12gameofcython_12gameofcython_5render, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_5render(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("render (wrapper)", 0);
-  __pyx_r = __pyx_pf_8examples_12gameofcython_12gameofcython_render(__pyx_self);
+  __pyx_r = __pyx_pf_8examples_12gameofcython_12gameofcython_4render(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_4render(CYTHON_UNUSED PyObject *__pyx_self) {
   struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_v_hpg;
   PyObject *__pyx_v_a = NULL;
   PyObject *__pyx_r = NULL;
@@ -1948,12 +2717,18 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   int __pyx_t_4;
+  int __pyx_t_5;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  int __pyx_t_10;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("render", 0);
 
-  /* "examples/gameofcython/gameofcython.pyx":18
+  /* "examples/gameofcython/gameofcython.pyx":80
  * 
  * def render():
  *     cdef Hpg hpg = make_hpg()             # <<<<<<<<<<<<<<
@@ -1962,14 +2737,14 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
  */
   __pyx_v_hpg = __pyx_f_8hypergen_8ultragen_make_hpg();
 
-  /* "examples/gameofcython/gameofcython.pyx":20
+  /* "examples/gameofcython/gameofcython.pyx":82
  *     cdef Hpg hpg = make_hpg()
  *     cdef int i
  *     a = time()             # <<<<<<<<<<<<<<
- *     template(hpg)
+ *     crender(hpg)
  *     print("Duration:", (time() - a) * 1000, "ms")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -1987,29 +2762,30 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
     PyObject *__pyx_callargs[1] = {__pyx_t_3, };
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_4, 0+__pyx_t_4);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __pyx_v_a = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "examples/gameofcython/gameofcython.pyx":21
+  /* "examples/gameofcython/gameofcython.pyx":83
  *     cdef int i
  *     a = time()
- *     template(hpg)             # <<<<<<<<<<<<<<
+ *     crender(hpg)             # <<<<<<<<<<<<<<
  *     print("Duration:", (time() - a) * 1000, "ms")
- *     return hpg.html
+ *     if not c.request.is_ajax():
  */
-  __pyx_f_8examples_12gameofcython_12gameofcython_template(__pyx_v_hpg);
+  __pyx_f_8examples_12gameofcython_12gameofcython_crender(__pyx_v_hpg);
 
-  /* "examples/gameofcython/gameofcython.pyx":22
+  /* "examples/gameofcython/gameofcython.pyx":84
  *     a = time()
- *     template(hpg)
+ *     crender(hpg)
  *     print("Duration:", (time() - a) * 1000, "ms")             # <<<<<<<<<<<<<<
- *     return hpg.html
+ *     if not c.request.is_ajax():
+ *         c.hypergen.commands.append(["fastSetTable", json.dumps(hpg.html).strip('"')])
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -2027,17 +2803,17 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
     PyObject *__pyx_callargs[1] = {__pyx_t_3, };
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_4, 0+__pyx_t_4);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
-  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_v_a); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_v_a); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_MultiplyObjC(__pyx_t_2, __pyx_int_1000, 0x3E8, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_MultiplyObjC(__pyx_t_2, __pyx_int_1000, 0x3E8, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_kp_s_Duration);
   __Pyx_GIVEREF(__pyx_kp_s_Duration);
@@ -2048,25 +2824,171 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
   __Pyx_GIVEREF(__pyx_n_s_ms);
   PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_n_s_ms);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "examples/gameofcython/gameofcython.pyx":23
- *     template(hpg)
+  /* "examples/gameofcython/gameofcython.pyx":85
+ *     crender(hpg)
  *     print("Duration:", (time() - a) * 1000, "ms")
- *     return hpg.html             # <<<<<<<<<<<<<<
+ *     if not c.request.is_ajax():             # <<<<<<<<<<<<<<
+ *         c.hypergen.commands.append(["fastSetTable", json.dumps(hpg.html).strip('"')])
+ *     else:
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_c); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_request); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_is_ajax); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = NULL;
+  __pyx_t_4 = 0;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __pyx_t_4 = 1;
+    }
+  }
+  {
+    PyObject *__pyx_callargs[1] = {__pyx_t_3, };
+    __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_4, 0+__pyx_t_4);
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  }
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_6 = ((!__pyx_t_5) != 0);
+  if (__pyx_t_6) {
 
-  /* "examples/gameofcython/gameofcython.pyx":17
- *     table_c(hpg)
+    /* "examples/gameofcython/gameofcython.pyx":86
+ *     print("Duration:", (time() - a) * 1000, "ms")
+ *     if not c.request.is_ajax():
+ *         c.hypergen.commands.append(["fastSetTable", json.dumps(hpg.html).strip('"')])             # <<<<<<<<<<<<<<
+ *     else:
+ *         c.hypergen.commands.append(["fastSetTable", hpg.html])
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_c); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_hypergen); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_commands); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_json); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_dumps); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __pyx_t_7 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_9 = NULL;
+    __pyx_t_4 = 0;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
+      __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_8);
+      if (likely(__pyx_t_9)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+        __Pyx_INCREF(__pyx_t_9);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_8, function);
+        __pyx_t_4 = 1;
+      }
+    }
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_7};
+      __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_8, __pyx_callargs+1-__pyx_t_4, 1+__pyx_t_4);
+      __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 86, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    }
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_strip); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = NULL;
+    __pyx_t_4 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_8);
+      if (likely(__pyx_t_3)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+        __Pyx_INCREF(__pyx_t_3);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_8, function);
+        __pyx_t_4 = 1;
+      }
+    }
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_kp_s_};
+      __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_8, __pyx_callargs+1-__pyx_t_4, 1+__pyx_t_4);
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    }
+    __pyx_t_8 = PyList_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __Pyx_INCREF(__pyx_n_s_fastSetTable);
+    __Pyx_GIVEREF(__pyx_n_s_fastSetTable);
+    PyList_SET_ITEM(__pyx_t_8, 0, __pyx_n_s_fastSetTable);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyList_SET_ITEM(__pyx_t_8, 1, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_10 = __Pyx_PyObject_Append(__pyx_t_1, __pyx_t_8); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+
+    /* "examples/gameofcython/gameofcython.pyx":85
+ *     crender(hpg)
+ *     print("Duration:", (time() - a) * 1000, "ms")
+ *     if not c.request.is_ajax():             # <<<<<<<<<<<<<<
+ *         c.hypergen.commands.append(["fastSetTable", json.dumps(hpg.html).strip('"')])
+ *     else:
+ */
+    goto __pyx_L3;
+  }
+
+  /* "examples/gameofcython/gameofcython.pyx":88
+ *         c.hypergen.commands.append(["fastSetTable", json.dumps(hpg.html).strip('"')])
+ *     else:
+ *         c.hypergen.commands.append(["fastSetTable", hpg.html])             # <<<<<<<<<<<<<<
+ */
+  /*else*/ {
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_c); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_hypergen); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_commands); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = PyList_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_INCREF(__pyx_n_s_fastSetTable);
+    __Pyx_GIVEREF(__pyx_n_s_fastSetTable);
+    PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_fastSetTable);
+    __Pyx_GIVEREF(__pyx_t_1);
+    PyList_SET_ITEM(__pyx_t_2, 1, __pyx_t_1);
+    __pyx_t_1 = 0;
+    __pyx_t_10 = __Pyx_PyObject_Append(__pyx_t_8, __pyx_t_2); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  }
+  __pyx_L3:;
+
+  /* "examples/gameofcython/gameofcython.pyx":79
+ *     creset()
  * 
  * def render():             # <<<<<<<<<<<<<<
  *     cdef Hpg hpg = make_hpg()
@@ -2074,10 +2996,15 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
  */
 
   /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_9);
   __Pyx_AddTraceback("examples.gameofcython.gameofcython.render", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -2352,39 +3279,77 @@ static PyMethodDef __pyx_methods[] = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   #if CYTHON_COMPILING_IN_LIMITED_API
+  {0, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 0},
   {0, __pyx_k_Duration, sizeof(__pyx_k_Duration), 0, 0, 1, 0},
-  {0, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 1},
+  {0, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 1},
+  {0, __pyx_k__7, sizeof(__pyx_k__7), 0, 0, 1, 1},
   {0, __pyx_k_a, sizeof(__pyx_k_a), 0, 0, 1, 1},
+  {0, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
+  {0, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {0, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
+  {0, __pyx_k_commands, sizeof(__pyx_k_commands), 0, 0, 1, 1},
+  {0, __pyx_k_context, sizeof(__pyx_k_context), 0, 0, 1, 1},
+  {0, __pyx_k_dumps, sizeof(__pyx_k_dumps), 0, 0, 1, 1},
   {0, __pyx_k_examples_gameofcython_gameofcyth, sizeof(__pyx_k_examples_gameofcython_gameofcyth), 0, 0, 1, 0},
   {0, __pyx_k_examples_gameofcython_gameofcyth_2, sizeof(__pyx_k_examples_gameofcython_gameofcyth_2), 0, 0, 1, 1},
+  {0, __pyx_k_fastSetTable, sizeof(__pyx_k_fastSetTable), 0, 0, 1, 1},
   {0, __pyx_k_hpg, sizeof(__pyx_k_hpg), 0, 0, 1, 1},
+  {0, __pyx_k_hypergen, sizeof(__pyx_k_hypergen), 0, 0, 1, 1},
+  {0, __pyx_k_hypergen_core, sizeof(__pyx_k_hypergen_core), 0, 0, 1, 1},
   {0, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {0, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
+  {0, __pyx_k_initializing, sizeof(__pyx_k_initializing), 0, 0, 1, 1},
+  {0, __pyx_k_is_ajax, sizeof(__pyx_k_is_ajax), 0, 0, 1, 1},
+  {0, __pyx_k_json, sizeof(__pyx_k_json), 0, 0, 1, 1},
   {0, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {0, __pyx_k_ms, sizeof(__pyx_k_ms), 0, 0, 1, 1},
   {0, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {0, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {0, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {0, __pyx_k_render, sizeof(__pyx_k_render), 0, 0, 1, 1},
+  {0, __pyx_k_request, sizeof(__pyx_k_request), 0, 0, 1, 1},
+  {0, __pyx_k_reset, sizeof(__pyx_k_reset), 0, 0, 1, 1},
+  {0, __pyx_k_spec, sizeof(__pyx_k_spec), 0, 0, 1, 1},
+  {0, __pyx_k_step, sizeof(__pyx_k_step), 0, 0, 1, 1},
+  {0, __pyx_k_strip, sizeof(__pyx_k_strip), 0, 0, 1, 1},
+  {0, __pyx_k_t, sizeof(__pyx_k_t), 0, 0, 1, 1},
   {0, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {0, __pyx_k_time, sizeof(__pyx_k_time), 0, 0, 1, 1},
   #else
+  {&__pyx_kp_s_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 0},
   {&__pyx_kp_s_Duration, __pyx_k_Duration, sizeof(__pyx_k_Duration), 0, 0, 1, 0},
-  {&__pyx_n_s__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 1},
+  {&__pyx_n_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 1},
+  {&__pyx_n_s__7, __pyx_k__7, sizeof(__pyx_k__7), 0, 0, 1, 1},
   {&__pyx_n_s_a, __pyx_k_a, sizeof(__pyx_k_a), 0, 0, 1, 1},
+  {&__pyx_n_s_append, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
+  {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
+  {&__pyx_n_s_commands, __pyx_k_commands, sizeof(__pyx_k_commands), 0, 0, 1, 1},
+  {&__pyx_n_s_context, __pyx_k_context, sizeof(__pyx_k_context), 0, 0, 1, 1},
+  {&__pyx_n_s_dumps, __pyx_k_dumps, sizeof(__pyx_k_dumps), 0, 0, 1, 1},
   {&__pyx_kp_s_examples_gameofcython_gameofcyth, __pyx_k_examples_gameofcython_gameofcyth, sizeof(__pyx_k_examples_gameofcython_gameofcyth), 0, 0, 1, 0},
   {&__pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_k_examples_gameofcython_gameofcyth_2, sizeof(__pyx_k_examples_gameofcython_gameofcyth_2), 0, 0, 1, 1},
+  {&__pyx_n_s_fastSetTable, __pyx_k_fastSetTable, sizeof(__pyx_k_fastSetTable), 0, 0, 1, 1},
   {&__pyx_n_s_hpg, __pyx_k_hpg, sizeof(__pyx_k_hpg), 0, 0, 1, 1},
+  {&__pyx_n_s_hypergen, __pyx_k_hypergen, sizeof(__pyx_k_hypergen), 0, 0, 1, 1},
+  {&__pyx_n_s_hypergen_core, __pyx_k_hypergen_core, sizeof(__pyx_k_hypergen_core), 0, 0, 1, 1},
   {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
+  {&__pyx_n_s_initializing, __pyx_k_initializing, sizeof(__pyx_k_initializing), 0, 0, 1, 1},
+  {&__pyx_n_s_is_ajax, __pyx_k_is_ajax, sizeof(__pyx_k_is_ajax), 0, 0, 1, 1},
+  {&__pyx_n_s_json, __pyx_k_json, sizeof(__pyx_k_json), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_ms, __pyx_k_ms, sizeof(__pyx_k_ms), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_render, __pyx_k_render, sizeof(__pyx_k_render), 0, 0, 1, 1},
+  {&__pyx_n_s_request, __pyx_k_request, sizeof(__pyx_k_request), 0, 0, 1, 1},
+  {&__pyx_n_s_reset, __pyx_k_reset, sizeof(__pyx_k_reset), 0, 0, 1, 1},
+  {&__pyx_n_s_spec, __pyx_k_spec, sizeof(__pyx_k_spec), 0, 0, 1, 1},
+  {&__pyx_n_s_step, __pyx_k_step, sizeof(__pyx_k_step), 0, 0, 1, 1},
+  {&__pyx_n_s_strip, __pyx_k_strip, sizeof(__pyx_k_strip), 0, 0, 1, 1},
+  {&__pyx_n_s_t, __pyx_k_t, sizeof(__pyx_k_t), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_time, __pyx_k_time, sizeof(__pyx_k_time), 0, 0, 1, 1},
   #endif
@@ -2392,8 +3357,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 /* #### Code section: cached_builtins ### */
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 10, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 84, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2404,17 +3369,35 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "examples/gameofcython/gameofcython.pyx":17
+  /* "examples/gameofcython/gameofcython.pyx":73
  *     table_c(hpg)
+ * 
+ * def step():             # <<<<<<<<<<<<<<
+ *     cstep()
+ * 
+ */
+  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_examples_gameofcython_gameofcyth, __pyx_n_s_step, 73, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 73, __pyx_L1_error)
+
+  /* "examples/gameofcython/gameofcython.pyx":76
+ *     cstep()
+ * 
+ * def reset():             # <<<<<<<<<<<<<<
+ *     creset()
+ * 
+ */
+  __pyx_codeobj__4 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_examples_gameofcython_gameofcyth, __pyx_n_s_reset, 76, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__4)) __PYX_ERR(0, 76, __pyx_L1_error)
+
+  /* "examples/gameofcython/gameofcython.pyx":79
+ *     creset()
  * 
  * def render():             # <<<<<<<<<<<<<<
  *     cdef Hpg hpg = make_hpg()
  *     cdef int i
  */
-  __pyx_tuple_ = PyTuple_Pack(3, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_a); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 17, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple_);
-  __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_examples_gameofcython_gameofcyth, __pyx_n_s_render, 17, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(3, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_a); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_codeobj__6 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__5, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_examples_gameofcython_gameofcyth, __pyx_n_s_render, 79, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__6)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2425,23 +3408,42 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 
 static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   #if CYTHON_COMPILING_IN_LIMITED_API
-  if (__Pyx_InitString(__pyx_string_tab[0], &__pyx_kp_s_Duration) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[1], &__pyx_n_s__3) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[2], &__pyx_n_s_a) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[3], &__pyx_n_s_cline_in_traceback) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[4], &__pyx_kp_s_examples_gameofcython_gameofcyth) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[5], &__pyx_n_s_examples_gameofcython_gameofcyth_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[6], &__pyx_n_s_hpg) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[7], &__pyx_n_s_i) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[8], &__pyx_n_s_import) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[9], &__pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[10], &__pyx_n_s_ms) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[11], &__pyx_n_s_name) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[12], &__pyx_n_s_print) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[13], &__pyx_n_s_range) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[14], &__pyx_n_s_render) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[15], &__pyx_n_s_test) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[16], &__pyx_n_s_time) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[0], &__pyx_kp_s_) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[1], &__pyx_kp_s_Duration) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[2], &__pyx_n_s__2) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[3], &__pyx_n_s__7) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[4], &__pyx_n_s_a) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[5], &__pyx_n_s_append) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[6], &__pyx_n_s_c) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[7], &__pyx_n_s_cline_in_traceback) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[8], &__pyx_n_s_commands) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[9], &__pyx_n_s_context) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[10], &__pyx_n_s_dumps) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[11], &__pyx_kp_s_examples_gameofcython_gameofcyth) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[12], &__pyx_n_s_examples_gameofcython_gameofcyth_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[13], &__pyx_n_s_fastSetTable) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[14], &__pyx_n_s_hpg) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[15], &__pyx_n_s_hypergen) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[16], &__pyx_n_s_hypergen_core) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[17], &__pyx_n_s_i) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[18], &__pyx_n_s_import) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[19], &__pyx_n_s_initializing) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[20], &__pyx_n_s_is_ajax) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[21], &__pyx_n_s_json) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[22], &__pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[23], &__pyx_n_s_ms) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[24], &__pyx_n_s_name) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[25], &__pyx_n_s_print) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[26], &__pyx_n_s_range) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[27], &__pyx_n_s_render) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[28], &__pyx_n_s_request) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[29], &__pyx_n_s_reset) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[30], &__pyx_n_s_spec) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[31], &__pyx_n_s_step) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[32], &__pyx_n_s_strip) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[33], &__pyx_n_s_t) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[34], &__pyx_n_s_test) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[35], &__pyx_n_s_time) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
@@ -2532,7 +3534,6 @@ static int __Pyx_modinit_function_import_code(void) {
   __pyx_t_1 = PyImport_ImportModule("hypergen.ultragen"); if (!__pyx_t_1) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (__Pyx_ImportFunction(__pyx_t_1, "make_hpg", (void (**)(void))&__pyx_f_8hypergen_8ultragen_make_hpg, "struct __pyx_t_8hypergen_8ultragen_Hpg (void)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__Pyx_ImportFunction(__pyx_t_1, "i2s", (void (**)(void))&__pyx_f_8hypergen_8ultragen_i2s, "std::string (int)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ImportFunction(__pyx_t_1, "h1", (void (**)(void))&__pyx_f_8hypergen_8ultragen_h1, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ImportFunction(__pyx_t_1, "tr_o", (void (**)(void))&__pyx_f_8hypergen_8ultragen_tr_o, "int (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ImportFunction(__pyx_t_1, "tr_c", (void (**)(void))&__pyx_f_8hypergen_8ultragen_tr_c, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -2820,45 +3821,127 @@ if (!__Pyx_RefNanny) {
   /* "examples/gameofcython/gameofcython.pyx":3
  * # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str
  * # distutils: language=c++
- * from time import time             # <<<<<<<<<<<<<<
- * from hypergen.ultragen cimport *
+ * import json             # <<<<<<<<<<<<<<
+ * from time import time
  * 
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_ImportDottedModule(__pyx_n_s_json, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_json, __pyx_t_1) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "examples/gameofcython/gameofcython.pyx":4
+ * # distutils: language=c++
+ * import json
+ * from time import time             # <<<<<<<<<<<<<<
+ * 
+ * from hypergen.ultragen cimport *
+ */
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_time);
   __Pyx_GIVEREF(__pyx_n_s_time);
   PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_time);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_time, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_time, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_time, __pyx_t_1) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_time, __pyx_t_1) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "examples/gameofcython/gameofcython.pyx":17
+  /* "examples/gameofcython/gameofcython.pyx":7
+ * 
+ * from hypergen.ultragen cimport *
+ * from hypergen.core import context as c, t             # <<<<<<<<<<<<<<
+ * 
+ * cdef extern from "stdlib.h":
+ */
+  __pyx_t_2 = PyList_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_INCREF(__pyx_n_s_context);
+  __Pyx_GIVEREF(__pyx_n_s_context);
+  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_context);
+  __Pyx_INCREF(__pyx_n_s_t);
+  __Pyx_GIVEREF(__pyx_n_s_t);
+  PyList_SET_ITEM(__pyx_t_2, 1, __pyx_n_s_t);
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_hypergen_core, __pyx_t_2, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_context); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_c, __pyx_t_2) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_t); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_t, __pyx_t_2) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "examples/gameofcython/gameofcython.pyx":15
+ * DEF W = 200
+ * DEF H = 200
+ * cdef int WIDTH = W             # <<<<<<<<<<<<<<
+ * cdef int HEIGHT = H
+ * 
+ */
+  __pyx_v_8examples_12gameofcython_12gameofcython_WIDTH = 0xC8;
+
+  /* "examples/gameofcython/gameofcython.pyx":16
+ * DEF H = 200
+ * cdef int WIDTH = W
+ * cdef int HEIGHT = H             # <<<<<<<<<<<<<<
+ * 
+ * # Keeping state likes this of course only works in a one process, one user setting.
+ */
+  __pyx_v_8examples_12gameofcython_12gameofcython_HEIGHT = 0xC8;
+
+  /* "examples/gameofcython/gameofcython.pyx":73
  *     table_c(hpg)
+ * 
+ * def step():             # <<<<<<<<<<<<<<
+ *     cstep()
+ * 
+ */
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_8examples_12gameofcython_12gameofcython_1step, 0, __pyx_n_s_step, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__3)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_step, __pyx_t_1) < 0) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "examples/gameofcython/gameofcython.pyx":76
+ *     cstep()
+ * 
+ * def reset():             # <<<<<<<<<<<<<<
+ *     creset()
+ * 
+ */
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_8examples_12gameofcython_12gameofcython_3reset, 0, __pyx_n_s_reset, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__4)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_reset, __pyx_t_1) < 0) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "examples/gameofcython/gameofcython.pyx":79
+ *     creset()
  * 
  * def render():             # <<<<<<<<<<<<<<
  *     cdef Hpg hpg = make_hpg()
  *     cdef int i
  */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8examples_12gameofcython_12gameofcython_1render, 0, __pyx_n_s_render, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 17, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_render, __pyx_t_2) < 0) __PYX_ERR(0, 17, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_8examples_12gameofcython_12gameofcython_5render, 0, __pyx_n_s_render, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__6)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_render, __pyx_t_1) < 0) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "examples/gameofcython/gameofcython.pyx":1
  * # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str             # <<<<<<<<<<<<<<
  * # distutils: language=c++
- * from time import time
+ * import json
  */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "string.to_py":55
  * 
@@ -3671,6 +4754,150 @@ static PyObject* __Pyx_PyInt_MultiplyObjC(PyObject *op1, PyObject *op2, CYTHON_U
 }
 #endif
 
+/* PyObjectCall2Args */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {
+    PyObject *args[3] = {NULL, arg1, arg2};
+    return __Pyx_PyObject_FastCall(function, args+1, 2 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
+}
+
+/* PyObjectCallOneArg */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject *args[2] = {NULL, arg};
+    return __Pyx_PyObject_FastCall(func, args+1, 1 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
+}
+
+/* PyObjectGetMethod */
+static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **method) {
+    PyObject *attr;
+#if CYTHON_UNPACK_METHODS && CYTHON_COMPILING_IN_CPYTHON && CYTHON_USE_PYTYPE_LOOKUP
+    __Pyx_TypeName type_name;
+    PyTypeObject *tp = Py_TYPE(obj);
+    PyObject *descr;
+    descrgetfunc f = NULL;
+    PyObject **dictptr, *dict;
+    int meth_found = 0;
+    assert (*method == NULL);
+    if (unlikely(tp->tp_getattro != PyObject_GenericGetAttr)) {
+        attr = __Pyx_PyObject_GetAttrStr(obj, name);
+        goto try_unpack;
+    }
+    if (unlikely(tp->tp_dict == NULL) && unlikely(PyType_Ready(tp) < 0)) {
+        return 0;
+    }
+    descr = _PyType_Lookup(tp, name);
+    if (likely(descr != NULL)) {
+        Py_INCREF(descr);
+#if defined(Py_TPFLAGS_METHOD_DESCRIPTOR) && Py_TPFLAGS_METHOD_DESCRIPTOR
+        if (__Pyx_PyType_HasFeature(Py_TYPE(descr), Py_TPFLAGS_METHOD_DESCRIPTOR))
+#elif PY_MAJOR_VERSION >= 3
+        #ifdef __Pyx_CyFunction_USED
+        if (likely(PyFunction_Check(descr) || __Pyx_IS_TYPE(descr, &PyMethodDescr_Type) || __Pyx_CyFunction_Check(descr)))
+        #else
+        if (likely(PyFunction_Check(descr) || __Pyx_IS_TYPE(descr, &PyMethodDescr_Type)))
+        #endif
+#else
+        #ifdef __Pyx_CyFunction_USED
+        if (likely(PyFunction_Check(descr) || __Pyx_CyFunction_Check(descr)))
+        #else
+        if (likely(PyFunction_Check(descr)))
+        #endif
+#endif
+        {
+            meth_found = 1;
+        } else {
+            f = Py_TYPE(descr)->tp_descr_get;
+            if (f != NULL && PyDescr_IsData(descr)) {
+                attr = f(descr, obj, (PyObject *)Py_TYPE(obj));
+                Py_DECREF(descr);
+                goto try_unpack;
+            }
+        }
+    }
+    dictptr = _PyObject_GetDictPtr(obj);
+    if (dictptr != NULL && (dict = *dictptr) != NULL) {
+        Py_INCREF(dict);
+        attr = __Pyx_PyDict_GetItemStr(dict, name);
+        if (attr != NULL) {
+            Py_INCREF(attr);
+            Py_DECREF(dict);
+            Py_XDECREF(descr);
+            goto try_unpack;
+        }
+        Py_DECREF(dict);
+    }
+    if (meth_found) {
+        *method = descr;
+        return 1;
+    }
+    if (f != NULL) {
+        attr = f(descr, obj, (PyObject *)Py_TYPE(obj));
+        Py_DECREF(descr);
+        goto try_unpack;
+    }
+    if (likely(descr != NULL)) {
+        *method = descr;
+        return 0;
+    }
+    type_name = __Pyx_PyType_GetName(tp);
+    PyErr_Format(PyExc_AttributeError,
+#if PY_MAJOR_VERSION >= 3
+                 "'" __Pyx_FMT_TYPENAME "' object has no attribute '%U'",
+                 type_name, name);
+#else
+                 "'" __Pyx_FMT_TYPENAME "' object has no attribute '%.400s'",
+                 type_name, PyString_AS_STRING(name));
+#endif
+    __Pyx_DECREF_TypeName(type_name);
+    return 0;
+#else
+    attr = __Pyx_PyObject_GetAttrStr(obj, name);
+    goto try_unpack;
+#endif
+try_unpack:
+#if CYTHON_UNPACK_METHODS
+    if (likely(attr) && PyMethod_Check(attr) && likely(PyMethod_GET_SELF(attr) == obj)) {
+        PyObject *function = PyMethod_GET_FUNCTION(attr);
+        Py_INCREF(function);
+        Py_DECREF(attr);
+        *method = function;
+        return 1;
+    }
+#endif
+    *method = attr;
+    return 0;
+}
+
+/* PyObjectCallMethod1 */
+static PyObject* __Pyx__PyObject_CallMethod1(PyObject* method, PyObject* arg) {
+    PyObject *result = __Pyx_PyObject_CallOneArg(method, arg);
+    Py_DECREF(method);
+    return result;
+}
+static PyObject* __Pyx_PyObject_CallMethod1(PyObject* obj, PyObject* method_name, PyObject* arg) {
+    PyObject *method = NULL, *result;
+    int is_method = __Pyx_PyObject_GetMethod(obj, method_name, &method);
+    if (likely(is_method)) {
+        result = __Pyx_PyObject_Call2Args(method, obj, arg);
+        Py_DECREF(method);
+        return result;
+    }
+    if (unlikely(!method)) return NULL;
+    return __Pyx__PyObject_CallMethod1(method, arg);
+}
+
+/* append */
+static CYTHON_INLINE int __Pyx_PyObject_Append(PyObject* L, PyObject* x) {
+    if (likely(PyList_CheckExact(L))) {
+        if (unlikely(__Pyx_PyList_Append(L, x) < 0)) return -1;
+    } else {
+        PyObject* retval = __Pyx_PyObject_CallMethod1(L, __pyx_n_s_append, x);
+        if (unlikely(!retval))
+            return -1;
+        Py_DECREF(retval);
+    }
+    return 0;
+}
+
 /* Import */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
     PyObject *module = 0;
@@ -3737,6 +4964,128 @@ bad:
     Py_XDECREF(py_import);
     #endif
     return module;
+}
+
+/* ImportDottedModule */
+#if PY_MAJOR_VERSION >= 3
+static PyObject *__Pyx__ImportDottedModule_Error(PyObject *name, PyObject *parts_tuple, Py_ssize_t count) {
+    PyObject *partial_name = NULL, *slice = NULL, *sep = NULL;
+    if (unlikely(PyErr_Occurred())) {
+        PyErr_Clear();
+    }
+    if (likely(PyTuple_GET_SIZE(parts_tuple) == count)) {
+        partial_name = name;
+    } else {
+        PyObject *sep;
+        PyObject *slice = PySequence_GetSlice(parts_tuple, 0, count);
+        if (unlikely(!slice))
+            goto bad;
+        sep = PyUnicode_FromStringAndSize(".", 1);
+        if (unlikely(!sep))
+            goto bad;
+        partial_name = PyUnicode_Join(sep, slice);
+    }
+    PyErr_Format(
+#if PY_MAJOR_VERSION < 3
+        PyExc_ImportError,
+        "No module named '%s'", PyString_AS_STRING(partial_name));
+#else
+#if PY_VERSION_HEX >= 0x030600B1
+        PyExc_ModuleNotFoundError,
+#else
+        PyExc_ImportError,
+#endif
+        "No module named '%U'", partial_name);
+#endif
+bad:
+    Py_XDECREF(sep);
+    Py_XDECREF(slice);
+    Py_XDECREF(partial_name);
+    return NULL;
+}
+#endif
+#if PY_MAJOR_VERSION >= 3
+static PyObject *__Pyx__ImportDottedModule_Lookup(PyObject *name) {
+    PyObject *imported_module;
+#if PY_VERSION_HEX < 0x030700A1
+    PyObject *modules = PyImport_GetModuleDict();
+    if (unlikely(!modules))
+        return NULL;
+    imported_module = __Pyx_PyDict_GetItemStr(modules, name);
+    Py_XINCREF(imported_module);
+#else
+    imported_module = PyImport_GetModule(name);
+#endif
+    return imported_module;
+}
+#endif
+static PyObject *__Pyx__ImportDottedModule(PyObject *name, CYTHON_UNUSED PyObject *parts_tuple) {
+#if PY_MAJOR_VERSION < 3
+    PyObject *module, *from_list, *star = __pyx_n_s__2;
+    from_list = PyList_New(1);
+    if (unlikely(!from_list))
+        return NULL;
+    Py_INCREF(star);
+    PyList_SET_ITEM(from_list, 0, star);
+    module = __Pyx_Import(name, from_list, 0);
+    Py_DECREF(from_list);
+    return module;
+#else
+    Py_ssize_t i, nparts;
+    PyObject *imported_module;
+    PyObject *module = __Pyx_Import(name, NULL, 0);
+    if (!parts_tuple || unlikely(!module))
+        return module;
+    imported_module = __Pyx__ImportDottedModule_Lookup(name);
+    if (likely(imported_module)) {
+        Py_DECREF(module);
+        return imported_module;
+    }
+    PyErr_Clear();
+    nparts = PyTuple_GET_SIZE(parts_tuple);
+    for (i=1; i < nparts && module; i++) {
+        PyObject *part, *submodule;
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+        part = PyTuple_GET_ITEM(parts_tuple, i);
+#else
+        part = PySequence_ITEM(parts_tuple, i);
+#endif
+        submodule = __Pyx_PyObject_GetAttrStrNoError(module, part);
+#if !(CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS)
+        Py_DECREF(part);
+#endif
+        Py_DECREF(module);
+        module = submodule;
+    }
+    if (likely(module))
+        return module;
+    return __Pyx__ImportDottedModule_Error(name, parts_tuple, i);
+#endif
+}
+static PyObject *__Pyx_ImportDottedModule(PyObject *name, PyObject *parts_tuple) {
+#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030400B1
+    PyObject *module = __Pyx__ImportDottedModule_Lookup(name);
+    if (likely(module)) {
+        PyObject *spec = __Pyx_PyObject_GetAttrStrNoError(module, __pyx_n_s_spec);
+        if (likely(spec)) {
+            PyObject *unsafe = __Pyx_PyObject_GetAttrStrNoError(spec, __pyx_n_s_initializing);
+            if (likely(!unsafe || !__Pyx_PyObject_IsTrue(unsafe))) {
+                Py_DECREF(spec);
+                spec = NULL;
+            }
+            Py_XDECREF(unsafe);
+        }
+        if (likely(!spec)) {
+            PyErr_Clear();
+            return module;
+        }
+        Py_DECREF(spec);
+        Py_DECREF(module);
+    } else if (PyErr_Occurred()) {
+        PyErr_Clear();
+    }
+#endif
+    return __Pyx__ImportDottedModule(name, parts_tuple);
 }
 
 /* ImportFrom */
@@ -4885,6 +6234,37 @@ bad:
 }
 #endif
 
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+    const int neg_one = (int) ((int) 0 - (int) 1), const_zero = (int) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(int) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(int) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(int),
+                                     little, !is_unsigned);
+    }
+}
+
 /* CIntFromPyVerify */
 #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
     __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
@@ -5105,7 +6485,7 @@ __Pyx_PyType_GetName(PyTypeObject* tp)
                                                __pyx_n_s_name);
     if (unlikely(name == NULL) || unlikely(!PyUnicode_Check(name))) {
         PyErr_Clear();
-        Py_XSETREF(name, __Pyx_NewRef(__pyx_n_s__3));
+        Py_XSETREF(name, __Pyx_NewRef(__pyx_n_s__7));
     }
     return name;
 }

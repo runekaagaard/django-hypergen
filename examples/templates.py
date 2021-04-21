@@ -16,8 +16,8 @@ def base_template():
         with head():
             title("Hypergen Examples")
             script(src=static("hypergen/hypergen.min.js"))
-            link(NORMALISE)
-            link(SAKURA)
+            # link(NORMALISE)
+            # link(SAKURA)
 
         with body(style=d(max_width="none")):
             with div(id_="content"):
