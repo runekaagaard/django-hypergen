@@ -10,7 +10,7 @@ from hypergen.core import callback as cb
 from hypergen.core import context as c
 
 import templates as shared_templates
-from gameofcython.gameofcython import render, reset, step as step_
+from gameofcython.gameofcython import render, reset, step as cstep
 
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="gameofcython",
     app_name="gameofcython", base_template=shared_templates.base_template)
@@ -25,11 +25,8 @@ def gameofcython(request):
             border-collapse: collapse;
         }
         td {
-            width: 4px;
-            height: 4px;
-            max-height: 4px;
-            max-width: 4px;
-            padding: 0;
+            width: 6px;
+            height: 6px;
             margin: 0;
             border: 0;
         }
@@ -46,4 +43,4 @@ def gameofcython(request):
 
 @hypergen_callback(view=gameofcython, **HYPERGEN_SETTINGS)
 def step(request):
-    step_()
+    cstep()

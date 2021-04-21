@@ -26,8 +26,10 @@ cdef int num_neighbours(int x, int y) nogil:
     if populated(x-1, y-1): num += 1
     if populated(x, y-1): num += 1
     if populated(x+1, y-1): num += 1
+    
     if populated(x-1, y): num += 1
-    if populated(x, y+1): num += 1
+    if populated(x+1, y): num += 1
+    
     if populated(x-1, y+1): num += 1
     if populated(x, y+1): num += 1
     if populated(x+1, y+1): num += 1
@@ -36,8 +38,8 @@ cdef int num_neighbours(int x, int y) nogil:
 
 cdef void cstep() nogil:
     cdef int x, y, num
-    for x in range(WIDTH):
-        for y in range(HEIGHT):
+    for y in range(HEIGHT):
+        for x in range(WIDTH):
             num = num_neighbours(x, y)
             if state[x][y] == 1:
                 if not (1 < num < 4):
@@ -48,9 +50,9 @@ cdef void cstep() nogil:
 
 cdef void creset() nogil:
     cdef int x, y
-    for x in range(0, WIDTH):
-        for y in range(0, HEIGHT):
-            if drand48() > 0.50:
+    for y in range(0, HEIGHT):
+        for x in range(0, WIDTH):
+            if drand48() > 0.90:
                 state[x][y] = 1
             else:
                 state[x][y] = 0
@@ -58,11 +60,11 @@ cdef void creset() nogil:
 cdef void crender(Hpg &hpg) nogil:
     cdef int x, y
     cdef string cls
-    h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
+    h1(hpg, <s>"Game of life rendered with ultragen", [T])
     table_o(hpg, [T])
-    for x in range(WIDTH):
+    for y in range(HEIGHT):
         tr_o(hpg, [T])
-        for y in range(HEIGHT):
+        for x in range(WIDTH):
             cls = <s>""
             if state[x][y] == 1:
                 cls = <s>"black"
