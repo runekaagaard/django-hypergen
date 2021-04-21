@@ -133,3 +133,11 @@ hypergen/static/hypergen/node_modules/
 .python-project
 *flymake.py
 *~
+
+examples/gameofcython/gameofcython.c
+examples/gameofcython/gameofcython.cpp
+examples/gameofcython/gameofcython.html
+hypergen/ultragen.c
+hypergen/ultragen.cpp
+hypergen/ultragen.html
+
