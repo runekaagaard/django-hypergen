@@ -15,10 +15,11 @@ from gameofcython.gameofcython import render, reset, step as step_
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="gameofcython",
     app_name="gameofcython", base_template=shared_templates.base_template)
 
-reset()
-
 @hypergen_view(url="$^", **HYPERGEN_SETTINGS)
 def gameofcython(request):
+    if not c.request.is_ajax():
+        reset()
+
     style("""
         table {
             border-collapse: collapse;
@@ -40,9 +41,6 @@ def gameofcython(request):
         render()
     div(id_="step", onclick=cb(step))
     script('''
-        function fastSetTable(html) {
-            document.getElementById("gameoflife").innerHTML = html
-        }
         ready(() => document.getElementById("step").click())
     ''')
 

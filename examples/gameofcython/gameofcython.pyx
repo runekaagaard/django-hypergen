@@ -10,8 +10,8 @@ cdef extern from "stdlib.h":
     double drand48() nogil
     void srand48(long int seedval)
 
-DEF W = 200
-DEF H = 200
+DEF W = 100
+DEF H = 100
 cdef int WIDTH = W
 cdef int HEIGHT = H
 
@@ -82,7 +82,4 @@ def render():
     a = time()
     crender(hpg)
     print("Duration:", (time() - a) * 1000, "ms")
-    if not c.request.is_ajax():
-        c.hypergen.commands.append(["fastSetTable", json.dumps(hpg.html).strip('"')])
-    else:
-        c.hypergen.commands.append(["fastSetTable", hpg.html])
+    c.hypergen.into.append(hpg.html)
