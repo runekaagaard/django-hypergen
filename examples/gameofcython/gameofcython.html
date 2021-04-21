@@ -315,53 +315,42 @@ body.cython { font-family: courier; font-size: 12; }
   if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_time, __pyx_t_1) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 3, __pyx_L1_error)</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
-</pre><pre class="cython line score-0">&#xA0;<span class="">04</span>: </pre>
-<pre class="cython line score-0">&#xA0;<span class="">05</span>: from libcpp.string cimport string</pre>
-<pre class="cython line score-0">&#xA0;<span class="">06</span>: from libcpp.unordered_map cimport unordered_map</pre>
-<pre class="cython line score-0">&#xA0;<span class="">07</span>: </pre>
-<pre class="cython line score-0">&#xA0;<span class="">08</span>: from cymem.cymem cimport Pool</pre>
-<pre class="cython line score-0">&#xA0;<span class="">09</span>: </pre>
-<pre class="cython line score-0">&#xA0;<span class="">10</span>: from hypergen.ultragen cimport *</pre>
-<pre class="cython line score-0">&#xA0;<span class="">11</span>: </pre>
-<pre class="cython line score-0">&#xA0;<span class="">12</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">13</span>: ctypedef char* s</pre>
-<pre class='cython code score-0 '>typedef char *__pyx_t_8examples_12gameofcython_12gameofcython_s;
-</pre><pre class="cython line score-0">&#xA0;<span class="">14</span>: cdef struct Hpg:</pre>
-<pre class="cython line score-0">&#xA0;<span class="">15</span>:     string html</pre>
-<pre class="cython line score-0">&#xA0;<span class="">16</span>:     unordered_map [string, string] event_handler_callbacks</pre>
-<pre class="cython line score-0">&#xA0;<span class="">17</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">18</span>: cdef void template(Hpg &amp;hpg) nogil:</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">04</span>: from hypergen.ultragen cimport *</pre>
+<pre class="cython line score-0">&#xA0;<span class="">05</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">06</span>: cdef void template(Hpg &amp;hpg) nogil:</pre>
 <pre class='cython code score-0 '>static void __pyx_f_8examples_12gameofcython_12gameofcython_template(struct __pyx_t_8hypergen_8ultragen_Hpg &amp;__pyx_v_hpg) {
   int __pyx_v_i;
   int __pyx_v_j;
 /* … */
   /* function exit code */
 }
-</pre><pre class="cython line score-0">&#xA0;<span class="">19</span>:     cdef int i,j</pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">20</span>:     table_o(hpg, [T])</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">07</span>:     cdef int i, j</pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">08</span>:     h1(hpg, &lt;s&gt;"Game of life rendered in nogil Cython", [T])</pre>
 <pre class='cython code score-0 '>  __pyx_t_1[0] = __pyx_v_8hypergen_8ultragen_T;
-  (void)(__pyx_f_8hypergen_8ultragen_table_o(__pyx_v_hpg, __pyx_t_1));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">21</span>:     for i in range(100):</pre>
-<pre class='cython code score-0 '>  for (__pyx_t_2 = 0; __pyx_t_2 &lt; 0x64; __pyx_t_2+=1) {
-    __pyx_v_i = __pyx_t_2;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">22</span>:         tr_o(hpg, [T])</pre>
-<pre class='cython code score-0 '>    __pyx_t_3[0] = __pyx_v_8hypergen_8ultragen_T;
-    (void)(__pyx_f_8hypergen_8ultragen_tr_o(__pyx_v_hpg, __pyx_t_3));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">23</span>:         for j in range(100):</pre>
-<pre class='cython code score-0 '>    for (__pyx_t_4 = 0; __pyx_t_4 &lt; 0x64; __pyx_t_4+=1) {
-      __pyx_v_j = __pyx_t_4;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">24</span>:             td(hpg, i2s(i+j), [T])</pre>
-<pre class='cython code score-0 '>      __pyx_t_5[0] = __pyx_v_8hypergen_8ultragen_T;
-      __pyx_f_8hypergen_8ultragen_td(__pyx_v_hpg, __pyx_f_8hypergen_8ultragen_i2s((__pyx_v_i + __pyx_v_j)), __pyx_t_5);
+  __pyx_f_8hypergen_8ultragen_h1(__pyx_v_hpg, ((__pyx_t_8hypergen_8ultragen_s)((__pyx_t_8hypergen_8ultragen_s)"Game of life rendered in nogil Cython")), __pyx_t_1);
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">09</span>:     table_o(hpg, [T])</pre>
+<pre class='cython code score-0 '>  __pyx_t_2[0] = __pyx_v_8hypergen_8ultragen_T;
+  (void)(__pyx_f_8hypergen_8ultragen_table_o(__pyx_v_hpg, __pyx_t_2));
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">10</span>:     for i in range(50):</pre>
+<pre class='cython code score-0 '>  for (__pyx_t_3 = 0; __pyx_t_3 &lt; 50; __pyx_t_3+=1) {
+    __pyx_v_i = __pyx_t_3;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">11</span>:         tr_o(hpg, [T])</pre>
+<pre class='cython code score-0 '>    __pyx_t_4[0] = __pyx_v_8hypergen_8ultragen_T;
+    (void)(__pyx_f_8hypergen_8ultragen_tr_o(__pyx_v_hpg, __pyx_t_4));
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">12</span>:         for j in range(50):</pre>
+<pre class='cython code score-0 '>    for (__pyx_t_5 = 0; __pyx_t_5 &lt; 50; __pyx_t_5+=1) {
+      __pyx_v_j = __pyx_t_5;
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">13</span>:             td(hpg, i2s(i+j), [T])</pre>
+<pre class='cython code score-0 '>      __pyx_t_6[0] = __pyx_v_8hypergen_8ultragen_T;
+      __pyx_f_8hypergen_8ultragen_td(__pyx_v_hpg, __pyx_f_8hypergen_8ultragen_i2s((__pyx_v_i + __pyx_v_j)), __pyx_t_6);
     }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">25</span>:         tr_c(hpg)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">14</span>:         tr_c(hpg)</pre>
 <pre class='cython code score-0 '>    __pyx_f_8hypergen_8ultragen_tr_c(__pyx_v_hpg);
   }
-</pre><pre class="cython line score-0">&#xA0;<span class="">26</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">27</span>:     table_c(hpg)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">15</span>:     table_c(hpg)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8hypergen_8ultragen_table_c(__pyx_v_hpg);
-</pre><pre class="cython line score-0">&#xA0;<span class="">28</span>: </pre>
-<pre class="cython line score-21" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">29</span>: def render():</pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">16</span>: </pre>
+<pre class="cython line score-21" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">17</span>: def render():</pre>
 <pre class='cython code score-21 '>/* Python wrapper */
 static PyObject *__pyx_pw_8examples_12gameofcython_12gameofcython_1render(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
 static PyMethodDef __pyx_mdef_8examples_12gameofcython_12gameofcython_1render = {"render", (PyCFunction)__pyx_pw_8examples_12gameofcython_12gameofcython_1render, METH_NOARGS, 0};
@@ -398,19 +387,19 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
   return __pyx_r;
 }
 /* … */
-  __pyx_tuple_ = <span class='py_c_api'>PyTuple_Pack</span>(3, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_a);<span class='error_goto'> if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 29, __pyx_L1_error)</span>
+  __pyx_tuple_ = <span class='py_c_api'>PyTuple_Pack</span>(3, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_a);<span class='error_goto'> if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 17, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple_);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple_);
 /* … */
-  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_CyFunction_New</span>(&amp;__pyx_mdef_8examples_12gameofcython_12gameofcython_1render, 0, __pyx_n_s_render, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__2));<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 29, __pyx_L1_error)</span>
+  __pyx_t_2 = <span class='pyx_c_api'>__Pyx_CyFunction_New</span>(&amp;__pyx_mdef_8examples_12gameofcython_12gameofcython_1render, 0, __pyx_n_s_render, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__2));<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 17, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
-  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_render, __pyx_t_2) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 29, __pyx_L1_error)</span>
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_render, __pyx_t_2) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 17, __pyx_L1_error)</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">30</span>:     cdef Hpg hpg = make_hpg()</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">18</span>:     cdef Hpg hpg = make_hpg()</pre>
 <pre class='cython code score-0 '>  __pyx_v_hpg = __pyx_f_8hypergen_8ultragen_make_hpg();
-</pre><pre class="cython line score-0">&#xA0;<span class="">31</span>:     cdef int i</pre>
-<pre class="cython line score-16" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">32</span>:     a = time()</pre>
-<pre class='cython code score-16 '>  <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_t_2, __pyx_n_s_time);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)</span>
+</pre><pre class="cython line score-0">&#xA0;<span class="">19</span>:     cdef int i</pre>
+<pre class="cython line score-16" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">20</span>:     a = time()</pre>
+<pre class='cython code score-16 '>  <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_t_2, __pyx_n_s_time);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -428,16 +417,16 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
     PyObject *__pyx_callargs[1] = {__pyx_t_3, };
     __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_FastCall</span>(__pyx_t_2, __pyx_callargs+1-__pyx_t_4, 0+__pyx_t_4);
     <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) <span class='error_goto'>__PYX_ERR(0, 32, __pyx_L1_error)</span>
+    if (unlikely(!__pyx_t_1)) <span class='error_goto'>__PYX_ERR(0, 20, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
     <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
   }
   __pyx_v_a = __pyx_t_1;
   __pyx_t_1 = 0;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">33</span>:     template(hpg)</pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">21</span>:     template(hpg)</pre>
 <pre class='cython code score-0 '>  __pyx_f_8examples_12gameofcython_12gameofcython_template(__pyx_v_hpg);
-</pre><pre class="cython line score-39" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">34</span>:     print("Duration:", (time() - a) * 1000, "ms")</pre>
-<pre class='cython code score-39 '>  <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_t_2, __pyx_n_s_time);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)</span>
+</pre><pre class="cython line score-39" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">22</span>:     print("Duration:", (time() - a) * 1000, "ms")</pre>
+<pre class='cython code score-39 '>  <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_t_2, __pyx_n_s_time);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -455,17 +444,17 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
     PyObject *__pyx_callargs[1] = {__pyx_t_3, };
     __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_FastCall</span>(__pyx_t_2, __pyx_callargs+1-__pyx_t_4, 0+__pyx_t_4);
     <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) <span class='error_goto'>__PYX_ERR(0, 34, __pyx_L1_error)</span>
+    if (unlikely(!__pyx_t_1)) <span class='error_goto'>__PYX_ERR(0, 22, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
     <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
   }
-  __pyx_t_2 = <span class='py_c_api'>PyNumber_Subtract</span>(__pyx_t_1, __pyx_v_a);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)</span>
+  __pyx_t_2 = <span class='py_c_api'>PyNumber_Subtract</span>(__pyx_t_1, __pyx_v_a);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyInt_MultiplyObjC</span>(__pyx_t_2, __pyx_int_1000, 0x3E8, 0, 0);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)</span>
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyInt_MultiplyObjC</span>(__pyx_t_2, __pyx_int_1000, 0x3E8, 0, 0);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = <span class='py_c_api'>PyTuple_New</span>(3);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)</span>
+  __pyx_t_2 = <span class='py_c_api'>PyTuple_New</span>(3);<span class='error_goto'> if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_2);
   <span class='pyx_macro_api'>__Pyx_INCREF</span>(__pyx_kp_s_Duration);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_kp_s_Duration);
@@ -476,13 +465,13 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_n_s_ms);
   <span class='py_macro_api'>PyTuple_SET_ITEM</span>(__pyx_t_2, 2, __pyx_n_s_ms);
   __pyx_t_1 = 0;
-  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_builtin_print, __pyx_t_2, NULL);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)</span>
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(__pyx_builtin_print, __pyx_t_2, NULL);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_2); __pyx_t_2 = 0;
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-</pre><pre class="cython line score-3" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">35</span>:     return hpg.html</pre>
+</pre><pre class="cython line score-3" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">23</span>:     return hpg.html</pre>
 <pre class='cython code score-3 '>  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
-  __pyx_t_1 = <span class='pyx_c_api'>__pyx_convert_PyUnicode_string_to_py_std__in_string</span>(__pyx_v_hpg.html);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)</span>
+  __pyx_t_1 = <span class='pyx_c_api'>__pyx_convert_PyUnicode_string_to_py_std__in_string</span>(__pyx_v_hpg.html);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;

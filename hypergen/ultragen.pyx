@@ -7,8 +7,6 @@ from libc.stdio cimport printf, sprintf
 
 from cymem.cymem cimport Pool
 
-ctypedef char* s # Shortcut for char*
-
 cdef:
     string T = <char*>"__TERM__" # Terminate list of strings
 
@@ -182,6 +180,9 @@ cdef void element_close(string tag, Hpg &hpg) nogil:
 # HTML elements
 cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"div", hpg, s, attrs)
+
+cdef inline void h1(Hpg &hpg, string s, string* attrs) nogil:
+    element(<char*>"h1", hpg, s, attrs)
 
 cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"b", hpg, s, attrs)

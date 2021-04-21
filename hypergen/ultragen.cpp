@@ -1088,29 +1088,29 @@ struct __pyx_t_8hypergen_8ultragen_Hpg;
 struct __pyx_t_8hypergen_8ultragen_CbOpts;
 struct __pyx_t_8hypergen_8ultragen_ArgElOpts;
 
-/* "hypergen/ultragen.pyx":10
- * from cymem.cymem cimport Pool
+/* "hypergen/ultragen.pxd":7
  * 
+ * cdef string T
  * ctypedef char* s # Shortcut for char*             # <<<<<<<<<<<<<<
- * 
- * cdef:
+ * cdef struct Hpg:
+ *     string html
  */
 typedef char *__pyx_t_8hypergen_8ultragen_s;
 
-/* "hypergen/ultragen.pxd":6
- * 
+/* "hypergen/ultragen.pxd":8
  * cdef string T
- * cdef struct Hpg             # <<<<<<<<<<<<<<
- * cdef Hpg make_hpg()
- * cdef struct CbOpts
+ * ctypedef char* s # Shortcut for char*
+ * cdef struct Hpg:             # <<<<<<<<<<<<<<
+ *     string html
+ *     unordered_map [string, string] event_handler_callbacks
  */
 struct __pyx_t_8hypergen_8ultragen_Hpg {
   std::string html;
   std::unordered_map<std::string,std::string>  event_handler_callbacks;
 };
 
-/* "hypergen/ultragen.pxd":8
- * cdef struct Hpg
+/* "hypergen/ultragen.pxd":12
+ *     unordered_map [string, string] event_handler_callbacks
  * cdef Hpg make_hpg()
  * cdef struct CbOpts             # <<<<<<<<<<<<<<
  * cdef CbOpts make_cb_opts(string id_) nogil
@@ -1125,7 +1125,7 @@ struct __pyx_t_8hypergen_8ultragen_CbOpts {
   int upload_files;
 };
 
-/* "hypergen/ultragen.pxd":14
+/* "hypergen/ultragen.pxd":18
  * cdef string arg_i(int v) nogil
  * cdef string arg_s(string v) nogil
  * cdef struct ArgElOpts             # <<<<<<<<<<<<<<
@@ -1923,7 +1923,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #endif
 /* #### Code section: module_code ### */
 
-/* "hypergen/ultragen.pyx":20
+/* "hypergen/ultragen.pyx":18
  *     unordered_map [string, string] event_handler_callbacks
  * 
  * cdef Hpg make_hpg():             # <<<<<<<<<<<<<<
@@ -1944,38 +1944,38 @@ static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_f_8hypergen_8ultragen_make_h
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("make_hpg", 0);
 
-  /* "hypergen/ultragen.pyx":23
+  /* "hypergen/ultragen.pyx":21
  *     cdef:
  *         unordered_map [string, string] event_handler_callbacks
  *         hpg = Hpg(<char*>"", event_handler_callbacks)             # <<<<<<<<<<<<<<
  * 
  *     return hpg
  */
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyUnicode_FromString(((char *)((char *)""))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyUnicode_FromString(((char *)((char *)""))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_html, __pyx_t_2) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_html, __pyx_t_2) < 0) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __pyx_convert_unordered_map_to_py_std_3a__3a_string____std_3a__3a_string(__pyx_v_event_handler_callbacks); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_unordered_map_to_py_std_3a__3a_string____std_3a__3a_string(__pyx_v_event_handler_callbacks); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_event_handler_callbacks, __pyx_t_2) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_event_handler_callbacks, __pyx_t_2) < 0) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_hpg = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "hypergen/ultragen.pyx":25
+  /* "hypergen/ultragen.pyx":23
  *         hpg = Hpg(<char*>"", event_handler_callbacks)
  * 
  *     return hpg             # <<<<<<<<<<<<<<
  * 
  * # Callback options
  */
-  __pyx_t_3 = __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(__pyx_v_hpg); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 25, __pyx_L1_error)
+  __pyx_t_3 = __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(__pyx_v_hpg); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 23, __pyx_L1_error)
   __pyx_r = __pyx_t_3;
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":20
+  /* "hypergen/ultragen.pyx":18
  *     unordered_map [string, string] event_handler_callbacks
  * 
  * cdef Hpg make_hpg():             # <<<<<<<<<<<<<<
@@ -1995,7 +1995,7 @@ static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_f_8hypergen_8ultragen_make_h
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":36
+/* "hypergen/ultragen.pyx":34
  *     int upload_files
  * 
  * cdef CbOpts make_cb_opts(string id_) nogil:             # <<<<<<<<<<<<<<
@@ -2007,7 +2007,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
   struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_v_opts;
   struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_r;
 
-  /* "hypergen/ultragen.pyx":38
+  /* "hypergen/ultragen.pyx":36
  * cdef CbOpts make_cb_opts(string id_) nogil:
  *     cdef CbOpts opts
  *     opts.blocks = False             # <<<<<<<<<<<<<<
@@ -2016,7 +2016,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
  */
   __pyx_v_opts.blocks = 0;
 
-  /* "hypergen/ultragen.pyx":39
+  /* "hypergen/ultragen.pyx":37
  *     cdef CbOpts opts
  *     opts.blocks = False
  *     opts.confirm_ = <char*>""             # <<<<<<<<<<<<<<
@@ -2025,7 +2025,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
  */
   __pyx_v_opts.confirm_ = ((char *)((char *)""));
 
-  /* "hypergen/ultragen.pyx":40
+  /* "hypergen/ultragen.pyx":38
  *     opts.blocks = False
  *     opts.confirm_ = <char*>""
  *     opts.debounce = 0             # <<<<<<<<<<<<<<
@@ -2034,7 +2034,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
  */
   __pyx_v_opts.debounce = 0;
 
-  /* "hypergen/ultragen.pyx":41
+  /* "hypergen/ultragen.pyx":39
  *     opts.confirm_ = <char*>""
  *     opts.debounce = 0
  *     opts.clear = False             # <<<<<<<<<<<<<<
@@ -2043,7 +2043,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
  */
   __pyx_v_opts.clear = 0;
 
-  /* "hypergen/ultragen.pyx":42
+  /* "hypergen/ultragen.pyx":40
  *     opts.debounce = 0
  *     opts.clear = False
  *     opts.element_id = id_             # <<<<<<<<<<<<<<
@@ -2052,7 +2052,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
  */
   __pyx_v_opts.element_id = __pyx_v_id_;
 
-  /* "hypergen/ultragen.pyx":43
+  /* "hypergen/ultragen.pyx":41
  *     opts.clear = False
  *     opts.element_id = id_
  *     opts.upload_files = False             # <<<<<<<<<<<<<<
@@ -2061,7 +2061,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
  */
   __pyx_v_opts.upload_files = 0;
 
-  /* "hypergen/ultragen.pyx":45
+  /* "hypergen/ultragen.pyx":43
  *     opts.upload_files = False
  * 
  *     return opts             # <<<<<<<<<<<<<<
@@ -2071,7 +2071,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
   __pyx_r = __pyx_v_opts;
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":36
+  /* "hypergen/ultragen.pyx":34
  *     int upload_files
  * 
  * cdef CbOpts make_cb_opts(string id_) nogil:             # <<<<<<<<<<<<<<
@@ -2084,7 +2084,7 @@ static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_mak
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":48
+/* "hypergen/ultragen.pyx":46
  * 
  * # Server callback
  * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:             # <<<<<<<<<<<<<<
@@ -2105,7 +2105,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
   __Pyx_FakeReference<std::string> __pyx_t_4;
   __Pyx_FakeReference<std::string> __pyx_t_5;
 
-  /* "hypergen/ultragen.pyx":57
+  /* "hypergen/ultragen.pyx":55
  *         char s[100]
  * 
  *     client_state_key.append(id_)             # <<<<<<<<<<<<<<
@@ -2114,7 +2114,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_client_state_key.append(__pyx_v_id_));
 
-  /* "hypergen/ultragen.pyx":58
+  /* "hypergen/ultragen.pyx":56
  * 
  *     client_state_key.append(id_)
  *     client_state_key.append("__")             # <<<<<<<<<<<<<<
@@ -2123,7 +2123,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_client_state_key.append(((char const *)"__")));
 
-  /* "hypergen/ultragen.pyx":59
+  /* "hypergen/ultragen.pyx":57
  *     client_state_key.append(id_)
  *     client_state_key.append("__")
  *     client_state_key.append(attr_name)             # <<<<<<<<<<<<<<
@@ -2132,7 +2132,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_client_state_key.append(__pyx_v_attr_name));
 
-  /* "hypergen/ultragen.pyx":61
+  /* "hypergen/ultragen.pyx":59
  *     client_state_key.append(attr_name)
  * 
  *     html.append("e(event,'")             # <<<<<<<<<<<<<<
@@ -2141,7 +2141,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_html.append(((char const *)"e(event,'")));
 
-  /* "hypergen/ultragen.pyx":62
+  /* "hypergen/ultragen.pyx":60
  * 
  *     html.append("e(event,'")
  *     html.append(client_state_key)             # <<<<<<<<<<<<<<
@@ -2150,7 +2150,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_html.append(__pyx_v_client_state_key));
 
-  /* "hypergen/ultragen.pyx":63
+  /* "hypergen/ultragen.pyx":61
  *     html.append("e(event,'")
  *     html.append(client_state_key)
  *     html.append("')")             # <<<<<<<<<<<<<<
@@ -2159,7 +2159,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_html.append(((char const *)"')")));
 
-  /* "hypergen/ultragen.pyx":65
+  /* "hypergen/ultragen.pyx":63
  *     html.append("')")
  * 
  *     event_handler_callback.append('["')             # <<<<<<<<<<<<<<
@@ -2168,7 +2168,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"[\"")));
 
-  /* "hypergen/ultragen.pyx":66
+  /* "hypergen/ultragen.pyx":64
  * 
  *     event_handler_callback.append('["')
  *     event_handler_callback.append(url)             # <<<<<<<<<<<<<<
@@ -2177,7 +2177,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(__pyx_v_url));
 
-  /* "hypergen/ultragen.pyx":67
+  /* "hypergen/ultragen.pyx":65
  *     event_handler_callback.append('["')
  *     event_handler_callback.append(url)
  *     event_handler_callback.append('",')             # <<<<<<<<<<<<<<
@@ -2186,7 +2186,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"\",")));
 
-  /* "hypergen/ultragen.pyx":69
+  /* "hypergen/ultragen.pyx":67
  *     event_handler_callback.append('",')
  * 
  *     event_handler_callback.append('[')             # <<<<<<<<<<<<<<
@@ -2195,7 +2195,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"[")));
 
-  /* "hypergen/ultragen.pyx":70
+  /* "hypergen/ultragen.pyx":68
  * 
  *     event_handler_callback.append('[')
  *     for i in range(100):             # <<<<<<<<<<<<<<
@@ -2205,7 +2205,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
   for (__pyx_t_1 = 0; __pyx_t_1 < 0x64; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "hypergen/ultragen.pyx":71
+    /* "hypergen/ultragen.pyx":69
  *     event_handler_callback.append('[')
  *     for i in range(100):
  *         arg = args[i]             # <<<<<<<<<<<<<<
@@ -2214,7 +2214,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     __pyx_v_arg = (__pyx_v_args[__pyx_v_i]);
 
-    /* "hypergen/ultragen.pyx":72
+    /* "hypergen/ultragen.pyx":70
  *     for i in range(100):
  *         arg = args[i]
  *         if arg == T:             # <<<<<<<<<<<<<<
@@ -2224,7 +2224,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
     __pyx_t_2 = ((__pyx_v_arg == __pyx_v_8hypergen_8ultragen_T) != 0);
     if (__pyx_t_2) {
 
-      /* "hypergen/ultragen.pyx":73
+      /* "hypergen/ultragen.pyx":71
  *         arg = args[i]
  *         if arg == T:
  *             break             # <<<<<<<<<<<<<<
@@ -2233,7 +2233,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
       goto __pyx_L4_break;
 
-      /* "hypergen/ultragen.pyx":72
+      /* "hypergen/ultragen.pyx":70
  *     for i in range(100):
  *         arg = args[i]
  *         if arg == T:             # <<<<<<<<<<<<<<
@@ -2242,7 +2242,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     }
 
-    /* "hypergen/ultragen.pyx":74
+    /* "hypergen/ultragen.pyx":72
  *         if arg == T:
  *             break
  *         if i != 0:             # <<<<<<<<<<<<<<
@@ -2252,7 +2252,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
     __pyx_t_2 = ((__pyx_v_i != 0) != 0);
     if (__pyx_t_2) {
 
-      /* "hypergen/ultragen.pyx":75
+      /* "hypergen/ultragen.pyx":73
  *             break
  *         if i != 0:
  *             event_handler_callback.append(",")             # <<<<<<<<<<<<<<
@@ -2261,7 +2261,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
       (void)(__pyx_v_event_handler_callback.append(((char const *)",")));
 
-      /* "hypergen/ultragen.pyx":74
+      /* "hypergen/ultragen.pyx":72
  *         if arg == T:
  *             break
  *         if i != 0:             # <<<<<<<<<<<<<<
@@ -2270,7 +2270,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     }
 
-    /* "hypergen/ultragen.pyx":76
+    /* "hypergen/ultragen.pyx":74
  *         if i != 0:
  *             event_handler_callback.append(",")
  *         event_handler_callback.append(arg)             # <<<<<<<<<<<<<<
@@ -2281,7 +2281,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
   }
   __pyx_L4_break:;
 
-  /* "hypergen/ultragen.pyx":77
+  /* "hypergen/ultragen.pyx":75
  *             event_handler_callback.append(",")
  *         event_handler_callback.append(arg)
  *     event_handler_callback.append(']')             # <<<<<<<<<<<<<<
@@ -2290,7 +2290,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"]")));
 
-  /* "hypergen/ultragen.pyx":79
+  /* "hypergen/ultragen.pyx":77
  *     event_handler_callback.append(']')
  * 
  *     event_handler_callback.append(', {')             # <<<<<<<<<<<<<<
@@ -2299,7 +2299,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)", {")));
 
-    /* "hypergen/ultragen.pyx":80
+    /* "hypergen/ultragen.pyx":78
  * 
  *     event_handler_callback.append(', {')
  *     event_handler_callback.append('"blocks":')             # <<<<<<<<<<<<<<
@@ -2308,7 +2308,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)"\"blocks\":")));
 
-    /* "hypergen/ultragen.pyx":81
+    /* "hypergen/ultragen.pyx":79
  *     event_handler_callback.append(', {')
  *     event_handler_callback.append('"blocks":')
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2321,7 +2321,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
       __pyx_t_3 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "hypergen/ultragen.pyx":82
+    /* "hypergen/ultragen.pyx":80
  *     event_handler_callback.append('"blocks":')
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"debounce":')             # <<<<<<<<<<<<<<
@@ -2330,7 +2330,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"debounce\":")));
 
-    /* "hypergen/ultragen.pyx":83
+    /* "hypergen/ultragen.pyx":81
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"debounce":')
  *     event_handler_callback.append(i2s(cb_opts.debounce))             # <<<<<<<<<<<<<<
@@ -2339,7 +2339,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(__pyx_f_8hypergen_8ultragen_i2s(__pyx_v_cb_opts.debounce)));
 
-    /* "hypergen/ultragen.pyx":84
+    /* "hypergen/ultragen.pyx":82
  *     event_handler_callback.append(',"debounce":')
  *     event_handler_callback.append(i2s(cb_opts.debounce))
  *     event_handler_callback.append(',"clear":')             # <<<<<<<<<<<<<<
@@ -2348,7 +2348,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"clear\":")));
 
-    /* "hypergen/ultragen.pyx":85
+    /* "hypergen/ultragen.pyx":83
  *     event_handler_callback.append(i2s(cb_opts.debounce))
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2361,7 +2361,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
       __pyx_t_4 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "hypergen/ultragen.pyx":86
+    /* "hypergen/ultragen.pyx":84
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"elementId":"')             # <<<<<<<<<<<<<<
@@ -2370,7 +2370,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"elementId\":\"")));
 
-    /* "hypergen/ultragen.pyx":87
+    /* "hypergen/ultragen.pyx":85
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"elementId":"')
  *     event_handler_callback.append(id_)             # <<<<<<<<<<<<<<
@@ -2379,7 +2379,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(__pyx_v_id_));
 
-    /* "hypergen/ultragen.pyx":88
+    /* "hypergen/ultragen.pyx":86
  *     event_handler_callback.append(',"elementId":"')
  *     event_handler_callback.append(id_)
  *     event_handler_callback.append('"')             # <<<<<<<<<<<<<<
@@ -2388,7 +2388,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)"\"")));
 
-    /* "hypergen/ultragen.pyx":89
+    /* "hypergen/ultragen.pyx":87
  *     event_handler_callback.append(id_)
  *     event_handler_callback.append('"')
  *     event_handler_callback.append(',"uploadFiles":')             # <<<<<<<<<<<<<<
@@ -2397,7 +2397,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"uploadFiles\":")));
 
-    /* "hypergen/ultragen.pyx":90
+    /* "hypergen/ultragen.pyx":88
  *     event_handler_callback.append('"')
  *     event_handler_callback.append(',"uploadFiles":')
  *     event_handler_callback.append("true") if cb_opts.upload_files is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2410,7 +2410,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
       __pyx_t_5 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "hypergen/ultragen.pyx":92
+    /* "hypergen/ultragen.pyx":90
  *     event_handler_callback.append("true") if cb_opts.upload_files is True else event_handler_callback.append("false")
  * 
  *     event_handler_callback.append('}')             # <<<<<<<<<<<<<<
@@ -2419,7 +2419,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"}")));
 
-  /* "hypergen/ultragen.pyx":93
+  /* "hypergen/ultragen.pyx":91
  * 
  *     event_handler_callback.append('}')
  *     event_handler_callback.append("]")             # <<<<<<<<<<<<<<
@@ -2428,7 +2428,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"]")));
 
-  /* "hypergen/ultragen.pyx":95
+  /* "hypergen/ultragen.pyx":93
  *     event_handler_callback.append("]")
  * 
  *     hpg.event_handler_callbacks[client_state_key] = event_handler_callback             # <<<<<<<<<<<<<<
@@ -2437,7 +2437,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
  */
   (__pyx_v_hpg.event_handler_callbacks[__pyx_v_client_state_key]) = __pyx_v_event_handler_callback;
 
-  /* "hypergen/ultragen.pyx":97
+  /* "hypergen/ultragen.pyx":95
  *     hpg.event_handler_callbacks[client_state_key] = event_handler_callback
  * 
  *     return html             # <<<<<<<<<<<<<<
@@ -2447,7 +2447,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
   __pyx_r = __pyx_v_html;
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":48
+  /* "hypergen/ultragen.pyx":46
  * 
  * # Server callback
  * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:             # <<<<<<<<<<<<<<
@@ -2460,7 +2460,7 @@ static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultr
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":101
+/* "hypergen/ultragen.pyx":99
  * # Cast functions for callback arguments
  * 
  * cdef string i2s(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2472,7 +2472,7 @@ static std::string __pyx_f_8hypergen_8ultragen_i2s(int __pyx_v_v) {
   char __pyx_v_s[0x64];
   std::string __pyx_r;
 
-  /* "hypergen/ultragen.pyx":104
+  /* "hypergen/ultragen.pyx":102
  *     cdef:
  *         char s[100]
  *     sprintf(s, "%d", v)             # <<<<<<<<<<<<<<
@@ -2481,7 +2481,7 @@ static std::string __pyx_f_8hypergen_8ultragen_i2s(int __pyx_v_v) {
  */
   (void)(sprintf(__pyx_v_s, ((char const *)"%d"), __pyx_v_v));
 
-  /* "hypergen/ultragen.pyx":105
+  /* "hypergen/ultragen.pyx":103
  *         char s[100]
  *     sprintf(s, "%d", v)
  *     return <string> s             # <<<<<<<<<<<<<<
@@ -2491,7 +2491,7 @@ static std::string __pyx_f_8hypergen_8ultragen_i2s(int __pyx_v_v) {
   __pyx_r = ((std::string)__pyx_v_s);
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":101
+  /* "hypergen/ultragen.pyx":99
  * # Cast functions for callback arguments
  * 
  * cdef string i2s(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2504,7 +2504,7 @@ static std::string __pyx_f_8hypergen_8ultragen_i2s(int __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":108
+/* "hypergen/ultragen.pyx":106
  * 
  * 
  * cdef string arg_i(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2516,7 +2516,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_i(int __pyx_v_v) {
   char __pyx_v_s[0x64];
   std::string __pyx_r;
 
-  /* "hypergen/ultragen.pyx":111
+  /* "hypergen/ultragen.pyx":109
  *     cdef:
  *         char s[100]
  *     sprintf(s, "%d", v)             # <<<<<<<<<<<<<<
@@ -2525,7 +2525,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_i(int __pyx_v_v) {
  */
   (void)(sprintf(__pyx_v_s, ((char const *)"%d"), __pyx_v_v));
 
-  /* "hypergen/ultragen.pyx":112
+  /* "hypergen/ultragen.pyx":110
  *         char s[100]
  *     sprintf(s, "%d", v)
  *     return <string> s             # <<<<<<<<<<<<<<
@@ -2535,7 +2535,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_i(int __pyx_v_v) {
   __pyx_r = ((std::string)__pyx_v_s);
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":108
+  /* "hypergen/ultragen.pyx":106
  * 
  * 
  * cdef string arg_i(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2548,7 +2548,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_i(int __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":114
+/* "hypergen/ultragen.pyx":112
  *     return <string> s
  * 
  * cdef string arg_s(string v) nogil:             # <<<<<<<<<<<<<<
@@ -2560,7 +2560,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
   std::string __pyx_v_s;
   std::string __pyx_r;
 
-  /* "hypergen/ultragen.pyx":116
+  /* "hypergen/ultragen.pyx":114
  * cdef string arg_s(string v) nogil:
  *     cdef string s
  *     s.append('"')             # <<<<<<<<<<<<<<
@@ -2569,7 +2569,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(((char const *)"\"")));
 
-  /* "hypergen/ultragen.pyx":117
+  /* "hypergen/ultragen.pyx":115
  *     cdef string s
  *     s.append('"')
  *     s.append(v)             # <<<<<<<<<<<<<<
@@ -2578,7 +2578,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(__pyx_v_v));
 
-  /* "hypergen/ultragen.pyx":118
+  /* "hypergen/ultragen.pyx":116
  *     s.append('"')
  *     s.append(v)
  *     s.append('"')             # <<<<<<<<<<<<<<
@@ -2587,7 +2587,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(((char const *)"\"")));
 
-  /* "hypergen/ultragen.pyx":120
+  /* "hypergen/ultragen.pyx":118
  *     s.append('"')
  * 
  *     return s             # <<<<<<<<<<<<<<
@@ -2597,7 +2597,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
   __pyx_r = __pyx_v_s;
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":114
+  /* "hypergen/ultragen.pyx":112
  *     return <string> s
  * 
  * cdef string arg_s(string v) nogil:             # <<<<<<<<<<<<<<
@@ -2610,7 +2610,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":126
+/* "hypergen/ultragen.pyx":124
  *     string coerce_func
  * 
  * cdef string arg_el(string id_, ArgElOpts opts) nogil:             # <<<<<<<<<<<<<<
@@ -2622,7 +2622,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, C
   std::string __pyx_v_s;
   std::string __pyx_r;
 
-  /* "hypergen/ultragen.pyx":128
+  /* "hypergen/ultragen.pyx":126
  * cdef string arg_el(string id_, ArgElOpts opts) nogil:
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')             # <<<<<<<<<<<<<<
@@ -2631,7 +2631,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, C
  */
   (void)(__pyx_v_s.append(((char const *)"[\"_\",\"element_value\",[\"hypergen.read.value\", null, \"")));
 
-  /* "hypergen/ultragen.pyx":129
+  /* "hypergen/ultragen.pyx":127
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  *     s.append(id_)             # <<<<<<<<<<<<<<
@@ -2640,7 +2640,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, C
  */
   (void)(__pyx_v_s.append(__pyx_v_id_));
 
-  /* "hypergen/ultragen.pyx":130
+  /* "hypergen/ultragen.pyx":128
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  *     s.append(id_)
  *     s.append('"]]')             # <<<<<<<<<<<<<<
@@ -2649,7 +2649,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, C
  */
   (void)(__pyx_v_s.append(((char const *)"\"]]")));
 
-  /* "hypergen/ultragen.pyx":132
+  /* "hypergen/ultragen.pyx":130
  *     s.append('"]]')
  * 
  *     return s             # <<<<<<<<<<<<<<
@@ -2659,7 +2659,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, C
   __pyx_r = __pyx_v_s;
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":126
+  /* "hypergen/ultragen.pyx":124
  *     string coerce_func
  * 
  * cdef string arg_el(string id_, ArgElOpts opts) nogil:             # <<<<<<<<<<<<<<
@@ -2672,7 +2672,7 @@ static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, C
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":135
+/* "hypergen/ultragen.pyx":133
  * 
  * # Base HTML element
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -2686,7 +2686,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
   int __pyx_t_1;
   int __pyx_t_2;
 
-  /* "hypergen/ultragen.pyx":137
+  /* "hypergen/ultragen.pyx":135
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
  *     cdef int i, j
  *     hpg.html.append('<')             # <<<<<<<<<<<<<<
@@ -2695,7 +2695,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"<")));
 
-  /* "hypergen/ultragen.pyx":138
+  /* "hypergen/ultragen.pyx":136
  *     cdef int i, j
  *     hpg.html.append('<')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -2704,7 +2704,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "hypergen/ultragen.pyx":140
+  /* "hypergen/ultragen.pyx":138
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -2714,7 +2714,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
   __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8hypergen_8ultragen_T) != 0);
   if (__pyx_t_1) {
 
-    /* "hypergen/ultragen.pyx":141
+    /* "hypergen/ultragen.pyx":139
  * 
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
@@ -2724,7 +2724,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
     for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
       __pyx_v_i = __pyx_t_2;
 
-      /* "hypergen/ultragen.pyx":142
+      /* "hypergen/ultragen.pyx":140
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):
  *             j = i + 1             # <<<<<<<<<<<<<<
@@ -2733,7 +2733,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
       __pyx_v_j = (__pyx_v_i + 1);
 
-      /* "hypergen/ultragen.pyx":143
+      /* "hypergen/ultragen.pyx":141
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -2743,7 +2743,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
       __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8hypergen_8ultragen_T) != 0);
       if (__pyx_t_1) {
 
-        /* "hypergen/ultragen.pyx":144
+        /* "hypergen/ultragen.pyx":142
  *             j = i + 1
  *             if attrs[i] == T:
  *                 break             # <<<<<<<<<<<<<<
@@ -2752,7 +2752,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
         goto __pyx_L5_break;
 
-        /* "hypergen/ultragen.pyx":143
+        /* "hypergen/ultragen.pyx":141
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -2761,7 +2761,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
       }
 
-      /* "hypergen/ultragen.pyx":146
+      /* "hypergen/ultragen.pyx":144
  *                 break
  *             else:
  *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
@@ -2771,7 +2771,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
       /*else*/ {
         (void)(__pyx_v_hpg.html.append(((char const *)" ")));
 
-        /* "hypergen/ultragen.pyx":147
+        /* "hypergen/ultragen.pyx":145
  *             else:
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
@@ -2780,7 +2780,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
 
-        /* "hypergen/ultragen.pyx":148
+        /* "hypergen/ultragen.pyx":146
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
@@ -2789,7 +2789,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
         (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
 
-        /* "hypergen/ultragen.pyx":149
+        /* "hypergen/ultragen.pyx":147
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
@@ -2798,7 +2798,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
 
-        /* "hypergen/ultragen.pyx":150
+        /* "hypergen/ultragen.pyx":148
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])
  *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
@@ -2810,7 +2810,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
     }
     __pyx_L5_break:;
 
-    /* "hypergen/ultragen.pyx":140
+    /* "hypergen/ultragen.pyx":138
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -2819,7 +2819,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   }
 
-  /* "hypergen/ultragen.pyx":152
+  /* "hypergen/ultragen.pyx":150
  *                 hpg.html.append('"')
  * 
  *     hpg.html.append('>')             # <<<<<<<<<<<<<<
@@ -2828,7 +2828,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">")));
 
-  /* "hypergen/ultragen.pyx":153
+  /* "hypergen/ultragen.pyx":151
  * 
  *     hpg.html.append('>')
  *     hpg.html.append(s)             # <<<<<<<<<<<<<<
@@ -2837,7 +2837,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_s));
 
-  /* "hypergen/ultragen.pyx":154
+  /* "hypergen/ultragen.pyx":152
  *     hpg.html.append('>')
  *     hpg.html.append(s)
  *     hpg.html.append('</')             # <<<<<<<<<<<<<<
@@ -2846,7 +2846,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"</")));
 
-  /* "hypergen/ultragen.pyx":155
+  /* "hypergen/ultragen.pyx":153
  *     hpg.html.append(s)
  *     hpg.html.append('</')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -2855,7 +2855,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "hypergen/ultragen.pyx":156
+  /* "hypergen/ultragen.pyx":154
  *     hpg.html.append('</')
  *     hpg.html.append(tag)
  *     hpg.html.append('>\n')             # <<<<<<<<<<<<<<
@@ -2864,7 +2864,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">\n")));
 
-  /* "hypergen/ultragen.pyx":135
+  /* "hypergen/ultragen.pyx":133
  * 
  * # Base HTML element
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -2875,7 +2875,7 @@ static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct 
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":158
+/* "hypergen/ultragen.pyx":156
  *     hpg.html.append('>\n')
  * 
  * cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -2889,7 +2889,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
   int __pyx_t_1;
   int __pyx_t_2;
 
-  /* "hypergen/ultragen.pyx":160
+  /* "hypergen/ultragen.pyx":158
  * cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:
  *     cdef int i, j
  *     hpg.html.append('<')             # <<<<<<<<<<<<<<
@@ -2898,7 +2898,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"<")));
 
-  /* "hypergen/ultragen.pyx":161
+  /* "hypergen/ultragen.pyx":159
  *     cdef int i, j
  *     hpg.html.append('<')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -2907,7 +2907,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "hypergen/ultragen.pyx":163
+  /* "hypergen/ultragen.pyx":161
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -2917,7 +2917,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
   __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8hypergen_8ultragen_T) != 0);
   if (__pyx_t_1) {
 
-    /* "hypergen/ultragen.pyx":164
+    /* "hypergen/ultragen.pyx":162
  * 
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
@@ -2927,7 +2927,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
     for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
       __pyx_v_i = __pyx_t_2;
 
-      /* "hypergen/ultragen.pyx":165
+      /* "hypergen/ultragen.pyx":163
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):
  *             j = i + 1             # <<<<<<<<<<<<<<
@@ -2936,7 +2936,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
       __pyx_v_j = (__pyx_v_i + 1);
 
-      /* "hypergen/ultragen.pyx":166
+      /* "hypergen/ultragen.pyx":164
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -2946,7 +2946,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
       __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8hypergen_8ultragen_T) != 0);
       if (__pyx_t_1) {
 
-        /* "hypergen/ultragen.pyx":167
+        /* "hypergen/ultragen.pyx":165
  *             j = i + 1
  *             if attrs[i] == T:
  *                 break             # <<<<<<<<<<<<<<
@@ -2955,7 +2955,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
         goto __pyx_L5_break;
 
-        /* "hypergen/ultragen.pyx":166
+        /* "hypergen/ultragen.pyx":164
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -2964,7 +2964,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
       }
 
-      /* "hypergen/ultragen.pyx":169
+      /* "hypergen/ultragen.pyx":167
  *                 break
  *             else:
  *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
@@ -2974,7 +2974,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
       /*else*/ {
         (void)(__pyx_v_hpg.html.append(((char const *)" ")));
 
-        /* "hypergen/ultragen.pyx":170
+        /* "hypergen/ultragen.pyx":168
  *             else:
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
@@ -2983,7 +2983,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
 
-        /* "hypergen/ultragen.pyx":171
+        /* "hypergen/ultragen.pyx":169
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
@@ -2992,7 +2992,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
         (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
 
-        /* "hypergen/ultragen.pyx":172
+        /* "hypergen/ultragen.pyx":170
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
@@ -3001,7 +3001,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
 
-        /* "hypergen/ultragen.pyx":173
+        /* "hypergen/ultragen.pyx":171
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])
  *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
@@ -3013,7 +3013,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
     }
     __pyx_L5_break:;
 
-    /* "hypergen/ultragen.pyx":163
+    /* "hypergen/ultragen.pyx":161
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -3022,7 +3022,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
   }
 
-  /* "hypergen/ultragen.pyx":175
+  /* "hypergen/ultragen.pyx":173
  *                 hpg.html.append('"')
  * 
  *     hpg.html.append('>')             # <<<<<<<<<<<<<<
@@ -3031,7 +3031,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">")));
 
-  /* "hypergen/ultragen.pyx":158
+  /* "hypergen/ultragen.pyx":156
  *     hpg.html.append('>\n')
  * 
  * cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3042,7 +3042,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":177
+/* "hypergen/ultragen.pyx":175
  *     hpg.html.append('>')
  * 
  * cdef void element_close(string tag, Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
@@ -3052,7 +3052,7 @@ static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, st
 
 static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
 
-  /* "hypergen/ultragen.pyx":178
+  /* "hypergen/ultragen.pyx":176
  * 
  * cdef void element_close(string tag, Hpg &hpg) nogil:
  *     hpg.html.append('</')             # <<<<<<<<<<<<<<
@@ -3061,7 +3061,7 @@ static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, s
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"</")));
 
-  /* "hypergen/ultragen.pyx":179
+  /* "hypergen/ultragen.pyx":177
  * cdef void element_close(string tag, Hpg &hpg) nogil:
  *     hpg.html.append('</')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -3070,7 +3070,7 @@ static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, s
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "hypergen/ultragen.pyx":180
+  /* "hypergen/ultragen.pyx":178
  *     hpg.html.append('</')
  *     hpg.html.append(tag)
  *     hpg.html.append('>\n')             # <<<<<<<<<<<<<<
@@ -3079,7 +3079,7 @@ static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, s
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">\n")));
 
-  /* "hypergen/ultragen.pyx":177
+  /* "hypergen/ultragen.pyx":175
  *     hpg.html.append('>')
  * 
  * cdef void element_close(string tag, Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
@@ -3090,7 +3090,7 @@ static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, s
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":183
+/* "hypergen/ultragen.pyx":181
  * 
  * # HTML elements
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3100,16 +3100,16 @@ static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, s
 
 static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_div(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "hypergen/ultragen.pyx":184
+  /* "hypergen/ultragen.pyx":182
  * # HTML elements
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"div", hpg, s, attrs)             # <<<<<<<<<<<<<<
  * 
- * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
+ * cdef inline void h1(Hpg &hpg, string s, string* attrs) nogil:
  */
   __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"div")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "hypergen/ultragen.pyx":183
+  /* "hypergen/ultragen.pyx":181
  * 
  * # HTML elements
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3120,8 +3120,38 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_div(struct __pyx_t_8hyperg
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":186
+/* "hypergen/ultragen.pyx":184
  *     element(<char*>"div", hpg, s, attrs)
+ * 
+ * cdef inline void h1(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"h1", hpg, s, attrs)
+ * 
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_h1(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+
+  /* "hypergen/ultragen.pyx":185
+ * 
+ * cdef inline void h1(Hpg &hpg, string s, string* attrs) nogil:
+ *     element(<char*>"h1", hpg, s, attrs)             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
+ */
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"h1")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":184
+ *     element(<char*>"div", hpg, s, attrs)
+ * 
+ * cdef inline void h1(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"h1", hpg, s, attrs)
+ * 
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":187
+ *     element(<char*>"h1", hpg, s, attrs)
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
  *     element(<char*>"b", hpg, s, attrs)
@@ -3130,7 +3160,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_div(struct __pyx_t_8hyperg
 
 static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_b(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "hypergen/ultragen.pyx":187
+  /* "hypergen/ultragen.pyx":188
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"b", hpg, s, attrs)             # <<<<<<<<<<<<<<
@@ -3139,8 +3169,8 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_b(struct __pyx_t_8hypergen
  */
   __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "hypergen/ultragen.pyx":186
- *     element(<char*>"div", hpg, s, attrs)
+  /* "hypergen/ultragen.pyx":187
+ *     element(<char*>"h1", hpg, s, attrs)
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
  *     element(<char*>"b", hpg, s, attrs)
@@ -3150,7 +3180,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_b(struct __pyx_t_8hypergen
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":189
+/* "hypergen/ultragen.pyx":190
  *     element(<char*>"b", hpg, s, attrs)
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3160,7 +3190,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_b(struct __pyx_t_8hypergen
 
 static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_button(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "hypergen/ultragen.pyx":190
+  /* "hypergen/ultragen.pyx":191
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"button", hpg, s, attrs)             # <<<<<<<<<<<<<<
@@ -3169,7 +3199,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_button(struct __pyx_t_8hyp
  */
   __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"button")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "hypergen/ultragen.pyx":189
+  /* "hypergen/ultragen.pyx":190
  *     element(<char*>"b", hpg, s, attrs)
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3180,7 +3210,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_button(struct __pyx_t_8hyp
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":192
+/* "hypergen/ultragen.pyx":193
  *     element(<char*>"button", hpg, s, attrs)
  * 
  * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3191,7 +3221,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_button(struct __pyx_t_8hyp
 static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_table_o(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string *__pyx_v_attrs) {
   int __pyx_r;
 
-  /* "hypergen/ultragen.pyx":193
+  /* "hypergen/ultragen.pyx":194
  * 
  * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
  *     element_open(<char*>"table", hpg, attrs)             # <<<<<<<<<<<<<<
@@ -3200,7 +3230,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_table_o(struct __pyx_t_8hyp
  */
   __pyx_f_8hypergen_8ultragen_element_open(((char *)((char *)"table")), __pyx_v_hpg, __pyx_v_attrs);
 
-  /* "hypergen/ultragen.pyx":194
+  /* "hypergen/ultragen.pyx":195
  * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
  *     element_open(<char*>"table", hpg, attrs)
  *     return True             # <<<<<<<<<<<<<<
@@ -3210,7 +3240,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_table_o(struct __pyx_t_8hyp
   __pyx_r = 1;
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":192
+  /* "hypergen/ultragen.pyx":193
  *     element(<char*>"button", hpg, s, attrs)
  * 
  * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3223,7 +3253,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_table_o(struct __pyx_t_8hyp
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":196
+/* "hypergen/ultragen.pyx":197
  *     return True
  * 
  * cdef inline void table_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
@@ -3233,7 +3263,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_table_o(struct __pyx_t_8hyp
 
 static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_table_c(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
 
-  /* "hypergen/ultragen.pyx":197
+  /* "hypergen/ultragen.pyx":198
  * 
  * cdef inline void table_c(Hpg &hpg) nogil:
  *     element_close(<char*>"table", hpg)             # <<<<<<<<<<<<<<
@@ -3242,7 +3272,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_table_c(struct __pyx_t_8hy
  */
   __pyx_f_8hypergen_8ultragen_element_close(((char *)((char *)"table")), __pyx_v_hpg);
 
-  /* "hypergen/ultragen.pyx":196
+  /* "hypergen/ultragen.pyx":197
  *     return True
  * 
  * cdef inline void table_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
@@ -3253,7 +3283,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_table_c(struct __pyx_t_8hy
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":199
+/* "hypergen/ultragen.pyx":200
  *     element_close(<char*>"table", hpg)
  * 
  * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3263,7 +3293,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_table_c(struct __pyx_t_8hy
 
 static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "hypergen/ultragen.pyx":200
+  /* "hypergen/ultragen.pyx":201
  * 
  * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"tr", hpg, s, attrs)             # <<<<<<<<<<<<<<
@@ -3272,7 +3302,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr(struct __pyx_t_8hyperge
  */
   __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "hypergen/ultragen.pyx":199
+  /* "hypergen/ultragen.pyx":200
  *     element_close(<char*>"table", hpg)
  * 
  * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3283,7 +3313,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr(struct __pyx_t_8hyperge
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":202
+/* "hypergen/ultragen.pyx":203
  *     element(<char*>"tr", hpg, s, attrs)
  * 
  * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3294,7 +3324,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr(struct __pyx_t_8hyperge
 static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_tr_o(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string *__pyx_v_attrs) {
   int __pyx_r;
 
-  /* "hypergen/ultragen.pyx":203
+  /* "hypergen/ultragen.pyx":204
  * 
  * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:
  *     element_open(<char*>"tr", hpg, attrs)             # <<<<<<<<<<<<<<
@@ -3303,7 +3333,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_tr_o(struct __pyx_t_8hyperg
  */
   __pyx_f_8hypergen_8ultragen_element_open(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_attrs);
 
-  /* "hypergen/ultragen.pyx":204
+  /* "hypergen/ultragen.pyx":205
  * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:
  *     element_open(<char*>"tr", hpg, attrs)
  *     return True             # <<<<<<<<<<<<<<
@@ -3313,7 +3343,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_tr_o(struct __pyx_t_8hyperg
   __pyx_r = 1;
   goto __pyx_L0;
 
-  /* "hypergen/ultragen.pyx":202
+  /* "hypergen/ultragen.pyx":203
  *     element(<char*>"tr", hpg, s, attrs)
  * 
  * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3326,7 +3356,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_tr_o(struct __pyx_t_8hyperg
   return __pyx_r;
 }
 
-/* "hypergen/ultragen.pyx":206
+/* "hypergen/ultragen.pyx":207
  *     return True
  * 
  * cdef inline void tr_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
@@ -3336,7 +3366,7 @@ static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_tr_o(struct __pyx_t_8hyperg
 
 static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr_c(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
 
-  /* "hypergen/ultragen.pyx":207
+  /* "hypergen/ultragen.pyx":208
  * 
  * cdef inline void tr_c(Hpg &hpg) nogil:
  *     element_close(<char*>"tr", hpg)             # <<<<<<<<<<<<<<
@@ -3345,7 +3375,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr_c(struct __pyx_t_8hyper
  */
   __pyx_f_8hypergen_8ultragen_element_close(((char *)((char *)"tr")), __pyx_v_hpg);
 
-  /* "hypergen/ultragen.pyx":206
+  /* "hypergen/ultragen.pyx":207
  *     return True
  * 
  * cdef inline void tr_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
@@ -3356,7 +3386,7 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr_c(struct __pyx_t_8hyper
   /* function exit code */
 }
 
-/* "hypergen/ultragen.pyx":209
+/* "hypergen/ultragen.pyx":210
  *     element_close(<char*>"tr", hpg)
  * 
  * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3365,14 +3395,14 @@ static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr_c(struct __pyx_t_8hyper
 
 static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_td(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "hypergen/ultragen.pyx":210
+  /* "hypergen/ultragen.pyx":211
  * 
  * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"td", hpg, s, attrs)             # <<<<<<<<<<<<<<
  */
   __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"td")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "hypergen/ultragen.pyx":209
+  /* "hypergen/ultragen.pyx":210
  *     element_close(<char*>"tr", hpg)
  * 
  * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -4277,7 +4307,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 /* #### Code section: cached_builtins ### */
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 68, __pyx_L1_error)
   __pyx_builtin_KeyError = __Pyx_GetBuiltinName(__pyx_n_s_KeyError); if (!__pyx_builtin_KeyError) __PYX_ERR(1, 19, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 20, __pyx_L1_error)
   return 0;
@@ -4394,6 +4424,7 @@ static int __Pyx_modinit_function_export_code(void) {
   if (__Pyx_ExportFunction("arg_el", (void (*)(void))__pyx_f_8hypergen_8ultragen_arg_el, "std::string (std::string, struct __pyx_t_8hypergen_8ultragen_ArgElOpts)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ExportFunction("element", (void (*)(void))__pyx_f_8hypergen_8ultragen_element, "void (std::string, struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ExportFunction("div", (void (*)(void))__pyx_f_8hypergen_8ultragen_div, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("h1", (void (*)(void))__pyx_f_8hypergen_8ultragen_h1, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ExportFunction("b", (void (*)(void))__pyx_f_8hypergen_8ultragen_b, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ExportFunction("button", (void (*)(void))__pyx_f_8hypergen_8ultragen_button, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ExportFunction("tr", (void (*)(void))__pyx_f_8hypergen_8ultragen_tr, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -4731,7 +4762,7 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "hypergen/ultragen.pyx":13
+  /* "hypergen/ultragen.pyx":11
  * 
  * cdef:
  *     string T = <char*>"__TERM__" # Terminate list of strings             # <<<<<<<<<<<<<<

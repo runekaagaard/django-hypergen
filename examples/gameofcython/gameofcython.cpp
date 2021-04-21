@@ -1056,7 +1056,6 @@ static const char *__pyx_filename;
 static const char *__pyx_f[] = {
   "examples/gameofcython/gameofcython.pyx",
   "stringsource",
-  "cymem.pxd",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* #### Code section: numeric_typedefs ### */
@@ -1064,152 +1063,28 @@ static const char *__pyx_f[] = {
 /* #### Code section: type_declarations ### */
 
 /*--- Type declarations ---*/
-struct __pyx_obj_5cymem_5cymem_PyMalloc;
-struct __pyx_obj_5cymem_5cymem_PyFree;
-struct __pyx_obj_5cymem_5cymem_Pool;
-struct __pyx_obj_5cymem_5cymem_Address;
-
-/* "cymem/cymem.pxd":1
- * ctypedef void* (*malloc_t)(size_t n)             # <<<<<<<<<<<<<<
- * ctypedef void (*free_t)(void *p)
- * 
- */
-typedef void *(*__pyx_t_5cymem_5cymem_malloc_t)(size_t);
-
-/* "cymem/cymem.pxd":2
- * ctypedef void* (*malloc_t)(size_t n)
- * ctypedef void (*free_t)(void *p)             # <<<<<<<<<<<<<<
- * 
- * cdef class PyMalloc:
- */
-typedef void (*__pyx_t_5cymem_5cymem_free_t)(void *);
 struct __pyx_t_8hypergen_8ultragen_Hpg;
 
-/* "examples/gameofcython/gameofcython.pyx":13
+/* "hypergen/ultragen.pxd":7
  * 
- * 
- * ctypedef char* s             # <<<<<<<<<<<<<<
+ * cdef string T
+ * ctypedef char* s # Shortcut for char*             # <<<<<<<<<<<<<<
  * cdef struct Hpg:
  *     string html
  */
-typedef char *__pyx_t_8examples_12gameofcython_12gameofcython_s;
+typedef char *__pyx_t_8hypergen_8ultragen_s;
 
-/* "hypergen/ultragen.pxd":6
- * 
+/* "hypergen/ultragen.pxd":8
  * cdef string T
- * cdef struct Hpg             # <<<<<<<<<<<<<<
- * cdef Hpg make_hpg()
- * cdef struct CbOpts
+ * ctypedef char* s # Shortcut for char*
+ * cdef struct Hpg:             # <<<<<<<<<<<<<<
+ *     string html
+ *     unordered_map [string, string] event_handler_callbacks
  */
 struct __pyx_t_8hypergen_8ultragen_Hpg {
   std::string html;
   std::unordered_map<std::string,std::string>  event_handler_callbacks;
 };
-
-/* "cymem/cymem.pxd":4
- * ctypedef void (*free_t)(void *p)
- * 
- * cdef class PyMalloc:             # <<<<<<<<<<<<<<
- *     cdef malloc_t malloc
- *     cdef void _set(self, malloc_t malloc)
- */
-struct __pyx_obj_5cymem_5cymem_PyMalloc {
-  PyObject_HEAD
-  struct __pyx_vtabstruct_5cymem_5cymem_PyMalloc *__pyx_vtab;
-  __pyx_t_5cymem_5cymem_malloc_t malloc;
-};
-
-
-/* "cymem/cymem.pxd":10
- * cdef PyMalloc WrapMalloc(malloc_t malloc)
- * 
- * cdef class PyFree:             # <<<<<<<<<<<<<<
- *     cdef free_t free
- *     cdef void _set(self, free_t free)
- */
-struct __pyx_obj_5cymem_5cymem_PyFree {
-  PyObject_HEAD
-  struct __pyx_vtabstruct_5cymem_5cymem_PyFree *__pyx_vtab;
-  __pyx_t_5cymem_5cymem_free_t free;
-};
-
-
-/* "cymem/cymem.pxd":16
- * cdef PyFree WrapFree(free_t free)
- * 
- * cdef class Pool:             # <<<<<<<<<<<<<<
- *     cdef readonly size_t size
- *     cdef readonly dict addresses
- */
-struct __pyx_obj_5cymem_5cymem_Pool {
-  PyObject_HEAD
-  struct __pyx_vtabstruct_5cymem_5cymem_Pool *__pyx_vtab;
-  size_t size;
-  PyObject *addresses;
-  PyObject *refs;
-  struct __pyx_obj_5cymem_5cymem_PyMalloc *pymalloc;
-  struct __pyx_obj_5cymem_5cymem_PyFree *pyfree;
-};
-
-
-/* "cymem/cymem.pxd":28
- * 
- * 
- * cdef class Address:             # <<<<<<<<<<<<<<
- *     cdef void* ptr
- *     cdef readonly PyMalloc pymalloc
- */
-struct __pyx_obj_5cymem_5cymem_Address {
-  PyObject_HEAD
-  void *ptr;
-  struct __pyx_obj_5cymem_5cymem_PyMalloc *pymalloc;
-  struct __pyx_obj_5cymem_5cymem_PyFree *pyfree;
-};
-
-
-
-/* "cymem/cymem.pxd":4
- * ctypedef void (*free_t)(void *p)
- * 
- * cdef class PyMalloc:             # <<<<<<<<<<<<<<
- *     cdef malloc_t malloc
- *     cdef void _set(self, malloc_t malloc)
- */
-
-struct __pyx_vtabstruct_5cymem_5cymem_PyMalloc {
-  void (*_set)(struct __pyx_obj_5cymem_5cymem_PyMalloc *, __pyx_t_5cymem_5cymem_malloc_t);
-};
-static struct __pyx_vtabstruct_5cymem_5cymem_PyMalloc *__pyx_vtabptr_5cymem_5cymem_PyMalloc;
-
-
-/* "cymem/cymem.pxd":10
- * cdef PyMalloc WrapMalloc(malloc_t malloc)
- * 
- * cdef class PyFree:             # <<<<<<<<<<<<<<
- *     cdef free_t free
- *     cdef void _set(self, free_t free)
- */
-
-struct __pyx_vtabstruct_5cymem_5cymem_PyFree {
-  void (*_set)(struct __pyx_obj_5cymem_5cymem_PyFree *, __pyx_t_5cymem_5cymem_free_t);
-};
-static struct __pyx_vtabstruct_5cymem_5cymem_PyFree *__pyx_vtabptr_5cymem_5cymem_PyFree;
-
-
-/* "cymem/cymem.pxd":16
- * cdef PyFree WrapFree(free_t free)
- * 
- * cdef class Pool:             # <<<<<<<<<<<<<<
- *     cdef readonly size_t size
- *     cdef readonly dict addresses
- */
-
-struct __pyx_vtabstruct_5cymem_5cymem_Pool {
-  void *(*alloc)(struct __pyx_obj_5cymem_5cymem_Pool *, size_t, size_t);
-  void (*free)(struct __pyx_obj_5cymem_5cymem_Pool *, void *);
-  void *(*realloc)(struct __pyx_obj_5cymem_5cymem_Pool *, void *, size_t);
-};
-static struct __pyx_vtabstruct_5cymem_5cymem_Pool *__pyx_vtabptr_5cymem_5cymem_Pool;
 /* #### Code section: utility_code_proto ### */
 
 /* --- Runtime support code (head) --- */
@@ -1478,20 +1353,6 @@ static PyObject* __Pyx_PyInt_MultiplyObjC(PyObject *op1, PyObject *op2, long int
     (inplace ? PyNumber_InPlaceMultiply(op1, op2) : PyNumber_Multiply(op1, op2))
 #endif
 
-/* TypeImport.proto */
-#ifndef __PYX_HAVE_RT_ImportType_proto
-#define __PYX_HAVE_RT_ImportType_proto
-enum __Pyx_ImportType_CheckSize {
-   __Pyx_ImportType_CheckSize_Error = 0,
-   __Pyx_ImportType_CheckSize_Warn = 1,
-   __Pyx_ImportType_CheckSize_Ignore = 2
-};
-static PyTypeObject *__Pyx_ImportType(PyObject* module, const char *module_name, const char *class_name, size_t size, enum __Pyx_ImportType_CheckSize check_size);
-#endif
-
-/* GetVTable.proto */
-static void* __Pyx_GetVtable(PyTypeObject *type);
-
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
 
@@ -1698,14 +1559,6 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
 
-/* Module declarations from "cymem.cymem" */
-#if !CYTHON_COMPILING_IN_LIMITED_API
-static PyTypeObject *__pyx_ptype_5cymem_5cymem_PyMalloc = 0;
-static PyTypeObject *__pyx_ptype_5cymem_5cymem_PyFree = 0;
-static PyTypeObject *__pyx_ptype_5cymem_5cymem_Pool = 0;
-static PyTypeObject *__pyx_ptype_5cymem_5cymem_Address = 0;
-#endif
-
 /* Module declarations from "hypergen.ultragen" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
@@ -1713,6 +1566,7 @@ static std::string *__pyx_vp_8hypergen_8ultragen_T = 0;
 #define __pyx_v_8hypergen_8ultragen_T (*__pyx_vp_8hypergen_8ultragen_T)
 static struct __pyx_t_8hypergen_8ultragen_Hpg (*__pyx_f_8hypergen_8ultragen_make_hpg)(void); /*proto*/
 static std::string (*__pyx_f_8hypergen_8ultragen_i2s)(int); /*proto*/
+static void (*__pyx_f_8hypergen_8ultragen_h1)(struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *); /*proto*/
 static int (*__pyx_f_8hypergen_8ultragen_tr_o)(struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *); /*proto*/
 static void (*__pyx_f_8hypergen_8ultragen_tr_c)(struct __pyx_t_8hypergen_8ultragen_Hpg &); /*proto*/
 static int (*__pyx_f_8hypergen_8ultragen_table_o)(struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *); /*proto*/
@@ -1753,7 +1607,6 @@ static const char __pyx_k_range[] = "range";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_render[] = "render";
 static const char __pyx_k_Duration[] = "Duration:";
-static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_examples_gameofcython_gameofcyth[] = "examples/gameofcython/gameofcython.pyx";
 static const char __pyx_k_examples_gameofcython_gameofcyth_2[] = "examples.gameofcython.gameofcython";
@@ -1771,7 +1624,6 @@ static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_ms;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_print;
-static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_render;
 static PyObject *__pyx_n_s_test;
@@ -1802,10 +1654,6 @@ typedef struct {
   #ifdef __Pyx_FusedFunction_USED
   PyTypeObject *__pyx_FusedFunctionType;
   #endif
-  PyTypeObject *__pyx_ptype_5cymem_5cymem_PyMalloc;
-  PyTypeObject *__pyx_ptype_5cymem_5cymem_PyFree;
-  PyTypeObject *__pyx_ptype_5cymem_5cymem_Pool;
-  PyTypeObject *__pyx_ptype_5cymem_5cymem_Address;
   PyObject *__pyx_kp_s_Duration;
   PyObject *__pyx_n_s__3;
   PyObject *__pyx_n_s_a;
@@ -1819,7 +1667,6 @@ typedef struct {
   PyObject *__pyx_n_s_ms;
   PyObject *__pyx_n_s_name;
   PyObject *__pyx_n_s_print;
-  PyObject *__pyx_n_s_pyx_vtable;
   PyObject *__pyx_n_s_range;
   PyObject *__pyx_n_s_render;
   PyObject *__pyx_n_s_test;
@@ -1860,10 +1707,6 @@ static int __pyx_m_clear(PyObject *m) {
   #ifdef __Pyx_FusedFunction_USED
   Py_CLEAR(clear_module_state->__pyx_FusedFunctionType);
   #endif
-  Py_CLEAR(clear_module_state->__pyx_ptype_5cymem_5cymem_PyMalloc);
-  Py_CLEAR(clear_module_state->__pyx_ptype_5cymem_5cymem_PyFree);
-  Py_CLEAR(clear_module_state->__pyx_ptype_5cymem_5cymem_Pool);
-  Py_CLEAR(clear_module_state->__pyx_ptype_5cymem_5cymem_Address);
   Py_CLEAR(clear_module_state->__pyx_kp_s_Duration);
   Py_CLEAR(clear_module_state->__pyx_n_s__3);
   Py_CLEAR(clear_module_state->__pyx_n_s_a);
@@ -1877,7 +1720,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_ms);
   Py_CLEAR(clear_module_state->__pyx_n_s_name);
   Py_CLEAR(clear_module_state->__pyx_n_s_print);
-  Py_CLEAR(clear_module_state->__pyx_n_s_pyx_vtable);
   Py_CLEAR(clear_module_state->__pyx_n_s_range);
   Py_CLEAR(clear_module_state->__pyx_n_s_render);
   Py_CLEAR(clear_module_state->__pyx_n_s_test);
@@ -1905,10 +1747,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   #ifdef __Pyx_FusedFunction_USED
   Py_VISIT(traverse_module_state->__pyx_FusedFunctionType);
   #endif
-  Py_VISIT(traverse_module_state->__pyx_ptype_5cymem_5cymem_PyMalloc);
-  Py_VISIT(traverse_module_state->__pyx_ptype_5cymem_5cymem_PyFree);
-  Py_VISIT(traverse_module_state->__pyx_ptype_5cymem_5cymem_Pool);
-  Py_VISIT(traverse_module_state->__pyx_ptype_5cymem_5cymem_Address);
   Py_VISIT(traverse_module_state->__pyx_kp_s_Duration);
   Py_VISIT(traverse_module_state->__pyx_n_s__3);
   Py_VISIT(traverse_module_state->__pyx_n_s_a);
@@ -1922,7 +1760,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_ms);
   Py_VISIT(traverse_module_state->__pyx_n_s_name);
   Py_VISIT(traverse_module_state->__pyx_n_s_print);
-  Py_VISIT(traverse_module_state->__pyx_n_s_pyx_vtable);
   Py_VISIT(traverse_module_state->__pyx_n_s_range);
   Py_VISIT(traverse_module_state->__pyx_n_s_render);
   Py_VISIT(traverse_module_state->__pyx_n_s_test);
@@ -1947,10 +1784,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #ifdef __Pyx_FusedFunction_USED
 #define __pyx_FusedFunctionType __pyx_mstate_global->__pyx_FusedFunctionType
 #endif
-#define __pyx_ptype_5cymem_5cymem_PyMalloc __pyx_mstate_global->__pyx_ptype_5cymem_5cymem_PyMalloc
-#define __pyx_ptype_5cymem_5cymem_PyFree __pyx_mstate_global->__pyx_ptype_5cymem_5cymem_PyFree
-#define __pyx_ptype_5cymem_5cymem_Pool __pyx_mstate_global->__pyx_ptype_5cymem_5cymem_Pool
-#define __pyx_ptype_5cymem_5cymem_Address __pyx_mstate_global->__pyx_ptype_5cymem_5cymem_Address
 #define __pyx_kp_s_Duration __pyx_mstate_global->__pyx_kp_s_Duration
 #define __pyx_n_s__3 __pyx_mstate_global->__pyx_n_s__3
 #define __pyx_n_s_a __pyx_mstate_global->__pyx_n_s_a
@@ -1964,7 +1797,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_ms __pyx_mstate_global->__pyx_n_s_ms
 #define __pyx_n_s_name __pyx_mstate_global->__pyx_n_s_name
 #define __pyx_n_s_print __pyx_mstate_global->__pyx_n_s_print
-#define __pyx_n_s_pyx_vtable __pyx_mstate_global->__pyx_n_s_pyx_vtable
 #define __pyx_n_s_range __pyx_mstate_global->__pyx_n_s_range
 #define __pyx_n_s_render __pyx_mstate_global->__pyx_n_s_render
 #define __pyx_n_s_test __pyx_mstate_global->__pyx_n_s_test
@@ -1975,105 +1807,116 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #endif
 /* #### Code section: module_code ### */
 
-/* "examples/gameofcython/gameofcython.pyx":18
- *     unordered_map [string, string] event_handler_callbacks
+/* "examples/gameofcython/gameofcython.pyx":6
+ * from hypergen.ultragen cimport *
  * 
  * cdef void template(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i,j
- *     table_o(hpg, [T])
+ *     cdef int i, j
+ *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
  */
 
 static void __pyx_f_8examples_12gameofcython_12gameofcython_template(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
   int __pyx_v_i;
   int __pyx_v_j;
   std::string __pyx_t_1[1];
-  int __pyx_t_2;
-  std::string __pyx_t_3[1];
-  int __pyx_t_4;
-  std::string __pyx_t_5[1];
+  std::string __pyx_t_2[1];
+  int __pyx_t_3;
+  std::string __pyx_t_4[1];
+  int __pyx_t_5;
+  std::string __pyx_t_6[1];
 
-  /* "examples/gameofcython/gameofcython.pyx":20
+  /* "examples/gameofcython/gameofcython.pyx":8
  * cdef void template(Hpg &hpg) nogil:
- *     cdef int i,j
- *     table_o(hpg, [T])             # <<<<<<<<<<<<<<
- *     for i in range(100):
- *         tr_o(hpg, [T])
+ *     cdef int i, j
+ *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])             # <<<<<<<<<<<<<<
+ *     table_o(hpg, [T])
+ *     for i in range(50):
  */
   __pyx_t_1[0] = __pyx_v_8hypergen_8ultragen_T;
-  (void)(__pyx_f_8hypergen_8ultragen_table_o(__pyx_v_hpg, __pyx_t_1));
+  __pyx_f_8hypergen_8ultragen_h1(__pyx_v_hpg, ((__pyx_t_8hypergen_8ultragen_s)((__pyx_t_8hypergen_8ultragen_s)"Game of life rendered in nogil Cython")), __pyx_t_1);
 
-  /* "examples/gameofcython/gameofcython.pyx":21
- *     cdef int i,j
- *     table_o(hpg, [T])
- *     for i in range(100):             # <<<<<<<<<<<<<<
+  /* "examples/gameofcython/gameofcython.pyx":9
+ *     cdef int i, j
+ *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
+ *     table_o(hpg, [T])             # <<<<<<<<<<<<<<
+ *     for i in range(50):
  *         tr_o(hpg, [T])
- *         for j in range(100):
  */
-  for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=1) {
-    __pyx_v_i = __pyx_t_2;
+  __pyx_t_2[0] = __pyx_v_8hypergen_8ultragen_T;
+  (void)(__pyx_f_8hypergen_8ultragen_table_o(__pyx_v_hpg, __pyx_t_2));
 
-    /* "examples/gameofcython/gameofcython.pyx":22
+  /* "examples/gameofcython/gameofcython.pyx":10
+ *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
  *     table_o(hpg, [T])
- *     for i in range(100):
+ *     for i in range(50):             # <<<<<<<<<<<<<<
+ *         tr_o(hpg, [T])
+ *         for j in range(50):
+ */
+  for (__pyx_t_3 = 0; __pyx_t_3 < 50; __pyx_t_3+=1) {
+    __pyx_v_i = __pyx_t_3;
+
+    /* "examples/gameofcython/gameofcython.pyx":11
+ *     table_o(hpg, [T])
+ *     for i in range(50):
  *         tr_o(hpg, [T])             # <<<<<<<<<<<<<<
- *         for j in range(100):
+ *         for j in range(50):
  *             td(hpg, i2s(i+j), [T])
  */
-    __pyx_t_3[0] = __pyx_v_8hypergen_8ultragen_T;
-    (void)(__pyx_f_8hypergen_8ultragen_tr_o(__pyx_v_hpg, __pyx_t_3));
+    __pyx_t_4[0] = __pyx_v_8hypergen_8ultragen_T;
+    (void)(__pyx_f_8hypergen_8ultragen_tr_o(__pyx_v_hpg, __pyx_t_4));
 
-    /* "examples/gameofcython/gameofcython.pyx":23
- *     for i in range(100):
+    /* "examples/gameofcython/gameofcython.pyx":12
+ *     for i in range(50):
  *         tr_o(hpg, [T])
- *         for j in range(100):             # <<<<<<<<<<<<<<
+ *         for j in range(50):             # <<<<<<<<<<<<<<
  *             td(hpg, i2s(i+j), [T])
  *         tr_c(hpg)
  */
-    for (__pyx_t_4 = 0; __pyx_t_4 < 0x64; __pyx_t_4+=1) {
-      __pyx_v_j = __pyx_t_4;
+    for (__pyx_t_5 = 0; __pyx_t_5 < 50; __pyx_t_5+=1) {
+      __pyx_v_j = __pyx_t_5;
 
-      /* "examples/gameofcython/gameofcython.pyx":24
+      /* "examples/gameofcython/gameofcython.pyx":13
  *         tr_o(hpg, [T])
- *         for j in range(100):
+ *         for j in range(50):
  *             td(hpg, i2s(i+j), [T])             # <<<<<<<<<<<<<<
  *         tr_c(hpg)
- * 
+ *     table_c(hpg)
  */
-      __pyx_t_5[0] = __pyx_v_8hypergen_8ultragen_T;
-      __pyx_f_8hypergen_8ultragen_td(__pyx_v_hpg, __pyx_f_8hypergen_8ultragen_i2s((__pyx_v_i + __pyx_v_j)), __pyx_t_5);
+      __pyx_t_6[0] = __pyx_v_8hypergen_8ultragen_T;
+      __pyx_f_8hypergen_8ultragen_td(__pyx_v_hpg, __pyx_f_8hypergen_8ultragen_i2s((__pyx_v_i + __pyx_v_j)), __pyx_t_6);
     }
 
-    /* "examples/gameofcython/gameofcython.pyx":25
- *         for j in range(100):
+    /* "examples/gameofcython/gameofcython.pyx":14
+ *         for j in range(50):
  *             td(hpg, i2s(i+j), [T])
  *         tr_c(hpg)             # <<<<<<<<<<<<<<
- * 
  *     table_c(hpg)
+ * 
  */
     __pyx_f_8hypergen_8ultragen_tr_c(__pyx_v_hpg);
   }
 
-  /* "examples/gameofcython/gameofcython.pyx":27
+  /* "examples/gameofcython/gameofcython.pyx":15
+ *             td(hpg, i2s(i+j), [T])
  *         tr_c(hpg)
- * 
  *     table_c(hpg)             # <<<<<<<<<<<<<<
  * 
  * def render():
  */
   __pyx_f_8hypergen_8ultragen_table_c(__pyx_v_hpg);
 
-  /* "examples/gameofcython/gameofcython.pyx":18
- *     unordered_map [string, string] event_handler_callbacks
+  /* "examples/gameofcython/gameofcython.pyx":6
+ * from hypergen.ultragen cimport *
  * 
  * cdef void template(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
- *     cdef int i,j
- *     table_o(hpg, [T])
+ *     cdef int i, j
+ *     h1(hpg, <s>"Game of life rendered in nogil Cython", [T])
  */
 
   /* function exit code */
 }
 
-/* "examples/gameofcython/gameofcython.pyx":29
+/* "examples/gameofcython/gameofcython.pyx":17
  *     table_c(hpg)
  * 
  * def render():             # <<<<<<<<<<<<<<
@@ -2110,7 +1953,7 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("render", 0);
 
-  /* "examples/gameofcython/gameofcython.pyx":30
+  /* "examples/gameofcython/gameofcython.pyx":18
  * 
  * def render():
  *     cdef Hpg hpg = make_hpg()             # <<<<<<<<<<<<<<
@@ -2119,14 +1962,14 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
  */
   __pyx_v_hpg = __pyx_f_8hypergen_8ultragen_make_hpg();
 
-  /* "examples/gameofcython/gameofcython.pyx":32
+  /* "examples/gameofcython/gameofcython.pyx":20
  *     cdef Hpg hpg = make_hpg()
  *     cdef int i
  *     a = time()             # <<<<<<<<<<<<<<
  *     template(hpg)
  *     print("Duration:", (time() - a) * 1000, "ms")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -2144,14 +1987,14 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
     PyObject *__pyx_callargs[1] = {__pyx_t_3, };
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_4, 0+__pyx_t_4);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __pyx_v_a = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "examples/gameofcython/gameofcython.pyx":33
+  /* "examples/gameofcython/gameofcython.pyx":21
  *     cdef int i
  *     a = time()
  *     template(hpg)             # <<<<<<<<<<<<<<
@@ -2160,13 +2003,13 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
  */
   __pyx_f_8examples_12gameofcython_12gameofcython_template(__pyx_v_hpg);
 
-  /* "examples/gameofcython/gameofcython.pyx":34
+  /* "examples/gameofcython/gameofcython.pyx":22
  *     a = time()
  *     template(hpg)
  *     print("Duration:", (time() - a) * 1000, "ms")             # <<<<<<<<<<<<<<
  *     return hpg.html
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   __pyx_t_4 = 0;
@@ -2184,17 +2027,17 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
     PyObject *__pyx_callargs[1] = {__pyx_t_3, };
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_4, 0+__pyx_t_4);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
-  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_v_a); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Subtract(__pyx_t_1, __pyx_v_a); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_MultiplyObjC(__pyx_t_2, __pyx_int_1000, 0x3E8, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_MultiplyObjC(__pyx_t_2, __pyx_int_1000, 0x3E8, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_kp_s_Duration);
   __Pyx_GIVEREF(__pyx_kp_s_Duration);
@@ -2205,24 +2048,24 @@ static PyObject *__pyx_pf_8examples_12gameofcython_12gameofcython_render(CYTHON_
   __Pyx_GIVEREF(__pyx_n_s_ms);
   PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_n_s_ms);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "examples/gameofcython/gameofcython.pyx":35
+  /* "examples/gameofcython/gameofcython.pyx":23
  *     template(hpg)
  *     print("Duration:", (time() - a) * 1000, "ms")
  *     return hpg.html             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_hpg.html); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "examples/gameofcython/gameofcython.pyx":29
+  /* "examples/gameofcython/gameofcython.pyx":17
  *     table_c(hpg)
  * 
  * def render():             # <<<<<<<<<<<<<<
@@ -2522,7 +2365,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, __pyx_k_ms, sizeof(__pyx_k_ms), 0, 0, 1, 1},
   {0, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {0, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
-  {0, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {0, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {0, __pyx_k_render, sizeof(__pyx_k_render), 0, 0, 1, 1},
   {0, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
@@ -2541,7 +2383,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ms, __pyx_k_ms, sizeof(__pyx_k_ms), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
-  {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_render, __pyx_k_render, sizeof(__pyx_k_render), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
@@ -2551,8 +2392,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 /* #### Code section: cached_builtins ### */
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 21, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 22, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2563,17 +2404,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "examples/gameofcython/gameofcython.pyx":29
+  /* "examples/gameofcython/gameofcython.pyx":17
  *     table_c(hpg)
  * 
  * def render():             # <<<<<<<<<<<<<<
  *     cdef Hpg hpg = make_hpg()
  *     cdef int i
  */
-  __pyx_tuple_ = PyTuple_Pack(3, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_a); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 29, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(3, __pyx_n_s_hpg, __pyx_n_s_i, __pyx_n_s_a); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_examples_gameofcython_gameofcyth, __pyx_n_s_render, 29, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 29, __pyx_L1_error)
+  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_examples_gameofcython_gameofcyth, __pyx_n_s_render, 17, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2597,11 +2438,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   if (__Pyx_InitString(__pyx_string_tab[10], &__pyx_n_s_ms) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[11], &__pyx_n_s_name) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[12], &__pyx_n_s_print) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[13], &__pyx_n_s_pyx_vtable) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[14], &__pyx_n_s_range) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[15], &__pyx_n_s_render) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[16], &__pyx_n_s_test) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[17], &__pyx_n_s_time) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[13], &__pyx_n_s_range) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[14], &__pyx_n_s_render) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[15], &__pyx_n_s_test) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[16], &__pyx_n_s_time) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
@@ -2655,32 +2495,10 @@ static int __Pyx_modinit_type_init_code(void) {
 
 static int __Pyx_modinit_type_import_code(void) {
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_import_code", 0);
   /*--- Type import code ---*/
-  __pyx_t_1 = PyImport_ImportModule("cymem.cymem"); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_ptype_5cymem_5cymem_PyMalloc = __Pyx_ImportType(__pyx_t_1, "cymem.cymem", "PyMalloc", sizeof(struct __pyx_obj_5cymem_5cymem_PyMalloc), __Pyx_ImportType_CheckSize_Warn);
-   if (!__pyx_ptype_5cymem_5cymem_PyMalloc) __PYX_ERR(2, 4, __pyx_L1_error)
-  __pyx_vtabptr_5cymem_5cymem_PyMalloc = (struct __pyx_vtabstruct_5cymem_5cymem_PyMalloc*)__Pyx_GetVtable(__pyx_ptype_5cymem_5cymem_PyMalloc); if (unlikely(!__pyx_vtabptr_5cymem_5cymem_PyMalloc)) __PYX_ERR(2, 4, __pyx_L1_error)
-  __pyx_ptype_5cymem_5cymem_PyFree = __Pyx_ImportType(__pyx_t_1, "cymem.cymem", "PyFree", sizeof(struct __pyx_obj_5cymem_5cymem_PyFree), __Pyx_ImportType_CheckSize_Warn);
-   if (!__pyx_ptype_5cymem_5cymem_PyFree) __PYX_ERR(2, 10, __pyx_L1_error)
-  __pyx_vtabptr_5cymem_5cymem_PyFree = (struct __pyx_vtabstruct_5cymem_5cymem_PyFree*)__Pyx_GetVtable(__pyx_ptype_5cymem_5cymem_PyFree); if (unlikely(!__pyx_vtabptr_5cymem_5cymem_PyFree)) __PYX_ERR(2, 10, __pyx_L1_error)
-  __pyx_ptype_5cymem_5cymem_Pool = __Pyx_ImportType(__pyx_t_1, "cymem.cymem", "Pool", sizeof(struct __pyx_obj_5cymem_5cymem_Pool), __Pyx_ImportType_CheckSize_Warn);
-   if (!__pyx_ptype_5cymem_5cymem_Pool) __PYX_ERR(2, 16, __pyx_L1_error)
-  __pyx_vtabptr_5cymem_5cymem_Pool = (struct __pyx_vtabstruct_5cymem_5cymem_Pool*)__Pyx_GetVtable(__pyx_ptype_5cymem_5cymem_Pool); if (unlikely(!__pyx_vtabptr_5cymem_5cymem_Pool)) __PYX_ERR(2, 16, __pyx_L1_error)
-  __pyx_ptype_5cymem_5cymem_Address = __Pyx_ImportType(__pyx_t_1, "cymem.cymem", "Address", sizeof(struct __pyx_obj_5cymem_5cymem_Address), __Pyx_ImportType_CheckSize_Warn);
-   if (!__pyx_ptype_5cymem_5cymem_Address) __PYX_ERR(2, 28, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_RefNannyFinishContext();
   return 0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_RefNannyFinishContext();
-  return -1;
 }
 
 static int __Pyx_modinit_variable_import_code(void) {
@@ -2715,6 +2533,7 @@ static int __Pyx_modinit_function_import_code(void) {
   __Pyx_GOTREF(__pyx_t_1);
   if (__Pyx_ImportFunction(__pyx_t_1, "make_hpg", (void (**)(void))&__pyx_f_8hypergen_8ultragen_make_hpg, "struct __pyx_t_8hypergen_8ultragen_Hpg (void)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ImportFunction(__pyx_t_1, "i2s", (void (**)(void))&__pyx_f_8hypergen_8ultragen_i2s, "std::string (int)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ImportFunction(__pyx_t_1, "h1", (void (**)(void))&__pyx_f_8hypergen_8ultragen_h1, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ImportFunction(__pyx_t_1, "tr_o", (void (**)(void))&__pyx_f_8hypergen_8ultragen_tr_o, "int (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ImportFunction(__pyx_t_1, "tr_c", (void (**)(void))&__pyx_f_8hypergen_8ultragen_tr_c, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_ImportFunction(__pyx_t_1, "table_o", (void (**)(void))&__pyx_f_8hypergen_8ultragen_table_o, "int (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -2990,7 +2809,7 @@ if (!__Pyx_RefNanny) {
   (void)__Pyx_modinit_variable_export_code();
   (void)__Pyx_modinit_function_export_code();
   (void)__Pyx_modinit_type_init_code();
-  if (unlikely(__Pyx_modinit_type_import_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+  (void)__Pyx_modinit_type_import_code();
   if (unlikely(__Pyx_modinit_variable_import_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
   if (unlikely(__Pyx_modinit_function_import_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
   /*--- Execution code ---*/
@@ -3002,8 +2821,8 @@ if (!__Pyx_RefNanny) {
  * # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str
  * # distutils: language=c++
  * from time import time             # <<<<<<<<<<<<<<
+ * from hypergen.ultragen cimport *
  * 
- * from libcpp.string cimport string
  */
   __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -3019,16 +2838,16 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "examples/gameofcython/gameofcython.pyx":29
+  /* "examples/gameofcython/gameofcython.pyx":17
  *     table_c(hpg)
  * 
  * def render():             # <<<<<<<<<<<<<<
  *     cdef Hpg hpg = make_hpg()
  *     cdef int i
  */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8examples_12gameofcython_12gameofcython_1render, 0, __pyx_n_s_render, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 29, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8examples_12gameofcython_12gameofcython_1render, 0, __pyx_n_s_render, NULL, __pyx_n_s_examples_gameofcython_gameofcyth_2, __pyx_d, ((PyObject *)__pyx_codeobj__2)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_render, __pyx_t_2) < 0) __PYX_ERR(0, 29, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_render, __pyx_t_2) < 0) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "examples/gameofcython/gameofcython.pyx":1
@@ -3851,87 +3670,6 @@ static PyObject* __Pyx_PyInt_MultiplyObjC(PyObject *op1, PyObject *op2, CYTHON_U
     return (inplace ? PyNumber_InPlaceMultiply : PyNumber_Multiply)(op1, op2);
 }
 #endif
-
-/* TypeImport */
-#ifndef __PYX_HAVE_RT_ImportType
-#define __PYX_HAVE_RT_ImportType
-static PyTypeObject *__Pyx_ImportType(PyObject *module, const char *module_name, const char *class_name,
-    size_t size, enum __Pyx_ImportType_CheckSize check_size)
-{
-    PyObject *result = 0;
-    char warning[200];
-    Py_ssize_t basicsize;
-#if CYTHON_COMPILING_IN_LIMITED_API
-    PyObject *py_basicsize;
-#endif
-    result = PyObject_GetAttrString(module, class_name);
-    if (!result)
-        goto bad;
-    if (!PyType_Check(result)) {
-        PyErr_Format(PyExc_TypeError,
-            "%.200s.%.200s is not a type object",
-            module_name, class_name);
-        goto bad;
-    }
-#if !CYTHON_COMPILING_IN_LIMITED_API
-    basicsize = ((PyTypeObject *)result)->tp_basicsize;
-#else
-    py_basicsize = PyObject_GetAttrString(result, "__basicsize__");
-    if (!py_basicsize)
-        goto bad;
-    basicsize = PyLong_AsSsize_t(py_basicsize);
-    Py_DECREF(py_basicsize);
-    py_basicsize = 0;
-    if (basicsize == (Py_ssize_t)-1 && PyErr_Occurred())
-        goto bad;
-#endif
-    if ((size_t)basicsize < size) {
-        PyErr_Format(PyExc_ValueError,
-            "%.200s.%.200s size changed, may indicate binary incompatibility. "
-            "Expected %zd from C header, got %zd from PyObject",
-            module_name, class_name, size, basicsize);
-        goto bad;
-    }
-    if (check_size == __Pyx_ImportType_CheckSize_Error && (size_t)basicsize != size) {
-        PyErr_Format(PyExc_ValueError,
-            "%.200s.%.200s size changed, may indicate binary incompatibility. "
-            "Expected %zd from C header, got %zd from PyObject",
-            module_name, class_name, size, basicsize);
-        goto bad;
-    }
-    else if (check_size == __Pyx_ImportType_CheckSize_Warn && (size_t)basicsize > size) {
-        PyOS_snprintf(warning, sizeof(warning),
-            "%s.%s size changed, may indicate binary incompatibility. "
-            "Expected %zd from C header, got %zd from PyObject",
-            module_name, class_name, size, basicsize);
-        if (PyErr_WarnEx(NULL, warning, 0) < 0) goto bad;
-    }
-    return (PyTypeObject *)result;
-bad:
-    Py_XDECREF(result);
-    return NULL;
-}
-#endif
-
-/* GetVTable */
-static void* __Pyx_GetVtable(PyTypeObject *type) {
-    void* ptr;
-#if CYTHON_COMPILING_IN_LIMITED_API
-    PyObject *ob = PyObject_GetAttr((PyObject *)type, __pyx_n_s_pyx_vtable);
-#else
-    PyObject *ob = PyObject_GetItem(type->tp_dict, __pyx_n_s_pyx_vtable);
-#endif
-    if (!ob)
-        goto bad;
-    ptr = PyCapsule_GetPointer(ob, 0);
-    if (!ptr && !PyErr_Occurred())
-        PyErr_SetString(PyExc_RuntimeError, "invalid vtable found for imported type");
-    Py_DECREF(ob);
-    return ptr;
-bad:
-    Py_XDECREF(ob);
-    return NULL;
-}
 
 /* Import */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
