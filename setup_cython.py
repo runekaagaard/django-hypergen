@@ -10,6 +10,3 @@ setup(
     ext_modules=cythonize(extensions),
     zip_safe=False,
 )
-
-# setup(ext_modules=cythonize("hypergen/ultragen.pyx", "./examples/gameofcython/gameofcython.pyx", annotate=True),
-#     include_dirs=numpy.get_include())
