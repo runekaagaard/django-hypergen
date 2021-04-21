@@ -2,3 +2,4 @@ django
 django_extensions
 Cython==3.0a6
 cymem
+numpy

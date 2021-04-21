@@ -5,12 +5,12 @@
     "distutils": {
         "depends": [],
         "language": "c++",
-        "name": "ultragen",
+        "name": "hypergen.ultragen",
         "sources": [
             "hypergen/ultragen.pyx"
         ]
     },
-    "module_name": "ultragen"
+    "module_name": "hypergen.ultragen"
 }
 END: Cython Metadata */
 
@@ -810,8 +810,8 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__ultragen
-#define __PYX_HAVE_API__ultragen
+#define __PYX_HAVE__hypergen__ultragen
+#define __PYX_HAVE_API__hypergen__ultragen
 /* Early includes */
 #include <string.h>
 #include "ios"
@@ -1057,7 +1057,7 @@ static const char *__pyx_filename;
 static const char *__pyx_f[] = {
   "hypergen/ultragen.pyx",
   "stringsource",
-  "venv/lib/python3.9/site-packages/cymem/cymem.pxd",
+  "cymem.pxd",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* #### Code section: numeric_typedefs ### */
@@ -1084,39 +1084,39 @@ typedef void *(*__pyx_t_5cymem_5cymem_malloc_t)(size_t);
  * cdef class PyMalloc:
  */
 typedef void (*__pyx_t_5cymem_5cymem_free_t)(void *);
-struct __pyx_t_8ultragen_Hpg;
-struct __pyx_t_8ultragen_CbOpts;
-struct __pyx_t_8ultragen_ArgElOpts;
+struct __pyx_t_8hypergen_8ultragen_Hpg;
+struct __pyx_t_8hypergen_8ultragen_CbOpts;
+struct __pyx_t_8hypergen_8ultragen_ArgElOpts;
 
-/* "ultragen.pyx":10
+/* "hypergen/ultragen.pyx":10
  * from cymem.cymem cimport Pool
  * 
  * ctypedef char* s # Shortcut for char*             # <<<<<<<<<<<<<<
  * 
  * cdef:
  */
-typedef char *__pyx_t_8ultragen_s;
+typedef char *__pyx_t_8hypergen_8ultragen_s;
 
-/* "ultragen.pyx":16
+/* "hypergen/ultragen.pxd":6
  * 
- * # Hypergen state passed around to everything
- * cdef struct Hpg:             # <<<<<<<<<<<<<<
- *     string html
- *     unordered_map [string, string] event_handler_callbacks
+ * cdef string T
+ * cdef struct Hpg             # <<<<<<<<<<<<<<
+ * cdef Hpg make_hpg()
+ * cdef struct CbOpts
  */
-struct __pyx_t_8ultragen_Hpg {
+struct __pyx_t_8hypergen_8ultragen_Hpg {
   std::string html;
   std::unordered_map<std::string,std::string>  event_handler_callbacks;
 };
 
-/* "ultragen.pyx":28
- * 
- * # Callback options
- * cdef struct CbOpts:             # <<<<<<<<<<<<<<
- *     int blocks
- *     string confirm_
+/* "hypergen/ultragen.pxd":8
+ * cdef struct Hpg
+ * cdef Hpg make_hpg()
+ * cdef struct CbOpts             # <<<<<<<<<<<<<<
+ * cdef CbOpts make_cb_opts(string id_) nogil
+ * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil
  */
-struct __pyx_t_8ultragen_CbOpts {
+struct __pyx_t_8hypergen_8ultragen_CbOpts {
   int blocks;
   std::string confirm_;
   int debounce;
@@ -1125,14 +1125,14 @@ struct __pyx_t_8ultragen_CbOpts {
   int upload_files;
 };
 
-/* "ultragen.pyx":122
- *     return s
- * 
- * cdef struct ArgElOpts:             # <<<<<<<<<<<<<<
- *     string value_func
- *     string coerce_func
+/* "hypergen/ultragen.pxd":14
+ * cdef string arg_i(int v) nogil
+ * cdef string arg_s(string v) nogil
+ * cdef struct ArgElOpts             # <<<<<<<<<<<<<<
+ * cdef string arg_el(string id_, ArgElOpts opts) nogil
+ * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil
  */
-struct __pyx_t_8ultragen_ArgElOpts {
+struct __pyx_t_8hypergen_8ultragen_ArgElOpts {
   std::string value_func;
   std::string coerce_func;
 };
@@ -1380,48 +1380,6 @@ static void __Pyx_WriteUnraisable(const char *name, int clineno,
                                   int lineno, const char *filename,
                                   int full_traceback, int nogil);
 
-/* TupleAndListFromArray.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyList_FromArray(PyObject *const *src, Py_ssize_t n);
-static CYTHON_INLINE PyObject* __Pyx_PyTuple_FromArray(PyObject *const *src, Py_ssize_t n);
-#endif
-
-/* IncludeStringH.proto */
-#include <string.h>
-
-/* BytesEquals.proto */
-static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals);
-
-/* UnicodeEquals.proto */
-static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals);
-
-/* fastcall.proto */
-#define __Pyx_Arg_VARARGS(args, i) PyTuple_GET_ITEM(args, i)
-#define __Pyx_NumKwargs_VARARGS(kwds) PyDict_Size(kwds)
-#define __Pyx_KwValues_VARARGS(args, nargs) NULL
-#define __Pyx_GetKwValue_VARARGS(kw, kwvalues, s) __Pyx_PyDict_GetItemStrWithError(kw, s)
-#define __Pyx_KwargsAsDict_VARARGS(kw, kwvalues) PyDict_Copy(kw)
-#if CYTHON_METH_FASTCALL
-    #define __Pyx_Arg_FASTCALL(args, i) args[i]
-    #define __Pyx_NumKwargs_FASTCALL(kwds) PyTuple_GET_SIZE(kwds)
-    #define __Pyx_KwValues_FASTCALL(args, nargs) (&args[nargs])
-    static CYTHON_INLINE PyObject * __Pyx_GetKwValue_FASTCALL(PyObject *kwnames, PyObject *const *kwvalues, PyObject *s);
-    #define __Pyx_KwargsAsDict_FASTCALL(kw, kwvalues) _PyStack_AsDict(kwvalues, kw)
-#else
-    #define __Pyx_Arg_FASTCALL __Pyx_Arg_VARARGS
-    #define __Pyx_NumKwargs_FASTCALL __Pyx_NumKwargs_VARARGS
-    #define __Pyx_KwValues_FASTCALL __Pyx_KwValues_VARARGS
-    #define __Pyx_GetKwValue_FASTCALL __Pyx_GetKwValue_VARARGS
-    #define __Pyx_KwargsAsDict_FASTCALL __Pyx_KwargsAsDict_VARARGS
-#endif
-#if CYTHON_COMPILING_IN_CPYTHON
-#define __Pyx_ArgsSlice_VARARGS(args, start, stop) __Pyx_PyTuple_FromArray(&__Pyx_Arg_VARARGS(args, start), stop - start)
-#define __Pyx_ArgsSlice_FASTCALL(args, start, stop) __Pyx_PyTuple_FromArray(&__Pyx_Arg_FASTCALL(args, start), stop - start)
-#else
-#define __Pyx_ArgsSlice_VARARGS(args, start, stop) PyTuple_GetSlice(args, start, stop)
-#define __Pyx_ArgsSlice_FASTCALL(args, start, stop) PyTuple_GetSlice(args, start, stop)
-#endif
-
 /* RaiseUnexpectedTypeError.proto */
 static int __Pyx_RaiseUnexpectedTypeError(const char *expected, PyObject *obj);
 
@@ -1570,105 +1528,6 @@ static PyTypeObject *__Pyx_ImportType(PyObject* module, const char *module_name,
 /* GetVTable.proto */
 static void* __Pyx_GetVtable(PyTypeObject *type);
 
-/* FetchCommonType.proto */
-static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type);
-#if CYTHON_COMPILING_IN_LIMITED_API
-static PyTypeObject* __Pyx_FetchCommonTypeFromSpec(PyType_Spec *spec, PyObject *bases);
-#endif
-
-/* PyMethodNew.proto */
-#if PY_MAJOR_VERSION >= 3
-static PyObject *__Pyx_PyMethod_New(PyObject *func, PyObject *self, CYTHON_UNUSED PyObject *typ) {
-    if (!self)
-        return __Pyx_NewRef(func);
-    return PyMethod_New(func, self);
-}
-#else
-    #define __Pyx_PyMethod_New PyMethod_New
-#endif
-
-/* PyVectorcallFastCallDict.proto */
-#if CYTHON_METH_FASTCALL
-static CYTHON_INLINE PyObject *__Pyx_PyVectorcall_FastCallDict(PyObject *func, __pyx_vectorcallfunc vc, PyObject *const *args, Py_ssize_t nargs, PyObject *kw);
-#endif
-
-/* CythonFunctionShared.proto */
-#define __Pyx_CyFunction_USED
-#define __Pyx_CYFUNCTION_STATICMETHOD  0x01
-#define __Pyx_CYFUNCTION_CLASSMETHOD   0x02
-#define __Pyx_CYFUNCTION_CCLASS        0x04
-#define __Pyx_CyFunction_GetClosure(f)\
-    (((__pyx_CyFunctionObject *) (f))->func_closure)
-#define __Pyx_CyFunction_GetClassObj(f)\
-    (((__pyx_CyFunctionObject *) (f))->func_classobj)
-#define __Pyx_CyFunction_Defaults(type, f)\
-    ((type *)(((__pyx_CyFunctionObject *) (f))->defaults))
-#define __Pyx_CyFunction_SetDefaultsGetter(f, g)\
-    ((__pyx_CyFunctionObject *) (f))->defaults_getter = (g)
-typedef struct {
-    PyCFunctionObject func;
-#if CYTHON_BACKPORT_VECTORCALL
-    __pyx_vectorcallfunc func_vectorcall;
-#endif
-#if PY_VERSION_HEX < 0x030500A0
-    PyObject *func_weakreflist;
-#endif
-    PyObject *func_dict;
-    PyObject *func_name;
-    PyObject *func_qualname;
-    PyObject *func_doc;
-    PyObject *func_globals;
-    PyObject *func_code;
-    PyObject *func_closure;
-    PyObject *func_classobj;
-    void *defaults;
-    int defaults_pyobjects;
-    size_t defaults_size;  // used by FusedFunction for copying defaults
-    int flags;
-    PyObject *defaults_tuple;
-    PyObject *defaults_kwdict;
-    PyObject *(*defaults_getter)(PyObject *);
-    PyObject *func_annotations;
-} __pyx_CyFunctionObject;
-#if !CYTHON_COMPILING_IN_LIMITED_API
-static PyTypeObject *__pyx_CyFunctionType = 0;
-#endif
-#define __Pyx_CyFunction_Check(obj)  __Pyx_TypeCheck(obj, __pyx_CyFunctionType)
-#define __Pyx_IsCyOrPyCFunction(obj)  __Pyx_TypeCheck2(obj, __pyx_CyFunctionType, &PyCFunction_Type)
-#define __Pyx_CyFunction_CheckExact(obj)  __Pyx_IS_TYPE(obj, __pyx_CyFunctionType)
-static PyObject *__Pyx_CyFunction_Init(__pyx_CyFunctionObject* op, PyMethodDef *ml,
-                                      int flags, PyObject* qualname,
-                                      PyObject *closure,
-                                      PyObject *module, PyObject *globals,
-                                      PyObject* code);
-static CYTHON_INLINE void *__Pyx_CyFunction_InitDefaults(PyObject *m,
-                                                         size_t size,
-                                                         int pyobjects);
-static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsTuple(PyObject *m,
-                                                            PyObject *tuple);
-static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsKwDict(PyObject *m,
-                                                             PyObject *dict);
-static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *m,
-                                                              PyObject *dict);
-static int __pyx_CyFunction_init(void);
-#if CYTHON_METH_FASTCALL
-static PyObject * __Pyx_CyFunction_Vectorcall_NOARGS(PyObject *func, PyObject *const *args, size_t nargsf, PyObject *kwnames);
-static PyObject * __Pyx_CyFunction_Vectorcall_O(PyObject *func, PyObject *const *args, size_t nargsf, PyObject *kwnames);
-static PyObject * __Pyx_CyFunction_Vectorcall_FASTCALL_KEYWORDS(PyObject *func, PyObject *const *args, size_t nargsf, PyObject *kwnames);
-#if CYTHON_BACKPORT_VECTORCALL
-#define __Pyx_CyFunction_func_vectorcall(f) (((__pyx_CyFunctionObject*)f)->func_vectorcall)
-#else
-#define __Pyx_CyFunction_func_vectorcall(f) (((__pyx_CyFunctionObject*)f)->func.vectorcall)
-#endif
-#endif
-
-/* CythonFunction.proto */
-static PyObject *__Pyx_CyFunction_New(PyMethodDef *ml,
-                                      int flags, PyObject* qualname,
-                                      PyObject *closure,
-                                      PyObject *module, PyObject *globals,
-                                      PyObject* code);
-
 /* PyDictVersioning.proto */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
 #define __PYX_DICT_VERSION_INIT  ((PY_UINT64_T) -1)
@@ -1765,6 +1624,21 @@ static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObj
 /* CheckBinaryVersion.proto */
 static int __Pyx_check_binary_version(void);
 
+/* PyObjectSetAttrStr.proto */
+#if CYTHON_USE_TYPE_SLOTS
+#define __Pyx_PyObject_DelAttrStr(o,n) __Pyx_PyObject_SetAttrStr(o, n, NULL)
+static CYTHON_INLINE int __Pyx_PyObject_SetAttrStr(PyObject* obj, PyObject* attr_name, PyObject* value);
+#else
+#define __Pyx_PyObject_DelAttrStr(o,n)   PyObject_DelAttr(o,n)
+#define __Pyx_PyObject_SetAttrStr(o,n,v) PyObject_SetAttr(o,n,v)
+#endif
+
+/* VoidPtrExport.proto */
+static int __Pyx_ExportVoidPtr(PyObject *name, void *p, const char *sig);
+
+/* FunctionExport.proto */
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig);
+
 /* InitStrings.proto */
 #if CYTHON_COMPILING_IN_LIMITED_API
 static int __Pyx_InitString(__Pyx_StringTabEntry t, PyObject **str);
@@ -1802,13 +1676,14 @@ static PyTypeObject *__pyx_ptype_5cymem_5cymem_Pool = 0;
 static PyTypeObject *__pyx_ptype_5cymem_5cymem_Address = 0;
 #endif
 
-/* Module declarations from "ultragen" */
+/* Module declarations from "hypergen.ultragen" */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
-static std::string __pyx_v_8ultragen_T;
-static std::string __pyx_f_8ultragen_i2s(int); /*proto*/
-static void __pyx_f_8ultragen_element(std::string, struct __pyx_t_8ultragen_Hpg &, std::string, std::string *); /*proto*/
-static std::string __pyx_f_8ultragen_ok(int __pyx_skip_dispatch); /*proto*/
+static std::string __pyx_v_8hypergen_8ultragen_T;
+static std::string __pyx_f_8hypergen_8ultragen_i2s(int); /*proto*/
+static void __pyx_f_8hypergen_8ultragen_element(std::string, struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *); /*proto*/
+static void __pyx_f_8hypergen_8ultragen_element_open(std::string, struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *); /*proto*/
+static void __pyx_f_8hypergen_8ultragen_element_close(std::string, struct __pyx_t_8hypergen_8ultragen_Hpg &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyStr_string_to_py_std__in_string(std::string const &); /*proto*/
@@ -1817,33 +1692,32 @@ static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_std__in_st
 static PyObject *__pyx_convert_unordered_map_to_py_std_3a__3a_string____std_3a__3a_string(std::unordered_map<std::string,std::string>  const &); /*proto*/
 static std::string __pyx_convert_string_from_py_std__in_string(PyObject *); /*proto*/
 static std::unordered_map<std::string,std::string>  __pyx_convert_unordered_map_from_py_std_3a__3a_string__and_std_3a__3a_string(PyObject *); /*proto*/
-static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(PyObject *); /*proto*/
+static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(PyObject *); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "ultragen"
-extern int __pyx_module_is_main_ultragen;
-int __pyx_module_is_main_ultragen = 0;
+#define __Pyx_MODULE_NAME "hypergen.ultragen"
+extern int __pyx_module_is_main_hypergen__ultragen;
+int __pyx_module_is_main_hypergen__ultragen = 0;
 
-/* Implementation of "ultragen" */
+/* Implementation of "hypergen.ultragen" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_KeyError;
 static PyObject *__pyx_builtin_ValueError;
 /* #### Code section: string_decls ### */
-static const char __pyx_k__4[] = "?";
-static const char __pyx_k_ok[] = "ok";
+static const char __pyx_k_T[] = "T";
+static const char __pyx_k__3[] = "?";
 static const char __pyx_k_html[] = "html";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_KeyError[] = "KeyError";
-static const char __pyx_k_ultragen[] = "ultragen";
+static const char __pyx_k_pyx_capi[] = "__pyx_capi__";
 static const char __pyx_k_iteritems[] = "iteritems";
 static const char __pyx_k_ValueError[] = "ValueError";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
-static const char __pyx_k_hypergen_ultragen_pyx[] = "hypergen/ultragen.pyx";
 static const char __pyx_k_event_handler_callbacks[] = "event_handler_callbacks";
 static const char __pyx_k_No_value_specified_for_struct_at[] = "No value specified for struct attribute 'html'";
 static const char __pyx_k_No_value_specified_for_struct_at_2[] = "No value specified for struct attribute 'event_handler_callbacks'";
@@ -1851,29 +1725,26 @@ static const char __pyx_k_No_value_specified_for_struct_at_2[] = "No value speci
 static PyObject *__pyx_n_s_KeyError;
 static PyObject *__pyx_kp_s_No_value_specified_for_struct_at;
 static PyObject *__pyx_kp_s_No_value_specified_for_struct_at_2;
+static PyObject *__pyx_n_s_T;
 static PyObject *__pyx_n_s_ValueError;
-static PyObject *__pyx_n_s__4;
+static PyObject *__pyx_n_s__3;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_event_handler_callbacks;
 static PyObject *__pyx_n_s_html;
-static PyObject *__pyx_kp_s_hypergen_ultragen_pyx;
 static PyObject *__pyx_n_s_iteritems;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_name;
-static PyObject *__pyx_n_s_ok;
+static PyObject *__pyx_n_s_pyx_capi;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_test;
-static PyObject *__pyx_n_s_ultragen;
 #endif
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_8ultragen_ok(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 #if !CYTHON_COMPILING_IN_LIMITED_API
 #endif
 #if !CYTHON_COMPILING_IN_LIMITED_API
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
-static PyObject *__pyx_codeobj__3;
 #endif
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
@@ -1898,23 +1769,21 @@ typedef struct {
   PyObject *__pyx_n_s_KeyError;
   PyObject *__pyx_kp_s_No_value_specified_for_struct_at;
   PyObject *__pyx_kp_s_No_value_specified_for_struct_at_2;
+  PyObject *__pyx_n_s_T;
   PyObject *__pyx_n_s_ValueError;
-  PyObject *__pyx_n_s__4;
+  PyObject *__pyx_n_s__3;
   PyObject *__pyx_n_s_cline_in_traceback;
   PyObject *__pyx_n_s_event_handler_callbacks;
   PyObject *__pyx_n_s_html;
-  PyObject *__pyx_kp_s_hypergen_ultragen_pyx;
   PyObject *__pyx_n_s_iteritems;
   PyObject *__pyx_n_s_main;
   PyObject *__pyx_n_s_name;
-  PyObject *__pyx_n_s_ok;
+  PyObject *__pyx_n_s_pyx_capi;
   PyObject *__pyx_n_s_pyx_vtable;
   PyObject *__pyx_n_s_range;
   PyObject *__pyx_n_s_test;
-  PyObject *__pyx_n_s_ultragen;
   PyObject *__pyx_tuple_;
   PyObject *__pyx_tuple__2;
-  PyObject *__pyx_codeobj__3;
 } __pyx_mstate;
 
 #ifdef __cplusplus
@@ -1955,23 +1824,21 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_KeyError);
   Py_CLEAR(clear_module_state->__pyx_kp_s_No_value_specified_for_struct_at);
   Py_CLEAR(clear_module_state->__pyx_kp_s_No_value_specified_for_struct_at_2);
+  Py_CLEAR(clear_module_state->__pyx_n_s_T);
   Py_CLEAR(clear_module_state->__pyx_n_s_ValueError);
-  Py_CLEAR(clear_module_state->__pyx_n_s__4);
+  Py_CLEAR(clear_module_state->__pyx_n_s__3);
   Py_CLEAR(clear_module_state->__pyx_n_s_cline_in_traceback);
   Py_CLEAR(clear_module_state->__pyx_n_s_event_handler_callbacks);
   Py_CLEAR(clear_module_state->__pyx_n_s_html);
-  Py_CLEAR(clear_module_state->__pyx_kp_s_hypergen_ultragen_pyx);
   Py_CLEAR(clear_module_state->__pyx_n_s_iteritems);
   Py_CLEAR(clear_module_state->__pyx_n_s_main);
   Py_CLEAR(clear_module_state->__pyx_n_s_name);
-  Py_CLEAR(clear_module_state->__pyx_n_s_ok);
+  Py_CLEAR(clear_module_state->__pyx_n_s_pyx_capi);
   Py_CLEAR(clear_module_state->__pyx_n_s_pyx_vtable);
   Py_CLEAR(clear_module_state->__pyx_n_s_range);
   Py_CLEAR(clear_module_state->__pyx_n_s_test);
-  Py_CLEAR(clear_module_state->__pyx_n_s_ultragen);
   Py_CLEAR(clear_module_state->__pyx_tuple_);
   Py_CLEAR(clear_module_state->__pyx_tuple__2);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__3);
   return 0;
 }
 #endif
@@ -1999,23 +1866,21 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_KeyError);
   Py_VISIT(traverse_module_state->__pyx_kp_s_No_value_specified_for_struct_at);
   Py_VISIT(traverse_module_state->__pyx_kp_s_No_value_specified_for_struct_at_2);
+  Py_VISIT(traverse_module_state->__pyx_n_s_T);
   Py_VISIT(traverse_module_state->__pyx_n_s_ValueError);
-  Py_VISIT(traverse_module_state->__pyx_n_s__4);
+  Py_VISIT(traverse_module_state->__pyx_n_s__3);
   Py_VISIT(traverse_module_state->__pyx_n_s_cline_in_traceback);
   Py_VISIT(traverse_module_state->__pyx_n_s_event_handler_callbacks);
   Py_VISIT(traverse_module_state->__pyx_n_s_html);
-  Py_VISIT(traverse_module_state->__pyx_kp_s_hypergen_ultragen_pyx);
   Py_VISIT(traverse_module_state->__pyx_n_s_iteritems);
   Py_VISIT(traverse_module_state->__pyx_n_s_main);
   Py_VISIT(traverse_module_state->__pyx_n_s_name);
-  Py_VISIT(traverse_module_state->__pyx_n_s_ok);
+  Py_VISIT(traverse_module_state->__pyx_n_s_pyx_capi);
   Py_VISIT(traverse_module_state->__pyx_n_s_pyx_vtable);
   Py_VISIT(traverse_module_state->__pyx_n_s_range);
   Py_VISIT(traverse_module_state->__pyx_n_s_test);
-  Py_VISIT(traverse_module_state->__pyx_n_s_ultragen);
   Py_VISIT(traverse_module_state->__pyx_tuple_);
   Py_VISIT(traverse_module_state->__pyx_tuple__2);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__3);
   return 0;
 }
 #endif
@@ -2040,27 +1905,25 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_KeyError __pyx_mstate_global->__pyx_n_s_KeyError
 #define __pyx_kp_s_No_value_specified_for_struct_at __pyx_mstate_global->__pyx_kp_s_No_value_specified_for_struct_at
 #define __pyx_kp_s_No_value_specified_for_struct_at_2 __pyx_mstate_global->__pyx_kp_s_No_value_specified_for_struct_at_2
+#define __pyx_n_s_T __pyx_mstate_global->__pyx_n_s_T
 #define __pyx_n_s_ValueError __pyx_mstate_global->__pyx_n_s_ValueError
-#define __pyx_n_s__4 __pyx_mstate_global->__pyx_n_s__4
+#define __pyx_n_s__3 __pyx_mstate_global->__pyx_n_s__3
 #define __pyx_n_s_cline_in_traceback __pyx_mstate_global->__pyx_n_s_cline_in_traceback
 #define __pyx_n_s_event_handler_callbacks __pyx_mstate_global->__pyx_n_s_event_handler_callbacks
 #define __pyx_n_s_html __pyx_mstate_global->__pyx_n_s_html
-#define __pyx_kp_s_hypergen_ultragen_pyx __pyx_mstate_global->__pyx_kp_s_hypergen_ultragen_pyx
 #define __pyx_n_s_iteritems __pyx_mstate_global->__pyx_n_s_iteritems
 #define __pyx_n_s_main __pyx_mstate_global->__pyx_n_s_main
 #define __pyx_n_s_name __pyx_mstate_global->__pyx_n_s_name
-#define __pyx_n_s_ok __pyx_mstate_global->__pyx_n_s_ok
+#define __pyx_n_s_pyx_capi __pyx_mstate_global->__pyx_n_s_pyx_capi
 #define __pyx_n_s_pyx_vtable __pyx_mstate_global->__pyx_n_s_pyx_vtable
 #define __pyx_n_s_range __pyx_mstate_global->__pyx_n_s_range
 #define __pyx_n_s_test __pyx_mstate_global->__pyx_n_s_test
-#define __pyx_n_s_ultragen __pyx_mstate_global->__pyx_n_s_ultragen
 #define __pyx_tuple_ __pyx_mstate_global->__pyx_tuple_
 #define __pyx_tuple__2 __pyx_mstate_global->__pyx_tuple__2
-#define __pyx_codeobj__3 __pyx_mstate_global->__pyx_codeobj__3
 #endif
 /* #### Code section: module_code ### */
 
-/* "ultragen.pyx":20
+/* "hypergen/ultragen.pyx":20
  *     unordered_map [string, string] event_handler_callbacks
  * 
  * cdef Hpg make_hpg():             # <<<<<<<<<<<<<<
@@ -2068,20 +1931,20 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
  *         unordered_map [string, string] event_handler_callbacks
  */
 
-static struct __pyx_t_8ultragen_Hpg __pyx_f_8ultragen_make_hpg(void) {
+static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_f_8hypergen_8ultragen_make_hpg(void) {
   std::unordered_map<std::string,std::string>  __pyx_v_event_handler_callbacks;
   PyObject *__pyx_v_hpg = 0;
-  struct __pyx_t_8ultragen_Hpg __pyx_r;
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_r;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
-  struct __pyx_t_8ultragen_Hpg __pyx_t_3;
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_t_3;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("make_hpg", 0);
 
-  /* "ultragen.pyx":23
+  /* "hypergen/ultragen.pyx":23
  *     cdef:
  *         unordered_map [string, string] event_handler_callbacks
  *         hpg = Hpg(<char*>"", event_handler_callbacks)             # <<<<<<<<<<<<<<
@@ -2101,18 +1964,18 @@ static struct __pyx_t_8ultragen_Hpg __pyx_f_8ultragen_make_hpg(void) {
   __pyx_v_hpg = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "ultragen.pyx":25
+  /* "hypergen/ultragen.pyx":25
  *         hpg = Hpg(<char*>"", event_handler_callbacks)
  * 
  *     return hpg             # <<<<<<<<<<<<<<
  * 
  * # Callback options
  */
-  __pyx_t_3 = __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(__pyx_v_hpg); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 25, __pyx_L1_error)
+  __pyx_t_3 = __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(__pyx_v_hpg); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 25, __pyx_L1_error)
   __pyx_r = __pyx_t_3;
   goto __pyx_L0;
 
-  /* "ultragen.pyx":20
+  /* "hypergen/ultragen.pyx":20
  *     unordered_map [string, string] event_handler_callbacks
  * 
  * cdef Hpg make_hpg():             # <<<<<<<<<<<<<<
@@ -2124,7 +1987,7 @@ static struct __pyx_t_8ultragen_Hpg __pyx_f_8ultragen_make_hpg(void) {
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_WriteUnraisable("ultragen.make_hpg", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __Pyx_WriteUnraisable("hypergen.ultragen.make_hpg", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __Pyx_pretend_to_initialize(&__pyx_r);
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_hpg);
@@ -2132,7 +1995,7 @@ static struct __pyx_t_8ultragen_Hpg __pyx_f_8ultragen_make_hpg(void) {
   return __pyx_r;
 }
 
-/* "ultragen.pyx":36
+/* "hypergen/ultragen.pyx":36
  *     int upload_files
  * 
  * cdef CbOpts make_cb_opts(string id_) nogil:             # <<<<<<<<<<<<<<
@@ -2140,11 +2003,11 @@ static struct __pyx_t_8ultragen_Hpg __pyx_f_8ultragen_make_hpg(void) {
  *     opts.blocks = False
  */
 
-static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::string __pyx_v_id_) {
-  struct __pyx_t_8ultragen_CbOpts __pyx_v_opts;
-  struct __pyx_t_8ultragen_CbOpts __pyx_r;
+static struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_f_8hypergen_8ultragen_make_cb_opts(std::string __pyx_v_id_) {
+  struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_v_opts;
+  struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_r;
 
-  /* "ultragen.pyx":38
+  /* "hypergen/ultragen.pyx":38
  * cdef CbOpts make_cb_opts(string id_) nogil:
  *     cdef CbOpts opts
  *     opts.blocks = False             # <<<<<<<<<<<<<<
@@ -2153,7 +2016,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
  */
   __pyx_v_opts.blocks = 0;
 
-  /* "ultragen.pyx":39
+  /* "hypergen/ultragen.pyx":39
  *     cdef CbOpts opts
  *     opts.blocks = False
  *     opts.confirm_ = <char*>""             # <<<<<<<<<<<<<<
@@ -2162,7 +2025,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
  */
   __pyx_v_opts.confirm_ = ((char *)((char *)""));
 
-  /* "ultragen.pyx":40
+  /* "hypergen/ultragen.pyx":40
  *     opts.blocks = False
  *     opts.confirm_ = <char*>""
  *     opts.debounce = 0             # <<<<<<<<<<<<<<
@@ -2171,7 +2034,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
  */
   __pyx_v_opts.debounce = 0;
 
-  /* "ultragen.pyx":41
+  /* "hypergen/ultragen.pyx":41
  *     opts.confirm_ = <char*>""
  *     opts.debounce = 0
  *     opts.clear = False             # <<<<<<<<<<<<<<
@@ -2180,7 +2043,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
  */
   __pyx_v_opts.clear = 0;
 
-  /* "ultragen.pyx":42
+  /* "hypergen/ultragen.pyx":42
  *     opts.debounce = 0
  *     opts.clear = False
  *     opts.element_id = id_             # <<<<<<<<<<<<<<
@@ -2189,7 +2052,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
  */
   __pyx_v_opts.element_id = __pyx_v_id_;
 
-  /* "ultragen.pyx":43
+  /* "hypergen/ultragen.pyx":43
  *     opts.clear = False
  *     opts.element_id = id_
  *     opts.upload_files = False             # <<<<<<<<<<<<<<
@@ -2198,7 +2061,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
  */
   __pyx_v_opts.upload_files = 0;
 
-  /* "ultragen.pyx":45
+  /* "hypergen/ultragen.pyx":45
  *     opts.upload_files = False
  * 
  *     return opts             # <<<<<<<<<<<<<<
@@ -2208,7 +2071,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
   __pyx_r = __pyx_v_opts;
   goto __pyx_L0;
 
-  /* "ultragen.pyx":36
+  /* "hypergen/ultragen.pyx":36
  *     int upload_files
  * 
  * cdef CbOpts make_cb_opts(string id_) nogil:             # <<<<<<<<<<<<<<
@@ -2221,7 +2084,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
   return __pyx_r;
 }
 
-/* "ultragen.pyx":48
+/* "hypergen/ultragen.pyx":48
  * 
  * # Server callback
  * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:             # <<<<<<<<<<<<<<
@@ -2229,7 +2092,7 @@ static struct __pyx_t_8ultragen_CbOpts __pyx_f_8ultragen_make_cb_opts(std::strin
  *         string html
  */
 
-static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_id_, std::string __pyx_v_attr_name, std::string __pyx_v_url, std::string *__pyx_v_args, struct __pyx_t_8ultragen_CbOpts __pyx_v_cb_opts) {
+static std::string __pyx_f_8hypergen_8ultragen_cb(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_id_, std::string __pyx_v_attr_name, std::string __pyx_v_url, std::string *__pyx_v_args, struct __pyx_t_8hypergen_8ultragen_CbOpts __pyx_v_cb_opts) {
   std::string __pyx_v_html;
   std::string __pyx_v_client_state_key;
   std::string __pyx_v_event_handler_callback;
@@ -2242,7 +2105,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
   __Pyx_FakeReference<std::string> __pyx_t_4;
   __Pyx_FakeReference<std::string> __pyx_t_5;
 
-  /* "ultragen.pyx":57
+  /* "hypergen/ultragen.pyx":57
  *         char s[100]
  * 
  *     client_state_key.append(id_)             # <<<<<<<<<<<<<<
@@ -2251,7 +2114,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_client_state_key.append(__pyx_v_id_));
 
-  /* "ultragen.pyx":58
+  /* "hypergen/ultragen.pyx":58
  * 
  *     client_state_key.append(id_)
  *     client_state_key.append("__")             # <<<<<<<<<<<<<<
@@ -2260,7 +2123,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_client_state_key.append(((char const *)"__")));
 
-  /* "ultragen.pyx":59
+  /* "hypergen/ultragen.pyx":59
  *     client_state_key.append(id_)
  *     client_state_key.append("__")
  *     client_state_key.append(attr_name)             # <<<<<<<<<<<<<<
@@ -2269,7 +2132,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_client_state_key.append(__pyx_v_attr_name));
 
-  /* "ultragen.pyx":61
+  /* "hypergen/ultragen.pyx":61
  *     client_state_key.append(attr_name)
  * 
  *     html.append("e(event,'")             # <<<<<<<<<<<<<<
@@ -2278,7 +2141,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_html.append(((char const *)"e(event,'")));
 
-  /* "ultragen.pyx":62
+  /* "hypergen/ultragen.pyx":62
  * 
  *     html.append("e(event,'")
  *     html.append(client_state_key)             # <<<<<<<<<<<<<<
@@ -2287,7 +2150,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_html.append(__pyx_v_client_state_key));
 
-  /* "ultragen.pyx":63
+  /* "hypergen/ultragen.pyx":63
  *     html.append("e(event,'")
  *     html.append(client_state_key)
  *     html.append("')")             # <<<<<<<<<<<<<<
@@ -2296,7 +2159,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_html.append(((char const *)"')")));
 
-  /* "ultragen.pyx":65
+  /* "hypergen/ultragen.pyx":65
  *     html.append("')")
  * 
  *     event_handler_callback.append('["')             # <<<<<<<<<<<<<<
@@ -2305,7 +2168,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"[\"")));
 
-  /* "ultragen.pyx":66
+  /* "hypergen/ultragen.pyx":66
  * 
  *     event_handler_callback.append('["')
  *     event_handler_callback.append(url)             # <<<<<<<<<<<<<<
@@ -2314,7 +2177,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(__pyx_v_url));
 
-  /* "ultragen.pyx":67
+  /* "hypergen/ultragen.pyx":67
  *     event_handler_callback.append('["')
  *     event_handler_callback.append(url)
  *     event_handler_callback.append('",')             # <<<<<<<<<<<<<<
@@ -2323,7 +2186,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"\",")));
 
-  /* "ultragen.pyx":69
+  /* "hypergen/ultragen.pyx":69
  *     event_handler_callback.append('",')
  * 
  *     event_handler_callback.append('[')             # <<<<<<<<<<<<<<
@@ -2332,7 +2195,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"[")));
 
-  /* "ultragen.pyx":70
+  /* "hypergen/ultragen.pyx":70
  * 
  *     event_handler_callback.append('[')
  *     for i in range(100):             # <<<<<<<<<<<<<<
@@ -2342,7 +2205,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
   for (__pyx_t_1 = 0; __pyx_t_1 < 0x64; __pyx_t_1+=1) {
     __pyx_v_i = __pyx_t_1;
 
-    /* "ultragen.pyx":71
+    /* "hypergen/ultragen.pyx":71
  *     event_handler_callback.append('[')
  *     for i in range(100):
  *         arg = args[i]             # <<<<<<<<<<<<<<
@@ -2351,17 +2214,17 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     __pyx_v_arg = (__pyx_v_args[__pyx_v_i]);
 
-    /* "ultragen.pyx":72
+    /* "hypergen/ultragen.pyx":72
  *     for i in range(100):
  *         arg = args[i]
  *         if arg == T:             # <<<<<<<<<<<<<<
  *             break
  *         if i != 0:
  */
-    __pyx_t_2 = ((__pyx_v_arg == __pyx_v_8ultragen_T) != 0);
+    __pyx_t_2 = ((__pyx_v_arg == __pyx_v_8hypergen_8ultragen_T) != 0);
     if (__pyx_t_2) {
 
-      /* "ultragen.pyx":73
+      /* "hypergen/ultragen.pyx":73
  *         arg = args[i]
  *         if arg == T:
  *             break             # <<<<<<<<<<<<<<
@@ -2370,7 +2233,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
       goto __pyx_L4_break;
 
-      /* "ultragen.pyx":72
+      /* "hypergen/ultragen.pyx":72
  *     for i in range(100):
  *         arg = args[i]
  *         if arg == T:             # <<<<<<<<<<<<<<
@@ -2379,7 +2242,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     }
 
-    /* "ultragen.pyx":74
+    /* "hypergen/ultragen.pyx":74
  *         if arg == T:
  *             break
  *         if i != 0:             # <<<<<<<<<<<<<<
@@ -2389,7 +2252,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
     __pyx_t_2 = ((__pyx_v_i != 0) != 0);
     if (__pyx_t_2) {
 
-      /* "ultragen.pyx":75
+      /* "hypergen/ultragen.pyx":75
  *             break
  *         if i != 0:
  *             event_handler_callback.append(",")             # <<<<<<<<<<<<<<
@@ -2398,7 +2261,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
       (void)(__pyx_v_event_handler_callback.append(((char const *)",")));
 
-      /* "ultragen.pyx":74
+      /* "hypergen/ultragen.pyx":74
  *         if arg == T:
  *             break
  *         if i != 0:             # <<<<<<<<<<<<<<
@@ -2407,7 +2270,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     }
 
-    /* "ultragen.pyx":76
+    /* "hypergen/ultragen.pyx":76
  *         if i != 0:
  *             event_handler_callback.append(",")
  *         event_handler_callback.append(arg)             # <<<<<<<<<<<<<<
@@ -2418,7 +2281,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
   }
   __pyx_L4_break:;
 
-  /* "ultragen.pyx":77
+  /* "hypergen/ultragen.pyx":77
  *             event_handler_callback.append(",")
  *         event_handler_callback.append(arg)
  *     event_handler_callback.append(']')             # <<<<<<<<<<<<<<
@@ -2427,7 +2290,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"]")));
 
-  /* "ultragen.pyx":79
+  /* "hypergen/ultragen.pyx":79
  *     event_handler_callback.append(']')
  * 
  *     event_handler_callback.append(', {')             # <<<<<<<<<<<<<<
@@ -2436,7 +2299,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)", {")));
 
-    /* "ultragen.pyx":80
+    /* "hypergen/ultragen.pyx":80
  * 
  *     event_handler_callback.append(', {')
  *     event_handler_callback.append('"blocks":')             # <<<<<<<<<<<<<<
@@ -2445,7 +2308,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)"\"blocks\":")));
 
-    /* "ultragen.pyx":81
+    /* "hypergen/ultragen.pyx":81
  *     event_handler_callback.append(', {')
  *     event_handler_callback.append('"blocks":')
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2458,7 +2321,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
       __pyx_t_3 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "ultragen.pyx":82
+    /* "hypergen/ultragen.pyx":82
  *     event_handler_callback.append('"blocks":')
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"debounce":')             # <<<<<<<<<<<<<<
@@ -2467,16 +2330,16 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"debounce\":")));
 
-    /* "ultragen.pyx":83
+    /* "hypergen/ultragen.pyx":83
  *     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"debounce":')
  *     event_handler_callback.append(i2s(cb_opts.debounce))             # <<<<<<<<<<<<<<
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  */
-    (void)(__pyx_v_event_handler_callback.append(__pyx_f_8ultragen_i2s(__pyx_v_cb_opts.debounce)));
+    (void)(__pyx_v_event_handler_callback.append(__pyx_f_8hypergen_8ultragen_i2s(__pyx_v_cb_opts.debounce)));
 
-    /* "ultragen.pyx":84
+    /* "hypergen/ultragen.pyx":84
  *     event_handler_callback.append(',"debounce":')
  *     event_handler_callback.append(i2s(cb_opts.debounce))
  *     event_handler_callback.append(',"clear":')             # <<<<<<<<<<<<<<
@@ -2485,7 +2348,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"clear\":")));
 
-    /* "ultragen.pyx":85
+    /* "hypergen/ultragen.pyx":85
  *     event_handler_callback.append(i2s(cb_opts.debounce))
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2498,7 +2361,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
       __pyx_t_4 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "ultragen.pyx":86
+    /* "hypergen/ultragen.pyx":86
  *     event_handler_callback.append(',"clear":')
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"elementId":"')             # <<<<<<<<<<<<<<
@@ -2507,7 +2370,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"elementId\":\"")));
 
-    /* "ultragen.pyx":87
+    /* "hypergen/ultragen.pyx":87
  *     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
  *     event_handler_callback.append(',"elementId":"')
  *     event_handler_callback.append(id_)             # <<<<<<<<<<<<<<
@@ -2516,7 +2379,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     (void)(__pyx_v_event_handler_callback.append(__pyx_v_id_));
 
-    /* "ultragen.pyx":88
+    /* "hypergen/ultragen.pyx":88
  *     event_handler_callback.append(',"elementId":"')
  *     event_handler_callback.append(id_)
  *     event_handler_callback.append('"')             # <<<<<<<<<<<<<<
@@ -2525,7 +2388,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)"\"")));
 
-    /* "ultragen.pyx":89
+    /* "hypergen/ultragen.pyx":89
  *     event_handler_callback.append(id_)
  *     event_handler_callback.append('"')
  *     event_handler_callback.append(',"uploadFiles":')             # <<<<<<<<<<<<<<
@@ -2534,7 +2397,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
     (void)(__pyx_v_event_handler_callback.append(((char const *)",\"uploadFiles\":")));
 
-    /* "ultragen.pyx":90
+    /* "hypergen/ultragen.pyx":90
  *     event_handler_callback.append('"')
  *     event_handler_callback.append(',"uploadFiles":')
  *     event_handler_callback.append("true") if cb_opts.upload_files is True else event_handler_callback.append("false")             # <<<<<<<<<<<<<<
@@ -2547,7 +2410,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
       __pyx_t_5 = __pyx_v_event_handler_callback.append(((char const *)"false"));
     }
 
-    /* "ultragen.pyx":92
+    /* "hypergen/ultragen.pyx":92
  *     event_handler_callback.append("true") if cb_opts.upload_files is True else event_handler_callback.append("false")
  * 
  *     event_handler_callback.append('}')             # <<<<<<<<<<<<<<
@@ -2556,7 +2419,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"}")));
 
-  /* "ultragen.pyx":93
+  /* "hypergen/ultragen.pyx":93
  * 
  *     event_handler_callback.append('}')
  *     event_handler_callback.append("]")             # <<<<<<<<<<<<<<
@@ -2565,7 +2428,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (void)(__pyx_v_event_handler_callback.append(((char const *)"]")));
 
-  /* "ultragen.pyx":95
+  /* "hypergen/ultragen.pyx":95
  *     event_handler_callback.append("]")
  * 
  *     hpg.event_handler_callbacks[client_state_key] = event_handler_callback             # <<<<<<<<<<<<<<
@@ -2574,7 +2437,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  */
   (__pyx_v_hpg.event_handler_callbacks[__pyx_v_client_state_key]) = __pyx_v_event_handler_callback;
 
-  /* "ultragen.pyx":97
+  /* "hypergen/ultragen.pyx":97
  *     hpg.event_handler_callbacks[client_state_key] = event_handler_callback
  * 
  *     return html             # <<<<<<<<<<<<<<
@@ -2584,7 +2447,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
   __pyx_r = __pyx_v_html;
   goto __pyx_L0;
 
-  /* "ultragen.pyx":48
+  /* "hypergen/ultragen.pyx":48
  * 
  * # Server callback
  * cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:             # <<<<<<<<<<<<<<
@@ -2597,7 +2460,7 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
   return __pyx_r;
 }
 
-/* "ultragen.pyx":101
+/* "hypergen/ultragen.pyx":101
  * # Cast functions for callback arguments
  * 
  * cdef string i2s(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2605,11 +2468,11 @@ static std::string __pyx_f_8ultragen_cb(struct __pyx_t_8ultragen_Hpg &__pyx_v_hp
  *         char s[100]
  */
 
-static std::string __pyx_f_8ultragen_i2s(int __pyx_v_v) {
+static std::string __pyx_f_8hypergen_8ultragen_i2s(int __pyx_v_v) {
   char __pyx_v_s[0x64];
   std::string __pyx_r;
 
-  /* "ultragen.pyx":104
+  /* "hypergen/ultragen.pyx":104
  *     cdef:
  *         char s[100]
  *     sprintf(s, "%d", v)             # <<<<<<<<<<<<<<
@@ -2618,7 +2481,7 @@ static std::string __pyx_f_8ultragen_i2s(int __pyx_v_v) {
  */
   (void)(sprintf(__pyx_v_s, ((char const *)"%d"), __pyx_v_v));
 
-  /* "ultragen.pyx":105
+  /* "hypergen/ultragen.pyx":105
  *         char s[100]
  *     sprintf(s, "%d", v)
  *     return <string> s             # <<<<<<<<<<<<<<
@@ -2628,7 +2491,7 @@ static std::string __pyx_f_8ultragen_i2s(int __pyx_v_v) {
   __pyx_r = ((std::string)__pyx_v_s);
   goto __pyx_L0;
 
-  /* "ultragen.pyx":101
+  /* "hypergen/ultragen.pyx":101
  * # Cast functions for callback arguments
  * 
  * cdef string i2s(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2641,7 +2504,7 @@ static std::string __pyx_f_8ultragen_i2s(int __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "ultragen.pyx":108
+/* "hypergen/ultragen.pyx":108
  * 
  * 
  * cdef string arg_i(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2649,11 +2512,11 @@ static std::string __pyx_f_8ultragen_i2s(int __pyx_v_v) {
  *         char s[100]
  */
 
-static std::string __pyx_f_8ultragen_arg_i(int __pyx_v_v) {
+static std::string __pyx_f_8hypergen_8ultragen_arg_i(int __pyx_v_v) {
   char __pyx_v_s[0x64];
   std::string __pyx_r;
 
-  /* "ultragen.pyx":111
+  /* "hypergen/ultragen.pyx":111
  *     cdef:
  *         char s[100]
  *     sprintf(s, "%d", v)             # <<<<<<<<<<<<<<
@@ -2662,7 +2525,7 @@ static std::string __pyx_f_8ultragen_arg_i(int __pyx_v_v) {
  */
   (void)(sprintf(__pyx_v_s, ((char const *)"%d"), __pyx_v_v));
 
-  /* "ultragen.pyx":112
+  /* "hypergen/ultragen.pyx":112
  *         char s[100]
  *     sprintf(s, "%d", v)
  *     return <string> s             # <<<<<<<<<<<<<<
@@ -2672,7 +2535,7 @@ static std::string __pyx_f_8ultragen_arg_i(int __pyx_v_v) {
   __pyx_r = ((std::string)__pyx_v_s);
   goto __pyx_L0;
 
-  /* "ultragen.pyx":108
+  /* "hypergen/ultragen.pyx":108
  * 
  * 
  * cdef string arg_i(int v) nogil:             # <<<<<<<<<<<<<<
@@ -2685,7 +2548,7 @@ static std::string __pyx_f_8ultragen_arg_i(int __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "ultragen.pyx":114
+/* "hypergen/ultragen.pyx":114
  *     return <string> s
  * 
  * cdef string arg_s(string v) nogil:             # <<<<<<<<<<<<<<
@@ -2693,11 +2556,11 @@ static std::string __pyx_f_8ultragen_arg_i(int __pyx_v_v) {
  *     s.append('"')
  */
 
-static std::string __pyx_f_8ultragen_arg_s(std::string __pyx_v_v) {
+static std::string __pyx_f_8hypergen_8ultragen_arg_s(std::string __pyx_v_v) {
   std::string __pyx_v_s;
   std::string __pyx_r;
 
-  /* "ultragen.pyx":116
+  /* "hypergen/ultragen.pyx":116
  * cdef string arg_s(string v) nogil:
  *     cdef string s
  *     s.append('"')             # <<<<<<<<<<<<<<
@@ -2706,7 +2569,7 @@ static std::string __pyx_f_8ultragen_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(((char const *)"\"")));
 
-  /* "ultragen.pyx":117
+  /* "hypergen/ultragen.pyx":117
  *     cdef string s
  *     s.append('"')
  *     s.append(v)             # <<<<<<<<<<<<<<
@@ -2715,7 +2578,7 @@ static std::string __pyx_f_8ultragen_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(__pyx_v_v));
 
-  /* "ultragen.pyx":118
+  /* "hypergen/ultragen.pyx":118
  *     s.append('"')
  *     s.append(v)
  *     s.append('"')             # <<<<<<<<<<<<<<
@@ -2724,7 +2587,7 @@ static std::string __pyx_f_8ultragen_arg_s(std::string __pyx_v_v) {
  */
   (void)(__pyx_v_s.append(((char const *)"\"")));
 
-  /* "ultragen.pyx":120
+  /* "hypergen/ultragen.pyx":120
  *     s.append('"')
  * 
  *     return s             # <<<<<<<<<<<<<<
@@ -2734,7 +2597,7 @@ static std::string __pyx_f_8ultragen_arg_s(std::string __pyx_v_v) {
   __pyx_r = __pyx_v_s;
   goto __pyx_L0;
 
-  /* "ultragen.pyx":114
+  /* "hypergen/ultragen.pyx":114
  *     return <string> s
  * 
  * cdef string arg_s(string v) nogil:             # <<<<<<<<<<<<<<
@@ -2747,7 +2610,7 @@ static std::string __pyx_f_8ultragen_arg_s(std::string __pyx_v_v) {
   return __pyx_r;
 }
 
-/* "ultragen.pyx":126
+/* "hypergen/ultragen.pyx":126
  *     string coerce_func
  * 
  * cdef string arg_el(string id_, ArgElOpts opts) nogil:             # <<<<<<<<<<<<<<
@@ -2755,11 +2618,11 @@ static std::string __pyx_f_8ultragen_arg_s(std::string __pyx_v_v) {
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  */
 
-static std::string __pyx_f_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUSED struct __pyx_t_8ultragen_ArgElOpts __pyx_v_opts) {
+static std::string __pyx_f_8hypergen_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUSED struct __pyx_t_8hypergen_8ultragen_ArgElOpts __pyx_v_opts) {
   std::string __pyx_v_s;
   std::string __pyx_r;
 
-  /* "ultragen.pyx":128
+  /* "hypergen/ultragen.pyx":128
  * cdef string arg_el(string id_, ArgElOpts opts) nogil:
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')             # <<<<<<<<<<<<<<
@@ -2768,7 +2631,7 @@ static std::string __pyx_f_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUS
  */
   (void)(__pyx_v_s.append(((char const *)"[\"_\",\"element_value\",[\"hypergen.read.value\", null, \"")));
 
-  /* "ultragen.pyx":129
+  /* "hypergen/ultragen.pyx":129
  *     cdef string s
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  *     s.append(id_)             # <<<<<<<<<<<<<<
@@ -2777,7 +2640,7 @@ static std::string __pyx_f_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUS
  */
   (void)(__pyx_v_s.append(__pyx_v_id_));
 
-  /* "ultragen.pyx":130
+  /* "hypergen/ultragen.pyx":130
  *     s.append('["_","element_value",["hypergen.read.value", null, "')
  *     s.append(id_)
  *     s.append('"]]')             # <<<<<<<<<<<<<<
@@ -2786,7 +2649,7 @@ static std::string __pyx_f_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUS
  */
   (void)(__pyx_v_s.append(((char const *)"\"]]")));
 
-  /* "ultragen.pyx":132
+  /* "hypergen/ultragen.pyx":132
  *     s.append('"]]')
  * 
  *     return s             # <<<<<<<<<<<<<<
@@ -2796,7 +2659,7 @@ static std::string __pyx_f_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUS
   __pyx_r = __pyx_v_s;
   goto __pyx_L0;
 
-  /* "ultragen.pyx":126
+  /* "hypergen/ultragen.pyx":126
  *     string coerce_func
  * 
  * cdef string arg_el(string id_, ArgElOpts opts) nogil:             # <<<<<<<<<<<<<<
@@ -2809,7 +2672,7 @@ static std::string __pyx_f_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "ultragen.pyx":135
+/* "hypergen/ultragen.pyx":135
  * 
  * # Base HTML element
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -2817,13 +2680,13 @@ static std::string __pyx_f_8ultragen_arg_el(std::string __pyx_v_id_, CYTHON_UNUS
  *     hpg.html.append('<')
  */
 
-static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+static void __pyx_f_8hypergen_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
   int __pyx_v_i;
   int __pyx_v_j;
   int __pyx_t_1;
   int __pyx_t_2;
 
-  /* "ultragen.pyx":137
+  /* "hypergen/ultragen.pyx":137
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
  *     cdef int i, j
  *     hpg.html.append('<')             # <<<<<<<<<<<<<<
@@ -2832,7 +2695,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"<")));
 
-  /* "ultragen.pyx":138
+  /* "hypergen/ultragen.pyx":138
  *     cdef int i, j
  *     hpg.html.append('<')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -2841,17 +2704,17 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "ultragen.pyx":140
+  /* "hypergen/ultragen.pyx":140
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
  *         for i in range(0, 100, 2):
  *             j = i + 1
  */
-  __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8ultragen_T) != 0);
+  __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8hypergen_8ultragen_T) != 0);
   if (__pyx_t_1) {
 
-    /* "ultragen.pyx":141
+    /* "hypergen/ultragen.pyx":141
  * 
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
@@ -2861,7 +2724,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
     for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
       __pyx_v_i = __pyx_t_2;
 
-      /* "ultragen.pyx":142
+      /* "hypergen/ultragen.pyx":142
  *     if attrs[0] != T:
  *         for i in range(0, 100, 2):
  *             j = i + 1             # <<<<<<<<<<<<<<
@@ -2870,17 +2733,17 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
       __pyx_v_j = (__pyx_v_i + 1);
 
-      /* "ultragen.pyx":143
+      /* "hypergen/ultragen.pyx":143
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
  *                 break
  *             else:
  */
-      __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8ultragen_T) != 0);
+      __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8hypergen_8ultragen_T) != 0);
       if (__pyx_t_1) {
 
-        /* "ultragen.pyx":144
+        /* "hypergen/ultragen.pyx":144
  *             j = i + 1
  *             if attrs[i] == T:
  *                 break             # <<<<<<<<<<<<<<
@@ -2889,7 +2752,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
         goto __pyx_L5_break;
 
-        /* "ultragen.pyx":143
+        /* "hypergen/ultragen.pyx":143
  *         for i in range(0, 100, 2):
  *             j = i + 1
  *             if attrs[i] == T:             # <<<<<<<<<<<<<<
@@ -2898,7 +2761,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
       }
 
-      /* "ultragen.pyx":146
+      /* "hypergen/ultragen.pyx":146
  *                 break
  *             else:
  *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
@@ -2908,7 +2771,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
       /*else*/ {
         (void)(__pyx_v_hpg.html.append(((char const *)" ")));
 
-        /* "ultragen.pyx":147
+        /* "hypergen/ultragen.pyx":147
  *             else:
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
@@ -2917,7 +2780,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
 
-        /* "ultragen.pyx":148
+        /* "hypergen/ultragen.pyx":148
  *                 hpg.html.append(" ")
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
@@ -2926,7 +2789,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
         (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
 
-        /* "ultragen.pyx":149
+        /* "hypergen/ultragen.pyx":149
  *                 hpg.html.append(attrs[i])
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
@@ -2935,7 +2798,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
         (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
 
-        /* "ultragen.pyx":150
+        /* "hypergen/ultragen.pyx":150
  *                 hpg.html.append('="')
  *                 hpg.html.append(attrs[j])
  *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
@@ -2947,7 +2810,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
     }
     __pyx_L5_break:;
 
-    /* "ultragen.pyx":140
+    /* "hypergen/ultragen.pyx":140
  *     hpg.html.append(tag)
  * 
  *     if attrs[0] != T:             # <<<<<<<<<<<<<<
@@ -2956,7 +2819,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
   }
 
-  /* "ultragen.pyx":152
+  /* "hypergen/ultragen.pyx":152
  *                 hpg.html.append('"')
  * 
  *     hpg.html.append('>')             # <<<<<<<<<<<<<<
@@ -2965,7 +2828,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">")));
 
-  /* "ultragen.pyx":153
+  /* "hypergen/ultragen.pyx":153
  * 
  *     hpg.html.append('>')
  *     hpg.html.append(s)             # <<<<<<<<<<<<<<
@@ -2974,7 +2837,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_s));
 
-  /* "ultragen.pyx":154
+  /* "hypergen/ultragen.pyx":154
  *     hpg.html.append('>')
  *     hpg.html.append(s)
  *     hpg.html.append('</')             # <<<<<<<<<<<<<<
@@ -2983,7 +2846,7 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
   (void)(__pyx_v_hpg.html.append(((char const *)"</")));
 
-  /* "ultragen.pyx":155
+  /* "hypergen/ultragen.pyx":155
  *     hpg.html.append(s)
  *     hpg.html.append('</')
  *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
@@ -2992,16 +2855,16 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  */
   (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
 
-  /* "ultragen.pyx":156
+  /* "hypergen/ultragen.pyx":156
  *     hpg.html.append('</')
  *     hpg.html.append(tag)
  *     hpg.html.append('>\n')             # <<<<<<<<<<<<<<
  * 
- * # HTML elements
+ * cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:
  */
   (void)(__pyx_v_hpg.html.append(((char const *)">\n")));
 
-  /* "ultragen.pyx":135
+  /* "hypergen/ultragen.pyx":135
  * 
  * # Base HTML element
  * cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3012,7 +2875,222 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
   /* function exit code */
 }
 
-/* "ultragen.pyx":159
+/* "hypergen/ultragen.pyx":158
+ *     hpg.html.append('>\n')
+ * 
+ * cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int i, j
+ *     hpg.html.append('<')
+ */
+
+static void __pyx_f_8hypergen_8ultragen_element_open(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string *__pyx_v_attrs) {
+  int __pyx_v_i;
+  int __pyx_v_j;
+  int __pyx_t_1;
+  int __pyx_t_2;
+
+  /* "hypergen/ultragen.pyx":160
+ * cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:
+ *     cdef int i, j
+ *     hpg.html.append('<')             # <<<<<<<<<<<<<<
+ *     hpg.html.append(tag)
+ * 
+ */
+  (void)(__pyx_v_hpg.html.append(((char const *)"<")));
+
+  /* "hypergen/ultragen.pyx":161
+ *     cdef int i, j
+ *     hpg.html.append('<')
+ *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
+ * 
+ *     if attrs[0] != T:
+ */
+  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
+
+  /* "hypergen/ultragen.pyx":163
+ *     hpg.html.append(tag)
+ * 
+ *     if attrs[0] != T:             # <<<<<<<<<<<<<<
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
+ */
+  __pyx_t_1 = (((__pyx_v_attrs[0]) != __pyx_v_8hypergen_8ultragen_T) != 0);
+  if (__pyx_t_1) {
+
+    /* "hypergen/ultragen.pyx":164
+ * 
+ *     if attrs[0] != T:
+ *         for i in range(0, 100, 2):             # <<<<<<<<<<<<<<
+ *             j = i + 1
+ *             if attrs[i] == T:
+ */
+    for (__pyx_t_2 = 0; __pyx_t_2 < 0x64; __pyx_t_2+=2) {
+      __pyx_v_i = __pyx_t_2;
+
+      /* "hypergen/ultragen.pyx":165
+ *     if attrs[0] != T:
+ *         for i in range(0, 100, 2):
+ *             j = i + 1             # <<<<<<<<<<<<<<
+ *             if attrs[i] == T:
+ *                 break
+ */
+      __pyx_v_j = (__pyx_v_i + 1);
+
+      /* "hypergen/ultragen.pyx":166
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
+ *             if attrs[i] == T:             # <<<<<<<<<<<<<<
+ *                 break
+ *             else:
+ */
+      __pyx_t_1 = (((__pyx_v_attrs[__pyx_v_i]) == __pyx_v_8hypergen_8ultragen_T) != 0);
+      if (__pyx_t_1) {
+
+        /* "hypergen/ultragen.pyx":167
+ *             j = i + 1
+ *             if attrs[i] == T:
+ *                 break             # <<<<<<<<<<<<<<
+ *             else:
+ *                 hpg.html.append(" ")
+ */
+        goto __pyx_L5_break;
+
+        /* "hypergen/ultragen.pyx":166
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
+ *             if attrs[i] == T:             # <<<<<<<<<<<<<<
+ *                 break
+ *             else:
+ */
+      }
+
+      /* "hypergen/ultragen.pyx":169
+ *                 break
+ *             else:
+ *                 hpg.html.append(" ")             # <<<<<<<<<<<<<<
+ *                 hpg.html.append(attrs[i])
+ *                 hpg.html.append('="')
+ */
+      /*else*/ {
+        (void)(__pyx_v_hpg.html.append(((char const *)" ")));
+
+        /* "hypergen/ultragen.pyx":170
+ *             else:
+ *                 hpg.html.append(" ")
+ *                 hpg.html.append(attrs[i])             # <<<<<<<<<<<<<<
+ *                 hpg.html.append('="')
+ *                 hpg.html.append(attrs[j])
+ */
+        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_i])));
+
+        /* "hypergen/ultragen.pyx":171
+ *                 hpg.html.append(" ")
+ *                 hpg.html.append(attrs[i])
+ *                 hpg.html.append('="')             # <<<<<<<<<<<<<<
+ *                 hpg.html.append(attrs[j])
+ *                 hpg.html.append('"')
+ */
+        (void)(__pyx_v_hpg.html.append(((char const *)"=\"")));
+
+        /* "hypergen/ultragen.pyx":172
+ *                 hpg.html.append(attrs[i])
+ *                 hpg.html.append('="')
+ *                 hpg.html.append(attrs[j])             # <<<<<<<<<<<<<<
+ *                 hpg.html.append('"')
+ * 
+ */
+        (void)(__pyx_v_hpg.html.append((__pyx_v_attrs[__pyx_v_j])));
+
+        /* "hypergen/ultragen.pyx":173
+ *                 hpg.html.append('="')
+ *                 hpg.html.append(attrs[j])
+ *                 hpg.html.append('"')             # <<<<<<<<<<<<<<
+ * 
+ *     hpg.html.append('>')
+ */
+        (void)(__pyx_v_hpg.html.append(((char const *)"\"")));
+      }
+    }
+    __pyx_L5_break:;
+
+    /* "hypergen/ultragen.pyx":163
+ *     hpg.html.append(tag)
+ * 
+ *     if attrs[0] != T:             # <<<<<<<<<<<<<<
+ *         for i in range(0, 100, 2):
+ *             j = i + 1
+ */
+  }
+
+  /* "hypergen/ultragen.pyx":175
+ *                 hpg.html.append('"')
+ * 
+ *     hpg.html.append('>')             # <<<<<<<<<<<<<<
+ * 
+ * cdef void element_close(string tag, Hpg &hpg) nogil:
+ */
+  (void)(__pyx_v_hpg.html.append(((char const *)">")));
+
+  /* "hypergen/ultragen.pyx":158
+ *     hpg.html.append('>\n')
+ * 
+ * cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     cdef int i, j
+ *     hpg.html.append('<')
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":177
+ *     hpg.html.append('>')
+ * 
+ * cdef void element_close(string tag, Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     hpg.html.append('</')
+ *     hpg.html.append(tag)
+ */
+
+static void __pyx_f_8hypergen_8ultragen_element_close(std::string __pyx_v_tag, struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
+
+  /* "hypergen/ultragen.pyx":178
+ * 
+ * cdef void element_close(string tag, Hpg &hpg) nogil:
+ *     hpg.html.append('</')             # <<<<<<<<<<<<<<
+ *     hpg.html.append(tag)
+ *     hpg.html.append('>\n')
+ */
+  (void)(__pyx_v_hpg.html.append(((char const *)"</")));
+
+  /* "hypergen/ultragen.pyx":179
+ * cdef void element_close(string tag, Hpg &hpg) nogil:
+ *     hpg.html.append('</')
+ *     hpg.html.append(tag)             # <<<<<<<<<<<<<<
+ *     hpg.html.append('>\n')
+ * 
+ */
+  (void)(__pyx_v_hpg.html.append(__pyx_v_tag));
+
+  /* "hypergen/ultragen.pyx":180
+ *     hpg.html.append('</')
+ *     hpg.html.append(tag)
+ *     hpg.html.append('>\n')             # <<<<<<<<<<<<<<
+ * 
+ * # HTML elements
+ */
+  (void)(__pyx_v_hpg.html.append(((char const *)">\n")));
+
+  /* "hypergen/ultragen.pyx":177
+ *     hpg.html.append('>')
+ * 
+ * cdef void element_close(string tag, Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     hpg.html.append('</')
+ *     hpg.html.append(tag)
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":183
  * 
  * # HTML elements
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3020,18 +3098,18 @@ static void __pyx_f_8ultragen_element(std::string __pyx_v_tag, struct __pyx_t_8u
  * 
  */
 
-static CYTHON_INLINE void __pyx_f_8ultragen_div(struct __pyx_t_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_div(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "ultragen.pyx":160
+  /* "hypergen/ultragen.pyx":184
  * # HTML elements
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"div", hpg, s, attrs)             # <<<<<<<<<<<<<<
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
  */
-  __pyx_f_8ultragen_element(((char *)((char *)"div")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"div")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "ultragen.pyx":159
+  /* "hypergen/ultragen.pyx":183
  * 
  * # HTML elements
  * cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3042,7 +3120,7 @@ static CYTHON_INLINE void __pyx_f_8ultragen_div(struct __pyx_t_8ultragen_Hpg &__
   /* function exit code */
 }
 
-/* "ultragen.pyx":162
+/* "hypergen/ultragen.pyx":186
  *     element(<char*>"div", hpg, s, attrs)
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3050,18 +3128,18 @@ static CYTHON_INLINE void __pyx_f_8ultragen_div(struct __pyx_t_8ultragen_Hpg &__
  * 
  */
 
-static CYTHON_INLINE void __pyx_f_8ultragen_b(struct __pyx_t_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_b(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "ultragen.pyx":163
+  /* "hypergen/ultragen.pyx":187
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"b", hpg, s, attrs)             # <<<<<<<<<<<<<<
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
  */
-  __pyx_f_8ultragen_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"b")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "ultragen.pyx":162
+  /* "hypergen/ultragen.pyx":186
  *     element(<char*>"div", hpg, s, attrs)
  * 
  * cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3072,7 +3150,7 @@ static CYTHON_INLINE void __pyx_f_8ultragen_b(struct __pyx_t_8ultragen_Hpg &__py
   /* function exit code */
 }
 
-/* "ultragen.pyx":165
+/* "hypergen/ultragen.pyx":189
  *     element(<char*>"b", hpg, s, attrs)
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3080,18 +3158,18 @@ static CYTHON_INLINE void __pyx_f_8ultragen_b(struct __pyx_t_8ultragen_Hpg &__py
  * 
  */
 
-static CYTHON_INLINE void __pyx_f_8ultragen_button(struct __pyx_t_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_button(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "ultragen.pyx":166
+  /* "hypergen/ultragen.pyx":190
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"button", hpg, s, attrs)             # <<<<<<<<<<<<<<
  * 
- * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
+ * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
  */
-  __pyx_f_8ultragen_element(((char *)((char *)"button")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"button")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "ultragen.pyx":165
+  /* "hypergen/ultragen.pyx":189
  *     element(<char*>"b", hpg, s, attrs)
  * 
  * cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
@@ -3102,27 +3180,100 @@ static CYTHON_INLINE void __pyx_f_8ultragen_button(struct __pyx_t_8ultragen_Hpg 
   /* function exit code */
 }
 
-/* "ultragen.pyx":168
+/* "hypergen/ultragen.pyx":192
  *     element(<char*>"button", hpg, s, attrs)
+ * 
+ * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element_open(<char*>"table", hpg, attrs)
+ *     return True
+ */
+
+static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_table_o(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string *__pyx_v_attrs) {
+  int __pyx_r;
+
+  /* "hypergen/ultragen.pyx":193
+ * 
+ * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
+ *     element_open(<char*>"table", hpg, attrs)             # <<<<<<<<<<<<<<
+ *     return True
+ * 
+ */
+  __pyx_f_8hypergen_8ultragen_element_open(((char *)((char *)"table")), __pyx_v_hpg, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":194
+ * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
+ *     element_open(<char*>"table", hpg, attrs)
+ *     return True             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void table_c(Hpg &hpg) nogil:
+ */
+  __pyx_r = 1;
+  goto __pyx_L0;
+
+  /* "hypergen/ultragen.pyx":192
+ *     element(<char*>"button", hpg, s, attrs)
+ * 
+ * cdef inline int table_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element_open(<char*>"table", hpg, attrs)
+ *     return True
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "hypergen/ultragen.pyx":196
+ *     return True
+ * 
+ * cdef inline void table_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     element_close(<char*>"table", hpg)
+ * 
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_table_c(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
+
+  /* "hypergen/ultragen.pyx":197
+ * 
+ * cdef inline void table_c(Hpg &hpg) nogil:
+ *     element_close(<char*>"table", hpg)             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
+ */
+  __pyx_f_8hypergen_8ultragen_element_close(((char *)((char *)"table")), __pyx_v_hpg);
+
+  /* "hypergen/ultragen.pyx":196
+ *     return True
+ * 
+ * cdef inline void table_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     element_close(<char*>"table", hpg)
+ * 
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":199
+ *     element_close(<char*>"table", hpg)
  * 
  * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
  *     element(<char*>"tr", hpg, s, attrs)
  * 
  */
 
-static CYTHON_INLINE void __pyx_f_8ultragen_tr(struct __pyx_t_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
 
-  /* "ultragen.pyx":169
+  /* "hypergen/ultragen.pyx":200
  * 
  * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
  *     element(<char*>"tr", hpg, s, attrs)             # <<<<<<<<<<<<<<
  * 
- * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
+ * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:
  */
-  __pyx_f_8ultragen_element(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
 
-  /* "ultragen.pyx":168
- *     element(<char*>"button", hpg, s, attrs)
+  /* "hypergen/ultragen.pyx":199
+ *     element_close(<char*>"table", hpg)
  * 
  * cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
  *     element(<char*>"tr", hpg, s, attrs)
@@ -3132,109 +3283,103 @@ static CYTHON_INLINE void __pyx_f_8ultragen_tr(struct __pyx_t_8ultragen_Hpg &__p
   /* function exit code */
 }
 
-/* "ultragen.pyx":171
+/* "hypergen/ultragen.pyx":202
  *     element(<char*>"tr", hpg, s, attrs)
  * 
- * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element_open(<char*>"tr", hpg, attrs)
+ *     return True
+ */
+
+static CYTHON_INLINE int __pyx_f_8hypergen_8ultragen_tr_o(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string *__pyx_v_attrs) {
+  int __pyx_r;
+
+  /* "hypergen/ultragen.pyx":203
+ * 
+ * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:
+ *     element_open(<char*>"tr", hpg, attrs)             # <<<<<<<<<<<<<<
+ *     return True
+ * 
+ */
+  __pyx_f_8hypergen_8ultragen_element_open(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":204
+ * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:
+ *     element_open(<char*>"tr", hpg, attrs)
+ *     return True             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline void tr_c(Hpg &hpg) nogil:
+ */
+  __pyx_r = 1;
+  goto __pyx_L0;
+
+  /* "hypergen/ultragen.pyx":202
  *     element(<char*>"tr", hpg, s, attrs)
+ * 
+ * cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element_open(<char*>"tr", hpg, attrs)
+ *     return True
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  return __pyx_r;
+}
+
+/* "hypergen/ultragen.pyx":206
+ *     return True
+ * 
+ * cdef inline void tr_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     element_close(<char*>"tr", hpg)
  * 
  */
 
-static CYTHON_INLINE void __pyx_f_8ultragen_td(struct __pyx_t_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_tr_c(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg) {
 
-  /* "ultragen.pyx":172
+  /* "hypergen/ultragen.pyx":207
+ * 
+ * cdef inline void tr_c(Hpg &hpg) nogil:
+ *     element_close(<char*>"tr", hpg)             # <<<<<<<<<<<<<<
  * 
  * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
- *     element(<char*>"tr", hpg, s, attrs)             # <<<<<<<<<<<<<<
- * 
- * cpdef string ok():
  */
-  __pyx_f_8ultragen_element(((char *)((char *)"tr")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+  __pyx_f_8hypergen_8ultragen_element_close(((char *)((char *)"tr")), __pyx_v_hpg);
 
-  /* "ultragen.pyx":171
- *     element(<char*>"tr", hpg, s, attrs)
+  /* "hypergen/ultragen.pyx":206
+ *     return True
+ * 
+ * cdef inline void tr_c(Hpg &hpg) nogil:             # <<<<<<<<<<<<<<
+ *     element_close(<char*>"tr", hpg)
+ * 
+ */
+
+  /* function exit code */
+}
+
+/* "hypergen/ultragen.pyx":209
+ *     element_close(<char*>"tr", hpg)
  * 
  * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
- *     element(<char*>"tr", hpg, s, attrs)
+ *     element(<char*>"td", hpg, s, attrs)
+ */
+
+static CYTHON_INLINE void __pyx_f_8hypergen_8ultragen_td(struct __pyx_t_8hypergen_8ultragen_Hpg &__pyx_v_hpg, std::string __pyx_v_s, std::string *__pyx_v_attrs) {
+
+  /* "hypergen/ultragen.pyx":210
  * 
+ * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
+ *     element(<char*>"td", hpg, s, attrs)             # <<<<<<<<<<<<<<
+ */
+  __pyx_f_8hypergen_8ultragen_element(((char *)((char *)"td")), __pyx_v_hpg, __pyx_v_s, __pyx_v_attrs);
+
+  /* "hypergen/ultragen.pyx":209
+ *     element_close(<char*>"tr", hpg)
+ * 
+ * cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:             # <<<<<<<<<<<<<<
+ *     element(<char*>"td", hpg, s, attrs)
  */
 
   /* function exit code */
-}
-
-/* "ultragen.pyx":174
- *     element(<char*>"tr", hpg, s, attrs)
- * 
- * cpdef string ok():             # <<<<<<<<<<<<<<
- *     return <char*> "OK"
- */
-
-static PyObject *__pyx_pw_8ultragen_1ok(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static std::string __pyx_f_8ultragen_ok(CYTHON_UNUSED int __pyx_skip_dispatch) {
-  std::string __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("ok", 0);
-
-  /* "ultragen.pyx":175
- * 
- * cpdef string ok():
- *     return <char*> "OK"             # <<<<<<<<<<<<<<
- */
-  __pyx_r = ((char *)((char *)"OK"));
-  goto __pyx_L0;
-
-  /* "ultragen.pyx":174
- *     element(<char*>"tr", hpg, s, attrs)
- * 
- * cpdef string ok():             # <<<<<<<<<<<<<<
- *     return <char*> "OK"
- */
-
-  /* function exit code */
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_8ultragen_1ok(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_8ultragen_1ok = {"ok", (PyCFunction)__pyx_pw_8ultragen_1ok, METH_NOARGS, 0};
-static PyObject *__pyx_pw_8ultragen_1ok(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
-  CYTHON_UNUSED PyObject *const *__pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("ok (wrapper)", 0);
-  __pyx_r = __pyx_pf_8ultragen_ok(__pyx_self);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_8ultragen_ok(CYTHON_UNUSED PyObject *__pyx_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("ok", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_8ultragen_ok(0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("ultragen.ok", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
 }
 
 /* "string.to_py":31
@@ -3790,16 +3935,16 @@ static std::unordered_map<std::string,std::string>  __pyx_convert_unordered_map_
 
 /* "FromPyStructUtility":12
  * 
- * @cname("__pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg")
- * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
+ * @cname("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg")
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
  *     cdef struct_type result
  *     if not PyMapping_Check(obj):
  */
 
-static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(PyObject *__pyx_v_obj) {
-  struct __pyx_t_8ultragen_Hpg __pyx_v_result;
+static struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(PyObject *__pyx_v_obj) {
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_v_result;
   PyObject *__pyx_v_value = NULL;
-  struct __pyx_t_8ultragen_Hpg __pyx_r;
+  struct __pyx_t_8hypergen_8ultragen_Hpg __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -3815,10 +3960,10 @@ static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultr
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg", 0);
+  __Pyx_RefNannySetupContext("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", 0);
 
   /* "FromPyStructUtility":14
- * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(obj) except *:
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:
  *     cdef struct_type result
  *     if not PyMapping_Check(obj):             # <<<<<<<<<<<<<<
  *         __Pyx_RaiseUnexpectedTypeError(b"a mapping", obj)
@@ -3837,7 +3982,7 @@ static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultr
     __pyx_t_2 = __Pyx_RaiseUnexpectedTypeError(((char const *)"a mapping"), __pyx_v_obj); if (unlikely(__pyx_t_2 == ((int)0))) __PYX_ERR(1, 15, __pyx_L1_error)
 
     /* "FromPyStructUtility":14
- * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(obj) except *:
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:
  *     cdef struct_type result
  *     if not PyMapping_Check(obj):             # <<<<<<<<<<<<<<
  *         __Pyx_RaiseUnexpectedTypeError(b"a mapping", obj)
@@ -3897,7 +4042,7 @@ static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultr
  */
     __pyx_t_2 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_KeyError);
     if (__pyx_t_2) {
-      __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
       if (__Pyx_GetException(&__pyx_t_6, &__pyx_t_7, &__pyx_t_8) < 0) __PYX_ERR(1, 19, __pyx_L6_except_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_GOTREF(__pyx_t_7);
@@ -3999,7 +4144,7 @@ static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultr
  */
     __pyx_t_2 = __Pyx_PyErr_ExceptionMatches(__pyx_builtin_KeyError);
     if (__pyx_t_2) {
-      __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
       if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_7, &__pyx_t_6) < 0) __PYX_ERR(1, 24, __pyx_L14_except_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GOTREF(__pyx_t_7);
@@ -4058,8 +4203,8 @@ static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultr
 
   /* "FromPyStructUtility":12
  * 
- * @cname("__pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg")
- * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
+ * @cname("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg")
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
  *     cdef struct_type result
  *     if not PyMapping_Check(obj):
  */
@@ -4070,7 +4215,7 @@ static struct __pyx_t_8ultragen_Hpg __pyx_convert__from_py_struct____pyx_t_8ultr
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("FromPyStructUtility.__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_pretend_to_initialize(&__pyx_r);
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_value);
@@ -4097,38 +4242,36 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, __pyx_k_KeyError, sizeof(__pyx_k_KeyError), 0, 0, 1, 1},
   {0, __pyx_k_No_value_specified_for_struct_at, sizeof(__pyx_k_No_value_specified_for_struct_at), 0, 0, 1, 0},
   {0, __pyx_k_No_value_specified_for_struct_at_2, sizeof(__pyx_k_No_value_specified_for_struct_at_2), 0, 0, 1, 0},
+  {0, __pyx_k_T, sizeof(__pyx_k_T), 0, 0, 1, 1},
   {0, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
-  {0, __pyx_k__4, sizeof(__pyx_k__4), 0, 0, 1, 1},
+  {0, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 1},
   {0, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {0, __pyx_k_event_handler_callbacks, sizeof(__pyx_k_event_handler_callbacks), 0, 0, 1, 1},
   {0, __pyx_k_html, sizeof(__pyx_k_html), 0, 0, 1, 1},
-  {0, __pyx_k_hypergen_ultragen_pyx, sizeof(__pyx_k_hypergen_ultragen_pyx), 0, 0, 1, 0},
   {0, __pyx_k_iteritems, sizeof(__pyx_k_iteritems), 0, 0, 1, 1},
   {0, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {0, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
-  {0, __pyx_k_ok, sizeof(__pyx_k_ok), 0, 0, 1, 1},
+  {0, __pyx_k_pyx_capi, sizeof(__pyx_k_pyx_capi), 0, 0, 1, 1},
   {0, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {0, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {0, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
-  {0, __pyx_k_ultragen, sizeof(__pyx_k_ultragen), 0, 0, 1, 1},
   #else
   {&__pyx_n_s_KeyError, __pyx_k_KeyError, sizeof(__pyx_k_KeyError), 0, 0, 1, 1},
   {&__pyx_kp_s_No_value_specified_for_struct_at, __pyx_k_No_value_specified_for_struct_at, sizeof(__pyx_k_No_value_specified_for_struct_at), 0, 0, 1, 0},
   {&__pyx_kp_s_No_value_specified_for_struct_at_2, __pyx_k_No_value_specified_for_struct_at_2, sizeof(__pyx_k_No_value_specified_for_struct_at_2), 0, 0, 1, 0},
+  {&__pyx_n_s_T, __pyx_k_T, sizeof(__pyx_k_T), 0, 0, 1, 1},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
-  {&__pyx_n_s__4, __pyx_k__4, sizeof(__pyx_k__4), 0, 0, 1, 1},
+  {&__pyx_n_s__3, __pyx_k__3, sizeof(__pyx_k__3), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_event_handler_callbacks, __pyx_k_event_handler_callbacks, sizeof(__pyx_k_event_handler_callbacks), 0, 0, 1, 1},
   {&__pyx_n_s_html, __pyx_k_html, sizeof(__pyx_k_html), 0, 0, 1, 1},
-  {&__pyx_kp_s_hypergen_ultragen_pyx, __pyx_k_hypergen_ultragen_pyx, sizeof(__pyx_k_hypergen_ultragen_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_iteritems, __pyx_k_iteritems, sizeof(__pyx_k_iteritems), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
-  {&__pyx_n_s_ok, __pyx_k_ok, sizeof(__pyx_k_ok), 0, 0, 1, 1},
+  {&__pyx_n_s_pyx_capi, __pyx_k_pyx_capi, sizeof(__pyx_k_pyx_capi), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
-  {&__pyx_n_s_ultragen, __pyx_k_ultragen, sizeof(__pyx_k_ultragen), 0, 0, 1, 1},
   #endif
   {0, 0, 0, 0, 0, 0, 0}
 };
@@ -4168,14 +4311,6 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_s_No_value_specified_for_struct_at_2); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(1, 25, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
-
-  /* "ultragen.pyx":174
- *     element(<char*>"tr", hpg, s, attrs)
- * 
- * cpdef string ok():             # <<<<<<<<<<<<<<
- *     return <char*> "OK"
- */
-  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_hypergen_ultragen_pyx, __pyx_n_s_ok, 174, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(0, 174, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -4189,20 +4324,19 @@ static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   if (__Pyx_InitString(__pyx_string_tab[0], &__pyx_n_s_KeyError) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[1], &__pyx_kp_s_No_value_specified_for_struct_at) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[2], &__pyx_kp_s_No_value_specified_for_struct_at_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[3], &__pyx_n_s_ValueError) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[4], &__pyx_n_s__4) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[5], &__pyx_n_s_cline_in_traceback) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[6], &__pyx_n_s_event_handler_callbacks) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[7], &__pyx_n_s_html) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[8], &__pyx_kp_s_hypergen_ultragen_pyx) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[3], &__pyx_n_s_T) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[4], &__pyx_n_s_ValueError) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[5], &__pyx_n_s__3) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[6], &__pyx_n_s_cline_in_traceback) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[7], &__pyx_n_s_event_handler_callbacks) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[8], &__pyx_n_s_html) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[9], &__pyx_n_s_iteritems) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[10], &__pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[11], &__pyx_n_s_name) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[12], &__pyx_n_s_ok) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[12], &__pyx_n_s_pyx_capi) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[13], &__pyx_n_s_pyx_vtable) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[14], &__pyx_n_s_range) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[15], &__pyx_n_s_test) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[16], &__pyx_n_s_ultragen) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
@@ -4231,18 +4365,48 @@ static int __Pyx_modinit_global_init_code(void) {
 
 static int __Pyx_modinit_variable_export_code(void) {
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_variable_export_code", 0);
   /*--- Variable export code ---*/
+  if (__Pyx_ExportVoidPtr(__pyx_n_s_T, (void *)&__pyx_v_8hypergen_8ultragen_T, "std::string") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
+  __pyx_L1_error:;
+  __Pyx_RefNannyFinishContext();
+  return -1;
 }
 
 static int __Pyx_modinit_function_export_code(void) {
   __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__Pyx_modinit_function_export_code", 0);
   /*--- Function export code ---*/
+  if (__Pyx_ExportFunction("make_hpg", (void (*)(void))__pyx_f_8hypergen_8ultragen_make_hpg, "struct __pyx_t_8hypergen_8ultragen_Hpg (void)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("make_cb_opts", (void (*)(void))__pyx_f_8hypergen_8ultragen_make_cb_opts, "struct __pyx_t_8hypergen_8ultragen_CbOpts (std::string)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("cb", (void (*)(void))__pyx_f_8hypergen_8ultragen_cb, "std::string (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string, std::string, std::string *, struct __pyx_t_8hypergen_8ultragen_CbOpts)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("i2s", (void (*)(void))__pyx_f_8hypergen_8ultragen_i2s, "std::string (int)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("arg_i", (void (*)(void))__pyx_f_8hypergen_8ultragen_arg_i, "std::string (int)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("arg_s", (void (*)(void))__pyx_f_8hypergen_8ultragen_arg_s, "std::string (std::string)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("arg_el", (void (*)(void))__pyx_f_8hypergen_8ultragen_arg_el, "std::string (std::string, struct __pyx_t_8hypergen_8ultragen_ArgElOpts)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("element", (void (*)(void))__pyx_f_8hypergen_8ultragen_element, "void (std::string, struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("div", (void (*)(void))__pyx_f_8hypergen_8ultragen_div, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("b", (void (*)(void))__pyx_f_8hypergen_8ultragen_b, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("button", (void (*)(void))__pyx_f_8hypergen_8ultragen_button, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("tr", (void (*)(void))__pyx_f_8hypergen_8ultragen_tr, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("tr_o", (void (*)(void))__pyx_f_8hypergen_8ultragen_tr_o, "int (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("tr_c", (void (*)(void))__pyx_f_8hypergen_8ultragen_tr_c, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("table_o", (void (*)(void))__pyx_f_8hypergen_8ultragen_table_o, "int (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("table_c", (void (*)(void))__pyx_f_8hypergen_8ultragen_table_c, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_ExportFunction("td", (void (*)(void))__pyx_f_8hypergen_8ultragen_td, "void (struct __pyx_t_8hypergen_8ultragen_Hpg &, std::string, std::string *)") < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
+  __pyx_L1_error:;
+  __Pyx_RefNannyFinishContext();
+  return -1;
 }
 
 static int __Pyx_modinit_type_init_code(void) {
@@ -4539,14 +4703,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_ultragen) {
+  if (__pyx_module_is_main_hypergen__ultragen) {
     if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name, __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "ultragen")) {
-      if (unlikely(PyDict_SetItemString(modules, "ultragen", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "hypergen.ultragen")) {
+      if (unlikely(PyDict_SetItemString(modules, "hypergen.ultragen", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -4556,8 +4720,8 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_InitCachedConstants() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   /*--- Global type/function init code ---*/
   (void)__Pyx_modinit_global_init_code();
-  (void)__Pyx_modinit_variable_export_code();
-  (void)__Pyx_modinit_function_export_code();
+  if (unlikely(__Pyx_modinit_variable_export_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (unlikely(__Pyx_modinit_function_export_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
   (void)__Pyx_modinit_type_init_code();
   if (unlikely(__Pyx_modinit_type_import_code() < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
   (void)__Pyx_modinit_variable_import_code();
@@ -4567,27 +4731,16 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "ultragen.pyx":13
+  /* "hypergen/ultragen.pyx":13
  * 
  * cdef:
  *     string T = <char*>"__TERM__" # Terminate list of strings             # <<<<<<<<<<<<<<
  * 
  * # Hypergen state passed around to everything
  */
-  __pyx_v_8ultragen_T = ((char *)((char *)"__TERM__"));
+  __pyx_v_8hypergen_8ultragen_T = ((char *)((char *)"__TERM__"));
 
-  /* "ultragen.pyx":174
- *     element(<char*>"tr", hpg, s, attrs)
- * 
- * cpdef string ok():             # <<<<<<<<<<<<<<
- *     return <char*> "OK"
- */
-  __pyx_t_1 = __Pyx_CyFunction_New(&__pyx_mdef_8ultragen_1ok, 0, __pyx_n_s_ok, NULL, __pyx_n_s_ultragen, __pyx_d, ((PyObject *)__pyx_codeobj__3)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ok, __pyx_t_1) < 0) __PYX_ERR(0, 174, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "ultragen.pyx":1
+  /* "hypergen/ultragen.pyx":1
  * # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str             # <<<<<<<<<<<<<<
  * # distutils: language=c++
  * from libcpp.string cimport string
@@ -4599,8 +4752,8 @@ if (!__Pyx_RefNanny) {
 
   /* "FromPyStructUtility":12
  * 
- * @cname("__pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg")
- * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
+ * @cname("__pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg")
+ * cdef struct_type __pyx_convert__from_py_struct____pyx_t_8hypergen_8ultragen_Hpg(obj) except *:             # <<<<<<<<<<<<<<
  *     cdef struct_type result
  *     if not PyMapping_Check(obj):
  */
@@ -4612,13 +4765,13 @@ if (!__Pyx_RefNanny) {
   __Pyx_XDECREF(__pyx_t_1);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init ultragen", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init hypergen.ultragen", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_COMPILING_IN_LIMITED_API
     Py_CLEAR(__pyx_m);
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init ultragen");
+    PyErr_SetString(PyExc_ImportError, "init hypergen.ultragen");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -4793,213 +4946,6 @@ static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
         PyGILState_Release(state);
 #endif
 }
-
-/* TupleAndListFromArray */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE void __Pyx_copy_object_array(PyObject *const *CYTHON_RESTRICT src, PyObject** CYTHON_RESTRICT dest, Py_ssize_t length) {
-    PyObject *v;
-    Py_ssize_t i;
-    for (i = 0; i < length; i++) {
-        v = dest[i] = src[i];
-        Py_INCREF(v);
-    }
-}
-static CYTHON_INLINE PyObject *
-__Pyx_PyTuple_FromArray(PyObject *const *src, Py_ssize_t n)
-{
-    PyObject *res;
-    if (n <= 0) {
-        Py_INCREF(__pyx_empty_tuple);
-        return __pyx_empty_tuple;
-    }
-    res = PyTuple_New(n);
-    if (unlikely(res == NULL)) return NULL;
-    __Pyx_copy_object_array(src, ((PyTupleObject*)res)->ob_item, n);
-    return res;
-}
-static CYTHON_INLINE PyObject *
-__Pyx_PyList_FromArray(PyObject *const *src, Py_ssize_t n)
-{
-    PyObject *res;
-    if (n <= 0) {
-        return PyList_New(0);
-    }
-    res = PyList_New(n);
-    if (unlikely(res == NULL)) return NULL;
-    __Pyx_copy_object_array(src, ((PyListObject*)res)->ob_item, n);
-    return res;
-}
-#endif
-
-/* BytesEquals */
-static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
-#if CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_LIMITED_API
-    return PyObject_RichCompareBool(s1, s2, equals);
-#else
-    if (s1 == s2) {
-        return (equals == Py_EQ);
-    } else if (PyBytes_CheckExact(s1) & PyBytes_CheckExact(s2)) {
-        const char *ps1, *ps2;
-        Py_ssize_t length = PyBytes_GET_SIZE(s1);
-        if (length != PyBytes_GET_SIZE(s2))
-            return (equals == Py_NE);
-        ps1 = PyBytes_AS_STRING(s1);
-        ps2 = PyBytes_AS_STRING(s2);
-        if (ps1[0] != ps2[0]) {
-            return (equals == Py_NE);
-        } else if (length == 1) {
-            return (equals == Py_EQ);
-        } else {
-            int result;
-#if CYTHON_USE_UNICODE_INTERNALS
-            Py_hash_t hash1, hash2;
-            hash1 = ((PyBytesObject*)s1)->ob_shash;
-            hash2 = ((PyBytesObject*)s2)->ob_shash;
-            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
-                return (equals == Py_NE);
-            }
-#endif
-            result = memcmp(ps1, ps2, (size_t)length);
-            return (equals == Py_EQ) ? (result == 0) : (result != 0);
-        }
-    } else if ((s1 == Py_None) & PyBytes_CheckExact(s2)) {
-        return (equals == Py_NE);
-    } else if ((s2 == Py_None) & PyBytes_CheckExact(s1)) {
-        return (equals == Py_NE);
-    } else {
-        int result;
-        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
-        if (!py_result)
-            return -1;
-        result = __Pyx_PyObject_IsTrue(py_result);
-        Py_DECREF(py_result);
-        return result;
-    }
-#endif
-}
-
-/* UnicodeEquals */
-static CYTHON_INLINE int __Pyx_PyUnicode_Equals(PyObject* s1, PyObject* s2, int equals) {
-#if CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_LIMITED_API
-    return PyObject_RichCompareBool(s1, s2, equals);
-#else
-#if PY_MAJOR_VERSION < 3
-    PyObject* owned_ref = NULL;
-#endif
-    int s1_is_unicode, s2_is_unicode;
-    if (s1 == s2) {
-        goto return_eq;
-    }
-    s1_is_unicode = PyUnicode_CheckExact(s1);
-    s2_is_unicode = PyUnicode_CheckExact(s2);
-#if PY_MAJOR_VERSION < 3
-    if ((s1_is_unicode & (!s2_is_unicode)) && PyString_CheckExact(s2)) {
-        owned_ref = PyUnicode_FromObject(s2);
-        if (unlikely(!owned_ref))
-            return -1;
-        s2 = owned_ref;
-        s2_is_unicode = 1;
-    } else if ((s2_is_unicode & (!s1_is_unicode)) && PyString_CheckExact(s1)) {
-        owned_ref = PyUnicode_FromObject(s1);
-        if (unlikely(!owned_ref))
-            return -1;
-        s1 = owned_ref;
-        s1_is_unicode = 1;
-    } else if (((!s2_is_unicode) & (!s1_is_unicode))) {
-        return __Pyx_PyBytes_Equals(s1, s2, equals);
-    }
-#endif
-    if (s1_is_unicode & s2_is_unicode) {
-        Py_ssize_t length;
-        int kind;
-        void *data1, *data2;
-        if (unlikely(__Pyx_PyUnicode_READY(s1) < 0) || unlikely(__Pyx_PyUnicode_READY(s2) < 0))
-            return -1;
-        length = __Pyx_PyUnicode_GET_LENGTH(s1);
-        if (length != __Pyx_PyUnicode_GET_LENGTH(s2)) {
-            goto return_ne;
-        }
-#if CYTHON_USE_UNICODE_INTERNALS
-        {
-            Py_hash_t hash1, hash2;
-        #if CYTHON_PEP393_ENABLED
-            hash1 = ((PyASCIIObject*)s1)->hash;
-            hash2 = ((PyASCIIObject*)s2)->hash;
-        #else
-            hash1 = ((PyUnicodeObject*)s1)->hash;
-            hash2 = ((PyUnicodeObject*)s2)->hash;
-        #endif
-            if (hash1 != hash2 && hash1 != -1 && hash2 != -1) {
-                goto return_ne;
-            }
-        }
-#endif
-        kind = __Pyx_PyUnicode_KIND(s1);
-        if (kind != __Pyx_PyUnicode_KIND(s2)) {
-            goto return_ne;
-        }
-        data1 = __Pyx_PyUnicode_DATA(s1);
-        data2 = __Pyx_PyUnicode_DATA(s2);
-        if (__Pyx_PyUnicode_READ(kind, data1, 0) != __Pyx_PyUnicode_READ(kind, data2, 0)) {
-            goto return_ne;
-        } else if (length == 1) {
-            goto return_eq;
-        } else {
-            int result = memcmp(data1, data2, (size_t)(length * kind));
-            #if PY_MAJOR_VERSION < 3
-            Py_XDECREF(owned_ref);
-            #endif
-            return (equals == Py_EQ) ? (result == 0) : (result != 0);
-        }
-    } else if ((s1 == Py_None) & s2_is_unicode) {
-        goto return_ne;
-    } else if ((s2 == Py_None) & s1_is_unicode) {
-        goto return_ne;
-    } else {
-        int result;
-        PyObject* py_result = PyObject_RichCompare(s1, s2, equals);
-        #if PY_MAJOR_VERSION < 3
-        Py_XDECREF(owned_ref);
-        #endif
-        if (!py_result)
-            return -1;
-        result = __Pyx_PyObject_IsTrue(py_result);
-        Py_DECREF(py_result);
-        return result;
-    }
-return_eq:
-    #if PY_MAJOR_VERSION < 3
-    Py_XDECREF(owned_ref);
-    #endif
-    return (equals == Py_EQ);
-return_ne:
-    #if PY_MAJOR_VERSION < 3
-    Py_XDECREF(owned_ref);
-    #endif
-    return (equals == Py_NE);
-#endif
-}
-
-/* fastcall */
-#if CYTHON_METH_FASTCALL
-static CYTHON_INLINE PyObject * __Pyx_GetKwValue_FASTCALL(PyObject *kwnames, PyObject *const *kwvalues, PyObject *s)
-{
-    Py_ssize_t i, n = PyTuple_GET_SIZE(kwnames);
-    for (i = 0; i < n; i++)
-    {
-        if (s == PyTuple_GET_ITEM(kwnames, i)) return kwvalues[i];
-    }
-    for (i = 0; i < n; i++)
-    {
-        int eq = __Pyx_PyUnicode_Equals(s, PyTuple_GET_ITEM(kwnames, i), Py_EQ);
-        if (unlikely(eq != 0)) {
-            if (unlikely(eq < 0)) return NULL;  // error
-            return kwvalues[i];
-        }
-    }
-    return NULL;  // not found (no exception set)
-}
-#endif
 
 /* RaiseUnexpectedTypeError */
 static int
@@ -6010,917 +5956,6 @@ bad:
     return NULL;
 }
 
-/* FetchCommonType */
-static PyObject *__Pyx_FetchSharedCythonABIModule(void) {
-    PyObject *abi_module = PyImport_AddModule((char*) __PYX_ABI_MODULE_NAME);
-    if (!abi_module) return NULL;
-    Py_INCREF(abi_module);
-    return abi_module;
-}
-static int __Pyx_VerifyCachedType(PyObject *cached_type,
-                               const char *name,
-                               Py_ssize_t basicsize,
-                               Py_ssize_t expected_basicsize) {
-    if (!PyType_Check(cached_type)) {
-        PyErr_Format(PyExc_TypeError,
-            "Shared Cython type %.200s is not a type object", name);
-        return -1;
-    }
-    if (basicsize != expected_basicsize) {
-        PyErr_Format(PyExc_TypeError,
-            "Shared Cython type %.200s has the wrong size, try recompiling",
-            name);
-        return -1;
-    }
-    return 0;
-}
-static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type) {
-    PyObject* abi_module;
-    PyTypeObject *cached_type = NULL;
-    abi_module = __Pyx_FetchSharedCythonABIModule();
-    if (!abi_module) return NULL;
-    cached_type = (PyTypeObject*) PyObject_GetAttrString(abi_module, type->tp_name);
-    if (cached_type) {
-        if (__Pyx_VerifyCachedType(
-              (PyObject *)cached_type,
-              type->tp_name,
-              cached_type->tp_basicsize,
-              type->tp_basicsize) < 0) {
-            goto bad;
-        }
-        goto done;
-    }
-    if (!PyErr_ExceptionMatches(PyExc_AttributeError)) goto bad;
-    PyErr_Clear();
-    if (PyType_Ready(type) < 0) goto bad;
-    if (PyObject_SetAttrString(abi_module, type->tp_name, (PyObject *)type) < 0)
-        goto bad;
-    Py_INCREF(type);
-    cached_type = type;
-done:
-    Py_DECREF(abi_module);
-    return cached_type;
-bad:
-    Py_XDECREF(cached_type);
-    cached_type = NULL;
-    goto done;
-}
-#if CYTHON_COMPILING_IN_LIMITED_API
-static PyTypeObject *__Pyx_FetchCommonTypeFromSpec(PyType_Spec *spec, PyObject *bases) {
-    PyObject *abi_module, *py_basicsize, *cached_type = NULL;
-    Py_ssize_t basicsize;
-    abi_module = __Pyx_FetchSharedCythonABIModule();
-    if (!abi_module) return NULL;
-    cached_type = PyObject_GetAttrString(abi_module, spec->name);
-    if (cached_type) {
-        py_basicsize = PyObject_GetAttrString(cached_type, "__basicsize__");
-        if (!py_basicsize) goto bad;
-        basicsize = PyLong_AsSsize_t(py_basicsize);
-        Py_DECREF(py_basicsize);
-        py_basicsize = 0;
-        if (basicsize == (Py_ssize_t)-1 && PyErr_Occurred()) goto bad;
-        if (__Pyx_VerifyCachedType(
-              cached_type,
-              spec->name,
-              basicsize,
-              spec->basicsize) < 0) {
-            goto bad;
-        }
-        goto done;
-    }
-    if (!PyErr_ExceptionMatches(PyExc_AttributeError)) goto bad;
-    PyErr_Clear();
-    cached_type = PyType_FromSpecWithBases(spec, bases);
-    if (unlikely(!cached_type)) goto bad;
-    if (PyObject_SetAttrString(abi_module, spec->name, cached_type) < 0) goto bad;
-done:
-    Py_DECREF(abi_module);
-    assert(cached_type == NULL || PyType_Check(cached_type));
-    return (PyTypeObject *) cached_type;
-bad:
-    Py_XDECREF(cached_type);
-    cached_type = NULL;
-    goto done;
-}
-#endif
-
-/* PyVectorcallFastCallDict */
-#if CYTHON_METH_FASTCALL
-static PyObject *__Pyx_PyVectorcall_FastCallDict_kw(PyObject *func, __pyx_vectorcallfunc vc, PyObject *const *args, Py_ssize_t nargs, PyObject *kw)
-{
-    PyObject *res = NULL;
-    PyObject *kwnames;
-    PyObject **newargs;
-    PyObject **kwvalues;
-    Py_ssize_t i, pos;
-    PyObject *key, *value;
-    unsigned long keys_are_strings;
-    Py_ssize_t nkw = PyDict_GET_SIZE(kw);
-    newargs = (PyObject **)PyMem_Malloc((nargs + nkw) * sizeof(args[0]));
-    if (unlikely(newargs == NULL)) {
-        PyErr_NoMemory();
-        return NULL;
-    }
-    for (i = 0; i < nargs; i++) newargs[i] = args[i];
-    kwnames = PyTuple_New(nkw);
-    if (unlikely(kwnames == NULL)) {
-        PyMem_Free(newargs);
-        return NULL;
-    }
-    kwvalues = newargs + nargs;
-    pos = i = 0;
-    keys_are_strings = Py_TPFLAGS_UNICODE_SUBCLASS;
-    while (PyDict_Next(kw, &pos, &key, &value)) {
-        keys_are_strings &= Py_TYPE(key)->tp_flags;
-        Py_INCREF(key);
-        Py_INCREF(value);
-        PyTuple_SET_ITEM(kwnames, i, key);
-        kwvalues[i] = value;
-        i++;
-    }
-    if (unlikely(!keys_are_strings)) {
-        PyErr_SetString(PyExc_TypeError, "keywords must be strings");
-        goto cleanup;
-    }
-    res = vc(func, newargs, nargs, kwnames);
-cleanup:
-    Py_DECREF(kwnames);
-    for (i = 0; i < nkw; i++)
-        Py_DECREF(kwvalues[i]);
-    PyMem_Free(newargs);
-    return res;
-}
-static CYTHON_INLINE PyObject *__Pyx_PyVectorcall_FastCallDict(PyObject *func, __pyx_vectorcallfunc vc, PyObject *const *args, Py_ssize_t nargs, PyObject *kw)
-{
-    if (likely(kw == NULL) || PyDict_GET_SIZE(kw) == 0) {
-        return vc(func, args, nargs, NULL);
-    }
-    return __Pyx_PyVectorcall_FastCallDict_kw(func, vc, args, nargs, kw);
-}
-#endif
-
-/* CythonFunctionShared */
-#include <structmember.h>
-static PyObject *
-__Pyx_CyFunction_get_doc(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *closure)
-{
-    if (unlikely(op->func_doc == NULL)) {
-        if (op->func.m_ml->ml_doc) {
-#if PY_MAJOR_VERSION >= 3
-            op->func_doc = PyUnicode_FromString(op->func.m_ml->ml_doc);
-#else
-            op->func_doc = PyString_FromString(op->func.m_ml->ml_doc);
-#endif
-            if (unlikely(op->func_doc == NULL))
-                return NULL;
-        } else {
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-    }
-    Py_INCREF(op->func_doc);
-    return op->func_doc;
-}
-static int
-__Pyx_CyFunction_set_doc(__pyx_CyFunctionObject *op, PyObject *value, CYTHON_UNUSED void *context)
-{
-    if (value == NULL) {
-        value = Py_None;
-    }
-    Py_INCREF(value);
-    __Pyx_Py_XDECREF_SET(op->func_doc, value);
-    return 0;
-}
-static PyObject *
-__Pyx_CyFunction_get_name(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context)
-{
-    if (unlikely(op->func_name == NULL)) {
-#if PY_MAJOR_VERSION >= 3
-        op->func_name = PyUnicode_InternFromString(op->func.m_ml->ml_name);
-#else
-        op->func_name = PyString_InternFromString(op->func.m_ml->ml_name);
-#endif
-        if (unlikely(op->func_name == NULL))
-            return NULL;
-    }
-    Py_INCREF(op->func_name);
-    return op->func_name;
-}
-static int
-__Pyx_CyFunction_set_name(__pyx_CyFunctionObject *op, PyObject *value, CYTHON_UNUSED void *context)
-{
-#if PY_MAJOR_VERSION >= 3
-    if (unlikely(value == NULL || !PyUnicode_Check(value)))
-#else
-    if (unlikely(value == NULL || !PyString_Check(value)))
-#endif
-    {
-        PyErr_SetString(PyExc_TypeError,
-                        "__name__ must be set to a string object");
-        return -1;
-    }
-    Py_INCREF(value);
-    __Pyx_Py_XDECREF_SET(op->func_name, value);
-    return 0;
-}
-static PyObject *
-__Pyx_CyFunction_get_qualname(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context)
-{
-    Py_INCREF(op->func_qualname);
-    return op->func_qualname;
-}
-static int
-__Pyx_CyFunction_set_qualname(__pyx_CyFunctionObject *op, PyObject *value, CYTHON_UNUSED void *context)
-{
-#if PY_MAJOR_VERSION >= 3
-    if (unlikely(value == NULL || !PyUnicode_Check(value)))
-#else
-    if (unlikely(value == NULL || !PyString_Check(value)))
-#endif
-    {
-        PyErr_SetString(PyExc_TypeError,
-                        "__qualname__ must be set to a string object");
-        return -1;
-    }
-    Py_INCREF(value);
-    __Pyx_Py_XDECREF_SET(op->func_qualname, value);
-    return 0;
-}
-static PyObject *
-__Pyx_CyFunction_get_self(__pyx_CyFunctionObject *m, CYTHON_UNUSED void *closure)
-{
-    PyObject *self;
-    self = m->func_closure;
-    if (self == NULL)
-        self = Py_None;
-    Py_INCREF(self);
-    return self;
-}
-static PyObject *
-__Pyx_CyFunction_get_dict(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context)
-{
-    if (unlikely(op->func_dict == NULL)) {
-        op->func_dict = PyDict_New();
-        if (unlikely(op->func_dict == NULL))
-            return NULL;
-    }
-    Py_INCREF(op->func_dict);
-    return op->func_dict;
-}
-static int
-__Pyx_CyFunction_set_dict(__pyx_CyFunctionObject *op, PyObject *value, CYTHON_UNUSED void *context)
-{
-    if (unlikely(value == NULL)) {
-        PyErr_SetString(PyExc_TypeError,
-               "function's dictionary may not be deleted");
-        return -1;
-    }
-    if (unlikely(!PyDict_Check(value))) {
-        PyErr_SetString(PyExc_TypeError,
-               "setting function's dictionary to a non-dict");
-        return -1;
-    }
-    Py_INCREF(value);
-    __Pyx_Py_XDECREF_SET(op->func_dict, value);
-    return 0;
-}
-static PyObject *
-__Pyx_CyFunction_get_globals(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context)
-{
-    Py_INCREF(op->func_globals);
-    return op->func_globals;
-}
-static PyObject *
-__Pyx_CyFunction_get_closure(CYTHON_UNUSED __pyx_CyFunctionObject *op, CYTHON_UNUSED void *context)
-{
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-static PyObject *
-__Pyx_CyFunction_get_code(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context)
-{
-    PyObject* result = (op->func_code) ? op->func_code : Py_None;
-    Py_INCREF(result);
-    return result;
-}
-static int
-__Pyx_CyFunction_init_defaults(__pyx_CyFunctionObject *op) {
-    int result = 0;
-    PyObject *res = op->defaults_getter((PyObject *) op);
-    if (unlikely(!res))
-        return -1;
-    #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    op->defaults_tuple = PyTuple_GET_ITEM(res, 0);
-    Py_INCREF(op->defaults_tuple);
-    op->defaults_kwdict = PyTuple_GET_ITEM(res, 1);
-    Py_INCREF(op->defaults_kwdict);
-    #else
-    op->defaults_tuple = PySequence_ITEM(res, 0);
-    if (unlikely(!op->defaults_tuple)) result = -1;
-    else {
-        op->defaults_kwdict = PySequence_ITEM(res, 1);
-        if (unlikely(!op->defaults_kwdict)) result = -1;
-    }
-    #endif
-    Py_DECREF(res);
-    return result;
-}
-static int
-__Pyx_CyFunction_set_defaults(__pyx_CyFunctionObject *op, PyObject* value, CYTHON_UNUSED void *context) {
-    if (!value) {
-        value = Py_None;
-    } else if (unlikely(value != Py_None && !PyTuple_Check(value))) {
-        PyErr_SetString(PyExc_TypeError,
-                        "__defaults__ must be set to a tuple object");
-        return -1;
-    }
-    Py_INCREF(value);
-    __Pyx_Py_XDECREF_SET(op->defaults_tuple, value);
-    return 0;
-}
-static PyObject *
-__Pyx_CyFunction_get_defaults(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context) {
-    PyObject* result = op->defaults_tuple;
-    if (unlikely(!result)) {
-        if (op->defaults_getter) {
-            if (unlikely(__Pyx_CyFunction_init_defaults(op) < 0)) return NULL;
-            result = op->defaults_tuple;
-        } else {
-            result = Py_None;
-        }
-    }
-    Py_INCREF(result);
-    return result;
-}
-static int
-__Pyx_CyFunction_set_kwdefaults(__pyx_CyFunctionObject *op, PyObject* value, CYTHON_UNUSED void *context) {
-    if (!value) {
-        value = Py_None;
-    } else if (unlikely(value != Py_None && !PyDict_Check(value))) {
-        PyErr_SetString(PyExc_TypeError,
-                        "__kwdefaults__ must be set to a dict object");
-        return -1;
-    }
-    Py_INCREF(value);
-    __Pyx_Py_XDECREF_SET(op->defaults_kwdict, value);
-    return 0;
-}
-static PyObject *
-__Pyx_CyFunction_get_kwdefaults(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context) {
-    PyObject* result = op->defaults_kwdict;
-    if (unlikely(!result)) {
-        if (op->defaults_getter) {
-            if (unlikely(__Pyx_CyFunction_init_defaults(op) < 0)) return NULL;
-            result = op->defaults_kwdict;
-        } else {
-            result = Py_None;
-        }
-    }
-    Py_INCREF(result);
-    return result;
-}
-static int
-__Pyx_CyFunction_set_annotations(__pyx_CyFunctionObject *op, PyObject* value, CYTHON_UNUSED void *context) {
-    if (!value || value == Py_None) {
-        value = NULL;
-    } else if (unlikely(!PyDict_Check(value))) {
-        PyErr_SetString(PyExc_TypeError,
-                        "__annotations__ must be set to a dict object");
-        return -1;
-    }
-    Py_XINCREF(value);
-    __Pyx_Py_XDECREF_SET(op->func_annotations, value);
-    return 0;
-}
-static PyObject *
-__Pyx_CyFunction_get_annotations(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *context) {
-    PyObject* result = op->func_annotations;
-    if (unlikely(!result)) {
-        result = PyDict_New();
-        if (unlikely(!result)) return NULL;
-        op->func_annotations = result;
-    }
-    Py_INCREF(result);
-    return result;
-}
-static PyGetSetDef __pyx_CyFunction_getsets[] = {
-    {(char *) "func_doc", (getter)__Pyx_CyFunction_get_doc, (setter)__Pyx_CyFunction_set_doc, 0, 0},
-    {(char *) "__doc__",  (getter)__Pyx_CyFunction_get_doc, (setter)__Pyx_CyFunction_set_doc, 0, 0},
-    {(char *) "func_name", (getter)__Pyx_CyFunction_get_name, (setter)__Pyx_CyFunction_set_name, 0, 0},
-    {(char *) "__name__", (getter)__Pyx_CyFunction_get_name, (setter)__Pyx_CyFunction_set_name, 0, 0},
-    {(char *) "__qualname__", (getter)__Pyx_CyFunction_get_qualname, (setter)__Pyx_CyFunction_set_qualname, 0, 0},
-    {(char *) "__self__", (getter)__Pyx_CyFunction_get_self, 0, 0, 0},
-    {(char *) "func_dict", (getter)__Pyx_CyFunction_get_dict, (setter)__Pyx_CyFunction_set_dict, 0, 0},
-    {(char *) "__dict__", (getter)__Pyx_CyFunction_get_dict, (setter)__Pyx_CyFunction_set_dict, 0, 0},
-    {(char *) "func_globals", (getter)__Pyx_CyFunction_get_globals, 0, 0, 0},
-    {(char *) "__globals__", (getter)__Pyx_CyFunction_get_globals, 0, 0, 0},
-    {(char *) "func_closure", (getter)__Pyx_CyFunction_get_closure, 0, 0, 0},
-    {(char *) "__closure__", (getter)__Pyx_CyFunction_get_closure, 0, 0, 0},
-    {(char *) "func_code", (getter)__Pyx_CyFunction_get_code, 0, 0, 0},
-    {(char *) "__code__", (getter)__Pyx_CyFunction_get_code, 0, 0, 0},
-    {(char *) "func_defaults", (getter)__Pyx_CyFunction_get_defaults, (setter)__Pyx_CyFunction_set_defaults, 0, 0},
-    {(char *) "__defaults__", (getter)__Pyx_CyFunction_get_defaults, (setter)__Pyx_CyFunction_set_defaults, 0, 0},
-    {(char *) "__kwdefaults__", (getter)__Pyx_CyFunction_get_kwdefaults, (setter)__Pyx_CyFunction_set_kwdefaults, 0, 0},
-    {(char *) "__annotations__", (getter)__Pyx_CyFunction_get_annotations, (setter)__Pyx_CyFunction_set_annotations, 0, 0},
-    {0, 0, 0, 0, 0}
-};
-static PyMemberDef __pyx_CyFunction_members[] = {
-    {(char *) "__module__", T_OBJECT, offsetof(PyCFunctionObject, m_module), PY_WRITE_RESTRICTED, 0},
-#if CYTHON_COMPILING_IN_LIMITED_API
-    {(char *) "__dictoffset__", T_PYSSIZET, offsetof(__pyx_CyFunctionObject, func_dict), READONLY, 0},
-#if PY_VERSION_HEX < 0x030500A0
-    {(char *) "__weaklistoffset__", T_PYSSIZET, offsetof(__pyx_CyFunctionObject, func_weakreflist), READONLY, 0},
-#else
-    {(char *) "__weaklistoffset__", T_PYSSIZET, offsetof(PyCFunctionObject, m_weakreflist), READONLY, 0},
-#endif
-#endif
-    {0, 0, 0,  0, 0}
-};
-static PyObject *
-__Pyx_CyFunction_reduce(__pyx_CyFunctionObject *m, CYTHON_UNUSED PyObject *args)
-{
-#if PY_MAJOR_VERSION >= 3
-    Py_INCREF(m->func_qualname);
-    return m->func_qualname;
-#else
-    return PyString_FromString(m->func.m_ml->ml_name);
-#endif
-}
-static PyMethodDef __pyx_CyFunction_methods[] = {
-    {"__reduce__", (PyCFunction)__Pyx_CyFunction_reduce, METH_VARARGS, 0},
-    {0, 0, 0, 0}
-};
-#if PY_VERSION_HEX < 0x030500A0
-#define __Pyx_CyFunction_weakreflist(cyfunc) ((cyfunc)->func_weakreflist)
-#else
-#define __Pyx_CyFunction_weakreflist(cyfunc) ((cyfunc)->func.m_weakreflist)
-#endif
-static PyObject *__Pyx_CyFunction_Init(__pyx_CyFunctionObject *op, PyMethodDef *ml, int flags, PyObject* qualname,
-                                       PyObject *closure, PyObject *module, PyObject* globals, PyObject* code) {
-    if (unlikely(op == NULL))
-        return NULL;
-    op->flags = flags;
-    __Pyx_CyFunction_weakreflist(op) = NULL;
-    op->func.m_ml = ml;
-    op->func.m_self = (PyObject *) op;
-    Py_XINCREF(closure);
-    op->func_closure = closure;
-    Py_XINCREF(module);
-    op->func.m_module = module;
-    op->func_dict = NULL;
-    op->func_name = NULL;
-    Py_INCREF(qualname);
-    op->func_qualname = qualname;
-    op->func_doc = NULL;
-    op->func_classobj = NULL;
-    op->func_globals = globals;
-    Py_INCREF(op->func_globals);
-    Py_XINCREF(code);
-    op->func_code = code;
-    op->defaults_pyobjects = 0;
-    op->defaults_size = 0;
-    op->defaults = NULL;
-    op->defaults_tuple = NULL;
-    op->defaults_kwdict = NULL;
-    op->defaults_getter = NULL;
-    op->func_annotations = NULL;
-#if CYTHON_METH_FASTCALL
-    switch (ml->ml_flags & (METH_VARARGS | METH_FASTCALL | METH_NOARGS | METH_O | METH_KEYWORDS)) {
-    case METH_NOARGS:
-        __Pyx_CyFunction_func_vectorcall(op) = __Pyx_CyFunction_Vectorcall_NOARGS;
-        break;
-    case METH_O:
-        __Pyx_CyFunction_func_vectorcall(op) = __Pyx_CyFunction_Vectorcall_O;
-        break;
-    case METH_FASTCALL | METH_KEYWORDS:
-        __Pyx_CyFunction_func_vectorcall(op) = __Pyx_CyFunction_Vectorcall_FASTCALL_KEYWORDS;
-        break;
-    case METH_VARARGS | METH_KEYWORDS:
-        __Pyx_CyFunction_func_vectorcall(op) = NULL;
-        break;
-    default:
-        PyErr_SetString(PyExc_SystemError, "Bad call flags for CyFunction");
-        Py_DECREF(op);
-        return NULL;
-    }
-#endif
-    return (PyObject *) op;
-}
-static int
-__Pyx_CyFunction_clear(__pyx_CyFunctionObject *m)
-{
-    Py_CLEAR(m->func_closure);
-    Py_CLEAR(m->func.m_module);
-    Py_CLEAR(m->func_dict);
-    Py_CLEAR(m->func_name);
-    Py_CLEAR(m->func_qualname);
-    Py_CLEAR(m->func_doc);
-    Py_CLEAR(m->func_globals);
-    Py_CLEAR(m->func_code);
-    Py_CLEAR(m->func_classobj);
-    Py_CLEAR(m->defaults_tuple);
-    Py_CLEAR(m->defaults_kwdict);
-    Py_CLEAR(m->func_annotations);
-    if (m->defaults) {
-        PyObject **pydefaults = __Pyx_CyFunction_Defaults(PyObject *, m);
-        int i;
-        for (i = 0; i < m->defaults_pyobjects; i++)
-            Py_XDECREF(pydefaults[i]);
-        PyObject_Free(m->defaults);
-        m->defaults = NULL;
-    }
-    return 0;
-}
-static void __Pyx__CyFunction_dealloc(__pyx_CyFunctionObject *m)
-{
-    if (__Pyx_CyFunction_weakreflist(m) != NULL)
-        PyObject_ClearWeakRefs((PyObject *) m);
-    __Pyx_CyFunction_clear(m);
-    PyObject_GC_Del(m);
-}
-static void __Pyx_CyFunction_dealloc(__pyx_CyFunctionObject *m)
-{
-    PyObject_GC_UnTrack(m);
-    __Pyx__CyFunction_dealloc(m);
-}
-static int __Pyx_CyFunction_traverse(__pyx_CyFunctionObject *m, visitproc visit, void *arg)
-{
-    Py_VISIT(m->func_closure);
-    Py_VISIT(m->func.m_module);
-    Py_VISIT(m->func_dict);
-    Py_VISIT(m->func_name);
-    Py_VISIT(m->func_qualname);
-    Py_VISIT(m->func_doc);
-    Py_VISIT(m->func_globals);
-    Py_VISIT(m->func_code);
-    Py_VISIT(m->func_classobj);
-    Py_VISIT(m->defaults_tuple);
-    Py_VISIT(m->defaults_kwdict);
-    if (m->defaults) {
-        PyObject **pydefaults = __Pyx_CyFunction_Defaults(PyObject *, m);
-        int i;
-        for (i = 0; i < m->defaults_pyobjects; i++)
-            Py_VISIT(pydefaults[i]);
-    }
-    return 0;
-}
-static PyObject*
-__Pyx_CyFunction_repr(__pyx_CyFunctionObject *op)
-{
-#if PY_MAJOR_VERSION >= 3
-    return PyUnicode_FromFormat("<cyfunction %U at %p>",
-                                op->func_qualname, (void *)op);
-#else
-    return PyString_FromFormat("<cyfunction %s at %p>",
-                               PyString_AsString(op->func_qualname), (void *)op);
-#endif
-}
-static PyObject * __Pyx_CyFunction_CallMethod(PyObject *func, PyObject *self, PyObject *arg, PyObject *kw) {
-    PyCFunctionObject* f = (PyCFunctionObject*)func;
-    PyCFunction meth = f->m_ml->ml_meth;
-    Py_ssize_t size;
-    switch (f->m_ml->ml_flags & (METH_VARARGS | METH_KEYWORDS | METH_NOARGS | METH_O)) {
-    case METH_VARARGS:
-        if (likely(kw == NULL || PyDict_Size(kw) == 0))
-            return (*meth)(self, arg);
-        break;
-    case METH_VARARGS | METH_KEYWORDS:
-        return (*(PyCFunctionWithKeywords)(void*)meth)(self, arg, kw);
-    case METH_NOARGS:
-        if (likely(kw == NULL || PyDict_Size(kw) == 0)) {
-            size = PyTuple_GET_SIZE(arg);
-            if (likely(size == 0))
-                return (*meth)(self, NULL);
-            PyErr_Format(PyExc_TypeError,
-                "%.200s() takes no arguments (%" CYTHON_FORMAT_SSIZE_T "d given)",
-                f->m_ml->ml_name, size);
-            return NULL;
-        }
-        break;
-    case METH_O:
-        if (likely(kw == NULL || PyDict_Size(kw) == 0)) {
-            size = PyTuple_GET_SIZE(arg);
-            if (likely(size == 1)) {
-                PyObject *result, *arg0;
-                #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-                arg0 = PyTuple_GET_ITEM(arg, 0);
-                #else
-                arg0 = PySequence_ITEM(arg, 0); if (unlikely(!arg0)) return NULL;
-                #endif
-                result = (*meth)(self, arg0);
-                #if !(CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS)
-                Py_DECREF(arg0);
-                #endif
-                return result;
-            }
-            PyErr_Format(PyExc_TypeError,
-                "%.200s() takes exactly one argument (%" CYTHON_FORMAT_SSIZE_T "d given)",
-                f->m_ml->ml_name, size);
-            return NULL;
-        }
-        break;
-    default:
-        PyErr_SetString(PyExc_SystemError, "Bad call flags for CyFunction");
-        return NULL;
-    }
-    PyErr_Format(PyExc_TypeError, "%.200s() takes no keyword arguments",
-                 f->m_ml->ml_name);
-    return NULL;
-}
-static CYTHON_INLINE PyObject *__Pyx_CyFunction_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    return __Pyx_CyFunction_CallMethod(func, ((PyCFunctionObject*)func)->m_self, arg, kw);
-}
-static PyObject *__Pyx_CyFunction_CallAsMethod(PyObject *func, PyObject *args, PyObject *kw) {
-    PyObject *result;
-    __pyx_CyFunctionObject *cyfunc = (__pyx_CyFunctionObject *) func;
-#if CYTHON_METH_FASTCALL
-     __pyx_vectorcallfunc vc = __Pyx_CyFunction_func_vectorcall(cyfunc);
-    if (vc) {
-#if CYTHON_ASSUME_SAFE_MACROS
-        return __Pyx_PyVectorcall_FastCallDict(func, vc, &PyTuple_GET_ITEM(args, 0), PyTuple_GET_SIZE(args), kw);
-#else
-        (void) &__Pyx_PyVectorcall_FastCallDict;
-        return PyVectorcall_Call(func, args, kw);
-#endif
-    }
-#endif
-    if ((cyfunc->flags & __Pyx_CYFUNCTION_CCLASS) && !(cyfunc->flags & __Pyx_CYFUNCTION_STATICMETHOD)) {
-        Py_ssize_t argc;
-        PyObject *new_args;
-        PyObject *self;
-        argc = PyTuple_GET_SIZE(args);
-        new_args = PyTuple_GetSlice(args, 1, argc);
-        if (unlikely(!new_args))
-            return NULL;
-        self = PyTuple_GetItem(args, 0);
-        if (unlikely(!self)) {
-            Py_DECREF(new_args);
-            return NULL;
-        }
-        result = __Pyx_CyFunction_CallMethod(func, self, new_args, kw);
-        Py_DECREF(new_args);
-    } else {
-        result = __Pyx_CyFunction_Call(func, args, kw);
-    }
-    return result;
-}
-#if CYTHON_METH_FASTCALL
-static CYTHON_INLINE int __Pyx_CyFunction_Vectorcall_CheckArgs(__pyx_CyFunctionObject *cyfunc, Py_ssize_t nargs, PyObject *kwnames)
-{
-    int ret = 0;
-    if ((cyfunc->flags & __Pyx_CYFUNCTION_CCLASS) && !(cyfunc->flags & __Pyx_CYFUNCTION_STATICMETHOD)) {
-        if (unlikely(nargs < 1)) {
-            PyErr_Format(PyExc_TypeError, "%.200s() needs an argument",
-                         cyfunc->func.m_ml->ml_name);
-            return -1;
-        }
-        ret = 1;
-    }
-    if (unlikely(kwnames) && unlikely(PyTuple_GET_SIZE(kwnames))) {
-        PyErr_Format(PyExc_TypeError,
-                     "%.200s() takes no keyword arguments", cyfunc->func.m_ml->ml_name);
-        return -1;
-    }
-    return ret;
-}
-static PyObject * __Pyx_CyFunction_Vectorcall_NOARGS(PyObject *func, PyObject *const *args, size_t nargsf, PyObject *kwnames)
-{
-    __pyx_CyFunctionObject *cyfunc = (__pyx_CyFunctionObject *)func;
-    PyMethodDef* def = cyfunc->func.m_ml;
-#if CYTHON_BACKPORT_VECTORCALL
-    Py_ssize_t nargs = (Py_ssize_t)nargsf;
-#else
-    Py_ssize_t nargs = PyVectorcall_NARGS(nargsf);
-#endif
-    PyObject *self;
-    switch (__Pyx_CyFunction_Vectorcall_CheckArgs(cyfunc, nargs, kwnames)) {
-    case 1:
-        self = args[0];
-        args += 1;
-        nargs -= 1;
-        break;
-    case 0:
-        self = cyfunc->func.m_self;
-        break;
-    default:
-        return NULL;
-    }
-    if (unlikely(nargs != 0)) {
-        PyErr_Format(PyExc_TypeError,
-            "%.200s() takes no arguments (%" CYTHON_FORMAT_SSIZE_T "d given)",
-            def->ml_name, nargs);
-        return NULL;
-    }
-    return def->ml_meth(self, NULL);
-}
-static PyObject * __Pyx_CyFunction_Vectorcall_O(PyObject *func, PyObject *const *args, size_t nargsf, PyObject *kwnames)
-{
-    __pyx_CyFunctionObject *cyfunc = (__pyx_CyFunctionObject *)func;
-    PyMethodDef* def = cyfunc->func.m_ml;
-#if CYTHON_BACKPORT_VECTORCALL
-    Py_ssize_t nargs = (Py_ssize_t)nargsf;
-#else
-    Py_ssize_t nargs = PyVectorcall_NARGS(nargsf);
-#endif
-    PyObject *self;
-    switch (__Pyx_CyFunction_Vectorcall_CheckArgs(cyfunc, nargs, kwnames)) {
-    case 1:
-        self = args[0];
-        args += 1;
-        nargs -= 1;
-        break;
-    case 0:
-        self = cyfunc->func.m_self;
-        break;
-    default:
-        return NULL;
-    }
-    if (unlikely(nargs != 1)) {
-        PyErr_Format(PyExc_TypeError,
-            "%.200s() takes exactly one argument (%" CYTHON_FORMAT_SSIZE_T "d given)",
-            def->ml_name, nargs);
-        return NULL;
-    }
-    return def->ml_meth(self, args[0]);
-}
-static PyObject * __Pyx_CyFunction_Vectorcall_FASTCALL_KEYWORDS(PyObject *func, PyObject *const *args, size_t nargsf, PyObject *kwnames)
-{
-    __pyx_CyFunctionObject *cyfunc = (__pyx_CyFunctionObject *)func;
-    PyMethodDef* def = cyfunc->func.m_ml;
-#if CYTHON_BACKPORT_VECTORCALL
-    Py_ssize_t nargs = (Py_ssize_t)nargsf;
-#else
-    Py_ssize_t nargs = PyVectorcall_NARGS(nargsf);
-#endif
-    PyObject *self;
-    switch (__Pyx_CyFunction_Vectorcall_CheckArgs(cyfunc, nargs, NULL)) {
-    case 1:
-        self = args[0];
-        args += 1;
-        nargs -= 1;
-        break;
-    case 0:
-        self = cyfunc->func.m_self;
-        break;
-    default:
-        return NULL;
-    }
-    return ((_PyCFunctionFastWithKeywords)(void(*)(void))def->ml_meth)(self, args, nargs, kwnames);
-}
-#endif
-#if CYTHON_COMPILING_IN_LIMITED_API
-static PyType_Slot __pyx_CyFunctionType_slots[] = {
-    {Py_tp_dealloc, (void *)__Pyx_CyFunction_dealloc},
-    {Py_tp_repr, (void *)__Pyx_CyFunction_repr},
-    {Py_tp_call, (void *)__Pyx_CyFunction_CallAsMethod},
-    {Py_tp_traverse, (void *)__Pyx_CyFunction_traverse},
-    {Py_tp_clear, (void *)__Pyx_CyFunction_clear},
-    {Py_tp_methods, (void *)__pyx_CyFunction_methods},
-    {Py_tp_members, (void *)__pyx_CyFunction_members},
-    {Py_tp_getset, (void *)__pyx_CyFunction_getsets},
-    {Py_tp_descr_get, (void *)__Pyx_PyMethod_New},
-    {0, 0},
-};
-static PyType_Spec __pyx_CyFunctionType_spec = {
-    __PYX_TYPE_MODULE_PREFIX "cython_function_or_method",
-    sizeof(__pyx_CyFunctionObject),
-    0,
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
-    __pyx_CyFunctionType_slots
-};
-#else
-static PyTypeObject __pyx_CyFunctionType_type = {
-    PyVarObject_HEAD_INIT(0, 0)
-    __PYX_TYPE_MODULE_PREFIX "cython_function_or_method",
-    sizeof(__pyx_CyFunctionObject),
-    0,
-    (destructor) __Pyx_CyFunction_dealloc,
-#if !CYTHON_METH_FASTCALL
-    0,
-#elif CYTHON_BACKPORT_VECTORCALL
-    (printfunc)offsetof(__pyx_CyFunctionObject, func_vectorcall),
-#else
-    offsetof(__pyx_CyFunctionObject, func.vectorcall),
-#endif
-    0,
-    0,
-#if PY_MAJOR_VERSION < 3
-    0,
-#else
-    0,
-#endif
-    (reprfunc) __Pyx_CyFunction_repr,
-    0,
-    0,
-    0,
-    0,
-    __Pyx_CyFunction_CallAsMethod,
-    0,
-    0,
-    0,
-    0,
-#ifdef Py_TPFLAGS_METHOD_DESCRIPTOR
-    Py_TPFLAGS_METHOD_DESCRIPTOR |
-#endif
-#ifdef _Py_TPFLAGS_HAVE_VECTORCALL
-    _Py_TPFLAGS_HAVE_VECTORCALL |
-#endif
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
-    0,
-    (traverseproc) __Pyx_CyFunction_traverse,
-    (inquiry) __Pyx_CyFunction_clear,
-    0,
-#if PY_VERSION_HEX < 0x030500A0
-    offsetof(__pyx_CyFunctionObject, func_weakreflist),
-#else
-    offsetof(PyCFunctionObject, m_weakreflist),
-#endif
-    0,
-    0,
-    __pyx_CyFunction_methods,
-    __pyx_CyFunction_members,
-    __pyx_CyFunction_getsets,
-    0,
-    0,
-    __Pyx_PyMethod_New,
-    0,
-    offsetof(__pyx_CyFunctionObject, func_dict),
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-#if PY_VERSION_HEX >= 0x030400a1
-    0,
-#endif
-#if PY_VERSION_HEX >= 0x030800b1
-    0,
-#endif
-#if PY_VERSION_HEX >= 0x030800b4 && PY_VERSION_HEX < 0x03090000
-    0,
-#endif
-#if CYTHON_COMPILING_IN_PYPY && PYPY_VERSION_NUM+0 >= 0x06000000
-    0,
-#endif
-};
-#endif
-static int __pyx_CyFunction_init(void) {
-#if CYTHON_COMPILING_IN_LIMITED_API
-    __pyx_CyFunctionType = __Pyx_FetchCommonTypeFromSpec(&__pyx_CyFunctionType_spec, NULL);
-#else
-    __pyx_CyFunctionType = __Pyx_FetchCommonType(&__pyx_CyFunctionType_type);
-#endif
-    if (unlikely(__pyx_CyFunctionType == NULL)) {
-        return -1;
-    }
-    return 0;
-}
-static CYTHON_INLINE void *__Pyx_CyFunction_InitDefaults(PyObject *func, size_t size, int pyobjects) {
-    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
-    m->defaults = PyObject_Malloc(size);
-    if (unlikely(!m->defaults))
-        return PyErr_NoMemory();
-    memset(m->defaults, 0, size);
-    m->defaults_pyobjects = pyobjects;
-    m->defaults_size = size;
-    return m->defaults;
-}
-static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsTuple(PyObject *func, PyObject *tuple) {
-    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
-    m->defaults_tuple = tuple;
-    Py_INCREF(tuple);
-}
-static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsKwDict(PyObject *func, PyObject *dict) {
-    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
-    m->defaults_kwdict = dict;
-    Py_INCREF(dict);
-}
-static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, PyObject *dict) {
-    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
-    m->func_annotations = dict;
-    Py_INCREF(dict);
-}
-
-/* CythonFunction */
-static PyObject *__Pyx_CyFunction_New(PyMethodDef *ml, int flags, PyObject* qualname,
-                                      PyObject *closure, PyObject *module, PyObject* globals, PyObject* code) {
-    PyObject *op = __Pyx_CyFunction_Init(
-        PyObject_GC_New(__pyx_CyFunctionObject, __pyx_CyFunctionType),
-        ml, flags, qualname, closure, module, globals, code
-    );
-    if (likely(op)) {
-        PyObject_GC_Track(op);
-    }
-    return op;
-}
-
 /* PyDictVersioning */
 #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_TYPE_SLOTS
 static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj) {
@@ -7388,7 +6423,7 @@ __Pyx_PyType_GetName(PyTypeObject* tp)
                                                __pyx_n_s_name);
     if (unlikely(name == NULL) || unlikely(!PyUnicode_Check(name))) {
         PyErr_Clear();
-        Py_XSETREF(name, __Pyx_NewRef(__pyx_n_s__4));
+        Py_XSETREF(name, __Pyx_NewRef(__pyx_n_s__3));
     }
     return name;
 }
@@ -7744,6 +6779,80 @@ static int __Pyx_check_binary_version(void) {
         return PyErr_WarnEx(NULL, message, 1);
     }
     return 0;
+}
+
+/* PyObjectSetAttrStr */
+#if CYTHON_USE_TYPE_SLOTS
+static CYTHON_INLINE int __Pyx_PyObject_SetAttrStr(PyObject* obj, PyObject* attr_name, PyObject* value) {
+    PyTypeObject* tp = Py_TYPE(obj);
+    if (likely(tp->tp_setattro))
+        return tp->tp_setattro(obj, attr_name, value);
+#if PY_MAJOR_VERSION < 3
+    if (likely(tp->tp_setattr))
+        return tp->tp_setattr(obj, PyString_AS_STRING(attr_name), value);
+#endif
+    return PyObject_SetAttr(obj, attr_name, value);
+}
+#endif
+
+/* VoidPtrExport */
+static int __Pyx_ExportVoidPtr(PyObject *name, void *p, const char *sig) {
+    PyObject *d;
+    PyObject *cobj = 0;
+    d = PyDict_GetItem(__pyx_d, __pyx_n_s_pyx_capi);
+    Py_XINCREF(d);
+    if (!d) {
+        d = PyDict_New();
+        if (!d)
+            goto bad;
+        if (__Pyx_PyObject_SetAttrStr(__pyx_m, __pyx_n_s_pyx_capi, d) < 0)
+            goto bad;
+    }
+    cobj = PyCapsule_New(p, sig, 0);
+    if (!cobj)
+        goto bad;
+    if (PyDict_SetItem(d, name, cobj) < 0)
+        goto bad;
+    Py_DECREF(cobj);
+    Py_DECREF(d);
+    return 0;
+bad:
+    Py_XDECREF(cobj);
+    Py_XDECREF(d);
+    return -1;
+}
+
+/* FunctionExport */
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig) {
+    PyObject *d = 0;
+    PyObject *cobj = 0;
+    union {
+        void (*fp)(void);
+        void *p;
+    } tmp;
+    d = PyObject_GetAttrString(__pyx_m, (char *)"__pyx_capi__");
+    if (!d) {
+        PyErr_Clear();
+        d = PyDict_New();
+        if (!d)
+            goto bad;
+        Py_INCREF(d);
+        if (PyModule_AddObject(__pyx_m, (char *)"__pyx_capi__", d) < 0)
+            goto bad;
+    }
+    tmp.fp = f;
+    cobj = PyCapsule_New(tmp.p, sig, 0);
+    if (!cobj)
+        goto bad;
+    if (PyDict_SetItemString(d, name, cobj) < 0)
+        goto bad;
+    Py_DECREF(cobj);
+    Py_DECREF(d);
+    return 0;
+bad:
+    Py_XDECREF(cobj);
+    Py_XDECREF(d);
+    return -1;
 }
 
 /* InitStrings */

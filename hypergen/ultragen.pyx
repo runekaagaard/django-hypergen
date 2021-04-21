@@ -155,6 +155,30 @@ cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
     hpg.html.append(tag)
     hpg.html.append('>\n')
 
+cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:
+    cdef int i, j
+    hpg.html.append('<')
+    hpg.html.append(tag)
+
+    if attrs[0] != T:
+        for i in range(0, 100, 2):
+            j = i + 1
+            if attrs[i] == T:
+                break
+            else:
+                hpg.html.append(" ")
+                hpg.html.append(attrs[i])
+                hpg.html.append('="')
+                hpg.html.append(attrs[j])
+                hpg.html.append('"')
+
+    hpg.html.append('>')
+
+cdef void element_close(string tag, Hpg &hpg) nogil:
+    hpg.html.append('</')
+    hpg.html.append(tag)
+    hpg.html.append('>\n')
+    
 # HTML elements
 cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"div", hpg, s, attrs)
@@ -165,11 +189,22 @@ cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
 cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"button", hpg, s, attrs)
 
+cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
+    element_open(<char*>"table", hpg, attrs)
+    return True
+
+cdef inline void table_c(Hpg &hpg) nogil:
+    element_close(<char*>"table", hpg)
+    
 cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"tr", hpg, s, attrs)
 
-cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
-    element(<char*>"tr", hpg, s, attrs)
+cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:
+    element_open(<char*>"tr", hpg, attrs)
+    return True
 
-cpdef string ok():
-    return <char*> "OK"
+cdef inline void tr_c(Hpg &hpg) nogil:
+    element_close(<char*>"tr", hpg)
+
+cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
+    element(<char*>"td", hpg, s, attrs)

@@ -17,7 +17,7 @@ HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=shared_templates.b
 
 @hypergen_view(url="$^", **HYPERGEN_SETTINGS)
 def gameofcython(request):
-    div(render())
+    raw(render())
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, namespace="gameofcython")
 def submit(request, value, target_id):

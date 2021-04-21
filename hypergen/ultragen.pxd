@@ -1,5 +1,8 @@
+# cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str
+# distutils: language=c++
 from libcpp.string cimport string
 
+cdef string T
 cdef struct Hpg
 cdef Hpg make_hpg()
 cdef struct CbOpts
@@ -15,5 +18,9 @@ cdef void div(Hpg &hpg, string s, string* attrs) nogil
 cdef void b(Hpg &hpg, string s, string* attrs) nogil
 cdef void button(Hpg &hpg, string s, string* attrs) nogil
 cdef void tr(Hpg &hpg, string s, string* attrs) nogil
+cdef int tr_o(Hpg &hpg, string* attrs) nogil
+cdef void tr_c(Hpg &hpg) nogil
+cdef int table_o(Hpg &hpg, string* attrs) nogil
+cdef void table_c(Hpg &hpg) nogil
 cdef void td(Hpg &hpg, string s, string* attrs) nogil
-cdef string ok()
+
