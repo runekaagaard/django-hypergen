@@ -1,10 +1,14 @@
 # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str
 # distutils: language=c++
+cimport cython
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 
 cdef string T
 ctypedef char* s # Shortcut for char*
+ctypedef fused number:
+    cython.int
+    cython.double
 cdef struct Hpg:
     string html
     unordered_map [string, string] event_handler_callbacks
@@ -12,7 +16,7 @@ cdef Hpg make_hpg()
 cdef struct CbOpts
 cdef CbOpts make_cb_opts(string id_) nogil
 cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil
-cdef string i2s(int v) nogil
+cdef string n2s(number v, int float_precision=*) nogil
 cdef string arg_i(int v) nogil
 cdef string arg_s(string v) nogil
 cdef struct ArgElOpts

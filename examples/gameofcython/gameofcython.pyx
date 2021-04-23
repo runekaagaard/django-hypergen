@@ -69,6 +69,10 @@ cdef void crender(Hpg &hpg) nogil:
             if state[x][y] == 1:
                 cls = <s>"black"
             td(hpg, <s>"", [<s>"class", cls, T])
+            # TODO: Showcase this.
+            # td(hpg, n2s(200), [T])
+            # td(hpg, n2s(200.9), [T])
+            # td(hpg, n2s(200.92344353462345, 3), [T])
         tr_c(hpg)
     table_c(hpg)
                 

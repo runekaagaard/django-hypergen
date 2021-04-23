@@ -2,6 +2,7 @@
 # distutils: language=c++
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
+cimport cython
 
 from libc.stdio cimport printf, sprintf
 
@@ -78,7 +79,7 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args,
     event_handler_callback.append('"blocks":')
     event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
     event_handler_callback.append(',"debounce":')
-    event_handler_callback.append(i2s(cb_opts.debounce))
+    event_handler_callback.append(n2s(cb_opts.debounce))
     event_handler_callback.append(',"clear":')
     event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
     event_handler_callback.append(',"elementId":"')
@@ -94,20 +95,32 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args,
     
     return html
 
-# Cast functions for callback arguments 
+# Convert an int or float to a string
 
-cdef string i2s(int v) nogil:
+cdef string n2s(number v, int float_precision=-1) nogil:
     cdef:
         char s[100]
-    sprintf(s, "%d", v)
-    return <string> s
-
+        char double_fmt[20]
+    if number is cython.int:
+        sprintf(s, "%d", v)
+    elif number is cython.double:
+        if float_precision == -1:
+            sprintf(s, "%f", v)
+        else:
+            sprintf(double_fmt, "%%.%df", float_precision)
+            sprintf(s, double_fmt, v)
+    else:
+        raise Exception("Unknown type")
+    
+    return <string>s
     
 cdef string arg_i(int v) nogil:
     cdef:
         char s[100]
     sprintf(s, "%d", v)
     return <string> s
+
+# Cast functions for callback arguments
 
 cdef string arg_s(string v) nogil:
     cdef string s
