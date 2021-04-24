@@ -2,8 +2,6 @@
 # pylint: disable=no-value-for-parameter
 d = dict
 
-import datetime
-
 from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 from hypergen.core import *
 from hypergen.core import callback as cb
@@ -14,6 +12,9 @@ from gameofcython.gameofcython import render, reset, step as cstep
 
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="gameofcython",
     app_name="gameofcython", base_template=shared_templates.base_template)
+
+RUNNING, STOPPED = "RUNNING", "STOPPED"
+STATE = STOPPED
 
 @hypergen_view(url="$^", **HYPERGEN_SETTINGS)
 def gameofcython(request):
@@ -35,12 +36,14 @@ def gameofcython(request):
         }
     """)
     with div(id_="gameoflife"):
-        render()
-    div(id_="step", onclick=cb(step))
+        render(str(step.reverse()))
+    # div(id_="step", onclick=cb(step))
     script('''
-        ready(() => document.getElementById("step").click())
+        //ready(() => document.getElementById("step").click())
     ''')
 
 @hypergen_callback(view=gameofcython, **HYPERGEN_SETTINGS)
 def step(request):
+    if STATE == RUNNING:
+        cstep()
     cstep()

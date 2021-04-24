@@ -57,7 +57,7 @@ cdef void creset() nogil:
             else:
                 state[x][y] = 0
 
-cdef void crender(Hpg &hpg) nogil:
+cdef void crender(Hpg &hpg, string step_url) nogil:
     cdef int x, y
     cdef string cls
     h1(hpg, <s>"Game of life rendered with ultragen", [T])
@@ -75,6 +75,10 @@ cdef void crender(Hpg &hpg) nogil:
             # td(hpg, n2s(200.92344353462345, 3), [T])
         tr_c(hpg)
     table_c(hpg)
+    
+    cdef CbOpts cb_opts = make_cb_opts(<s>"step")
+    button(hpg, <s>"Step", [<s>"onclick", cb(hpg, <s>"step", <s>"onclick", step_url, [T], cb_opts), T])
+    button(hpg, <s>"Stop", [<s>"onclick", cb(hpg, <s>"stop", <s>"onclick", step_url, [T], cb_opts), T])
                 
 def step():
     cstep()
@@ -82,10 +86,14 @@ def step():
 def reset():
     creset()
     
-def render():
+def render(step_url):
     cdef Hpg hpg = make_hpg()
     cdef int i
     a = time()
-    crender(hpg)
+    crender(hpg, step_url)
     print("Duration:", (time() - a) * 1000, "ms")
+    hpg.event_handler_callback_str.insert(0, "{")
+    hpg.event_handler_callback_str.append("}")
+    print(hpg.event_handler_callback_str)
     c.hypergen.into.append(hpg.html)
+    c.hypergen.event_handler_callbacks.update(json.loads(hpg.event_handler_callback_str))

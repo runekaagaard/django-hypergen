@@ -14,12 +14,12 @@ cdef:
 # Hypergen state passed around to everything
 cdef struct Hpg:
     string html
-    unordered_map [string, string] event_handler_callbacks
+    unordered_map [string, string] event_handler_callback_strs
 
 cdef Hpg make_hpg():
     cdef:
-        unordered_map [string, string] event_handler_callbacks
-        hpg = Hpg(<char*>"", event_handler_callbacks)
+        unordered_map [string, string] event_handler_callback_strs
+        hpg = Hpg(<char*>"", <char*>"")
 
     return hpg
     
@@ -32,14 +32,15 @@ cdef struct CbOpts:
     string element_id
     int upload_files
 
-cdef CbOpts make_cb_opts(string id_) nogil:
+cdef CbOpts make_cb_opts(string id_, int blocks=False, string confirm=<char*>"", int debounce=0, int clear=False,
+                         int upload_files=False) nogil:
     cdef CbOpts opts
-    opts.blocks = False
-    opts.confirm_ = <char*>""
-    opts.debounce = 0
-    opts.clear = False
     opts.element_id = id_
-    opts.upload_files = False
+    opts.blocks = blocks
+    opts.confirm_ = confirm
+    opts.debounce = debounce
+    opts.clear = clear
+    opts.upload_files = upload_files
     
     return opts
 
@@ -61,7 +62,13 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args,
     html.append(client_state_key)
     html.append("')")
 
-    event_handler_callback.append('["')
+    if hpg.event_handler_callback_str != <char*> "":
+        event_handler_callback.append(',')
+    event_handler_callback.append('"')
+    event_handler_callback.append(client_state_key)
+    event_handler_callback.append('":')
+    
+    event_handler_callback.append('["hypergen.callback", "')
     event_handler_callback.append(url)
     event_handler_callback.append('",')
     
@@ -91,7 +98,7 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args,
     event_handler_callback.append('}')
     event_handler_callback.append("]")
     
-    hpg.event_handler_callbacks[client_state_key] = event_handler_callback
+    hpg.event_handler_callback_str.append(event_handler_callback)
     
     return html
 
@@ -182,7 +189,7 @@ cdef inline void h1(Hpg &hpg, string s, string* attrs) nogil:
 cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
     element(<char*>"b", hpg, s, attrs)
 
-cdef inline void button(Hpg &hpg, string s, string* attrs) nogil:
+cdef inline void button(Hpg &hpg, string s, string* attrs=[T]) nogil:
     element(<char*>"button", hpg, s, attrs)
 
 cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
