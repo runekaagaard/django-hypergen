@@ -13,6 +13,7 @@ cdef struct Hpg:
     string html
     string event_handler_callback_str
 cdef Hpg make_hpg()
+cdef void commit(Hpg &hpg)
 cdef struct CbOpts:
     int blocks
     string confirm_

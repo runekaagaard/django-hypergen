@@ -91,9 +91,6 @@ def render(step_url):
     cdef int i
     a = time()
     crender(hpg, step_url)
+    commit(hpg)
     print("Duration:", (time() - a) * 1000, "ms")
-    hpg.event_handler_callback_str.insert(0, "{")
-    hpg.event_handler_callback_str.append("}")
-    print(hpg.event_handler_callback_str)
-    c.hypergen.into.append(hpg.html)
-    c.hypergen.event_handler_callbacks.update(json.loads(hpg.event_handler_callback_str))
+    

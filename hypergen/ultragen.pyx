@@ -1,27 +1,28 @@
 # cython: c_string_type=unicode, c_string_encoding=utf8, language_level=3str
 # distutils: language=c++
+import json
+
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 cimport cython
-
 from libc.stdio cimport printf, sprintf
-
 from cymem.cymem cimport Pool
+
+from hypergen.core import context as c
 
 cdef:
     string T = <char*>"__TERM__" # Terminate list of strings
 
 # Hypergen state passed around to everything
-cdef struct Hpg:
-    string html
-    unordered_map [string, string] event_handler_callback_strs
-
 cdef Hpg make_hpg():
-    cdef:
-        unordered_map [string, string] event_handler_callback_strs
-        hpg = Hpg(<char*>"", <char*>"")
+    return Hpg(<char*>"", <char*>"{")
 
-    return hpg
+cdef void commit(Hpg &hpg):
+    # TODO: Dont double encode json, use something like this instead:
+    # https://stackoverflow.com/questions/12397279/custom-json-encoder-in-python-with-precomputed-literal-json
+    hpg.event_handler_callback_str.append("}")
+    c.hypergen.into.append(hpg.html)
+    c.hypergen.event_handler_callbacks.update(json.loads(hpg.event_handler_callback_str))
     
 # Callback options
 cdef struct CbOpts:
@@ -62,7 +63,7 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args,
     html.append(client_state_key)
     html.append("')")
 
-    if hpg.event_handler_callback_str != <char*> "":
+    if hpg.event_handler_callback_str != <char*> "{":
         event_handler_callback.append(',')
     event_handler_callback.append('"')
     event_handler_callback.append(client_state_key)
