@@ -11,7 +11,7 @@ from cymem.cymem cimport Pool
 from hypergen.core import context as c
 
 cdef:
-    string T = <char*>"__TERM__" # Terminate list of strings
+    char* T = <char*>"__TERM__" # Terminate list of strings
 
 # Hypergen state passed around to everything
 cdef Hpg make_hpg():
@@ -27,13 +27,13 @@ cdef void commit(Hpg &hpg):
 # Callback options
 cdef struct CbOpts:
     int blocks
-    string confirm_
+    char* confirm_
     int debounce
     int clear
-    string element_id
+    char* element_id
     int upload_files
 
-cdef CbOpts make_cb_opts(string id_, int blocks=False, string confirm=<char*>"", int debounce=0, int clear=False,
+cdef CbOpts make_cb_opts(char* id_, int blocks=False, char* confirm=<char*>"", int debounce=0, int clear=False,
                          int upload_files=False) nogil:
     cdef CbOpts opts
     opts.element_id = id_
@@ -46,7 +46,7 @@ cdef CbOpts make_cb_opts(string id_, int blocks=False, string confirm=<char*>"",
     return opts
 
 # Server callback
-cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args, CbOpts cb_opts) nogil:
+cdef const char* cb(Hpg &hpg, char* id_, char* attr_name, char* url, char** args, CbOpts cb_opts) nogil:
     cdef:
         string html
         string client_state_key
@@ -100,8 +100,6 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args,
     event_handler_callback.append("]")
     
     hpg.event_handler_callback_str.append(event_handler_callback)
-    
-    return html
 
 # Convert an int or float to a string
 
@@ -130,7 +128,7 @@ cdef string arg_i(int v) nogil:
 
 # Cast functions for callback arguments
 
-cdef string arg_s(string v) nogil:
+cdef string arg_s(char* v) nogil:
     cdef string s
     s.append('"')
     s.append(v)
@@ -142,7 +140,7 @@ cdef struct ArgElOpts:
     string value_func
     string coerce_func
 
-cdef string arg_el(string id_, ArgElOpts opts) nogil:
+cdef string arg_el(char* id_, ArgElOpts opts) nogil:
     cdef string s
     s.append('["_","element_value",["hypergen.read.value", null, "')
     s.append(id_)
@@ -151,12 +149,12 @@ cdef string arg_el(string id_, ArgElOpts opts) nogil:
     return s
 
 # Base HTML element
-cdef void element(string tag, Hpg &hpg, string s, string* attrs) nogil:
+cdef void element(char* tag, Hpg &hpg, char* s, char** attrs) nogil:
     element_open(tag, hpg, attrs)
     hpg.html.append(s)
     element_close(tag, hpg)
 
-cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:
+cdef void element_open(char* tag, Hpg &hpg, char** attrs) nogil:
     cdef int i, j
     hpg.html.append('<')
     hpg.html.append(tag)
@@ -175,40 +173,40 @@ cdef void element_open(string tag, Hpg &hpg, string* attrs) nogil:
 
     hpg.html.append('>')
 
-cdef void element_close(string tag, Hpg &hpg) nogil:
+cdef void element_close(char* tag, Hpg &hpg) nogil:
     hpg.html.append('</')
     hpg.html.append(tag)
     hpg.html.append('>\n')
     
 # HTML elements
-cdef inline void div(Hpg &hpg, string s, string* attrs) nogil:
+cdef inline void div(Hpg &hpg, char* s, char** attrs) nogil:
     element(<char*>"div", hpg, s, attrs)
 
-cdef inline void h1(Hpg &hpg, string s, string* attrs) nogil:
+cdef inline void h1(Hpg &hpg, char* s, char** attrs) nogil:
     element(<char*>"h1", hpg, s, attrs)
 
-cdef inline void b(Hpg &hpg, string s, string* attrs) nogil:
+cdef inline void b(Hpg &hpg, char* s, char** attrs) nogil:
     element(<char*>"b", hpg, s, attrs)
 
-cdef inline void button(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void button(Hpg &hpg, char* s, char** attrs=[T]) nogil:
     element(<char*>"button", hpg, s, attrs)
 
-cdef inline int table_o(Hpg &hpg, string* attrs) nogil:
+cdef inline int table_o(Hpg &hpg, char** attrs) nogil:
     element_open(<char*>"table", hpg, attrs)
     return True
 
 cdef inline void table_c(Hpg &hpg) nogil:
     element_close(<char*>"table", hpg)
     
-cdef inline void tr(Hpg &hpg, string s, string* attrs) nogil:
+cdef inline void tr(Hpg &hpg, char* s, char** attrs) nogil:
     element(<char*>"tr", hpg, s, attrs)
 
-cdef inline int tr_o(Hpg &hpg, string* attrs) nogil:
+cdef inline int tr_o(Hpg &hpg, char** attrs) nogil:
     element_open(<char*>"tr", hpg, attrs)
     return True
 
 cdef inline void tr_c(Hpg &hpg) nogil:
     element_close(<char*>"tr", hpg)
 
-cdef inline void td(Hpg &hpg, string s, string* attrs) nogil:
+cdef inline void td(Hpg &hpg, char* s, char** attrs) nogil:
     element(<char*>"td", hpg, s, attrs)

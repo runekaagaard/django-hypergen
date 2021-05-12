@@ -14,6 +14,7 @@ from pyrsistent import pmap, m
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_text
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.conf import settings
 
 __all__ = [
     "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi",
@@ -104,28 +105,30 @@ def hypergen_to_string(func, *args, **kwargs):
 
         return html
 
-def hypergen_response(html_or_commands_or_http_response):
+def hypergen_response(html_or_commands_or_http_response, status=None):
     value = html_or_commands_or_http_response
     if isinstance(value, HttpResponseRedirect):
         if c.request.is_ajax():
-            return HttpResponse(dumps([["hypergen.redirect", value["Location"]]]), status=200,
+            return HttpResponse(dumps([["hypergen.redirect", value["Location"]]]), status=status,
                 content_type='application/json')
         else:
             return value
     elif isinstance(value, HttpResponse):
+        assert status is None
         assert not c.request.is_ajax()
         return value
     elif type(value) in (list, tuple):
         assert c.request.is_ajax()
-        return HttpResponse(dumps(value), status=200, content_type='application/json')
+        return HttpResponse(dumps(value), status=status, content_type='application/json')
     elif type(value) in (str, unicode):
         assert not c.request.is_ajax()
-        return HttpResponse(value)
+        return HttpResponse(value, status=status)
     else:
         raise Exception("Invalid response value: {}".format(repr(value)))
 
 def hypergen_to_response(func, *args, **kwargs):
-    return hypergen_response(hypergen(func, *args, **kwargs))
+    status = kwargs.pop("status", None)
+    return hypergen_response(hypergen(func, *args, **kwargs), status)
 
 def command(javascript_func_path, *args, **kwargs):
     prepend = kwargs.pop("prepend", False)
@@ -203,7 +206,7 @@ def callback(url_or_view, *cb_args, **kwargs):
         cmd = command(
             "hypergen.callback", url, [fix_this(x) for x in cb_args],
             d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear,
-            elementId=element.attrs["id_"].v), return_=True)
+            elementId=element.attrs["id_"].v), return_=True, debug=settings.DEBUG)
         cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
 
         c.hypergen.event_handler_callbacks[cmd_id] = cmd

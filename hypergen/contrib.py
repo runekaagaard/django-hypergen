@@ -203,7 +203,8 @@ def hypergen_permission_required(perm, login_url=None, raise_exception=False, on
     Writes a set of matched perms to the global context at c.hypergen.matched_perms.
     """
     def check_perms(user):
-        if isinstance(perm, str):
+        # TODO: Fix for python2 vs 3.
+        if isinstance(perm, str) or isinstance(perm, unicode):
             perms = (perm,)
         else:
             perms = perm

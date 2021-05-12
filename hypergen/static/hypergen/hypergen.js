@@ -80,7 +80,7 @@ export const setClientState = function(at, value) {
 var i = 0
 var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
-                                             params={}, meta={}, clear=false, elementId=null}={}) {
+                                             params={}, meta={}, clear=false, elementId=null, debug=false}={}) {
   let postIt = function() {
     let json
     console.log("REQUEST", url, args, debounce)
@@ -124,10 +124,12 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     }, (data, jsonOk, xhr) => {
       isBlocked = false
       console.error("Hypergen post error occured", data)
-      /* if (xhr.getResponseHeader("Content-Type") === "text/plain") {
-       *   data = "<pre><code>" + data + "</pre></code>"
-       * }
-       * document.getElementsByTagName("html")[0].innerHTML = data */
+      if (debug !== true) {
+        if (xhr.getResponseHeader("Content-Type") === "text/plain") {
+          data = "<pre><code>" + data + "</pre></code>"
+        }
+        document.getElementsByTagName("html")[0].innerHTML = data
+      }
     }, params)
   }
   if (debounce === 0) {
