@@ -2,20 +2,18 @@
 # distutils: language=c++
 import json
 
-from libcpp.string cimport string
-from libcpp.unordered_map cimport unordered_map
 cimport cython
+from libcpp.string cimport string
 from libc.stdio cimport printf, sprintf
-from cymem.cymem cimport Pool
 
 from hypergen.core import context as c
 
 cdef:
-    char* T = <char*>"__TERM__" # Terminate list of strings
+    string T = <char*>"__TERM__" # Terminate list of strings
 
 # Hypergen state passed around to everything
 cdef Hpg make_hpg():
-    return Hpg(<char*>"", <char*>"{")
+    return Hpg("", "{")
 
 cdef void commit(Hpg &hpg):
     # TODO: Dont double encode json, use something like this instead:
@@ -24,36 +22,14 @@ cdef void commit(Hpg &hpg):
     c.hypergen.into.append(hpg.html)
     c.hypergen.event_handler_callbacks.update(json.loads(hpg.event_handler_callback_str))
     
-# Callback options
-cdef struct CbOpts:
-    int blocks
-    char* confirm_
-    int debounce
-    int clear
-    char* element_id
-    int upload_files
-
-cdef CbOpts make_cb_opts(char* id_, int blocks=False, char* confirm=<char*>"", int debounce=0, int clear=False,
-                         int upload_files=False) nogil:
-    cdef CbOpts opts
-    opts.element_id = id_
-    opts.blocks = blocks
-    opts.confirm_ = confirm
-    opts.debounce = debounce
-    opts.clear = clear
-    opts.upload_files = upload_files
-    
-    return opts
-
 # Server callback
-cdef const char* cb(Hpg &hpg, char* id_, char* attr_name, char* url, char** args, CbOpts cb_opts) nogil:
+cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args=[T], int blocks=False,
+               string confirm=<char*>"", int debounce=0, int clear=False, int upload_files=False) nogil:
     cdef:
         string html
         string client_state_key
         string event_handler_callback
         int i
-        int arg_i
-        char s[100]
         
     client_state_key.append(id_)
     client_state_key.append("__")
@@ -78,28 +54,30 @@ cdef const char* cb(Hpg &hpg, char* id_, char* attr_name, char* url, char** args
         arg = args[i]
         if arg == T:
             break
-        if i != 0:
+        elif i != 0:
             event_handler_callback.append(",")
         event_handler_callback.append(arg)
     event_handler_callback.append(']')
 
     event_handler_callback.append(', {')
     event_handler_callback.append('"blocks":')
-    event_handler_callback.append("true") if cb_opts.blocks is True else event_handler_callback.append("false")
+    event_handler_callback.append("true") if blocks is True else event_handler_callback.append("false")
     event_handler_callback.append(',"debounce":')
-    event_handler_callback.append(n2s(cb_opts.debounce))
+    event_handler_callback.append(n2s(debounce))
     event_handler_callback.append(',"clear":')
-    event_handler_callback.append("true") if cb_opts.clear is True else event_handler_callback.append("false")
+    event_handler_callback.append("true") if clear is True else event_handler_callback.append("false")
     event_handler_callback.append(',"elementId":"')
     event_handler_callback.append(id_)
     event_handler_callback.append('"')
     event_handler_callback.append(',"uploadFiles":')
-    event_handler_callback.append("true") if cb_opts.upload_files is True else event_handler_callback.append("false")
+    event_handler_callback.append("true") if upload_files is True else event_handler_callback.append("false")
         
     event_handler_callback.append('}')
     event_handler_callback.append("]")
     
     hpg.event_handler_callback_str.append(event_handler_callback)
+
+    return html
 
 # Convert an int or float to a string
 
@@ -128,7 +106,7 @@ cdef string arg_i(int v) nogil:
 
 # Cast functions for callback arguments
 
-cdef string arg_s(char* v) nogil:
+cdef string arg_s(string v) nogil:
     cdef string s
     s.append('"')
     s.append(v)
@@ -140,21 +118,31 @@ cdef struct ArgElOpts:
     string value_func
     string coerce_func
 
-cdef string arg_el(char* id_, ArgElOpts opts) nogil:
+cdef string arg_el(string id_, string value_func=<char*>"hypergen.read.value", string coerce_func=<char*>"null") nogil:
     cdef string s
-    s.append('["_","element_value",["hypergen.read.value", null, "')
+    s.append('["_","element_value",["')
+    s.append(value_func)
+    s.append('", ')
+    if coerce_func == <char*>"null":
+        s.append("null")
+    else:
+        s.append('"')
+        s.append(coerce_func)
+        s.append('"')
+        
+    s.append(', "')
     s.append(id_)
     s.append('"]]')
 
     return s
 
 # Base HTML element
-cdef void element(char* tag, Hpg &hpg, char* s, char** attrs) nogil:
+cdef void element(string tag, Hpg &hpg, string s, string* attrs=[T]) nogil:
     element_open(tag, hpg, attrs)
     hpg.html.append(s)
     element_close(tag, hpg)
 
-cdef void element_open(char* tag, Hpg &hpg, char** attrs) nogil:
+cdef void element_open(string tag, Hpg &hpg, string* attrs=[T]) nogil:
     cdef int i, j
     hpg.html.append('<')
     hpg.html.append(tag)
@@ -173,40 +161,43 @@ cdef void element_open(char* tag, Hpg &hpg, char** attrs) nogil:
 
     hpg.html.append('>')
 
-cdef void element_close(char* tag, Hpg &hpg) nogil:
+cdef void element_close(string tag, Hpg &hpg) nogil:
     hpg.html.append('</')
     hpg.html.append(tag)
     hpg.html.append('>\n')
     
 # HTML elements
-cdef inline void div(Hpg &hpg, char* s, char** attrs) nogil:
+cdef inline void div(Hpg &hpg, string s, string* attrs=[T]) nogil:
     element(<char*>"div", hpg, s, attrs)
 
-cdef inline void h1(Hpg &hpg, char* s, char** attrs) nogil:
+cdef inline void h1(Hpg &hpg, string s, string* attrs=[T]) nogil:
     element(<char*>"h1", hpg, s, attrs)
 
-cdef inline void b(Hpg &hpg, char* s, char** attrs) nogil:
+cdef inline void b(Hpg &hpg, string s, string* attrs=[T]) nogil:
     element(<char*>"b", hpg, s, attrs)
 
-cdef inline void button(Hpg &hpg, char* s, char** attrs=[T]) nogil:
+cdef inline void button(Hpg &hpg, string s, string* attrs=[T]) nogil:
     element(<char*>"button", hpg, s, attrs)
 
-cdef inline int table_o(Hpg &hpg, char** attrs) nogil:
+cdef inline int table_o(Hpg &hpg, string* attrs=[T]) nogil:
     element_open(<char*>"table", hpg, attrs)
     return True
 
 cdef inline void table_c(Hpg &hpg) nogil:
     element_close(<char*>"table", hpg)
     
-cdef inline void tr(Hpg &hpg, char* s, char** attrs) nogil:
+cdef inline void tr(Hpg &hpg, string s, string* attrs=[T]) nogil:
     element(<char*>"tr", hpg, s, attrs)
 
-cdef inline int tr_o(Hpg &hpg, char** attrs) nogil:
+cdef inline int tr_o(Hpg &hpg, string* attrs=[T]) nogil:
     element_open(<char*>"tr", hpg, attrs)
     return True
 
 cdef inline void tr_c(Hpg &hpg) nogil:
     element_close(<char*>"tr", hpg)
 
-cdef inline void td(Hpg &hpg, char* s, char** attrs) nogil:
+cdef inline void td(Hpg &hpg, string s, string* attrs=[T]) nogil:
     element(<char*>"td", hpg, s, attrs)
+
+cdef inline void textarea(Hpg &hpg, string s, string* attrs=[T]) nogil:
+    element(<char*>"textarea", hpg, s, attrs)

@@ -2,9 +2,8 @@
 # distutils: language=c++
 cimport cython
 from libcpp.string cimport string
-from libcpp.unordered_map cimport unordered_map
 
-cdef char* T
+cdef string T
 ctypedef char* s # Shortcut for char*
 ctypedef fused number:
     cython.int
@@ -14,30 +13,22 @@ cdef struct Hpg:
     string event_handler_callback_str
 cdef Hpg make_hpg()
 cdef void commit(Hpg &hpg)
-cdef struct CbOpts:
-    int blocks
-    char* confirm_
-    int debounce
-    int clear
-    char* element_id
-    int upload_files
-cdef CbOpts make_cb_opts(char* id_, int blocks=*, char* confirm=*, int debounce=*, int clear=*,
-                         int upload_files=*) nogil
-cdef char* cb(Hpg &hpg, char* id_, char* attr_name, char* url, char** args, CbOpts cb_opts) nogil
+cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args=*, int blocks=*,
+               string confirm=*, int debounce=*, int clear=*, int upload_files=*) nogil
 cdef string n2s(number v, int float_precision=*) nogil
 cdef string arg_i(int v) nogil
-cdef string arg_s(char* v) nogil
-cdef struct ArgElOpts
-cdef string arg_el(char* id_, ArgElOpts opts) nogil
-cdef void element(char* tag, Hpg &hpg, char* s, char** attrs) nogil
-cdef void div(Hpg &hpg, char* s, char** attrs) nogil
-cdef void h1(Hpg &hpg, char* s, char** attrs) nogil
-cdef void b(Hpg &hpg, char* s, char** attrs) nogil
-cdef void button(Hpg &hpg, char* s, char** attrs=*) nogil
-cdef void tr(Hpg &hpg, char* s, char** attrs) nogil
-cdef int tr_o(Hpg &hpg, char** attrs) nogil
+cdef string arg_s(string v) nogil
+cdef string arg_el(string id_, string value_func=*, string coerce_func=*) nogil
+cdef void element(string tag, Hpg &hpg, string s, string* attrs=*) nogil
+cdef void div(Hpg &hpg, string s, string* attrs=*) nogil
+cdef void h1(Hpg &hpg, string s, string* attrs=*) nogil
+cdef void b(Hpg &hpg, string s, string* attrs=*) nogil
+cdef void button(Hpg &hpg, string s, string* attrs=*) nogil
+cdef void tr(Hpg &hpg, string s, string* attrs=*) nogil
+cdef int tr_o(Hpg &hpg, string* attrs=*) nogil
 cdef void tr_c(Hpg &hpg) nogil
-cdef int table_o(Hpg &hpg, char** attrs) nogil
+cdef int table_o(Hpg &hpg, string* attrs=*) nogil
 cdef void table_c(Hpg &hpg) nogil
-cdef void td(Hpg &hpg, char* s, char** attrs) nogil
+cdef void td(Hpg &hpg, string s, string* attrs=*) nogil
+cdef void textarea(Hpg &hpg, string s, string* attrs=*) nogil
 

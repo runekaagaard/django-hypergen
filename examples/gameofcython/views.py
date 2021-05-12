@@ -43,7 +43,8 @@ def gameofcython(request):
     ''')
 
 @hypergen_callback(view=gameofcython, **HYPERGEN_SETTINGS)
-def step(request):
+def step(request, *args):
+    print("STEP ARGS", args)
     if STATE == RUNNING:
         cstep()
     cstep()

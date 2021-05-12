@@ -60,25 +60,28 @@ cdef void creset() nogil:
 cdef void crender(Hpg &hpg, char* step_url) nogil:
     cdef int x, y
     cdef string cls
-    h1(hpg, "Game of life rendered with ultragen", ["color", "øæå", T])
-    table_o(hpg, [T])
+    h1(hpg, <s>"Game of life rendered with ultragen", [<s>"style", <s>"color: green;\*æøå*\ ", T])
+    table_o(hpg)
     for y in range(HEIGHT):
-        tr_o(hpg, [T])
+        tr_o(hpg)
         for x in range(WIDTH):
             cls = <s>""
             if state[x][y] == 1:
                 cls = <s>"black"
-            td(hpg, "", ["class", "kkk", T])
-            # TODO: Showcase this.
-            # td(hpg, n2s(200), [T])
-            # td(hpg, n2s(200.9), [T])
-            # td(hpg, n2s(200.92344353462345, 3), [T])
+            td(hpg, <s>"", [<s>"class", cls, T])
         tr_c(hpg)
     table_c(hpg)
     
-    cdef CbOpts cb_opts = make_cb_opts("step")
-    button(hpg, "Step", ["onclick", cb(hpg, "step", "onclick", step_url, [T], cb_opts), T])
-    #button(hpg, "Stop", ["onclick", cb(hpg, "stop", "onclick", step_url, [T], cb_opts), T])
+    button(hpg, <s>"Step", [<s>"id", <s>"step",
+                            <s>"onclick", cb(hpg, <s>"step", <s>"onclick", step_url,
+                                             [<s>"42", arg_el(<s>"mytext"), T]),
+                            T])
+    
+    h1(hpg, <s>"Other ultragen features")
+    div(hpg, n2s(200))
+    div(hpg, n2s(200.9))
+    div(hpg, n2s(200.92344353462345, 3))
+    textarea(hpg, <s>"My value", [<s>"id", <s>"mytext", T])
                 
 def step():
     cstep()
