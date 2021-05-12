@@ -97,26 +97,26 @@ cdef string n2s(number v, int float_precision=-1) nogil:
         raise Exception("Unknown type")
     
     return <string>s
-    
-cdef string arg_i(int v) nogil:
-    cdef:
-        char s[100]
-    sprintf(s, "%d", v)
-    return <string> s
 
-# Cast functions for callback arguments
-
-cdef string arg_s(string v) nogil:
-    cdef string s
-    s.append('"')
-    s.append(v)
-    s.append('"')
-    
-    return s
-
-cdef struct ArgElOpts:
-    string value_func
-    string coerce_func
+cdef string arg(whatever v) nogil:
+    cdef char s[20]
+    cdef string cs
+    if whatever is cython.int:
+        sprintf(s, "%d", v)
+        return <string> s
+    elif whatever is cython.double:
+        sprintf(s, "%f", v)
+        return <string> s
+    elif whatever is cython.p_char:
+        cs.append('"')
+        cs.append(v)
+        cs.append('"')
+        return cs
+    elif whatever is string:
+        return v
+    else:
+        raise Exception("Bad type")
+        
 
 cdef string arg_el(string id_, string value_func=<char*>"hypergen.read.value", string coerce_func=<char*>"null") nogil:
     cdef string s

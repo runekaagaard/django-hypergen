@@ -74,7 +74,8 @@ cdef void crender(Hpg &hpg, char* step_url) nogil:
     
     button(hpg, <s>"Step", [<s>"id", <s>"step",
                             <s>"onclick", cb(hpg, <s>"step", <s>"onclick", step_url,
-                                             [<s>"42", arg_el(<s>"mytext"), T]),
+                                             [<s>"42", arg_el(<s>"mytext"),
+                                              arg(42), arg(42.912), arg("foo"), T]),
                             T])
     
     h1(hpg, <s>"Other ultragen features")

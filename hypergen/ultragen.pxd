@@ -8,6 +8,11 @@ ctypedef char* s # Shortcut for char*
 ctypedef fused number:
     cython.int
     cython.double
+ctypedef fused whatever:
+    cython.int
+    cython.double
+    cython.p_char
+    string
 cdef struct Hpg:
     string html
     string event_handler_callback_str
@@ -16,8 +21,7 @@ cdef void commit(Hpg &hpg)
 cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args=*, int blocks=*,
                string confirm=*, int debounce=*, int clear=*, int upload_files=*) nogil
 cdef string n2s(number v, int float_precision=*) nogil
-cdef string arg_i(int v) nogil
-cdef string arg_s(string v) nogil
+cdef string arg(whatever v) nogil
 cdef string arg_el(string id_, string value_func=*, string coerce_func=*) nogil
 cdef void element(string tag, Hpg &hpg, string s, string* attrs=*) nogil
 cdef void div(Hpg &hpg, string s, string* attrs=*) nogil
