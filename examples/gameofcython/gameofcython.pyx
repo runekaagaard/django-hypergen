@@ -84,6 +84,7 @@ cdef void crender(Hpg &hpg, char* step_url) nogil:
     div(hpg, n2s(200.92344353462345, 3))
     div(hpg, 2222)
     div(hpg, 19.42)
+    div(hpg, "NCIE")
     textarea(hpg, <s>"My value", [<s>"id", <s>"mytext", T])
 
 cdef void crender2(Hpg &hpg, foo) nogil:

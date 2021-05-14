@@ -1,11 +1,12 @@
 # coding = utf-8
 # pylint: disable=no-value-for-parameter
-d = dict
+import operator
 
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from hypergen.core import hypergen_context_decorator, command, hypergen_response, context as c, loads
 
+d = dict
 # Only works in a one thread, one user context.
 STACK = []
 
@@ -23,54 +24,30 @@ def push(request):
     return hypergen_response(c.hypergen.commands)
 
 @hypergen_context_decorator
-def plus(request, *args):
-    global STACK
-    STACK = [sum(STACK)]
-    command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK)))
-    return hypergen_response(c.hypergen.commands)
+def add(request, *args):
+    return apply_operation(operator.add)
 
 @hypergen_context_decorator
-def minus(request, *args):
-    global STACK
-    res = None
-    for n in STACK:
-        if res is None:
-            res = n
-            continue
-        res -= n
-
-    STACK = [res]
-    command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK)))
-    return hypergen_response(c.hypergen.commands)
+def subtract(request, *args):
+    return apply_operation(operator.sub)
 
 @hypergen_context_decorator
 def multiply(request, *args):
-    global STACK
-    res = None
-    for n in STACK:
-        if res is None:
-            res = n
-            continue
-        res *= n
-
-    STACK = [res]
-    command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK)))
-    return hypergen_response(c.hypergen.commands)
+    return apply_operation(operator.mul)
 
 @hypergen_context_decorator
 def divide(request, *args):
+    if len(STACK) and STACK[-1] == 0:
+        return hypergen_response([["alert", "Can't divide by zero"]])
+
+    return apply_operation(operator.truediv)
+
+def apply_operation(op):
     global STACK
-    res = None
-    for n in STACK:
-        if res is None:
-            res = n
-            continue
-        elif n == 0:
-            res = 0
-            break
+    if len(STACK) < 2:
+        return hypergen_response([["alert", "Stack has too few elements"]])
 
-        res /= n
+    STACK.append(op(STACK.pop(), STACK.pop()))
 
-    STACK = [res]
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK)))
     return hypergen_response(c.hypergen.commands)
