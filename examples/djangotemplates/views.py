@@ -24,6 +24,14 @@ def push(request):
     return hypergen_response(c.hypergen.commands)
 
 @hypergen_context_decorator
+def reset(request):
+    global STACK
+    STACK = []
+
+    command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK)))
+    return hypergen_response(c.hypergen.commands)
+
+@hypergen_context_decorator
 def add(request, *args):
     return apply_operation(operator.add)
 
@@ -47,7 +55,8 @@ def apply_operation(op):
     if len(STACK) < 2:
         return hypergen_response([["alert", "Stack has too few elements"]])
 
-    STACK.append(op(STACK.pop(), STACK.pop()))
+    b, a = STACK.pop(), STACK.pop()
+    STACK.append(op(a, b))
 
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK)))
     return hypergen_response(c.hypergen.commands)

@@ -4,10 +4,11 @@
 {% url "djangotemplates:subtract" as u3 %}
 {% url "djangotemplates:multiply" as u4 %}
 {% url "djangotemplates:divide" as u5 %}
+{% url "djangotemplates:reset" as u6 %}
 
 <h2>Push number on stack</h2>
 
-<input id="number" type="number">
+<input id="number" type="number" autofocus>
 <button id="push" {% callback "push" "onclick" u1 "number"|element|coerce_float %}>Push</button>
 
 <h2>Perform operation</h2>
@@ -15,6 +16,7 @@
 <button id="subtract" {% callback "subtract" "onclick" u3 %}>-</button>
 <button id="multiply" {% callback "multiply" "onclick" u4 %}>*</button>
 <button id="divide" {% callback "divide" "onclick" u5 %}>/</button>
+<button id="reset" {% callback "reset" "onclick" u6 %}>C</button>
 
 <h2>Stack</h2>
 <ol>
