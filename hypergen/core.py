@@ -293,7 +293,7 @@ def call_js(command_path, *cb_args):
 
     return to_html
 
-def django_templates_callback(event_name, url_or_view, id_, *cb_args, **kwargs):
+def django_templates_callback(id_, event_name, url_or_view, *cb_args, **kwargs):
     js_value_func = kwargs.pop("js_value_func", "hypergen.read.value")
     js_coerce_func = kwargs.pop("js_coerce_func", None)
 

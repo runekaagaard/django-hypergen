@@ -12,8 +12,8 @@ d = dict
 register = template.Library()
 
 @register.simple_tag
-def callback(url_or_view, *cb_args, **config):
-    return django_templates_callback(url_or_view, *cb_args, **config)
+def callback(id_, event_name, url_or_view, *cb_args, **config):
+    return django_templates_callback(id_, event_name, url_or_view, *cb_args, **config)
 
 @register.filter
 def element(id_, js_coerce_func=None):
