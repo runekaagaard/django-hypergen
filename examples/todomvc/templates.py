@@ -15,6 +15,7 @@ def base():
             script(src=static("hypergen/hypergen.min.js"))
             link(static("todomvc.css"))
         with body():
+            p(a("Home", href="/"))
             with div(id_="content"):
                 yield
             with footer(class_="info"):
@@ -35,17 +36,17 @@ def todo_item(item):
     with li(class_=classes):
         if not is_editing:
             with div(class_="view"):
-                input_(class_="toggle", type_="checkbox", checked=item.is_completed,
-                    onclick=cb(toggle_is_completed, item.pk))
-                label(item.description, ondblclick=cb(start_edit, item.pk))
-                button(class_="destroy", onclick=cb(delete, item.pk))
+                input_(id_=("toggle_is_completed", item.pk), class_="toggle", type_="checkbox",
+                    checked=item.is_completed, onclick=cb(toggle_is_completed, item.pk))
+                label(item.description, id_=("start_edit", item.pk), ondblclick=cb(start_edit, item.pk))
+                button(class_="destroy", id_=("destroy", item.pk), onclick=cb(delete, item.pk))
         else:
             input_(id_="edit-item", class_="edit", autofocus=True, value=item.description,
                 onkeyup=cb(submit_edit, item.pk, THIS,
                 event_matches={"key": "Enter"}), onblur=cb(submit_edit, item.pk, THIS))
 
 def content(items, filtering, all_completed):
-    from todomvc.views import ALL, ACTIVE, COMPLETED, index, add, clear_completed, toggle_all
+    from todomvc.views import ALL, ACTIVE, COMPLETED, todomvc, add, clear_completed, toggle_all
     with section(class_="todoapp"):
         with header(class_="header"):
             h1("todos")
@@ -67,9 +68,16 @@ def content(items, filtering, all_completed):
             span(strong(len(items), "items" if len(items) > 1 else "item", sep=" "), class_="todo-count")
 
             with ul(class_="filters"):
-                li(a("All", class_="selected" if filtering == ALL else "", href=index.reverse(ALL)))
-                li(a("Active", class_="selected" if filtering == ACTIVE else "", href=index.reverse(ACTIVE)))
-                li(a("Completed", class_="selected" if filtering == COMPLETED else "", href=index.reverse(COMPLETED)))
+                li(
+                    a("All", class_="selected" if filtering == ALL else "", href=todomvc.reverse(ALL),
+                    id_="filter-all"))
+                li(
+                    a("Active", class_="selected" if filtering == ACTIVE else "", href=todomvc.reverse(ACTIVE),
+                    id_="filter-active"))
+                li(
+                    a("Completed", class_="selected" if filtering == COMPLETED else "",
+                    href=todomvc.reverse(COMPLETED), id_="filter-completed"))
 
             if items.filter(is_completed=True):
-                button("Clear completed", class_="clear-completed", onclick=cb(clear_completed))
+                button("Clear completed", id_="clear-completed", class_="clear-completed",
+                    onclick=cb(clear_completed))

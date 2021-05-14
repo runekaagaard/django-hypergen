@@ -13,11 +13,8 @@ Hypergen is a framework on top of Django that makes it easy to create responsive
     cd examples
     python manage.py migrate
     python manage.py runserver
-    # open
-    #     http://127.0.0.1:8000/todomvc/
-    # or
-    #     http://127.0.0.1:8000/inputs/
-
+    # open http://127.0.0.1:8000 in your browser
+    
 # Developing
 
 ## Backend

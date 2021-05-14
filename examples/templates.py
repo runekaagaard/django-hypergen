@@ -20,5 +20,6 @@ def base_template():
             # link(SAKURA)
 
         with body(style=d(max_width="none")):
+            p(a("Home", href="/"))
             with div(id_="content"):
                 yield

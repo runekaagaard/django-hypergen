@@ -13,7 +13,7 @@ import templates as shared_templates
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content",
     namespace="inputs", app_name="inputs")
 
-@hypergen_view(url="$^", **HYPERGEN_SETTINGS)
+@hypergen_view(url="", **HYPERGEN_SETTINGS)
 def inputs(request):
     INPUT_TYPES = [
         ("button", d(value="clicked")),
