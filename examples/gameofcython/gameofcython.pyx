@@ -85,7 +85,13 @@ cdef void crender(Hpg &hpg, char* step_url) nogil:
     div(hpg, 2222)
     div(hpg, 19.42)
     textarea(hpg, <s>"My value", [<s>"id", <s>"mytext", T])
-                
+
+cdef void crender2(Hpg &hpg, foo) nogil:
+    div(hpg, "KO")
+    with gil:
+        div(hpg, <string>foo["foo"])
+    
+    
 def step():
     cstep()
                 
@@ -97,8 +103,7 @@ def render(step_url):
     cdef int i
     a = time()
     crender(hpg, step_url)
-    foo = {"foo": "OK"}
-    div(hpg, <string>foo["foo"])
+    crender2(hpg, {"foo": "OK"})
     commit(hpg)
     print("Duration:", (time() - a) * 1000, "ms")
     
