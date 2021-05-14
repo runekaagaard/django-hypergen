@@ -293,37 +293,6 @@ def call_js(command_path, *cb_args):
 
     return to_html
 
-def django_templates_callback(id_, event_name, url_or_view, *cb_args, **kwargs):
-    debounce = kwargs.pop("debounce", 0)
-    confirm_ = kwargs.pop("confirm", False)
-    blocks = kwargs.pop("blocks", False)
-    upload_files = kwargs.pop("upload_files", False)
-    event_matches = kwargs.pop("event_matches", False)
-    clear = kwargs.pop("clear", False)
-    assert not kwargs, "Invalid callback kwarg(s): {}".format(repr(kwargs))
-
-    if callable(url_or_view):
-        assert hasattr(url_or_view, "reverse") and callable(
-            url_or_view.reverse), "Must have a reverse() attribute {}".format(url_or_view)
-        url = url_or_view.reverse()
-    else:
-        url = url_or_view
-
-    cmd = command(
-        "hypergen.callback", url, cb_args,
-        d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear, elementId=id_,
-        debug=settings.DEBUG), return_=True)
-    cmd_id = "{}__{}".format(id_, event_name)
-
-    c.hypergen.event_handler_callbacks[cmd_id] = cmd
-
-    if event_matches:
-        em = ", {}".format(escape(dumps(event_matches)))
-    else:
-        em = ""
-
-    return mark_safe("".join([t(event_name), '="', "e(event,'{}'{})".format(cmd_id, em), '"']))
-
 ### Base dom element ###
 class THIS(object):
     pass

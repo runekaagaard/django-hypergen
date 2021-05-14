@@ -8,7 +8,7 @@
 <h2>Push number on stack</h2>
 
 <input id="number" type="number">
-<button id="push" {% callback "push" "onclick" u1 "number"|element:"hypergen.coerce.float" %}>Push</button>
+<button id="push" {% callback "push" "onclick" u1 "number"|element|coerce_float %}>Push</button>
 
 <h2>Perform operation</h2>
 <button id="plus" {% callback "plus" "onclick" u2 %}>+</button>
