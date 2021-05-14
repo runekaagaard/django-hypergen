@@ -1,4 +1,4 @@
-{% load callback %}
+{% load hypergen %}
 {% url "djangotemplates:push" as u1 %}
 {% url "djangotemplates:plus" as u2 %}
 {% url "djangotemplates:minus" as u3 %}
@@ -8,7 +8,7 @@
 <h2>Push number on stack</h2>
 
 <input id="number" type="number">
-<button id="push" {% callback "onclick" u1 "push" "#number" %}>Push</button>
+<button id="push" {% callback "onclick" u1 "push" "number"|element:"hypergen.coerce.float" %}>Push</button>
 
 <h2>Perform operation</h2>
 <button id="plus" {% callback "onclick" u2 "plus" %}>+</button>

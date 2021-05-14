@@ -5,11 +5,19 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.templatetags.static import static
 
-from hypergen.core import context as c, dumps, command
+from hypergen.core import django_templates_callback, context as c, dumps, command
 
 d = dict
 
 register = template.Library()
+
+@register.simple_tag
+def callback(url_or_view, *cb_args, **config):
+    return django_templates_callback(url_or_view, *cb_args, **config)
+
+@register.filter
+def element(id_, js_coerce_func=None):
+    return ["_", "element_value", ["hypergen.read.value", js_coerce_func, id_]]
 
 @register.simple_tag
 def hypergen_footer():
