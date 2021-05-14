@@ -18,7 +18,7 @@ def push(request):
     number, = loads(request.POST["hypergen_data"])["args"]
     if number is not None:
         assert type(number) is float
-        STACK.append(float(number))
+        STACK.append(number)
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK)))
     return hypergen_response(c.hypergen.commands)
 
