@@ -57,7 +57,7 @@ cdef void creset() nogil:
             else:
                 state[x][y] = 0
 
-cdef void crender(Hpg &hpg, char* step_url, foo) nogil:
+cdef void crender(Hpg &hpg, char* step_url) nogil:
     cdef int x, y
     cdef string cls
     h1(hpg, <s>"Game of life rendered with ultragen", [<s>"style", <s>"color: green;\*æøå*\ ", T])
@@ -84,8 +84,6 @@ cdef void crender(Hpg &hpg, char* step_url, foo) nogil:
     div(hpg, n2s(200.92344353462345, 3))
     div(hpg, 2222)
     div(hpg, 19.42)
-    with gil:
-        div(hpg, <string>foo["foo"])
     textarea(hpg, <s>"My value", [<s>"id", <s>"mytext", T])
                 
 def step():
@@ -98,7 +96,9 @@ def render(step_url):
     cdef Hpg hpg = make_hpg()
     cdef int i
     a = time()
-    crender(hpg, step_url, {"foo": "OK"})
+    crender(hpg, step_url)
+    foo = {"foo": "OK"}
+    div(hpg, <string>foo["foo"])
     commit(hpg)
     print("Duration:", (time() - a) * 1000, "ms")
     
