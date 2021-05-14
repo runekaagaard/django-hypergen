@@ -294,18 +294,6 @@ def call_js(command_path, *cb_args):
     return to_html
 
 def django_templates_callback(id_, event_name, url_or_view, *cb_args, **kwargs):
-    js_value_func = kwargs.pop("js_value_func", "hypergen.read.value")
-    js_coerce_func = kwargs.pop("js_coerce_func", None)
-
-    def fix_cb_arg(x):
-        try:
-            if x.startswith("#"):
-                return ["_", "element_value", [js_value_func, js_coerce_func, x[1:]]]
-            else:
-                return x
-        except AttributeError:
-            return x
-
     debounce = kwargs.pop("debounce", 0)
     confirm_ = kwargs.pop("confirm", False)
     blocks = kwargs.pop("blocks", False)
@@ -320,8 +308,6 @@ def django_templates_callback(id_, event_name, url_or_view, *cb_args, **kwargs):
         url = url_or_view.reverse()
     else:
         url = url_or_view
-
-    cb_args = [fix_cb_arg(x) for x in cb_args]
 
     cmd = command(
         "hypergen.callback", url, cb_args,
