@@ -8,7 +8,12 @@ from hypergen.core import callback as cb
 from hypergen.core import context as c
 
 import templates as shared_templates
-from gameofcython.gameofcython import render, reset, step as cstep
+
+try:
+    from gameofcython.gameofcython import render, reset, step as cstep
+    module_found = True
+except ModuleNotFoundError:
+    module_found = False
 
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="gameofcython",
     app_name="gameofcython", base_template=shared_templates.base_template)
@@ -18,6 +23,10 @@ STATE = STOPPED
 
 @hypergen_view(url="", **HYPERGEN_SETTINGS)
 def gameofcython(request):
+    if not module_found:
+        p("Cython files are not compiled. Run 'make compile-cython' from the root of the repository.")
+        return
+
     if not c.request.is_ajax():
         reset()
 
