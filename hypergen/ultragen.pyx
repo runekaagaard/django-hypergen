@@ -10,6 +10,8 @@ from hypergen.core import context as c
 
 cdef:
     string T = <char*>"__TERM__" # Terminate list of strings
+    string* TT = [T]
+    
 
 # Hypergen state passed around to everything
 cdef Hpg make_hpg():
@@ -23,7 +25,7 @@ cdef void commit(Hpg &hpg):
     c.hypergen.event_handler_callbacks.update(json.loads(hpg.event_handler_callback_str))
     
 # Server callback
-cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args=[T], int blocks=False,
+cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args=TT, int blocks=False,
                string confirm=<char*>"", int debounce=0, int clear=False, int upload_files=False) nogil:
     cdef:
         string html
@@ -137,12 +139,24 @@ cdef string arg_el(string id_, string value_func=<char*>"hypergen.read.value", s
     return s
 
 # Base HTML element
-cdef void element(string tag, Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef void element(string tag, Hpg &hpg, whatever s, string* attrs=TT) nogil:
     element_open(tag, hpg, attrs)
-    hpg.html.append(s)
+    if whatever is cython.int:
+        hpg.html.append(n2s(s))
+    elif whatever is cython.double:
+        hpg.html.append(n2s(s))
+    elif whatever is cython.p_char:
+        hpg.html.append(s)
+    elif whatever is string:
+        hpg.html.append(s)
+    # elif whatever is unicode:
+    #     with gil:
+    #         hpg.html.append(<string>s)
+    else:
+        raise Exception("Bad type")
     element_close(tag, hpg)
 
-cdef void element_open(string tag, Hpg &hpg, string* attrs=[T]) nogil:
+cdef void element_open(string tag, Hpg &hpg, string* attrs=TT) nogil:
     cdef int i, j
     hpg.html.append('<')
     hpg.html.append(tag)
@@ -167,37 +181,37 @@ cdef void element_close(string tag, Hpg &hpg) nogil:
     hpg.html.append('>\n')
     
 # HTML elements
-cdef inline void div(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void div(Hpg &hpg, whatever s, string* attrs=TT) nogil:
     element(<char*>"div", hpg, s, attrs)
 
-cdef inline void h1(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void h1(Hpg &hpg, string s, string* attrs=TT) nogil:
     element(<char*>"h1", hpg, s, attrs)
 
-cdef inline void b(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void b(Hpg &hpg, string s, string* attrs=TT) nogil:
     element(<char*>"b", hpg, s, attrs)
 
-cdef inline void button(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void button(Hpg &hpg, string s, string* attrs=TT) nogil:
     element(<char*>"button", hpg, s, attrs)
 
-cdef inline int table_o(Hpg &hpg, string* attrs=[T]) nogil:
+cdef inline int table_o(Hpg &hpg, string* attrs=TT) nogil:
     element_open(<char*>"table", hpg, attrs)
     return True
 
 cdef inline void table_c(Hpg &hpg) nogil:
     element_close(<char*>"table", hpg)
     
-cdef inline void tr(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void tr(Hpg &hpg, string s, string* attrs=TT) nogil:
     element(<char*>"tr", hpg, s, attrs)
 
-cdef inline int tr_o(Hpg &hpg, string* attrs=[T]) nogil:
+cdef inline int tr_o(Hpg &hpg, string* attrs=TT) nogil:
     element_open(<char*>"tr", hpg, attrs)
     return True
 
 cdef inline void tr_c(Hpg &hpg) nogil:
     element_close(<char*>"tr", hpg)
 
-cdef inline void td(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void td(Hpg &hpg, string s, string* attrs=TT) nogil:
     element(<char*>"td", hpg, s, attrs)
 
-cdef inline void textarea(Hpg &hpg, string s, string* attrs=[T]) nogil:
+cdef inline void textarea(Hpg &hpg, string s, string* attrs=TT) nogil:
     element(<char*>"textarea", hpg, s, attrs)

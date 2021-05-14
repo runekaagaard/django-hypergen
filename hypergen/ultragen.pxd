@@ -23,8 +23,8 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args=
 cdef string n2s(number v, int float_precision=*) nogil
 cdef string arg(whatever v) nogil
 cdef string arg_el(string id_, string value_func=*, string coerce_func=*) nogil
-cdef void element(string tag, Hpg &hpg, string s, string* attrs=*) nogil
-cdef void div(Hpg &hpg, string s, string* attrs=*) nogil
+cdef void element(string tag, Hpg &hpg, whatever s, string* attrs=*) nogil
+cdef void div(Hpg &hpg, whatever s, string* attrs=*) nogil
 cdef void h1(Hpg &hpg, string s, string* attrs=*) nogil
 cdef void b(Hpg &hpg, string s, string* attrs=*) nogil
 cdef void button(Hpg &hpg, string s, string* attrs=*) nogil
