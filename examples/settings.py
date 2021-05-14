@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'hypergen',
     'todomvc',
     'inputs',
-    'gameofcython',]
+    'gameofcython',
+    'djangotemplates',]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware',

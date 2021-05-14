@@ -13,6 +13,7 @@ from pyrsistent import pmap, m
 
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 
@@ -55,6 +56,56 @@ else:
 
 OMIT = "__OMIT__"
 
+### Utilities ###
+
+def wrap2(f):
+    """
+    A a decorator decorator, allowing the decorator to be used as:
+        @decorator(with, arguments, and=kwargs)
+    or
+        @decorator
+
+    It does not work for a wrapped function that takes a callback as the only input.
+
+    It looks like this:
+
+        @wrap2
+        def mydecorator(func, *dargs, **dkwargs):
+            @wraps(func)
+            def _(*fargs, **fkwargs):
+                return func(*fargs, **fkwargs)
+
+            return _
+
+
+        @mydecorator
+        def myfunc(x, y=19):
+            return x + y
+
+
+        @mydecorator(42, foo=True)
+        def myfunc2(x, y=19):
+            return x + y
+    """
+    def _(*args, **kwargs):
+        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
+            f2 = f(args[0])
+            update_wrapper(f2, args[0])
+            return f2
+        else:
+
+            def f3(f4):
+                f5 = f(f4, *args, **kwargs)
+                update_wrapper(f5, f4)
+                return f5
+
+            return f3
+
+    return _
+
+def insert(source_str, insert_str, pos):
+    return ''.join((source_str[:pos], insert_str, source_str[pos:]))
+
 ### Rendering ###
 
 def default_wrap_elements(init, self, *children, **attrs):
@@ -70,6 +121,15 @@ def hypergen_context(data=None):
 
     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
     return c_
+
+@wrap2
+def hypergen_context_decorator(func, *dargs, **dkwargs):
+    @wraps(func)
+    def _(*fargs, **fkwargs):
+        with c(hypergen=hypergen_context()):
+            return func(*fargs, **fkwargs)
+
+    return _
 
 def hypergen(func, *args, **kwargs):
     a = time.time()
@@ -206,7 +266,7 @@ def callback(url_or_view, *cb_args, **kwargs):
         cmd = command(
             "hypergen.callback", url, [fix_this(x) for x in cb_args],
             d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear,
-            elementId=element.attrs["id_"].v), return_=True, debug=settings.DEBUG)
+            elementId=element.attrs["id_"].v, debug=settings.DEBUG), return_=True)
         cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
 
         c.hypergen.event_handler_callbacks[cmd_id] = cmd
@@ -232,6 +292,51 @@ def call_js(command_path, *cb_args):
         return [" ", t(k), '="', "e(event, '{}')".format(cmd_id), '"']
 
     return to_html
+
+def django_templates_callback(event_name, url_or_view, id_, *cb_args, **kwargs):
+    js_value_func = kwargs.pop("js_value_func", "hypergen.read.value")
+    js_coerce_func = kwargs.pop("js_coerce_func", None)
+
+    def fix_cb_arg(x):
+        try:
+            if x.startswith("#"):
+                return ["_", "element_value", [js_value_func, js_coerce_func, x[1:]]]
+            else:
+                return x
+        except AttributeError:
+            return x
+
+    debounce = kwargs.pop("debounce", 0)
+    confirm_ = kwargs.pop("confirm", False)
+    blocks = kwargs.pop("blocks", False)
+    upload_files = kwargs.pop("upload_files", False)
+    event_matches = kwargs.pop("event_matches", False)
+    clear = kwargs.pop("clear", False)
+    assert not kwargs, "Invalid callback kwarg(s): {}".format(repr(kwargs))
+
+    if callable(url_or_view):
+        assert hasattr(url_or_view, "reverse") and callable(
+            url_or_view.reverse), "Must have a reverse() attribute {}".format(url_or_view)
+        url = url_or_view.reverse()
+    else:
+        url = url_or_view
+
+    cb_args = [fix_cb_arg(x) for x in cb_args]
+
+    cmd = command(
+        "hypergen.callback", url, cb_args,
+        d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear, elementId=id_,
+        debug=settings.DEBUG), return_=True)
+    cmd_id = "{}__{}".format(id_, event_name)
+
+    c.hypergen.event_handler_callbacks[cmd_id] = cmd
+
+    if event_matches:
+        em = ", {}".format(escape(dumps(event_matches)))
+    else:
+        em = ""
+
+    return mark_safe("".join([t(event_name), '="', "e(event,'{}'{})".format(cmd_id, em), '"']))
 
 ### Base dom element ###
 class THIS(object):
@@ -842,53 +947,3 @@ class ContextMiddleware(object):
     def process_request(self, request):
         # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))
-
-### Utilities ###
-
-def wrap2(f):
-    """
-    A a decorator decorator, allowing the decorator to be used as:
-        @decorator(with, arguments, and=kwargs)
-    or
-        @decorator
-
-    It does not work for a wrapped function that takes a callback as the only input.
-
-    It looks like this:
-
-        @wrap2
-        def mydecorator(func, *dargs, **dkwargs):
-            @wraps(func)
-            def _(*fargs, **fkwargs):
-                return func(*fargs, **fkwargs)
-
-            return _
-
-
-        @mydecorator
-        def myfunc(x, y=19):
-            return x + y
-
-
-        @mydecorator(42, foo=True)
-        def myfunc2(x, y=19):
-            return x + y
-    """
-    def _(*args, **kwargs):
-        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
-            f2 = f(args[0])
-            update_wrapper(f2, args[0])
-            return f2
-        else:
-
-            def f3(f4):
-                f5 = f(f4, *args, **kwargs)
-                update_wrapper(f5, f4)
-                return f5
-
-            return f3
-
-    return _
-
-def insert(source_str, insert_str, pos):
-    return ''.join((source_str[:pos], insert_str, source_str[pos:]))

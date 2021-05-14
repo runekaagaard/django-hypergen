@@ -1,0 +1,24 @@
+{% load callback %}
+{% url "djangotemplates:push" as u1 %}
+{% url "djangotemplates:plus" as u2 %}
+{% url "djangotemplates:minus" as u3 %}
+{% url "djangotemplates:multiply" as u4 %}
+{% url "djangotemplates:divide" as u5 %}
+
+<h2>Push number on stack</h2>
+
+<input id="number" type="number">
+<button id="push" {% callback "onclick" u1 "push" "#number" %}>Push</button>
+
+<h2>Perform operation</h2>
+<button id="plus" {% callback "onclick" u2 "plus" %}>+</button>
+<button id="minus" {% callback "onclick" u3 "minus" %}>-</button>
+<button id="multiply" {% callback "onclick" u4 "multiply" %}>*</button>
+<button id="divide" {% callback "onclick" u5 "divide" %}>/</button>
+
+<h2>Stack</h2>
+<ul>
+{% for item in stack %}
+  <li>{{item}}</li>
+{% endfor %}
+</ul>
