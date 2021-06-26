@@ -20,24 +20,25 @@ Why not Hypergen?
 Value Proposition
 =================
 
-The basic form that makes Hypergen great is exemplified in this simple counter::
+The basic form that makes Hypergen great (for me) is exemplified in this simple counter::
 
-    N = 1
 
     from hypergen.core import callback as cb
     from hypergen.contrib import hypergen_view, hypergen_callback
     
-    @hypergen_callback(increment)
-    def increment():
-        global N
-        N += increment
-        
-    
     @hypergen_view()
     def counter():
+        template(1)
+    
+    @hypergen_callback()
+    def increment(n):
+        template(n+1)
+
+    def template(n):
         doctype()
         with html():
             with body():
-                p("current value: ", N)
-                button("Increment", onclick=cb(hypergen_callback, 1))
+                label("Current value: ")
+                input(id_="n", type_="number", value=n)
+                button("Increment", onclick=cb(hypergen_callback, n))
         
