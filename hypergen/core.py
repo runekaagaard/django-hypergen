@@ -249,6 +249,7 @@ def callback(url_or_view, *cb_args, **kwargs):
     upload_files = kwargs.pop("upload_files", False)
     event_matches = kwargs.pop("event_matches", False)
     clear = kwargs.pop("clear", False)
+    meta = kwargs.pop("meta", {})
     assert not kwargs, "Invalid callback kwarg(s): {}".format(repr(kwargs))
 
     if callable(url_or_view):
@@ -266,7 +267,7 @@ def callback(url_or_view, *cb_args, **kwargs):
         cmd = command(
             "hypergen.callback", url, [fix_this(x) for x in cb_args],
             d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear,
-            elementId=element.attrs["id_"].v, debug=settings.DEBUG), return_=True)
+            elementId=element.attrs["id_"].v, debug=settings.DEBUG, meta=meta), return_=True)
         cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
 
         c.hypergen.event_handler_callbacks[cmd_id] = cmd

@@ -105,8 +105,9 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
                 command("history.replaceState", d(callback_url=path), "", path)
 
         @appstate(app_name, appstate_init)
-        def wrap_view_with_hypergen():
-            func_return["value"] = func(request, *fargs, **fkwargs)
+        def wrap_view_with_hypergen(client_data):
+            with c(client_data=client_data, at="hypergen"):
+                func_return["value"] = func(request, *fargs, **fkwargs)
 
         if not c.request.is_ajax():
             fkwargs["wrap_elements"] = wrap_elements
@@ -115,13 +116,13 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
                 html = func_return["value"]
             return html
         else:
-            commands = hypergen(wrap_view_with_hypergen, target_id=target_id, wrap_elements=wrap_elements)
+            client_data = loads(c.request.POST["hypergen_data"])
+            commands = hypergen(wrap_view_with_hypergen, client_data, target_id=target_id, wrap_elements=wrap_elements)
             if func_return["value"] is not None:
                 commands = func_return["value"]
 
-            data = loads(c.request.POST["hypergen_data"])
-            if not ("meta" in data and "is_popstate" in data["meta"]
-                and data["meta"]["is_popstate"]) and type(commands) in (list, tuple):
+            if not ("meta" in client_data and "is_popstate" in client_data["meta"]
+                and client_data["meta"]["is_popstate"]) and type(commands) in (list, tuple):
                 commands.append(command("history.pushState", d(callback_url=path), "", path, return_=True))
             return commands
 

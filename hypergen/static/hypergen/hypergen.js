@@ -205,7 +205,10 @@ const applyCommand = function(path, ...args) {
   console.log("apply command", path, args)
   let rpath = resolvePath(path)
   rpath(...args)
+  const event = new CustomEvent('hypergen.applyCommand.after', {detail: {path, args}})
+  document.dispatchEvent(event)
 }
+
 window.e = function(event, callbackKey, eventMatches) {
   event.preventDefault()
   event.stopPropagation()
