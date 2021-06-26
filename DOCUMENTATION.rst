@@ -26,11 +26,11 @@ The basic form that makes Hypergen great (for me) is exemplified in this simple 
     from hypergen.core import callback as cb
     from hypergen.contrib import hypergen_view, hypergen_callback
     
-    @hypergen_view()
+    @hypergen_view
     def counter():
         template(1)
     
-    @hypergen_callback()
+    @hypergen_callback
     def increment(n):
         template(n+1)
 
