@@ -22,7 +22,7 @@ Value Proposition
 
 The basic form that makes Hypergen great (for me) is exemplified in this simple counter::
 
-
+    from hypergen.core import *
     from hypergen.core import callback as cb
     from hypergen.contrib import hypergen_view, hypergen_callback
     
