@@ -76,7 +76,6 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
     target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
-    assert target_id is not None, "target_id required"
     assert namespace is not None, "namespace required"
 
     if base_template_args is None:
@@ -117,7 +116,8 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
             return html
         else:
             client_data = loads(c.request.POST["hypergen_data"])
-            commands = hypergen(wrap_view_with_hypergen, client_data, target_id=target_id, wrap_elements=wrap_elements)
+            commands = hypergen(wrap_view_with_hypergen, client_data, target_id=target_id,
+                wrap_elements=wrap_elements)
             if func_return["value"] is not None:
                 commands = func_return["value"]
 
