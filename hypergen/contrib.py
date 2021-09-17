@@ -26,7 +26,11 @@ NO_PERM_REQUIRED = "__NO_PERM_REQUIRED__"
 
 def register_view_for_url(func, namespace, base_template, url=None):
     def _reverse(*view_args, **view_kwargs):
-        return StringWithMeta(reverse("{}:{}".format(namespace, func.__name__), args=view_args, kwargs=view_kwargs),
+        ns = namespace
+        if not ns:
+            ns = _reverse.hypergen_namespace
+            assert ns, "namespace must be defined in either hypergen_view/hypergen_callback or hypergen_urls"
+        return StringWithMeta(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
             d(base_template=base_template))
 
     func.reverse = _reverse
@@ -76,7 +80,6 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
     target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
-    assert namespace is not None, "namespace required"
 
     if base_template_args is None:
         base_template_args = tuple()
@@ -137,7 +140,6 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
     login_url=None, raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
     wrap_elements=default_wrap_elements):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
-    assert namespace is not None, "namespace is required"
 
     original_func = func
 
@@ -186,9 +188,10 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
     _.original_func = original_func
     return _
 
-def hypergen_urls(module):
+def hypergen_urls(module, namespace=None):
     patterns = []
     for func, url_ in _URLS.get(module.__name__, []):
+        func.reverse.hypergen_namespace = namespace
         patterns.append(url(url_, func, name=func.__name__))
 
     return patterns
