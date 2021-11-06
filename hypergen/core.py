@@ -525,23 +525,27 @@ class input_(base_element_void):
     void = True
 
     def __init__(self, *children, **attrs):
-        type_, value = attrs.get("type_", None), attrs.get("value", None)
-        if type_ == "radio":
+        if attrs.get("type_", None) == "radio":
             assert attrs.get("name"), "Name must be set for radio buttons."
-        elif type_ == "datetime-local":
-            if type(value) is datetime.datetime:
-                attrs["value"] = value.strftime("%Y-%m-%dT%H:%M:%S")
-        elif type_ == "month":
-            if type(value) is dict:
-                attrs["value"] = "{:04}-{:02}".format(value["year"], value["month"])
-        elif type_ == "week":
-            if type(value) is dict:
-                attrs["value"] = "{:04}-W{:02}".format(value["year"], value["week"])
         super(input_, self).__init__(*children, **attrs)
         self.js_value_func = attrs.pop("js_value_func",
             JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
         if self.js_coerce_func is None:
             self.js_coerce_func = attrs.pop("js_coerce_func", JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
+
+    def attribute(self, k, v):
+        if k != "value":
+            return super().attribute(k, v)
+
+        type_ = self.attrs.get("type_", None)
+        if type_ == "datetime-local":
+            return [" ", k, '="', v.strftime("%Y-%m-%dT%H:%M:%S"), '"']
+        elif type_ == "month" and type(v) is dict:
+            return [" ", k, '="', "{:04}-{:02}".format(v["year"], v["month"]), '"']
+        elif type_ == "week" and type(v) is dict:
+            return [" ", k, '="', "{:04}-W{:02}".format(v["year"], v["week"]), '"']
+        else:
+            return super().attribute(k, v)
 
 ### Special tags ###
 
