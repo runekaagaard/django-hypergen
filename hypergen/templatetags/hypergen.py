@@ -13,12 +13,12 @@ d = dict
 register = template.Library()
 
 @register.simple_tag
-def callback1(id_, event_name, url_or_view, *cb_args, **kwargs):
-    return mark_safe('id="{}" {}'.format(id_, callback(id_, event_name, url_or_view, *cb_args, **kwargs)))
+def callback(id_, event_name, url_or_view, *cb_args, **kwargs):
+    return mark_safe('id="{}" {}'.format(id_, callbackn(id_, event_name, url_or_view, *cb_args, **kwargs)))
 
 @register.simple_tag
-def callback(id_, event_name, url_or_view, *cb_args, **kwargs):
-    if type(url_or_view) in (SafeString, str) and ":" in url_or_view:
+def callbackn(id_, event_name, url_or_view, *cb_args, **kwargs):
+    if isinstance(url_or_view, str) and ":" in url_or_view:
         url_or_view = reverse(url_or_view)
     el = div(id_=id_)
     return mark_safe("".join(cb(url_or_view, *cb_args, **kwargs)(el, event_name, None)))

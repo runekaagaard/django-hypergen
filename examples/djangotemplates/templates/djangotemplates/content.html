@@ -2,14 +2,14 @@
 <h2>Push number on stack</h2>
 
 <input id="number" type="number" autofocus>
-<button {% callback1 "push" "onclick" "djangotemplates:push" "number"|element|coerce_float %}>Push</button>
+<button {% callback "push" "onclick" "djangotemplates:push" "number"|element|coerce_float %}>Push</button>
 
 <h2>Perform operation</h2>
-<button {% callback1 "add" "onclick" "djangotemplates:add" %}>+</button>
-<button {% callback1 "subtract" "onclick" "djangotemplates:subtract" %}>-</button>
-<button {% callback1 "multiply" "onclick" "djangotemplates:multiply" %}>*</button>
-<button {% callback1 "divide" "onclick" "djangotemplates:divide" %}>/</button>
-<button {% callback1 "reset" "onclick" "djangotemplates:reset" %}>C</button>
+<button {% callback "add" "onclick" "djangotemplates:add" %}>+</button>
+<button {% callback "subtract" "onclick" "djangotemplates:subtract" %}>-</button>
+<button {% callback "multiply" "onclick" "djangotemplates:multiply" %}>*</button>
+<button {% callback "divide" "onclick" "djangotemplates:divide" %}>/</button>
+<button {% callback "reset" "onclick" "djangotemplates:reset" %}>C</button>
 
 <h2>Stack</h2>
 <ol>
