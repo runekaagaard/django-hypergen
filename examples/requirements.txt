@@ -4,3 +4,4 @@ Cython==3.0a6
 cymem
 numpy
 pyprof2calltree
+yapf

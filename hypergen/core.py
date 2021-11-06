@@ -7,6 +7,7 @@ import string, sys, time, threading, datetime, json
 from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps, update_wrapper
+from copy import deepcopy
 
 from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
@@ -278,6 +279,8 @@ def callback(url_or_view, *cb_args, **kwargs):
             em = ""
         return [" ", t(k), '="', "e(event,'{}'{})".format(cmd_id, em), '"']
 
+    to_html.hypergen_callback_signature = "callback", (url_or_view,) + cb_args, kwargs
+
     return to_html
 
 def call_js(command_path, *cb_args):
@@ -357,6 +360,37 @@ class base_element(ContextDecorator):
     def __exit__(self, *exc):
         if not self.void:
             c.hypergen.into.extend(self.end())
+
+    def __repr__(self):
+        def value(v):
+            if isinstance(v, LazyAttribute):
+                return '"{}"'.format(v.v)
+            elif v is THIS:
+                return "THIS"
+            elif callable(v) and hasattr(v, "hypergen_callback_signature"):
+                name, a, kw = v.hypergen_callback_signature
+                return "{}({})".format(name, signature(a, kw))
+            elif callable(v):
+                # return ".".join((v.__module__, v.__name__))
+                return v.__name__
+            elif type(v) is str:
+                return '"{}"'.format(v)
+            else:
+                return repr(v)
+
+        def args(x):
+            return value(x)
+
+        def kwargs(k, v):
+            return k, value(v)
+
+        def signature(a, kw):
+            a, kw = deepcopy(a), deepcopy(kw)
+            return ", ".join([args(x) for x in a] + [
+                "{}={}".format(*kwargs(k, v))
+                for k, v in kw.items() if not (isinstance(v, LazyAttribute) and v.v is None)])
+
+        return "{}({})".format(self.__class__.__name__, signature(self.children, self.attrs))
 
     def as_string(self):
         into = self.start()

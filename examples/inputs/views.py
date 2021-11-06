@@ -1,8 +1,9 @@
 # coding = utf-8
 # pylint: disable=no-value-for-parameter
 d = dict
-
 import datetime
+
+from yapf.yapflib.yapf_api import FormatCode
 
 from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 from hypergen.core import *
@@ -15,8 +16,8 @@ HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=shared_templates.b
 
 @hypergen_view(url="", **HYPERGEN_SETTINGS)
 def inputs(request):
+    style("pre { background-color: gainsboro; padding: 4px;}")
     INPUT_TYPES = [
-        ("button", d(value="clicked")),
         ("checkbox", d(checked=True)),
         ("color", d(value="#bb7777")),
         ("date", d(value=datetime.date(2021, 4, 16))),
@@ -24,7 +25,6 @@ def inputs(request):
         ("email", d(value="foo@example.com")),
         ("file", d()),
         ("hidden", d(value="hidden")),
-        ("image", d(src="https://picsum.photos/80/40", value="clicked")),
         ("month", d(value=d(year=2099, month=9))),
         ("number", d(title="number (int)", value=99)),
         ("number", d(title="number (float)", value=12.12, coerce_to=float)),
@@ -32,18 +32,22 @@ def inputs(request):
         ("radio", d(name="myradio", value=20, checked=True, coerce_to=int)),
         ("radio", d(name="myradio", value=21, coerce_to=int)),
         ("range", d()),
-        ("reset", d(value="clicked")),
         ("search", d(value="Who is Rune Kaagaard?")),
-        ("submit", d(value="clicked")),
         ("tel", d(value="12345678")),
         ("text", d(value="This is text!")),
         ("time", d(value=datetime.time(7, 42))),
         ("url", d(value="https://github.com/runekaagaard/django-hypergen/")),
         ("week", d(value=d(year=1999, week=42))),]
 
+    CLICK_TYPES = [
+        ("button", d(value="clicked")),
+        ("image", d(src="https://picsum.photos/80/40", value="clicked")),
+        ("reset", d(value="clicked")),
+        ("submit", d(value="clicked")),]
+
     h1("Showing all input types.")
     with table():
-        tr(th(x) for x in ["Input type", "Input attributes", "Element", "Server callback value"])
+        tr(th(x) for x in ["Input type", "Code", "Rendered", "Server callback value"])
 
         for i, pair in enumerate(INPUT_TYPES):
             type_, attrs = pair
@@ -51,41 +55,55 @@ def inputs(request):
             id_ = "server-value-{}".format(i)
 
             with tr():
-                td(title)
-                td(code(attrs))
                 submit_cb = cb(submit, THIS, id_)
-                td(input_(id_=("element", i), class_="input", type_=type_, oninput=submit_cb, **attrs))
+                el = input_(id_=("element", i), type_=type_, oninput=submit_cb, **attrs)
+                th(title)
+                td(pre(code(FormatCode(repr(el))[0])))
+                td(el)
+                td(id_=id_)
+
+        for i, pair in enumerate(CLICK_TYPES):
+            i += len(INPUT_TYPES)
+            type_, attrs = pair
+            title = attrs.pop("title", type_)
+            id_ = "server-value-{}".format(i)
+
+            with tr():
+                submit_cb = cb(submit, THIS, id_)
+                el = input_(id_=("element", i), type_=type_, onclick=submit_cb, **attrs)
+                th(title)
+                td(pre(code(FormatCode(repr(el))[0])))
+                td(el)
                 td(id_=id_)
 
         with tr():
             i += 1
             id_ = "server-value-{}".format(i)
             attrs = d()
-            td("textarea")
-            td(code(attrs))
             submit_cb = cb(submit, THIS, id_)
-            td(
-                textarea("Who is Jeppe Tuxen?", id_=("element", i), class_="input", type_=type_, oninput=submit_cb,
-                **attrs))
+            el = textarea("Who is Jeppe Tuxen?", id_=("element", i), oninput=submit_cb, **attrs)
+            th("textarea")
+            td(pre(code(FormatCode(repr(el))[0])))
+            td(el)
             td(id_=id_)
 
         with tr():
             i += 1
             id_ = "server-value-{}".format(i)
             attrs = d(coerce_to=int)
-            td("select")
-            td(code(attrs))
             submit_cb = cb(submit, THIS, id_)
-            td(
-                select([option(x, value=x, selected=x == 3) for x in range(5)], id_=("element", i), class_="input",
-                type_=type_, onclick=submit_cb, oninput=submit_cb, **attrs))
+            el = select([option(x, value=x, selected=x == 3) for x in range(5)], id_=("element", i),
+                onclick=submit_cb, oninput=submit_cb, **attrs)
+            th("select")
+            td(pre(code(FormatCode(repr(el))[0])))
+            td(el)
             td(id_=id_)
 
-    script("""
-        ready(function() {
-            document.querySelectorAll(".input").forEach(el => (el.oninput(new Event("input"))));
-        })
-    """)
+    # script("""
+    #     ready(function() {
+    #          document.querySelectorAll(".input").forEach(el => (el.oninput(new Event("input"))));
+    #     })
+    # """)
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, namespace="inputs")
 def submit(request, value, target_id):
