@@ -96,12 +96,6 @@ def inputs(request):
             td(el)
             td(id_=id_)
 
-    # script("""
-    #     ready(function() {
-    #          document.querySelectorAll(".input").forEach(el => (el.oninput(new Event("input"))));
-    #     })
-    # """)
-
 @hypergen_callback(perm=NO_PERM_REQUIRED)
 def submit(request, value, target_id):
     c.hypergen = c.hypergen.set("target_id", target_id)
