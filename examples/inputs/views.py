@@ -11,10 +11,7 @@ from hypergen.core import callback as cb
 from hypergen.core import context as c
 import templates as shared_templates
 
-HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content",
-    namespace="inputs", app_name="inputs")
-
-@hypergen_view(url="", **HYPERGEN_SETTINGS)
+@hypergen_view(url="", perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content")
 def inputs(request):
     style("pre { background-color: gainsboro; padding: 4px;}")
     INPUT_TYPES = [
@@ -105,7 +102,7 @@ def inputs(request):
     #     })
     # """)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, namespace="inputs")
+@hypergen_callback(perm=NO_PERM_REQUIRED)
 def submit(request, value, target_id):
     c.hypergen = c.hypergen.set("target_id", target_id)
     with pre(style={"padding": 0}):
