@@ -11,7 +11,7 @@ from hypergen.core import callback as cb
 from hypergen.core import context as c
 import templates as shared_templates
 
-@hypergen_view(url="", perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content")
+@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content")
 def inputs(request):
     style("pre { background-color: gainsboro; padding: 4px;}")
     INPUT_TYPES = [

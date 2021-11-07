@@ -41,6 +41,8 @@ def register_view_for_url(func, namespace, base_template, url=None):
 
     if url is None:
         url = r"^{}/$".format(func.__name__)
+    elif url == "":
+        raise Exception('Use "^$" for an empty url in {}.{}'.format(module, func.__name__))
 
     _URLS[module].add((func, url))
 
