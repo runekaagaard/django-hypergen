@@ -371,8 +371,7 @@ class base_element(ContextDecorator):
                 name, a, kw = v.hypergen_callback_signature
                 return "{}({})".format(name, signature(a, kw))
             elif callable(v):
-                # return ".".join((v.__module__, v.__name__))
-                return v.__name__
+                return ".".join((v.__module__, v.__name__))
             elif type(v) is str:
                 return '"{}"'.format(v)
             else:
