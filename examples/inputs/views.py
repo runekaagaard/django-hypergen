@@ -2,6 +2,8 @@
 # pylint: disable=no-value-for-parameter
 d = dict
 import datetime
+from collections import namedtuple
+from hypergen.core import JS_COERCE_FUNCS, JS_VALUE_FUNCS
 
 from yapf.yapflib.yapf_api import FormatCode
 
@@ -11,30 +13,44 @@ from hypergen.core import callback as cb
 from hypergen.core import context as c
 import templates as shared_templates
 
+E = namedtuple("E", 'type,attrs,doc', defaults=[None] * 3)
+
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content")
 def inputs(request):
-    style("pre { background-color: gainsboro; padding: 4px;}")
+    style("""
+        pre { background-color: gainsboro; padding: 4px;}
+        table,th,td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th,td {
+            padding: 4px;
+        }
+    """)
     INPUT_TYPES = [
-        ("checkbox", d(checked=True)),
-        ("color", d(value="#bb7777")),
-        ("date", d(value=datetime.date(2021, 4, 16))),
-        ("datetime-local", d(value=datetime.datetime(1941, 5, 5, 5, 23))),
-        ("email", d(value="foo@example.com")),
-        ("file", d()),
-        ("hidden", d(value="hidden")),
-        ("month", d(value=d(year=2099, month=9))),
-        ("number", d(title="number (int)", value=99)),
-        ("number", d(title="number (float)", value=12.12, coerce_to=float)),
-        ("password", d(value="1234")),
-        ("radio", d(name="myradio", value=20, checked=True, coerce_to=int)),
-        ("radio", d(name="myradio", value=21, coerce_to=int)),
-        ("range", d()),
-        ("search", d(value="Who is Rune Kaagaard?")),
-        ("tel", d(value="12345678")),
-        ("text", d(value="This is text!")),
-        ("time", d(value=datetime.time(7, 42))),
-        ("url", d(value="https://github.com/runekaagaard/django-hypergen/")),
-        ("week", d(value=d(year=1999, week=42))),]
+        E("checkbox", d(checked=True)),
+        E("color", d(value="#bb7777")),
+        E(
+        "date", d(value=datetime.date(2021, 4, 16)),
+        "date, datetime-local, month, time and week fields also accepts the string representation as input value. They will return the python object on the server though."
+        ),
+        E("datetime-local", d(value=datetime.datetime(1941, 5, 5, 5, 23))),
+        E("email", d(value="foo@example.com")),
+        E("file", d()),
+        E("hidden", d(value="hidden")),
+        E("month", d(value=d(year=2099, month=9))),
+        E("number", d(title="number (int)", value=99)),
+        E("number", d(title="number (float)", value=12.12, coerce_to=float)),
+        E("password", d(value="1234")),
+        E("radio", d(name="myradio", value=20, checked=True, coerce_to=int), "Set the same name for radio groups"),
+        E("radio", d(name="myradio", value=21, coerce_to=int)),
+        E("range", d()),
+        E("search", d(value="Who is Rune Kaagaard?")),
+        E("tel", d(value="12345678")),
+        E("text", d(value="This is text!")),
+        E("time", d(value=datetime.time(7, 42))),
+        E("url", d(value="https://github.com/runekaagaard/django-hypergen/")),
+        E("week", d(value=d(year=1999, week=42))),]
 
     CLICK_TYPES = [
         ("button", d(value="clicked")),
@@ -42,12 +58,35 @@ def inputs(request):
         ("reset", d(value="clicked")),
         ("submit", d(value="clicked")),]
 
-    h1("Showing all input types.")
+    h1("Input elements")
+    p("Input elements are mostly standard hypergen elements. They add useful defaults for reading the value",
+        "of the different input types and to which datatype to coerce the read value.",
+        "Value reading and value coercion can be overridden by the js_value_func and js_coerce_func kwargs.",
+        "Their values should exist as a dotted paths on the frontend.", sep=" ")
+    p("These are the default values for js_value_func by element type: ")
+    with dl():
+        for k, v in JS_VALUE_FUNCS.items():
+            dt(k)
+            dd(v)
+    p("And similar for js_coerce_func:")
+    with dl():
+        for k, v in JS_COERCE_FUNCS.items():
+            dt(k)
+            dd(v)
+    p("Check hypergen.js to see their definitions.")
+
+    h2("Examples for all HTML5 input types.")
+
     with table():
         tr(th(x) for x in ["Input type", "Code", "Rendered", "Server callback value"])
+        tr(
+            td(x) for x in [
+            "", "This is the __repr__ representations of the hypergen input elements, which coincidentally"
+            " looks a lot like python code :)", "",
+            "The data received on the server when the relevant onXXX events are triggered."])
 
         for i, pair in enumerate(INPUT_TYPES):
-            type_, attrs = pair
+            type_, attrs, doc = pair
             title = attrs.pop("title", type_)
             id_ = "server-value-{}".format(i)
 
@@ -55,7 +94,7 @@ def inputs(request):
                 submit_cb = cb(submit, THIS, id_)
                 el = input_(id_=("element", i), type_=type_, oninput=submit_cb, **attrs)
                 th(title)
-                td(pre(code(FormatCode(repr(el))[0])))
+                td(pre(code(FormatCode(repr(el))[0])), p(doc) if doc else "")
                 td(el)
                 td(id_=id_)
 
