@@ -68,7 +68,10 @@ def inputs(request):
         for k, v in JS_VALUE_FUNCS.items():
             dt(k)
             dd(v)
-    p("And similar for js_coerce_func:")
+        dt("everything else")
+        dd("hypergen.read.value")
+
+    p("And similarly for js_coerce_func:")
     with dl():
         for k, v in JS_COERCE_FUNCS.items():
             dt(k)
