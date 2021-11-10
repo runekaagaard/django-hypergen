@@ -4,7 +4,7 @@ from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 
 from django.templatetags.static import static
 
-@hypergen_view(perm=NO_PERM_REQUIRED)
+@hypergen_view(url="^$", perm=NO_PERM_REQUIRED)
 def counter(request):
     doctype()
     with html():
