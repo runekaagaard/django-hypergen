@@ -3,7 +3,7 @@
 d = dict
 import datetime
 from collections import namedtuple
-from hypergen.core import JS_COERCE_FUNCS, JS_VALUE_FUNCS
+from hypergen.core import COERCE, JS_COERCE_FUNCS, JS_VALUE_FUNCS
 
 from yapf.yapflib.yapf_api import FormatCode
 
@@ -32,25 +32,26 @@ def inputs(request):
         E("color", d(value="#bb7777")),
         E(
         "date", d(value=datetime.date(2021, 4, 16)),
-        "date, datetime-local, month, time and week fields also accepts the string representation as input value. They will return the python object on the server though."
+        "Takes a datetime. Date, datetime-local, month, time and week fields also accepts the string representation as input value. They will return the python object on the server though."
         ),
-        E("datetime-local", d(value=datetime.datetime(1941, 5, 5, 5, 23))),
+        E("datetime-local", d(value=datetime.datetime(1941, 5, 5, 5, 23)), "Takes a datetime."),
         E("email", d(value="foo@example.com")),
         E("file", d()),
         E("hidden", d(value="hidden")),
-        E("month", d(value=d(year=2099, month=9))),
+        E("month", d(value=d(year=2099, month=9)), "Takes a dict with year and month."),
         E("number", d(title="number (int)", value=99)),
-        E("number", d(title="number (float)", value=12.12, coerce_to=float)),
+        E("number", d(title="number (float)", value=12.12, coerce_to=float), "Coercing to float here."),
         E("password", d(value="1234")),
-        E("radio", d(name="myradio", value=20, checked=True, coerce_to=int), "Set the same name for radio groups"),
+        E("radio", d(name="myradio", value=20, checked=True, coerce_to=int),
+        "Set the same name for radio groups. Notice the coercion to int."),
         E("radio", d(name="myradio", value=21, coerce_to=int)),
         E("range", d()),
         E("search", d(value="Who is Rune Kaagaard?")),
         E("tel", d(value="12345678")),
         E("text", d(value="This is text!")),
-        E("time", d(value=datetime.time(7, 42))),
+        E("time", d(value=datetime.time(7, 42)), "Takes a datetime.time value."),
         E("url", d(value="https://github.com/runekaagaard/django-hypergen/")),
-        E("week", d(value=d(year=1999, week=42))),]
+        E("week", d(value=d(year=1999, week=42)), "Takes a dict with year and week."),]
 
     CLICK_TYPES = [
         ("button", d(value="clicked")),
@@ -77,6 +78,9 @@ def inputs(request):
             dt(k)
             dd(v)
     p("Check hypergen.js to see their definitions.")
+    p(
+        "Instead of js_coerce_func it's often enough to use the coerce_to shortcut kwarg that takes the following builtin types: ",
+        span([x.__name__ for x in COERCE.keys()], sep=", "), ".")
 
     h2("Examples for all HTML5 input types.")
 

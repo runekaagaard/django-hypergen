@@ -309,6 +309,7 @@ COERCE = {str: None, unicode: None, int: "hypergen.coerce.int", float: "hypergen
 class base_element(ContextDecorator):
     void = False
     auto_id = False
+    config_attrs = {"t", "sep", "coerce_to", "js_coerce_func", "js_value_func"}
 
     def __new__(cls, *args, **kwargs):
         instance = ContextDecorator.__new__(cls)
@@ -317,7 +318,7 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         def init(self, *children, **attrs):
-            self.t = attrs.pop("t", t)
+            self.t = attrs.get("t", t)
             self.children = children
             self.attrs = attrs
 
@@ -327,17 +328,17 @@ class base_element(ContextDecorator):
             self.attrs["id_"] = LazyAttribute("id", id_)
 
             self.i = len(c.hypergen.into)
-            self.sep = attrs.pop("sep", "")
-            self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+            self.sep = attrs.get("sep", "")
+            self.js_value_func = attrs.get("js_value_func", "hypergen.read.value")
 
-            coerce_to = attrs.pop("coerce_to", None)
+            coerce_to = attrs.get("coerce_to", None)
             if coerce_to is not None:
                 try:
                     self.js_coerce_func = COERCE[coerce_to]
                 except KeyError:
                     raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
             else:
-                self.js_coerce_func = attrs.pop("js_coerce_func", None)
+                self.js_coerce_func = attrs.get("js_coerce_func", None)
 
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
@@ -371,7 +372,7 @@ class base_element(ContextDecorator):
                 name, a, kw = v.hypergen_callback_signature
                 return "{}({})".format(name, signature(a, kw))
             elif callable(v):
-                return ".".join((v.__module__, v.__name__))
+                return ".".join((v.__module__, v.__name__)).replace("builtins.", "")
             elif type(v) is str:
                 return '"{}"'.format(v)
             else:
@@ -463,6 +464,8 @@ class base_element(ContextDecorator):
     def start(self):
         into = ["<", self.tag]
         for k, v in items(self.attrs):
+            if k in self.config_attrs:
+                continue
             into.extend(self.attribute(k, v))
 
         if self.void:
