@@ -6,3 +6,8 @@ class KV(m.Model):
 
     class Meta:
         permissions = [('kv_hypergen_translations', 'Can edit translations')]
+
+    def save(self, *args, **kwargs):
+        super(KV, self).save(*args, **kwargs)
+        from hypergen.core import set_translations
+        set_translations(self)

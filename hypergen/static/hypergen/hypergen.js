@@ -457,8 +457,12 @@ const translations = function(url) {
       post(
         url,
         form,
-        () => { console.log("YES YES YES")},
-        () => { console.log("NO NO NO")},
+        () => {
+          event.target.setAttribute("data-hypergen-original", b)
+          event.target.blur()
+          console.log("Translation text was posted to the server")
+        },
+        () => { alert("Something went wrong.")},
         {},
       )
       console.log("Updated the string:", JSON.stringify(a), "->", JSON.stringify(b))

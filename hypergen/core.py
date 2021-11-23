@@ -117,19 +117,22 @@ def insert(source_str, insert_str, pos):
 TRANSLATIONS = {}
 
 def load_translations():
-    global TRANSLATIONS
     from hypergen.models import KV
     if not TRANSLATIONS:
         try:
-            kv, _ = KV.objects.get_or_create(defaults=d(k="hypergen_translations", value='{}'))
-            TRANSLATIONS = json.loads(kv.value)
+            kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
+            set_translations(kv)
         except Exception:
             logger.exception("Can't load translations")
+
+def set_translations(kv):
+    global TRANSLATIONS
+    TRANSLATIONS = json.loads(kv.value)
 
 def save_translation(a, b):
     global TRANSLATIONS
     from hypergen.models import KV
-    kv, _ = KV.objects.get_or_create(defaults=d(k="hypergen_translations", value='{}'))
+    kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
     t = json.loads(kv.value)
     values = list(t.values())
     status = False
@@ -185,7 +188,7 @@ def hypergen(func, *args, **kwargs):
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
-        if c.hypergen.translate:
+        if c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
             from hypergen.views import translate
             command("translations", translate.reverse())
         if not c.request.is_ajax():
