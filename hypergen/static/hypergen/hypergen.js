@@ -1,4 +1,6 @@
 import morphdom from 'morphdom'
+// https://github.com/ccampbell/mousetrap
+import mousetrap from 'mousetrap'
 import './hypergen'
 
 // Shims
@@ -434,16 +436,30 @@ window.addEventListener("popstate", function(event) {
   }
 })
 
+var trans = false
+
 const translations = function(url) {
-  document.querySelectorAll("*").forEach(x => {
-    if (!x.textContent || x.textContent != x.innerHTML) return
-    x.setAttribute("contenteditable", true)
-    x.setAttribute("data-hypergen-original", x.textContent)
+  mousetrap.bind('mod+1', () => {
+    trans = !trans
+    console.log("Translation mode:", trans)
+    if (trans) {
+      document.querySelectorAll("*").forEach(x => {
+        if (!x.textContent || x.textContent != x.innerHTML) return
+        x.setAttribute("contenteditable", true)
+        x.setAttribute("data-hypergen-original", x.textContent)
+        x.classList.add("hypergen-translating")
+      })
+    } else {
+      document.querySelectorAll(".hypergen-translating").forEach(x => {
+        x.setAttribute("contenteditable", false)
+        x.classList.remove("hypergen-translating")
+      })
+    }
   })
   
   document.addEventListener('keydown', function(event) {
     const x = event.target
-    if (!x.textContent || x.textContent != x.innerHTML) return
+    if (!trans || !x.textContent || x.textContent != x.innerHTML) return
     
     if(event.key === "Escape") {
       event.target.textContent = event.target.getAttribute("data-hypergen-original")
