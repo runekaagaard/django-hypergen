@@ -434,6 +434,40 @@ window.addEventListener("popstate", function(event) {
   }
 })
 
+const translations = function(url) {
+  document.querySelectorAll("*").forEach(x => {
+    if (!x.textContent || x.textContent != x.innerHTML) return
+    x.setAttribute("contenteditable", true)
+    x.setAttribute("data-hypergen-original", x.textContent)
+  })
+  
+  document.addEventListener('keydown', function(event) {
+    const x = event.target
+    if (!x.textContent || x.textContent != x.innerHTML) return
+    
+    if(event.key === "Escape") {
+        event.target.blur()
+    } else if (event.key === "Enter") {
+      event.stopPropagation()
+      event.preventDefault()
+      const [a, b] = [event.target.getAttribute("data-hypergen-original"), event.target.textContent]
+
+      let form = new FormData()
+      form.append("hypergen_data", JSON.stringify({args: [a, b], meta: {}}))
+      post(
+        url,
+        form,
+        () => { console.log("YES YES YES")},
+        () => { console.log("NO NO NO")},
+        {},
+      )
+      console.log("Updated the string:", JSON.stringify(a), "->", JSON.stringify(b))
+      return false
+    }
+  })
+}
+window.translations = translations
+
 const ready = function(fn) {
   if (document.readyState != 'loading') {
     fn();

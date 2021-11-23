@@ -79,7 +79,7 @@ def hypergen_response_decorator(func):
 @wrap2
 def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_template=no_base_template,
     base_template_args=None, base_template_kwargs=None, namespace=None, login_url=None, raise_exception=False,
-    target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements):
+    target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements, translate=False):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
 
@@ -115,6 +115,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
 
         if not c.request.is_ajax():
             fkwargs["wrap_elements"] = wrap_elements
+            fkwargs["translate"] = translate
             html = hypergen(wrap_base_template, request, *fargs, **fkwargs)
             if func_return["value"] is not None:
                 html = func_return["value"]

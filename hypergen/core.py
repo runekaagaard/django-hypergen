@@ -3,7 +3,7 @@ from __future__ import (absolute_import, division, unicode_literals)
 
 d = dict
 
-import string, sys, time, threading, datetime, json
+import string, sys, time, threading, datetime, json, logging
 from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps, update_wrapper
@@ -17,6 +17,8 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi",
@@ -33,9 +35,13 @@ __all__ = [
 
 ### Python 2+3 compatibility ###
 
-def make_string(x):
-    if x is not None:
-        return force_text(x)
+def make_string(s):
+    if s is not None:
+        s = force_text(s)
+        if c.hypergen["translate"] and s in TRANSLATIONS:
+            return TRANSLATIONS[s]
+
+        return s
     else:
         return ""
 
@@ -107,6 +113,42 @@ def wrap2(f):
 def insert(source_str, insert_str, pos):
     return ''.join((source_str[:pos], insert_str, source_str[pos:]))
 
+### Not translation ###
+TRANSLATIONS = {}
+
+def load_translations():
+    global TRANSLATIONS
+    from hypergen.models import KV
+    if not TRANSLATIONS:
+        try:
+            kv, _ = KV.objects.get_or_create(defaults=d(k="hypergen_translations", value='{}'))
+            TRANSLATIONS = json.loads(kv.value)
+        except Exception:
+            logger.exception("Can't load translations")
+
+def save_translation(a, b):
+    global TRANSLATIONS
+    from hypergen.models import KV
+    kv, _ = KV.objects.get_or_create(defaults=d(k="hypergen_translations", value='{}'))
+    t = json.loads(kv.value)
+    values = list(t.values())
+    status = False
+    try:
+        i = values.index(a)
+        keys = list(t.keys())
+        t[keys[i]] = b
+        status = True
+    except ValueError:
+        t[a] = b
+        status = True
+
+    if status:
+        kv.value = json.dumps(t)
+        kv.save()
+        TRANSLATIONS = t
+
+    return False
+
 ### Rendering ###
 
 def default_wrap_elements(init, self, *children, **attrs):
@@ -117,8 +159,9 @@ def hypergen_context(data=None):
         data = {}
 
     c_ = m(into=[], event_handler_callbacks={}, event_handler_callback_strs=[],
-        target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
-        wrap_elements=data.pop("wrap_elements", default_wrap_elements), matched_perms=set())
+        target_id=data.pop("target_id",
+        "__main__"), commands=[], ids=set(), wrap_elements=data.pop("wrap_elements",
+        default_wrap_elements), matched_perms=set(), translate=data.pop("translate", False))
 
     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
     return c_
@@ -142,6 +185,9 @@ def hypergen(func, *args, **kwargs):
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+        if c.hypergen.translate:
+            from hypergen.views import translate
+            command("translations", translate.reverse())
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
