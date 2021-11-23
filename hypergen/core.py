@@ -130,11 +130,11 @@ def set_translations(kv):
     TRANSLATIONS = json.loads(kv.value)
 
 def save_translation(a, b):
-    global TRANSLATIONS
     from hypergen.models import KV
     kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
     t = json.loads(kv.value)
     values = list(t.values())
+
     status = False
     try:
         i = values.index(a)
@@ -148,7 +148,7 @@ def save_translation(a, b):
     if status:
         kv.value = json.dumps(t)
         kv.save()
-        TRANSLATIONS = t
+        set_translations(kv)
 
     return False
 
@@ -183,6 +183,8 @@ def hypergen(func, *args, **kwargs):
     with c(hypergen=hypergen_context(kwargs)):
         assert not c.hypergen.into, "This should not happen"
         assert "target_id" not in kwargs, "This should not happen"
+        if c.hypergen.translate:
+            load_translations()
         func(*args, **kwargs)
         assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
