@@ -446,7 +446,8 @@ const translations = function(url) {
     if (!x.textContent || x.textContent != x.innerHTML) return
     
     if(event.key === "Escape") {
-        event.target.blur()
+      event.target.textContent = event.target.getAttribute("data-hypergen-original")
+      event.target.blur()
     } else if (event.key === "Enter") {
       event.stopPropagation()
       event.preventDefault()
