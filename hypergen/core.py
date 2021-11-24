@@ -140,10 +140,15 @@ def save_translation(a, b):
         i = values.index(a)
         assert values.count(a) == 1, "Duplicate value"
         keys = list(t.keys())
-        t[keys[i]] = b
+        k = keys[i]
+        t[k] = b
+        if k == b:
+            del t[k]
         status = True
     except ValueError:
         t[a] = b
+        if a == b:
+            del t[a]
         status = True
 
     if status:
