@@ -20,8 +20,12 @@ def increment(request, n):
 def template(n):
     h1("Translation")
     p("Hypergen does not have a full translation framework (YET!). What it does have is editable strings.")
-    h2("Use ctrl+1 or command+1 to toggle translation mode and then try to edit these strings by clicking on them.")
-    p("Use Enter to save your changes and Escape to abort.", "But you will have to be",
-        a("logged in",
-        href="/admin/"), "and have the permission hypergen.kv_hypergen_translations.", sep=" ", id_="foo")
+    h2("Use ctrl+shift+1 or command+shift+1 to toggle translation mode and then try to edit these strings"
+        " by clicking on them.")
+    p("Use Enter to save your changes and Escape to abort. "
+        "But you will have to be ", a("logged in", href="/admin/"),
+        " and have the permission hypergen.kv_hypergen_translations.", id_="foo")
     ul(li(x, id_=x) for x in ("edit this", "edit that", "edit me too"))
+    h2("How does it work?")
+    p("Hypergen persists the translation strings in the ", a("Key/Value model", href="/admin/hypergen/kv/"),
+        " and keeps the strings cached in memory for a very fast performance.")

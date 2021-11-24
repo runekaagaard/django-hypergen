@@ -439,27 +439,44 @@ window.addEventListener("popstate", function(event) {
 var trans = false
 
 const translations = function(url) {
-  mousetrap.bind('mod+1', () => {
+  mousetrap.bind('mod+shift+1', () => {
     trans = !trans
     console.log("Translation mode:", trans)
     if (trans) {
-      document.querySelectorAll("*").forEach(x => {
-        if (!x.textContent || x.textContent != x.innerHTML) return
-        x.setAttribute("contenteditable", true)
-        x.setAttribute("data-hypergen-original", x.textContent)
-        x.classList.add("hypergen-translating")
+      document.querySelectorAll("body *").forEach(x => {
+        if (!x.textContent) return
+        if (x.textContent === x.innerHTML) {
+          x.setAttribute("contenteditable", true)
+          x.setAttribute("data-hypergen-original", x.textContent)
+          x.classList.add("hypergen-translating")
+        } else {
+          x.childNodes.forEach((y, i) => {
+            if (y.nodeType !== Node.TEXT_NODE) return
+            let y2 = document.createElement("span")
+            y2.textContent = y.textContent;
+            y2.setAttribute("contenteditable", true)
+            y2.setAttribute("data-hypergen-original", y.textContent)
+            y2.classList.add("hypergen-translating")
+            y2.classList.add("hypergen-unwrap-later")
+            x.replaceChild(y2, y)
+          })
+        }
       })
     } else {
       document.querySelectorAll(".hypergen-translating").forEach(x => {
         x.setAttribute("contenteditable", false)
         x.classList.remove("hypergen-translating")
       })
+      document.querySelectorAll(".hypergen-unwrap-later").forEach(x => {
+        let x2 = document.createTextNode(x.textContent)
+        x.parentElement.replaceChild(x2, x)
+      })
     }
   })
   
   document.addEventListener('keydown', function(event) {
     const x = event.target
-    if (!trans || !x.textContent || x.textContent != x.innerHTML) return
+    if (!trans || !x.textContent || !x.classList.contains("hypergen-translating")) return
     
     if(event.key === "Escape") {
       event.target.textContent = event.target.getAttribute("data-hypergen-original")
