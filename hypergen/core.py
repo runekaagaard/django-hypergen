@@ -138,6 +138,7 @@ def save_translation(a, b):
     status = False
     try:
         i = values.index(a)
+        assert values.count(a) == 1, "Duplicate value"
         keys = list(t.keys())
         t[keys[i]] = b
         status = True
