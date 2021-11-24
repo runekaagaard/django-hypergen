@@ -13,10 +13,6 @@ def page(request):
         with body(id_="body"):
             template(1)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")
-def increment(request, n):
-    template(n + 1)
-
 def template(n):
     h1("Translation")
     p("Hypergen does not have a full translation framework (YET!). What it does have is editable strings.")
