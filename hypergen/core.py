@@ -17,6 +17,10 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object  # Backwards compatibility.
 
 logger = logging.getLogger(__name__)
 
@@ -996,7 +1000,7 @@ def context_middleware(get_response):
 
     return _
 
-class ContextMiddleware(object):
+class ContextMiddleware(MiddlewareMixin):
     def process_request(self, request):
         # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))
