@@ -49,4 +49,4 @@ def index(reverse=False):
                 todo_item()
 
 
-print hypergen(page, partial(index))
+print(hypergen(page, partial(index)))

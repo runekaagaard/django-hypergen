@@ -15,7 +15,7 @@ def open_tag(tag, **kwargs):
     s = "<" + tag
     if kwargs:
         s += " " + " ".join("=".join((k.rstrip("_"), v))
-                            for k, v in kwargs.items())
+                            for k, v in list(kwargs.items()))
     return s + ">"
 
 
@@ -62,10 +62,10 @@ def function(s):
 
 
 function("a-a")
-print "+++++++++++++++++"
-print "\n".join(x() if callable(x) else x for x in html
-                if x != DELETED).strip()
-print "-----------------"
+print("+++++++++++++++++")
+print("\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip())
+print("-----------------")
 
 # ------------------------------------------------- #
 
@@ -75,10 +75,10 @@ i = -1
 with div("B", id_="bid", class_="b-cls"):
     div("inner B", id_="inneridb")
 
-print "+++++++++++++++++"
-print "\n".join(x() if callable(x) else x for x in html
-                if x != DELETED).strip()
-print "-----------------"
+print("+++++++++++++++++")
+print("\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip())
+print("-----------------")
 
 # ------------------------------------------------- #
 
@@ -87,10 +87,10 @@ i = -1
 
 div("C", id_="cid", class_="c-cls")
 
-print "+++++++++++++++++"
-print "\n".join(x() if callable(x) else x for x in html
-                if x != DELETED).strip()
-print "-----------------"
+print("+++++++++++++++++")
+print("\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip())
+print("-----------------")
 
 # ------------------------------------------------- #
 
@@ -100,7 +100,7 @@ i = -1
 div(div(div("D", id_="did1"), id_="did2"), id_="did3")
 div(div(div("D", id_="did1"), id_="did2"), id_="did3")
 
-print "+++++++++++++++++"
-print "\n".join(x() if callable(x) else x for x in html
-                if x != DELETED).strip()
-print "-----------------"
+print("+++++++++++++++++")
+print("\n".join(x() if callable(x) else x for x in html
+                if x != DELETED).strip())
+print("-----------------")

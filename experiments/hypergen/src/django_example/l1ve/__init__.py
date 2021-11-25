@@ -5,7 +5,7 @@ global_context = threading.local()
 
 
 def update_global_context(data):
-    for k, v in data.items():
+    for k, v in list(data.items()):
         setattr(global_context, k, v)
 
 

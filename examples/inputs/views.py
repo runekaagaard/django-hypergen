@@ -66,7 +66,7 @@ def inputs(request):
         "Their values should exist as a dotted paths on the frontend.", sep=" ")
     p("These are the default values for js_value_func by element type: ")
     with dl():
-        for k, v in JS_VALUE_FUNCS.items():
+        for k, v in list(JS_VALUE_FUNCS.items()):
             dt(k)
             dd(v)
         dt("everything else")
@@ -74,13 +74,13 @@ def inputs(request):
 
     p("And similarly for js_coerce_func:")
     with dl():
-        for k, v in JS_COERCE_FUNCS.items():
+        for k, v in list(JS_COERCE_FUNCS.items()):
             dt(k)
             dd(v)
     p("Check hypergen.js to see their definitions.")
     p(
         "Instead of js_coerce_func it's often enough to use the coerce_to shortcut kwarg that takes the following builtin types: ",
-        span([x.__name__ for x in COERCE.keys()], sep=", "), ".")
+        span([x.__name__ for x in list(COERCE.keys())], sep=", "), ".")
 
     h2("Examples for all HTML5 input types.")
 

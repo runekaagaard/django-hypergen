@@ -48,16 +48,16 @@ def make_string(s):
 if sys.version_info.major > 2:
     from html import escape
     letters = string.ascii_letters
-    unicode = str
+    str = str
 
     def items(x):
-        return x.items()
+        return list(x.items())
 else:
     from cgi import escape
     letters = string.letters
 
     def items(x):
-        return x.iteritems()
+        return iter(x.items())
 
 ### Constants ####
 
@@ -205,11 +205,11 @@ def hypergen(func, *args, **kwargs):
                 s = "<script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
                     dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
-            print("Execution time:", (time.time() - a) * 1000, "ms")
+            print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return html
         else:
             command("hypergen.morph", c.hypergen.target_id, html)
-            print("Execution time:", (time.time() - a) * 1000, "ms")
+            print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return c.hypergen.commands
 
 def hypergen_to_string(func, *args, **kwargs):
@@ -219,7 +219,7 @@ def hypergen_to_string(func, *args, **kwargs):
         assert "target_id" not in kwargs, "This should not happen"
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
-        print("Execution time:", (time.time() - a) * 1000, "ms")
+        print(("Execution time:", (time.time() - a) * 1000, "ms"))
 
         return html
 
@@ -238,7 +238,7 @@ def hypergen_response(html_or_commands_or_http_response, status=None):
     elif type(value) in (list, tuple):
         assert c.request.is_ajax()
         return HttpResponse(dumps(value), status=status, content_type='application/json')
-    elif type(value) in (str, unicode):
+    elif type(value) in (str, str):
         assert not c.request.is_ajax()
         return HttpResponse(value, status=status)
     else:
@@ -361,7 +361,7 @@ class THIS(object):
 NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
 
-COERCE = {str: None, unicode: None, int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
+COERCE = {str: None, str: None, int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
 
 class base_element(ContextDecorator):
     void = False
@@ -445,7 +445,7 @@ class base_element(ContextDecorator):
             a, kw = deepcopy(a), deepcopy(kw)
             return ", ".join([args(x) for x in a] + [
                 "{}={}".format(*kwargs(k, v))
-                for k, v in kw.items() if not (isinstance(v, LazyAttribute) and v.v is None)])
+                for k, v in list(kw.items()) if not (isinstance(v, LazyAttribute) and v.v is None)])
 
         return "{}({})".format(self.__class__.__name__, signature(self.children, self.attrs))
 

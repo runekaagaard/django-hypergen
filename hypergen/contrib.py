@@ -3,7 +3,7 @@ from __future__ import (absolute_import, division, unicode_literals)
 from functools import wraps
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 
@@ -211,7 +211,7 @@ def hypergen_permission_required(perm, login_url=None, raise_exception=False, on
     """
     def check_perms(user):
         # TODO: Fix for python2 vs 3.
-        if isinstance(perm, str) or isinstance(perm, unicode):
+        if isinstance(perm, str) or isinstance(perm, str):
             perms = (perm,)
         else:
             perms = perm

@@ -20,4 +20,4 @@ def base65_counter():
 
 c = base65_counter()
 for i in range(500):
-    print next(c),
+    print(next(c), end=' ')

@@ -154,7 +154,7 @@ def petals_template():
         return sum(PETALS.get(x, 0) for x in question)
 
     streak = len(list(takewhile(lambda x: facit(x[0]) == x[1],
-                                zip(QUESTIONS[1:], ANSWERS[1:]))))
+                                list(zip(QUESTIONS[1:], ANSWERS[1:])))))
 
     write(DESCRIPTION)
     if streak > 5:
@@ -203,7 +203,7 @@ form { display: grid;grid-template-columns: repeat(2,1fr);grid-column-gap: 10px;
 input { width: 90% }
 """
 COLORS = ("Red", "Black", "Silver")
-RED, BLACK, SILVER = range(len(COLORS))
+RED, BLACK, SILVER = list(range(len(COLORS)))
 class Db:
     i = 0
     @staticmethod
