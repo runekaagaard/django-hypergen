@@ -10,10 +10,14 @@ def page(request):
     with html():
         with head():
             script(src=static("hypergen/hypergen.min.js"))
-        with body(id_="body"):
-            template(1)
+        with body(), div(id_="body"):
+            template()
 
-def template(n):
+@hypergen_callback(perm=NO_PERM_REQUIRED, translate=True, target_id="body")
+def reload(request):
+    template()
+
+def template():
     h1("Translation")
     p("Hypergen does not have a full translation framework (YET!). What it does have is editable strings.")
     h2("Use ctrl+shift+1 or command+shift+1 to toggle translation mode and then try to edit these strings"
@@ -25,3 +29,4 @@ def template(n):
     h2("How does it work?")
     p("Hypergen persists the translation strings in the ", a("Key/Value model", href="/admin/hypergen/kv/"),
         " and keeps the strings cached in memory for a very fast performance.")
+    button("Reload", id_="reload", onclick=cb(reload))

@@ -141,7 +141,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
 @wrap2
 def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, namespace=None, target_id=None,
     login_url=None, raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
-    wrap_elements=default_wrap_elements):
+    wrap_elements=default_wrap_elements, translate=False):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
 
     original_func = func
@@ -178,7 +178,7 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
         with c(referer_resolver_match=referer_resolver_match):
             func_return = {}
             commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id,
-                wrap_elements=wrap_elements)
+                wrap_elements=wrap_elements, translate=translate)
             # Commands are either default hypergen commands or commands from callback
             commands = commands if func_return["value"] is None else func_return["value"]
             # Allow view to add commands
