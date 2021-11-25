@@ -1,16 +1,16 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from . import hypergen.urls
+import hypergen.urls
 
-from . import todomvc.urls
-from . import inputs.urls
-from . import gameofcython.urls
-from . import djangotemplates.urls
-from . import hellohypergen.urls
-from . import t9n.urls
+import todomvc.urls
+import inputs.urls
+import gameofcython.urls
+import djangotemplates.urls
+import hellohypergen.urls
+import t9n.urls
 
-from .home import home
+from home import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),

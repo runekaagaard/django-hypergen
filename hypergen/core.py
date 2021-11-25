@@ -42,7 +42,8 @@ __all__ = [
 def make_string(s):
     if s is not None:
         s = force_text(s)
-        if c.hypergen["translate"] and s in TRANSLATIONS:
+        # TODO
+        if "hypergen" in c and "translate" in c["hypergen"] and c["hypergen"]["translate"] and s in TRANSLATIONS:
             return TRANSLATIONS[s]
 
         return s

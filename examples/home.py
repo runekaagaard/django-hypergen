@@ -1,14 +1,14 @@
 from django.urls import reverse
 
-from .hypergen.core import *
-from .hypergen.core import hypergen_to_response
+from hypergen.core import *
+from hypergen.core import hypergen_to_response
 
-from .todomvc.views import todomvc, ALL
-from .inputs.views import inputs
-from .gameofcython.views import gameofcython
-from .djangotemplates.views import djangotemplates
-from .hellohypergen.views import counter
-from .t9n.views import page
+from todomvc.views import todomvc, ALL
+from inputs.views import inputs
+from gameofcython.views import gameofcython
+from djangotemplates.views import djangotemplates
+from hellohypergen.views import counter
+from t9n.views import page
 
 def home(request):
     def template():
