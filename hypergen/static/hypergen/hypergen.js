@@ -465,13 +465,13 @@ const translations = function(url) {
   
   document.addEventListener('keydown', function(event) {
     if (!trans || !event.target.textContent || !event.target.classList.contains("hypergen-translatable")) return
+    event.stopPropagation()
+    event.preventDefault()
     
     if(event.key === "Escape") {
       event.target.textContent = event.target.getAttribute("data-hypergen-original")
       event.target.blur()
     } else if (event.key === "Enter") {
-      event.stopPropagation()
-      event.preventDefault()
       const [a, b] = [event.target.getAttribute("data-hypergen-original"), event.target.textContent]
 
       let form = new FormData()
