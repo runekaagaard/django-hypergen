@@ -29,4 +29,5 @@ def template():
     h2("How does it work?")
     p("Hypergen persists the translation strings in the ", a("Key/Value model", href="/admin/hypergen/kv/"),
         " and keeps the strings cached in memory for a very fast performance.")
+    p('Q "work"')
     button("Reload", id_="reload", onclick=cb(reload))

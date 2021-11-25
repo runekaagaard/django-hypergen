@@ -40,13 +40,8 @@ __all__ = [
 ### Python 2+3 compatibility ###
 
 def make_string(s):
-    if s is not None:
-        s = force_text(s)
-        # TODO
-        if "hypergen" in c and "translate" in c["hypergen"] and c["hypergen"]["translate"] and s in TRANSLATIONS:
-            return TRANSLATIONS[s]
-
-        return s
+    if s:
+        return force_text(s)
     else:
         return ""
 
@@ -138,30 +133,14 @@ def save_translation(a, b):
     from hypergen.models import KV
     kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
     t = json.loads(kv.value)
-    values = list(t.values())
 
-    status = False
-    try:
-        i = values.index(a)
-        assert values.count(a) == 1, "Duplicate value"
-        keys = list(t.keys())
-        k = keys[i]
-        t[k] = b
-        if k == b:
-            del t[k]
-        status = True
-    except ValueError:
-        t[a] = b
-        if a == b:
-            del t[a]
-        status = True
+    t[a] = b
+    if a == b:
+        del t[a]
 
-    if status:
-        kv.value = json.dumps(t)
-        kv.save()
-        set_translations(kv)
-
-    return False
+    kv.value = json.dumps(t)
+    kv.save()
+    set_translations(kv)
 
 ### Rendering ###
 
@@ -300,8 +279,18 @@ def join_html(html):
 def raw(*children):
     c.hypergen.into.extend(children)
 
-def t(s, quote=True):
-    return escape(make_string(s), quote=quote)
+def t(s, quote=True, translatable=False):
+    sb = s
+    s = s0 = escape(make_string(s), quote=quote)
+
+    if translatable and c["hypergen"]["translate"]:
+        if sb in TRANSLATIONS:
+            s = TRANSLATIONS[sb]
+
+        if c.user.has_perm("hypergen.kv_hypergen_translations"):
+            s = '<span data-hypergen-original="{}" class="hypergen-translatable">{}</span>'.format(s0, s)
+
+    return s
 
 ### Actions happening on the frontend  ###
 
@@ -464,12 +453,9 @@ class base_element(ContextDecorator):
         for i in range(self.i, self.j):
             c.hypergen.into[i] = DELETED
 
-    def format_children(self, children, _t=None):
-        if _t is None:
-            _t = self.t
-
+    def format_children(self, children):
         into = []
-        sep = t(self.sep)
+        sep = self.t(self.sep)
 
         for x in children:
             if x in ("", None):
@@ -481,13 +467,13 @@ class base_element(ContextDecorator):
                 x.delete()
                 into.extend(x.into)
             elif type(x) in (list, tuple):
-                into.extend(self.format_children(list(x), _t=_t))
+                into.extend(self.format_children(list(x)))
             elif type(x) in (GeneratorType,):
                 into.append(x)
             elif callable(x):
                 into.append(x)
             else:
-                into.append(_t(x))
+                into.append(self.t(x, translatable=True))
             if sep:
                 into.append(sep)
         if sep and children:
@@ -814,7 +800,7 @@ class samp(base_element): pass
 
 class script(base_element):
     def __init__(self, *children, **attrs):
-        attrs["t"] = lambda x: x
+        attrs["t"] = lambda x, **kwargs: x
         super(script, self).__init__(*children, **attrs)
 
 class section(base_element): pass
@@ -833,7 +819,7 @@ class strong(base_element): pass
 
 class style(base_element):
     def __init__(self, *children, **attrs):
-        attrs["t"] = lambda x: x
+        attrs["t"] = lambda x, **kwargs: x
         super(style, self).__init__(*children, **attrs)
 
 class sub(base_element): pass

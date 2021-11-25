@@ -443,40 +443,28 @@ const translations = function(url) {
     trans = !trans
     console.log("Translation mode:", trans)
     if (trans) {
-      document.querySelectorAll("body *").forEach(x => {
-        if (!x.textContent) return
-        if (x.textContent === x.innerHTML) {
+      document.querySelectorAll(".hypergen-translatable").forEach(x => {
+        if (!x.textContent || x.textContent !== x.innerHTML) return
           x.setAttribute("contenteditable", true)
-          x.setAttribute("data-hypergen-original", x.textContent)
-          x.classList.add("hypergen-translating")
-        } else {
-          x.childNodes.forEach((y, i) => {
-            if (y.nodeType !== Node.TEXT_NODE) return
-            let y2 = document.createElement("span")
-            y2.textContent = y.textContent;
-            y2.setAttribute("contenteditable", true)
-            y2.setAttribute("data-hypergen-original", y.textContent)
-            y2.classList.add("hypergen-translating")
-            y2.classList.add("hypergen-unwrap-later")
-            x.replaceChild(y2, y)
-          })
-        }
       })
     } else {
-      document.querySelectorAll(".hypergen-translating").forEach(x => {
+      document.querySelectorAll(".hypergen-translatable").forEach(x => {
         x.setAttribute("contenteditable", false)
-        x.classList.remove("hypergen-translating")
       })
-      document.querySelectorAll(".hypergen-unwrap-later").forEach(x => {
-        let x2 = document.createTextNode(x.textContent)
-        x.parentElement.replaceChild(x2, x)
-      })
+      document.activeElement.blur()
     }
   })
   
+  document.addEventListener('click', function(event) {
+    if (!trans || !event.target.textContent || !event.target.classList.contains("hypergen-translatable")) return
+    
+    event.stopPropagation()
+    event.preventDefault()
+    return false
+  })
+  
   document.addEventListener('keydown', function(event) {
-    const x = event.target
-    if (!trans || !x.textContent || !x.classList.contains("hypergen-translating")) return
+    if (!trans || !event.target.textContent || !event.target.classList.contains("hypergen-translatable")) return
     
     if(event.key === "Escape") {
       event.target.textContent = event.target.getAttribute("data-hypergen-original")
@@ -492,14 +480,13 @@ const translations = function(url) {
         url,
         form,
         () => {
-          event.target.setAttribute("data-hypergen-original", b)
           event.target.blur()
           console.log("Translation text was posted to the server")
         },
         () => { alert("Something went wrong when posting translation string to server.")},
         {},
       )
-      console.log("Updated the string:", JSON.stringify(a), "->", JSON.stringify(b))
+      console.log("Updated the strings [a, b]", [a, b])
       return false
     }
   })
