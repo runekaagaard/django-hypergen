@@ -280,15 +280,15 @@ def raw(*children):
     c.hypergen.into.extend(children)
 
 def t(s, quote=True, translatable=False):
-    sb = s
-    s = s0 = escape(make_string(s), quote=quote)
+    s0 = s
+    s = s1 = escape(make_string(s), quote=quote)
 
     if translatable and c["hypergen"]["translate"]:
-        if sb in TRANSLATIONS:
-            s = TRANSLATIONS[sb]
+        if s0 in TRANSLATIONS:
+            s = TRANSLATIONS[s0]
 
         if c.user.has_perm("hypergen.kv_hypergen_translations"):
-            s = '<span data-hypergen-original="{}" class="hypergen-translatable">{}</span>'.format(s0, s)
+            s = '<span data-hypergen-original="{}" class="hypergen-translatable">{}</span>'.format(s1, s)
 
     return s
 
