@@ -180,9 +180,11 @@ def hypergen(func, *args, **kwargs):
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
-        if c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
+
+        if not c.request.is_ajax() and c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
             from hypergen.views import translate
             command("translations", translate.reverse())
+
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
