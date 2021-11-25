@@ -10,7 +10,7 @@ def counter(request):
     with html():
         with head():
             script(src=static("hypergen/hypergen.min.js"))
-        with body(id_="body"):
+        with body(), div(id_="body"):
             template(1)
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")
