@@ -533,6 +533,7 @@ class base_element(ContextDecorator):
 
 class base_element_void(base_element):
     void = True
+    translatable = False
 
 class Component(object):
     def __init__(self, into, i, j):
@@ -623,7 +624,10 @@ class a(base_element):
 class abbr(base_element): pass
 class acronym(base_element): pass
 class address(base_element): pass
-class applet(base_element): pass
+
+class applet(base_element):
+    translatable = False
+
 class area(base_element_void): pass
 class article(base_element): pass
 class aside(base_element): pass
@@ -638,7 +642,10 @@ class blockquote(base_element): pass
 class body(base_element): pass
 class br(base_element_void): pass
 class button(base_element): pass
-class canvas(base_element): pass
+
+class canvas(base_element):
+    translatable = False
+
 class caption(base_element): pass
 class center(base_element): pass
 class cite(base_element): pass
@@ -684,9 +691,7 @@ class i(base_element): pass
 class iframe(base_element):
     translatable = False
 
-class img(base_element_void):
-    translatable = False
-
+class img(base_element_void): pass
 class ins(base_element): pass
 class kbd(base_element): pass
 class label(base_element): pass
@@ -700,21 +705,26 @@ class link(base_element):
         super(link, self).__init__(rel=rel, type_=type_, **attrs)
 
 class main(base_element): pass
-class map_(base_element): pass
-class mark(base_element): pass
-class meta(base_element_void):
+
+class map_(base_element):
     translatable = False
 
-class meter(base_element): pass
+class mark(base_element): pass
+class meta(base_element_void): pass
+
+class meter(base_element):
+    translatable = False
+
 class nav(base_element): pass
 
 class noframes(base_element):
     translatable = False
 
-class noscript(base_element):
+class noscript(base_element): pass
+
+class object_(base_element):
     translatable = False
 
-class object_(base_element): pass
 class ol(base_element): pass
 class optgroup(base_element): pass
 class option(base_element): pass
@@ -757,11 +767,17 @@ class style(base_element):
 class sub(base_element): pass
 class summary(base_element): pass
 class sup(base_element): pass
-class svg(base_element): pass
+
+class svg(base_element):
+    translatable = False
+
 class table(base_element): pass
 class tbody(base_element): pass
 class td(base_element): pass
-class template(base_element): pass
+
+class template(base_element):
+    translatable = False
+
 class textarea(base_element): pass
 class tfoot(base_element): pass
 class th(base_element): pass
@@ -782,6 +798,7 @@ class video(base_element):
     translatable = False
 
 class wbr(base_element_void): pass
+
 # yapf: enable
 
 # Serialization
