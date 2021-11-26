@@ -631,7 +631,10 @@ class applet(base_element):
 class area(base_element_void): pass
 class article(base_element): pass
 class aside(base_element): pass
-class audio(base_element): pass
+
+class audio(base_element):
+    translatable = False
+
 class b(base_element): pass
 class base(base_element_void): pass
 class basefont(base_element): pass
