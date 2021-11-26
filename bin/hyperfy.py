@@ -63,7 +63,7 @@ def _attrs(tag):
             if y and y == v:
                 continue
         if tag.name in ("link", "script", "meta"):
-            if k in ("href", "css", "content"):
+            if k in ("href", "src", "content"):
                 if v.startswith("/static/"):
                     v = v.replace("/static/", "")
                     v = 'static("{}")'.format(v)
