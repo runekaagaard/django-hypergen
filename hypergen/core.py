@@ -135,7 +135,7 @@ def save_translation(a, b):
     t = json.loads(kv.value)
 
     t[a] = b
-    if a == b:
+    if a == b or b == "RESET":
         del t[a]
 
     kv.value = json.dumps(t)
