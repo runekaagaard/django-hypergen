@@ -482,8 +482,10 @@ const translations = function(url) {
         url,
         form,
         () => {
+          if (b === "RESET") event.target.textContent = a
           event.target.blur()
           console.log("Translation text was posted to the server")
+          
         },
         () => { alert("Something went wrong when posting translation string to server.")},
         {},
