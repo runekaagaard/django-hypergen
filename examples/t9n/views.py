@@ -20,8 +20,10 @@ def reload(request):
 def template():
     h1("Translation")
     p("Hypergen does not have a full translation framework (YET!). What it does have is editable strings.")
-    h2("Use ctrl+shift+1 or command+shift+1 to toggle translation mode and then try to edit these strings"
-        " by clicking on them.")
+    h2(
+        "Use ctrl+shift+1 or command+shift+1 to toggle translation mode and then try to edit these strings"
+        " by clicking on them. Enter the text 'RESET' to reset to the original value. ",
+        "Use enter to commit and escape to cancel.")
     p("Use Enter to save your changes and Escape to abort. "
         "But you will have to be ", a("logged in", href="/admin/"),
         " and have the permission hypergen.kv_hypergen_translations.", id_="foo")
