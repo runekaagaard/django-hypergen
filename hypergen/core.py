@@ -113,35 +113,6 @@ def wrap2(f):
 def insert(source_str, insert_str, pos):
     return ''.join((source_str[:pos], insert_str, source_str[pos:]))
 
-### Not translation ###
-TRANSLATIONS = {}
-
-def load_translations():
-    from hypergen.models import KV
-    if not TRANSLATIONS:
-        try:
-            kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
-            set_translations(kv)
-        except Exception:
-            logger.exception("Can't load translations")
-
-def set_translations(kv):
-    global TRANSLATIONS
-    TRANSLATIONS = json.loads(kv.value)
-
-def save_translation(a, b):
-    from hypergen.models import KV
-    kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
-    t = json.loads(kv.value)
-
-    t[a] = b
-    if a == b or b == "RESET":
-        del t[a]
-
-    kv.value = json.dumps(t)
-    kv.save()
-    set_translations(kv)
-
 ### Rendering ###
 
 def default_wrap_elements(init, self, *children, **attrs):
@@ -183,12 +154,12 @@ def hypergen(func, *args, **kwargs):
 
         if not c.request.is_ajax() and c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
             from hypergen.views import translate
-            command("translations", translate.reverse())
+            command("translations", translate.reverse(), [[k, v] for k, v in TRANSLATIONS.items()])
 
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
-                s = "<script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
+                s = "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
                     dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
             print(("Execution time:", (time.time() - a) * 1000, "ms"))
@@ -282,17 +253,49 @@ def raw(*children):
     c.hypergen.into.extend(children)
 
 def t(s, quote=True, translatable=False):
-    s0 = s
-    s = s1 = escape(make_string(s), quote=quote)
+    return translate(escape(make_string(s), quote=quote), translatable=translatable)
 
+### Not translation ###
+
+TRANSLATIONS = {}
+
+def translate(s, translatable=True):
     if translatable and c["hypergen"]["translate"]:
-        if s0 in TRANSLATIONS:
-            s = TRANSLATIONS[s0]
+        if s in TRANSLATIONS:
+            return TRANSLATIONS[s]
+        else:
+            if c.user.has_perm("hypergen.kv_hypergen_translations"):
+                save_translation(s, s)
 
-        if c.user.has_perm("hypergen.kv_hypergen_translations"):
-            s = '<span data-hypergen-original="{}" class="hypergen-translatable">{}</span>'.format(s1, s)
+            return s
+    else:
+        return s
 
-    return s
+def load_translations():
+    from hypergen.models import KV
+    if not TRANSLATIONS:
+        try:
+            kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
+            set_translations(kv)
+        except Exception:
+            logger.exception("Can't load translations")
+
+def set_translations(kv):
+    global TRANSLATIONS
+    TRANSLATIONS = json.loads(kv.value)
+
+def save_translation(a, b):
+    from hypergen.models import KV
+    kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
+    t = json.loads(kv.value)
+
+    t[a] = b
+    if b == "RESET":
+        del t[a]
+
+    kv.value = json.dumps(t)
+    kv.save()
+    set_translations(kv)
 
 ### Actions happening on the frontend  ###
 
@@ -364,6 +367,7 @@ class base_element(ContextDecorator):
     auto_id = False
     config_attrs = {"t", "sep", "coerce_to", "js_coerce_func", "js_value_func"}
     translatable = True
+    translatable_attributes = ["placeholder", "title"]
 
     def __new__(cls, *args, **kwargs):
         instance = ContextDecorator.__new__(cls)
@@ -508,7 +512,7 @@ class base_element(ContextDecorator):
             if v is None:
                 v = ""
             else:
-                v = t(v)
+                v = t(v, translatable=(k in self.translatable_attributes and type(v) is str))
             assert '"' not in v, "How dare you put a \" in my attributes! :)"
             return [" ", k, '="', v, '"']
 
@@ -781,7 +785,9 @@ class td(base_element): pass
 class template(base_element):
     translatable = False
 
-class textarea(base_element): pass
+class textarea(base_element):
+    translatable = False
+
 class tfoot(base_element): pass
 class th(base_element): pass
 class thead(base_element): pass

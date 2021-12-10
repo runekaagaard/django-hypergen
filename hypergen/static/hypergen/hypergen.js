@@ -436,66 +436,86 @@ window.addEventListener("popstate", function(event) {
   }
 })
 
-var trans = false
 
-const translations = function(url) {
-  mousetrap.bind('mod+shift+1', () => {
-    trans = !trans
-    console.log("Translation mode:", trans)
-    if (trans) {
-      document.querySelectorAll(".hypergen-translatable").forEach(x => {
-        if (!x.textContent || x.textContent !== x.innerHTML) return
-          x.setAttribute("contenteditable", true)
-      })
-    } else {
-      document.querySelectorAll(".hypergen-translatable").forEach(x => {
-        x.setAttribute("contenteditable", false)
-      })
-      document.activeElement.blur()
+// Translations
+const replaceInText = function(element, pattern, replacement) {
+  if (element === null) element = document.querySelector("body")
+  
+  for (let node of element.childNodes) {
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE:
+        replaceInText(node, pattern, replacement);
+        break;
+      case Node.TEXT_NODE:
+        node.textContent = node.textContent.replace(pattern, replacement);
+        break;
+      case Node.DOCUMENT_NODE:
+        replaceInText(node, pattern, replacement);
     }
-  })
-  
-  document.addEventListener('click', function(event) {
-    if (!trans || !event.target.textContent || !event.target.classList.contains("hypergen-translatable")) return
-    
-    event.stopPropagation()
-    event.preventDefault()
-    return false
-  })
-  
-  document.addEventListener('keydown', function(event) {
-    if (!trans || !event.target.textContent || !event.target.classList.contains("hypergen-translatable")) return
-    
-    if(event.key === "Escape") {
-      event.stopPropagation()
-      event.preventDefault()
-      event.target.textContent = event.target.getAttribute("data-hypergen-original")
-      event.target.blur()
-    } else if (event.key === "Enter") {
-      event.stopPropagation()
-      event.preventDefault()
-      const [a, b] = [event.target.getAttribute("data-hypergen-original"), event.target.textContent]
+  }
+}
 
-      let form = new FormData()
-      form.append("hypergen_data", JSON.stringify({args: [a, b], meta: {}}))
-      post(
-        url,
-        form,
-        () => {
-          if (b === "RESET") event.target.textContent = a
-          event.target.blur()
-          console.log("Translation text was posted to the server")
-          
-        },
-        () => { alert("Something went wrong when posting translation string to server.")},
-        {},
-      )
-      console.log("Updating the strings [a, b]", [a, b])
-      return false
+const translations = function(url, T) {
+  window.t = {T}
+  
+  window.t.post = function(a, b, b0) {
+    let form = new FormData()
+    form.append("hypergen_data", JSON.stringify({args: [a, b], meta: {}}))
+    console.log("Translating", JSON.stringify(a), "to", JSON.stringify(b))
+    post(
+      url,
+      form,
+      () => { replaceInText(null, b0, (b === "RESET" ? a : b)); console.log("Server said, THANKYOUSE!") },
+      () => { alert("Something went wrong when posting translation string to server.")},
+      {},
+    )
+  }
+  
+  window.t.help = function() {
+    console.log(`Hi user, you have the following commands:
+
+    t.list() // Shows all translatable strings on this page and their reference number
+    t.translate() // Runs t.list and then prompts for reference number and then translation.
+
+Use "RESET" to reset back to the original content.
+      `)
+  }
+
+  var stringsOnPage = function() {
+    var html = document.body.innerHTML
+    return T.filter(x => html.includes(x[1]))
+  }
+  
+  window.t.list = function() {
+    var xs = stringsOnPage()
+    console.log("I found the following translatable strings on this page:\n\n" + xs.map(
+      (x, i) => `${i}: ${x[0]}`).join("\n"))
+  }
+  window.t.translate = function() {
+    var xs = stringsOnPage()
+    window.t.list()
+    i = Number(prompt("Which number string do you want to translate?"))
+    if (i != 0 && !i) {
+      console.error("Dont know that number", i, "try again!")
+      return
     }
-  })
+    var x = xs[i]
+    if (!x) {
+      console.error("Dont know that number", i, "try again!")
+      return
+    }
+  
+    var b = prompt("Input translation for: \n\n    '" + x[1] + "'", x[1])
+    if (!b || b.trim() === "") {
+      console.error("You did not write anything. Try again!")
+      return
+    }
+    window.t.post(x[0], b, x[1])
+  }
 }
 window.translations = translations
+
+// On ready
 
 const ready = function(fn) {
   if (document.readyState != 'loading') {
