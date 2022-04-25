@@ -10,12 +10,13 @@ import djangotemplates.urls
 import hellohypergen.urls
 import t9n.urls
 
-from home import home
+from home import home, examples
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hypergen/', include(hypergen.urls, namespace="hypergen")),
     path('', home),
+    path('examples/', examples),
     path('todomvc/', include(todomvc.urls, namespace="todomvc")),
     path('inputs/', include(inputs.urls, namespace="inputs")),
     path('gameofcython/', include(gameofcython.urls, namespace="gameofcython")),

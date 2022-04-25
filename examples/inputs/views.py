@@ -17,16 +17,6 @@ E = namedtuple("E", 'type,attrs,doc', defaults=[None] * 3)
 
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content")
 def inputs(request):
-    style("""
-        pre { background-color: gainsboro; padding: 4px;}
-        table,th,td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-        th,td {
-            padding: 4px;
-        }
-    """)
     INPUT_TYPES = [
         E("checkbox", d(checked=True)),
         E("color", d(value="#bb7777")),
