@@ -11,7 +11,7 @@ def base_template():
     doctype()
     with html():
         with head():
-            title("Hypergen Examples")
+            title("Django Hypergen")
             script(src=static("hypergen/hypergen.min.js"))
             link("https://unpkg.com/simpledotcss/simple.min.css")
             link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
