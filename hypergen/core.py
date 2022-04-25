@@ -3,10 +3,11 @@ from __future__ import (absolute_import, division, unicode_literals)
 
 d = dict
 
-import string, sys, time, threading, datetime, json
+import string, sys, time, threading, datetime, json, logging
 from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps, update_wrapper
+from copy import deepcopy
 
 from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
@@ -16,6 +17,12 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object  # Backwards compatibility.
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi",
@@ -32,25 +39,27 @@ __all__ = [
 
 ### Python 2+3 compatibility ###
 
-def make_string(x):
-    if x is not None:
-        return force_text(x)
+def make_string(s):
+    # TODO: WHY IS THERE AN IF STATEMENT HERE AT ALL?
+    # We had a bug where 0 int did not get rendered. I suck.
+    if s or type(s) in (int, float):
+        return force_text(s)
     else:
         return ""
 
 if sys.version_info.major > 2:
     from html import escape
     letters = string.ascii_letters
-    unicode = str
+    str = str
 
     def items(x):
-        return x.items()
+        return list(x.items())
 else:
     from cgi import escape
     letters = string.letters
 
     def items(x):
-        return x.iteritems()
+        return iter(x.items())
 
 ### Constants ####
 
@@ -116,8 +125,9 @@ def hypergen_context(data=None):
         data = {}
 
     c_ = m(into=[], event_handler_callbacks={}, event_handler_callback_strs=[],
-        target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
-        wrap_elements=data.pop("wrap_elements", default_wrap_elements), matched_perms=set())
+        target_id=data.pop("target_id",
+        "__main__"), commands=[], ids=set(), wrap_elements=data.pop("wrap_elements",
+        default_wrap_elements), matched_perms=set(), translate=data.pop("translate", False))
 
     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
     return c_
@@ -136,22 +146,29 @@ def hypergen(func, *args, **kwargs):
     with c(hypergen=hypergen_context(kwargs)):
         assert not c.hypergen.into, "This should not happen"
         assert "target_id" not in kwargs, "This should not happen"
+        if c.hypergen.translate:
+            load_translations()
         func(*args, **kwargs)
         assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+
+        if not c.request.is_ajax() and c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
+            from hypergen.views import translate
+            command("translations", translate.reverse(), [[k, v] for k, v in TRANSLATIONS.items()])
+
         if not c.request.is_ajax():
             pos = html.find("</head")
             if pos != -1:
-                s = "<script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>".format(
+                s = "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
                     dumps(c.hypergen.commands))
                 html = insert(html, s, pos)
-            print("Execution time:", (time.time() - a) * 1000, "ms")
+            print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return html
         else:
             command("hypergen.morph", c.hypergen.target_id, html)
-            print("Execution time:", (time.time() - a) * 1000, "ms")
+            print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return c.hypergen.commands
 
 def hypergen_to_string(func, *args, **kwargs):
@@ -161,7 +178,7 @@ def hypergen_to_string(func, *args, **kwargs):
         assert "target_id" not in kwargs, "This should not happen"
         func(*args, **kwargs)
         html = join_html(c.hypergen.into)
-        print("Execution time:", (time.time() - a) * 1000, "ms")
+        print(("Execution time:", (time.time() - a) * 1000, "ms"))
 
         return html
 
@@ -180,7 +197,7 @@ def hypergen_response(html_or_commands_or_http_response, status=None):
     elif type(value) in (list, tuple):
         assert c.request.is_ajax()
         return HttpResponse(dumps(value), status=status, content_type='application/json')
-    elif type(value) in (str, unicode):
+    elif type(value) in (str, str):
         assert not c.request.is_ajax()
         return HttpResponse(value, status=status)
     else:
@@ -237,8 +254,50 @@ def join_html(html):
 def raw(*children):
     c.hypergen.into.extend(children)
 
-def t(s, quote=True):
-    return escape(make_string(s), quote=quote)
+def t(s, quote=True, translatable=False):
+    return translate(escape(make_string(s), quote=quote), translatable=translatable)
+
+### Not translation ###
+
+TRANSLATIONS = {}
+
+def translate(s, translatable=True):
+    if translatable and c["hypergen"]["translate"]:
+        if s in TRANSLATIONS:
+            return TRANSLATIONS[s]
+        else:
+            if c.user.has_perm("hypergen.kv_hypergen_translations"):
+                save_translation(s, s)
+
+            return s
+    else:
+        return s
+
+def load_translations():
+    from hypergen.models import KV
+    if not TRANSLATIONS:
+        try:
+            kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
+            set_translations(kv)
+        except Exception:
+            logger.exception("Can't load translations")
+
+def set_translations(kv):
+    global TRANSLATIONS
+    TRANSLATIONS = json.loads(kv.value)
+
+def save_translation(a, b):
+    from hypergen.models import KV
+    kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
+    t = json.loads(kv.value)
+
+    t[a] = b
+    if b == "RESET":
+        del t[a]
+
+    kv.value = json.dumps(t)
+    kv.save()
+    set_translations(kv)
 
 ### Actions happening on the frontend  ###
 
@@ -278,6 +337,8 @@ def callback(url_or_view, *cb_args, **kwargs):
             em = ""
         return [" ", t(k), '="', "e(event,'{}'{})".format(cmd_id, em), '"']
 
+    to_html.hypergen_callback_signature = "callback", (url_or_view,) + cb_args, kwargs
+
     return to_html
 
 def call_js(command_path, *cb_args):
@@ -301,11 +362,14 @@ class THIS(object):
 NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
 
-COERCE = {str: None, unicode: None, int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
+COERCE = {str: None, str: None, int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
 
 class base_element(ContextDecorator):
     void = False
     auto_id = False
+    config_attrs = {"t", "sep", "coerce_to", "js_coerce_func", "js_value_func"}
+    translatable = True
+    translatable_attributes = ["placeholder", "title"]
 
     def __new__(cls, *args, **kwargs):
         instance = ContextDecorator.__new__(cls)
@@ -314,7 +378,7 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         def init(self, *children, **attrs):
-            self.t = attrs.pop("t", t)
+            self.t = attrs.get("t", t)
             self.children = children
             self.attrs = attrs
 
@@ -324,17 +388,17 @@ class base_element(ContextDecorator):
             self.attrs["id_"] = LazyAttribute("id", id_)
 
             self.i = len(c.hypergen.into)
-            self.sep = attrs.pop("sep", "")
-            self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+            self.sep = attrs.get("sep", "")
+            self.js_value_func = attrs.get("js_value_func", "hypergen.read.value")
 
-            coerce_to = attrs.pop("coerce_to", None)
+            coerce_to = attrs.get("coerce_to", None)
             if coerce_to is not None:
                 try:
                     self.js_coerce_func = COERCE[coerce_to]
                 except KeyError:
                     raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
             else:
-                self.js_coerce_func = attrs.pop("js_coerce_func", None)
+                self.js_coerce_func = attrs.get("js_coerce_func", None)
 
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
@@ -358,6 +422,36 @@ class base_element(ContextDecorator):
         if not self.void:
             c.hypergen.into.extend(self.end())
 
+    def __repr__(self):
+        def value(v):
+            if isinstance(v, LazyAttribute):
+                return '"{}"'.format(v.v)
+            elif v is THIS:
+                return "THIS"
+            elif callable(v) and hasattr(v, "hypergen_callback_signature"):
+                name, a, kw = v.hypergen_callback_signature
+                return "{}({})".format(name, signature(a, kw))
+            elif callable(v):
+                return ".".join((v.__module__, v.__name__)).replace("builtins.", "")
+            elif type(v) is str:
+                return '"{}"'.format(v)
+            else:
+                return repr(v)
+
+        def args(x):
+            return value(x)
+
+        def kwargs(k, v):
+            return k, value(v)
+
+        def signature(a, kw):
+            a, kw = deepcopy(a), deepcopy(kw)
+            return ", ".join([args(x) for x in a] + [
+                "{}={}".format(*kwargs(k, v))
+                for k, v in list(kw.items()) if not (isinstance(v, LazyAttribute) and v.v is None)])
+
+        return "{}({})".format(self.__class__.__name__, signature(self.children, self.attrs))
+
     def as_string(self):
         into = self.start()
         into.extend(self.end())
@@ -368,12 +462,9 @@ class base_element(ContextDecorator):
         for i in range(self.i, self.j):
             c.hypergen.into[i] = DELETED
 
-    def format_children(self, children, _t=None):
-        if _t is None:
-            _t = self.t
-
+    def format_children(self, children):
         into = []
-        sep = t(self.sep)
+        sep = self.t(self.sep)
 
         for x in children:
             if x in ("", None):
@@ -385,13 +476,13 @@ class base_element(ContextDecorator):
                 x.delete()
                 into.extend(x.into)
             elif type(x) in (list, tuple):
-                into.extend(self.format_children(list(x), _t=_t))
+                into.extend(self.format_children(list(x)))
             elif type(x) in (GeneratorType,):
                 into.append(x)
             elif callable(x):
                 into.append(x)
             else:
-                into.append(_t(x))
+                into.append(self.t(x, translatable=self.translatable))
             if sep:
                 into.append(sep)
         if sep and children:
@@ -423,13 +514,15 @@ class base_element(ContextDecorator):
             if v is None:
                 v = ""
             else:
-                v = t(v)
+                v = t(v, translatable=(k in self.translatable_attributes and type(v) is str))
             assert '"' not in v, "How dare you put a \" in my attributes! :)"
             return [" ", k, '="', v, '"']
 
     def start(self):
         into = ["<", self.tag]
         for k, v in items(self.attrs):
+            if k in self.config_attrs:
+                continue
             into.extend(self.attribute(k, v))
 
         if self.void:
@@ -446,6 +539,7 @@ class base_element(ContextDecorator):
 
 class base_element_void(base_element):
     void = True
+    translatable = False
 
 class Component(object):
     def __init__(self, into, i, j):
@@ -491,23 +585,27 @@ class input_(base_element_void):
     void = True
 
     def __init__(self, *children, **attrs):
-        type_, value = attrs.get("type_", None), attrs.get("value", None)
-        if type_ == "radio":
+        if attrs.get("type_", None) == "radio":
             assert attrs.get("name"), "Name must be set for radio buttons."
-        elif type_ == "datetime-local":
-            if type(value) is datetime.datetime:
-                attrs["value"] = value.strftime("%Y-%m-%dT%H:%M:%S")
-        elif type_ == "month":
-            if type(value) is dict:
-                attrs["value"] = "{:04}-{:02}".format(value["year"], value["month"])
-        elif type_ == "week":
-            if type(value) is dict:
-                attrs["value"] = "{:04}-W{:02}".format(value["year"], value["week"])
         super(input_, self).__init__(*children, **attrs)
         self.js_value_func = attrs.pop("js_value_func",
             JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
         if self.js_coerce_func is None:
             self.js_coerce_func = attrs.pop("js_coerce_func", JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
+
+    def attribute(self, k, v):
+        if k != "value":
+            return super().attribute(k, v)
+
+        type_ = self.attrs.get("type_", None)
+        if type_ == "datetime-local":
+            return [" ", k, '="', v.strftime("%Y-%m-%dT%H:%M:%S"), '"']
+        elif type_ == "month" and type(v) is dict:
+            return [" ", k, '="', "{:04}-{:02}".format(v["year"], v["month"]), '"']
+        elif type_ == "week" and type(v) is dict:
+            return [" ", k, '="', "{:04}-W{:02}".format(v["year"], v["week"]), '"']
+        else:
+            return super().attribute(k, v)
 
 ### Special tags ###
 
@@ -530,253 +628,188 @@ class a(base_element):
         super(a, self).__init__(*children, **attrs)
 
 class abbr(base_element): pass
-
 class acronym(base_element): pass
-
 class address(base_element): pass
 
-class applet(base_element): pass
+class applet(base_element):
+    translatable = False
 
 class area(base_element_void): pass
-
 class article(base_element): pass
-
 class aside(base_element): pass
 
-class audio(base_element): pass
+class audio(base_element):
+    translatable = False
 
 class b(base_element): pass
-
 class base(base_element_void): pass
-
 class basefont(base_element): pass
-
 class bdi(base_element): pass
-
 class bdo(base_element): pass
-
 class big(base_element): pass
-
 class blockquote(base_element): pass
-
 class body(base_element): pass
-
 class br(base_element_void): pass
-
 class button(base_element): pass
 
-class canvas(base_element): pass
+class canvas(base_element):
+    translatable = False
 
 class caption(base_element): pass
-
 class center(base_element): pass
-
 class cite(base_element): pass
-
 class code(base_element): pass
-
 class col(base_element_void): pass
-
 class colgroup(base_element): pass
-
 class data(base_element): pass
-
 class datalist(base_element): pass
-
 class dd(base_element): pass
-
 class del_(base_element): pass
-
 class details(base_element): pass
-
 class dfn(base_element): pass
-
 class dialog(base_element): pass
-
 class dir_(base_element): pass
-
 class div(base_element): pass
-
 class dl(base_element): pass
-
 class dt(base_element): pass
-
 class em(base_element): pass
-
 class embed(base_element_void): pass
-
 class fieldset(base_element): pass
-
 class figcaption(base_element): pass
-
 class figure(base_element): pass
-
 class font(base_element): pass
-
 class footer(base_element): pass
-
 class form(base_element): pass
-
 class frame(base_element): pass
-
 class frameset(base_element): pass
-
 class h1(base_element): pass
-
 class h2(base_element): pass
-
 class h3(base_element): pass
-
 class h4(base_element): pass
-
 class h5(base_element): pass
-
 class h6(base_element): pass
 
-class head(base_element): pass
+class head(base_element):
+    translatable = False
 
 class header(base_element): pass
-
 class hr(base_element_void): pass
-
 class html(base_element): pass
-
 class i(base_element): pass
 
-class iframe(base_element): pass
+class iframe(base_element):
+    translatable = False
 
 class img(base_element_void): pass
-
 class ins(base_element): pass
-
 class kbd(base_element): pass
-
 class label(base_element): pass
-
 class legend(base_element): pass
-
 class li(base_element): pass
 
 class link(base_element):
+    translatable = False
     def __init__(self, href, rel="stylesheet", type_="text/css", **attrs):
         attrs["href"] = href
         super(link, self).__init__(rel=rel, type_=type_, **attrs)
 
 class main(base_element): pass
 
-class map_(base_element): pass
+class map_(base_element):
+    translatable = False
 
 class mark(base_element): pass
-
 class meta(base_element_void): pass
 
-class meter(base_element): pass
+class meter(base_element):
+    translatable = False
 
 class nav(base_element): pass
 
-class noframes(base_element): pass
+class noframes(base_element):
+    translatable = False
 
 class noscript(base_element): pass
 
-class object_(base_element): pass
+class object_(base_element):
+    translatable = False
 
 class ol(base_element): pass
-
 class optgroup(base_element): pass
-
 class option(base_element): pass
-
 class output(base_element): pass
-
 class p(base_element): pass
-
 class param(base_element_void): pass
 
-class picture(base_element): pass
+class picture(base_element):
+    translatable = False
 
 class pre(base_element): pass
-
 class progress(base_element): pass
-
 class q(base_element): pass
-
 class rp(base_element): pass
-
 class rt(base_element): pass
-
 class ruby(base_element): pass
-
 class s(base_element): pass
-
 class samp(base_element): pass
 
 class script(base_element):
+    translatable = False
+
     def __init__(self, *children, **attrs):
-        attrs["t"] = lambda x: x
+        attrs["t"] = lambda x, **kwargs: x
         super(script, self).__init__(*children, **attrs)
 
 class section(base_element): pass
-
 class select(base_element): pass
-
 class small(base_element): pass
-
 class source(base_element_void): pass
-
 class span(base_element): pass
-
 class strike(base_element): pass
-
 class strong(base_element): pass
 
 class style(base_element):
     def __init__(self, *children, **attrs):
-        attrs["t"] = lambda x: x
+        attrs["t"] = lambda x, **kwargs: x
         super(style, self).__init__(*children, **attrs)
 
 class sub(base_element): pass
-
 class summary(base_element): pass
-
 class sup(base_element): pass
 
-class svg(base_element): pass
+class svg(base_element):
+    translatable = False
 
 class table(base_element): pass
-
 class tbody(base_element): pass
-
 class td(base_element): pass
 
-class template(base_element): pass
+class template(base_element):
+    translatable = False
 
-class textarea(base_element): pass
+class textarea(base_element):
+    translatable = False
 
 class tfoot(base_element): pass
-
 class th(base_element): pass
-
 class thead(base_element): pass
-
 class time_(base_element): pass
 
-class title(base_element): pass
+class title(base_element):
+    translatable = False
 
 class tr(base_element): pass
-
 class track(base_element_void): pass
-
 class tt(base_element): pass
-
 class u(base_element): pass
-
 class ul(base_element): pass
-
 class var(base_element): pass
 
-class video(base_element): pass
+class video(base_element):
+    translatable = False
 
 class wbr(base_element_void): pass
+
 # yapf: enable
 
 # Serialization
@@ -899,7 +932,7 @@ def context_middleware(get_response):
 
     return _
 
-class ContextMiddleware(object):
+class ContextMiddleware(MiddlewareMixin):
     def process_request(self, request):
         # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))

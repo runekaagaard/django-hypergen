@@ -1,5 +1,5 @@
 from hypergen.contrib import hypergen_urls
-from inputs import views
+from t9n import views
 
-app_name = 'inputs'
+app_name = 't9n'
 urlpatterns = hypergen_urls(views, app_name)

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import bs4
 import sys
 import argparse
@@ -6,7 +5,7 @@ import pyperclip as pc
 from bs4 import BeautifulSoup as bs, Tag, NavigableString
 import keyword
 
-GLOBALS = globals().keys()
+GLOBALS = list(globals().keys())
 BUILTINS = dir(__builtins__)
 
 parser = argparse.ArgumentParser()
@@ -52,7 +51,7 @@ def _attrs(tag):
     omit_v = {"link": {"type": "text/css", "rel": "stylesheet"}, "script": {"type": "text/javascript"}}
 
     a = []
-    for k, v in tag.attrs.items():
+    for k, v in list(tag.attrs.items()):
         q = '"'
         v = fmt_v(v)
         if k in omit:
@@ -63,7 +62,7 @@ def _attrs(tag):
             if y and y == v:
                 continue
         if tag.name in ("link", "script", "meta"):
-            if k in ("href", "css", "content"):
+            if k in ("href", "src", "content"):
                 if v.startswith("/static/"):
                     v = v.replace("/static/", "")
                     v = 'static("{}")'.format(v)
@@ -82,9 +81,9 @@ def _string(tag):
 def _params(tag):
     def multiline(x):
         if "\n" in x:
-            return u'"""{}"""'.format(x)
+            return '"""{}"""'.format(x)
         else:
-            return u'"{}"'.format(x)
+            return '"{}"'.format(x)
 
     if _string(tag):
         txt = multiline(tag.string) if tag.string is not None else None

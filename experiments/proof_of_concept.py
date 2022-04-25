@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import threading
 from contextlib import contextmanager
@@ -15,7 +15,7 @@ def htmlgen(f):
     def _(*args, **kwargs):
         try:
             f(*args, **kwargs)
-            html = u"".join(x for x in _local.html if x)
+            html = "".join(x for x in _local.html if x)
         finally:
             _local.html = []
 
@@ -26,7 +26,7 @@ def htmlgen(f):
 
 def write(html):
     if html:
-        _local.html.append(unicode(html))
+        _local.html.append(str(html))
         _local.index["value"] += 1
 
 
@@ -42,14 +42,14 @@ def _element_open(tag, **attrs):
     def _attr(k, v):
         k = k.lstrip("_")
         if type(v) is bool:
-            return u" {}".format(k) if v else u""
+            return " {}".format(k) if v else ""
         else:
-            return u' {}="{}"'.format(k, v)
+            return ' {}="{}"'.format(k, v)
 
-    html.append(u"<{}".format(tag))
-    [html.append(_attr(k, v)) for k, v in attrs.iteritems()]
+    html.append("<{}".format(tag))
+    [html.append(_attr(k, v)) for k, v in attrs.items()]
     html.append(">")
-    write(u"".join(html))
+    write("".join(html))
 
 
 def _element_close(tag):
@@ -137,7 +137,7 @@ def cachecm(**kwargs):
 
     hash_key = hash(
         tuple([hash(x) for x in keys] + ["SEP_A"] +
-              [(k, v) for k, v in kwargs.iteritems()]))
+              [(k, v) for k, v in kwargs.items()]))
 
     if hash_key in _local.cache:
         write(_local.cache[hash_key])
@@ -146,7 +146,7 @@ def cachecm(**kwargs):
         index0 = _local.index["value"]
         yield Bunch(kwargs)
         index1 = _local.index["value"]
-        _local.cache[hash_key] = u"".join(x for x in _local.html[index0:index1]
+        _local.cache[hash_key] = "".join(x for x in _local.html[index0:index1]
                                           if x)
 
 
@@ -171,7 +171,7 @@ def helper_1(guys):
 
 def test(_is, js, xs):
     with divcm(class_="the-class"), cachecm(js=js, nr=1, key=test) as data:
-        print "This will print.", data
+        print("This will print.", data)
         h1("My things")
 
         with ulcm(class_="my-ul"):
@@ -179,7 +179,7 @@ def test(_is, js, xs):
                 li("My li", value=j, type_="A")
 
     with divcm(class_="the-class"), cachecm(js=js, nr=1, key=test) as data:
-        print "This will not print. Its cached.", data
+        print("This will not print. Its cached.", data)
         h1("My things")
 
         with ulcm(class_="my-ul"):
@@ -201,7 +201,7 @@ def test(_is, js, xs):
 
 @htmlgen
 def page():
-    app_state = freeze([range(10), range(10), range(4)])
+    app_state = freeze([list(range(10)), list(range(10)), list(range(4))])
     with htmlcm():
         with bodycm(), cachecm(key=page, app_state=app_state) as data:
             test(*data.app_state)

@@ -25,7 +25,7 @@ def element(tag, inner, **attrs):
     e(("<", tag))
     e([
         escape(k, quote=True) + '=' + escape(v, quote=True)
-        for k, v in attrs.iteritems()
+        for k, v in attrs.items()
     ])
     e(('>', inner, "</", tag, ">"))
 
@@ -35,7 +35,7 @@ def tag_open(tag, **attrs):
     e(("<", tag))
     e([
         escape(k, quote=True) + '=' + escape(v, quote=True)
-        for k, v in attrs.iteritems()
+        for k, v in attrs.items()
     ])
 
     e(('>', ))
@@ -53,7 +53,7 @@ def _bigtable_benchmark_real_py(ctx):
     tag_open("table")
     for row in ctx['table']:
         tag_open("tr")
-        for key, value in row.items():
+        for key, value in list(row.items()):
 
             element("td", key)
             element("td", str(value))

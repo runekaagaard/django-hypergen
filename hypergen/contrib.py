@@ -3,7 +3,7 @@ from __future__ import (absolute_import, division, unicode_literals)
 from functools import wraps
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except ImportError:
     import pickle
 
@@ -26,7 +26,11 @@ NO_PERM_REQUIRED = "__NO_PERM_REQUIRED__"
 
 def register_view_for_url(func, namespace, base_template, url=None):
     def _reverse(*view_args, **view_kwargs):
-        return StringWithMeta(reverse("{}:{}".format(namespace, func.__name__), args=view_args, kwargs=view_kwargs),
+        ns = namespace
+        if not ns:
+            ns = _reverse.hypergen_namespace
+            assert ns, "namespace must be defined in either hypergen_view/hypergen_callback or hypergen_urls"
+        return StringWithMeta(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
             d(base_template=base_template))
 
     func.reverse = _reverse
@@ -37,6 +41,8 @@ def register_view_for_url(func, namespace, base_template, url=None):
 
     if url is None:
         url = r"^{}/$".format(func.__name__)
+    elif url == "":
+        raise Exception('Use "^$" for an empty url in {}.{}'.format(module, func.__name__))
 
     _URLS[module].add((func, url))
 
@@ -73,11 +79,9 @@ def hypergen_response_decorator(func):
 @wrap2
 def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_template=no_base_template,
     base_template_args=None, base_template_kwargs=None, namespace=None, login_url=None, raise_exception=False,
-    target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements):
+    target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements, translate=False):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
-    assert target_id is not None, "target_id required"
-    assert namespace is not None, "namespace required"
 
     if base_template_args is None:
         base_template_args = tuple()
@@ -111,13 +115,15 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
 
         if not c.request.is_ajax():
             fkwargs["wrap_elements"] = wrap_elements
+            fkwargs["translate"] = translate
             html = hypergen(wrap_base_template, request, *fargs, **fkwargs)
             if func_return["value"] is not None:
                 html = func_return["value"]
             return html
         else:
             client_data = loads(c.request.POST["hypergen_data"])
-            commands = hypergen(wrap_view_with_hypergen, client_data, target_id=target_id, wrap_elements=wrap_elements)
+            commands = hypergen(wrap_view_with_hypergen, client_data, target_id=target_id,
+                wrap_elements=wrap_elements, translate=translate)
             if func_return["value"] is not None:
                 commands = func_return["value"]
 
@@ -135,9 +141,8 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
 @wrap2
 def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, namespace=None, target_id=None,
     login_url=None, raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
-    wrap_elements=default_wrap_elements):
+    wrap_elements=default_wrap_elements, translate=False):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
-    assert namespace is not None, "namespace is required"
 
     original_func = func
 
@@ -173,7 +178,7 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
         with c(referer_resolver_match=referer_resolver_match):
             func_return = {}
             commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id,
-                wrap_elements=wrap_elements)
+                wrap_elements=wrap_elements, translate=translate)
             # Commands are either default hypergen commands or commands from callback
             commands = commands if func_return["value"] is None else func_return["value"]
             # Allow view to add commands
@@ -186,9 +191,10 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
     _.original_func = original_func
     return _
 
-def hypergen_urls(module):
+def hypergen_urls(module, namespace=None):
     patterns = []
     for func, url_ in _URLS.get(module.__name__, []):
+        func.reverse.hypergen_namespace = namespace
         patterns.append(url(url_, func, name=func.__name__))
 
     return patterns
@@ -205,7 +211,7 @@ def hypergen_permission_required(perm, login_url=None, raise_exception=False, on
     """
     def check_perms(user):
         # TODO: Fix for python2 vs 3.
-        if isinstance(perm, str) or isinstance(perm, unicode):
+        if isinstance(perm, str) or isinstance(perm, str):
             perms = (perm,)
         else:
             perms = perm

@@ -2,7 +2,8 @@
 from __future__ import (absolute_import, division, unicode_literals)
 
 from django import template
-from django.utils.safestring import mark_safe
+from django.urls.base import reverse
+from django.utils.safestring import SafeString, mark_safe
 from django.templatetags.static import static
 
 from hypergen.core import callback as cb, context as c, dumps, command, div
@@ -13,7 +14,12 @@ register = template.Library()
 
 @register.simple_tag
 def callback(id_, event_name, url_or_view, *cb_args, **kwargs):
-    # Fake element to use with the callback func.
+    return mark_safe('id="{}" {}'.format(id_, callbackn(id_, event_name, url_or_view, *cb_args, **kwargs)))
+
+@register.simple_tag
+def callbackn(id_, event_name, url_or_view, *cb_args, **kwargs):
+    if isinstance(url_or_view, str) and ":" in url_or_view:
+        url_or_view = reverse(url_or_view)
     el = div(id_=id_)
     return mark_safe("".join(cb(url_or_view, *cb_args, **kwargs)(el, event_name, None)))
 

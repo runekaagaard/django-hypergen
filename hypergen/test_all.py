@@ -167,12 +167,12 @@ def test_live_element():
             assert f() == """<input name="a"/><input id="A" name="b" onclick="e(event,'__main__',1234)"/>"""
 
         with context(is_test=True, hypergen=hypergen_context()):
-            el = textarea(placeholder=u"myplace")
+            el = textarea(placeholder="myplace")
             with div(class_="message"):
                 with div(class_="action-left"):
-                    span(u"Annullér", class_="clickable")
+                    span("Annullér", class_="clickable")
                 with div(class_="action-right"):
-                    span(u"Send", class_="clickable", onclick=cb(my_callback, el))
+                    span("Send", class_="clickable", onclick=cb(my_callback, el))
                 div(el, class_="form form-write")
 
             assert f(
@@ -195,8 +195,8 @@ def test_live_element2():
             el1 = input_(id_="id_new_password", placeholder="Adgangskode", oninput=cb(my_callback, THIS, ""))
             el2 = input_(placeholder="Gentag Adgangskode", oninput=cb(my_callback, THIS, el1))
 
-            h2(u"Skift Adgangskode")
-            p(u"Rules:")
+            h2("Skift Adgangskode")
+            p("Rules:")
             with div(class_="form"):
                 with div():
                     with ul(id_="password_verification_smartassness"):
@@ -204,7 +204,7 @@ def test_live_element2():
                     with div(class_="form"):
                         div(el1, class_="form-field")
                         div(el2, class_="form-field")
-                        div(u"Skift adgangskode", class_="button disabled")
+                        div("Skift adgangskode", class_="button disabled")
 
             assert f(
             ) == """<h2>Skift Adgangskode</h2><p>Rules:</p><div class="form"><div><ul id="password_verification_smartassness"><div>TODO</div></ul><div class="form"><div class="form-field"><input id="id_new_password" oninput="e(event,'__main__',1234)" placeholder="Adgangskode"/></div><div class="form-field"><input id="A" oninput="e(event,'__main__',1234)" placeholder="Gentag Adgangskode"/></div><div class="button disabled">Skift adgangskode</div></div></div></div>"""
@@ -286,11 +286,11 @@ def test_call_js():
             pass
 
         a(onclick=call_js("hypergen.xyz", THIS))
-        assert dumps(context.hypergen.client_state.values()
+        assert dumps(list(context.hypergen.client_state.values())
                     ) == '[["hypergen.xyz",["_","element_value",["hypergen.read.value",null,"A"]]]]'
 
 def test_string_with_meta():
-    assert "a" + unicode(StringWithMeta("b", None)) + "c" == "abc"
+    assert "a" + str(StringWithMeta("b", None)) + "c" == "abc"
     assert StringWithMeta("a", None) + "b" == "ab"
     s = StringWithMeta("a", None)
     s += "b"

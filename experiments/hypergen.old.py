@@ -13,14 +13,14 @@ if sys.version_info.major > 2:
     from html import escape
 
     def items(x):
-        return x.items()
+        return list(x.items())
 
 else:
     from cgi import escape
-    str = unicode
+    str = str
 
     def items(x):
-        return x.iteritems()
+        return iter(x.items())
 
 
 ### Globals ###

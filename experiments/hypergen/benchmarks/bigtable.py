@@ -10,7 +10,7 @@ except ImportError:
     escape = cgi.escape
 
 PY3 = sys.version_info[0] >= 3
-s = PY3 and str or unicode
+s = PY3 and str or str
 
 ctx = {
     'table': [
@@ -30,7 +30,7 @@ if PY3:
         w('<table>\n')
         for row in table:
             w('<tr>\n')
-            for key, value in row.items():
+            for key, value in list(row.items()):
                 w('<td>')
                 w(escape(key))
                 w('</td><td>')
@@ -45,17 +45,17 @@ else:
         b = []
         w = b.append
         table = ctx['table']
-        w(u'<table>\n')
+        w('<table>\n')
         for row in table:
-            w(u'<tr>\n')
-            for key, value in row.items():
-                w(u'<td>')
+            w('<tr>\n')
+            for key, value in list(row.items()):
+                w('<td>')
                 w(escape(key))
-                w(u'</td><td>')
-                w(unicode(value))
-                w(u'</td>\n')
-            w(u'</tr>\n')
-        w(u'</table>')
+                w('</td><td>')
+                w(str(value))
+                w('</td>\n')
+            w('</tr>\n')
+        w('</table>')
         return ''.join(b)
 
 
@@ -70,7 +70,7 @@ if PY3:
         e(('<table>\n', ))
         for row in table:
             e(('<tr>\n', ))
-            for key, value in row.items():
+            for key, value in list(row.items()):
                 e(('<td>', escape(key), '</td><td>', str(value), '</td>\n'))
             e(('</tr>\n', ))
         e(('</table>', ))
@@ -81,14 +81,14 @@ else:
         b = []
         e = b.extend
         table = ctx['table']
-        e((u'<table>\n', ))
+        e(('<table>\n', ))
         for row in table:
-            e((u'<tr>\n', ))
-            for key, value in row.items():
-                e((u'<td>', escape(key), u'</td><td>', unicode(value),
-                   u'</td>\n'))
-            e((u'</tr>\n', ))
-        e((u'</table>', ))
+            e(('<tr>\n', ))
+            for key, value in list(row.items()):
+                e(('<td>', escape(key), '</td><td>', str(value),
+                   '</td>\n'))
+            e(('</tr>\n', ))
+        e(('</table>', ))
         return ''.join(b)
 
 
@@ -233,7 +233,7 @@ else:
 # region: web2py
 
 try:
-    import cStringIO
+    import io
     from gluon.html import xmlescape
     from gluon.template import get_parsed
 except ImportError:
@@ -242,7 +242,7 @@ else:
     # see gluon.globals.Response
     class DummyResponse(object):
         def __init__(self):
-            self.body = cStringIO.StringIO()
+            self.body = io.StringIO()
 
         def write(self, data, escape=True):
             if not escape:
@@ -400,7 +400,7 @@ else:
             w(xml('<table>\n'))
             for row in table:
                 w(xml('<tr>\n'))
-                for key, value in row.items():
+                for key, value in list(row.items()):
                     w(xml('<td>'))
                     w(xml_quote(key))
                     w(xml('</td><td>'))
@@ -415,17 +415,17 @@ else:
             b = []
             w = b.append
             table = ctx['table']
-            w(xml(u'<table>\n'))
+            w(xml('<table>\n'))
             for row in table:
-                w(xml(u'<tr>\n'))
-                for key, value in row.items():
-                    w(xml(u'<td>'))
+                w(xml('<tr>\n'))
+                for key, value in list(row.items()):
+                    w(xml('<td>'))
                     w(xml_quote(key))
-                    w(xml(u'</td><td>'))
+                    w(xml('</td><td>'))
                     w(value)
-                    w(xml(u'</td>\n'))
-                w(xml(u'</tr>\n'))
-            w(xml(u'</table>'))
+                    w(xml('</td>\n'))
+                w(xml('</tr>\n'))
+            w(xml('</table>'))
             return join_xml(b)
 
 
@@ -475,7 +475,7 @@ def run(number=2):
     import profile
     from timeit import Timer
     from pstats import Stats
-    names = globals().keys()
+    names = list(globals().keys())
     names = sorted([(name, globals()[name]) for name in names
                     if name.startswith('test_')])
     print("                     msec    rps  tcalls  funcs")
@@ -495,11 +495,11 @@ def run(number=2):
             t = Timer(setup='from __main__ import %s as t' % name, stmt='t()')
             t = t.timeit(number=number)
             st = Stats(profile.Profile().runctx('test()', globals(), locals()))
-            print('%-17s %7.2f %6.2f %7d %6d' %
+            print(('%-17s %7.2f %6.2f %7d %6d' %
                   (name[5:], 1000 * t / number, number / t, st.total_calls,
-                   len(st.stats)))
+                   len(st.stats))))
         else:
-            print('%-26s not installed' % name[5:])
+            print(('%-26s not installed' % name[5:]))
 
 
 if __name__ == '__main__':

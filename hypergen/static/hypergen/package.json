@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "morphdom": "^2.6.1"
+    "morphdom": "^2.6.1",
+    "mousetrap": "^1.6.5"
   }
 }

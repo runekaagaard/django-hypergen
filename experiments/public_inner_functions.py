@@ -22,6 +22,6 @@ def a(x):
     
     return x + x 
     
-print a(4)
-print a.b(4)
-print a.b.c(4)
+print(a(4))
+print(a.b(4))
+print(a.b.c(4))

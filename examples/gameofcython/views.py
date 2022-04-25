@@ -21,7 +21,7 @@ HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="
 RUNNING, STOPPED = "RUNNING", "STOPPED"
 STATE = STOPPED
 
-@hypergen_view(url="", **HYPERGEN_SETTINGS)
+@hypergen_view(url="^$", **HYPERGEN_SETTINGS)
 def gameofcython(request):
     if not module_found:
         p("Cython files are not compiled. Run 'make compile-cython' from the root of the repository.")
@@ -54,7 +54,7 @@ def gameofcython(request):
 @hypergen_callback(view=gameofcython, **HYPERGEN_SETTINGS)
 def step(request, *args):
     c.hypergen = c.hypergen.set("target_id", "content")
-    print("STEP ARGS", args)
+    print(("STEP ARGS", args))
     if STATE == RUNNING:
         cstep()
     cstep()

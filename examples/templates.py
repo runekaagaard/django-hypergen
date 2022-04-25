@@ -18,8 +18,27 @@ def base_template():
             script(src=static("hypergen/hypergen.min.js"))
             # link(NORMALISE)
             # link(SAKURA)
+            style("""
+                html { margin: auto; max-width: 1200px; }
+                dt { font-weight: bold; }
+                @media screen and (max-width: 800px) {
+                  table thead {
+                    display: none;
+                  }
+                  table td {
+                    display: flex;
+                  }
 
-        with body(style=d(max_width="none")):
+                  table td::before {
+                    content: attr(label);
+                    font-weight: bold;
+                    width: 120px;
+                    min-width: 120px;
+                  }
+                }
+            """)
+
+        with body():
             p(a("Home", href="/"))
             with div(id_="content"):
                 yield

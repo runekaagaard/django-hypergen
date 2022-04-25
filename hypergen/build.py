@@ -1,6 +1,6 @@
 import keyword
 
-GLOBALS = globals().keys()
+GLOBALS = list(globals().keys())
 BUILTINS = dir(__builtins__)
 
 TEMPLATE = "### TEMPLATE-ELEMENT ###"
@@ -37,14 +37,14 @@ def protect(x):
     else:
         return x
 
-print sorted([protect(x) for x in ALL_TAGS])
+print(sorted([protect(x) for x in ALL_TAGS]))
 assert False
 
-print "# yapf: disable"
+print("# yapf: disable")
 for tag in sorted(ALL_TAGS - HARDCODED_TAGS):
     cls = "base_element_void" if tag in VOID_TAGS else "base_element"
-    print "class {}({}): pass".format(protect(tag), cls)
-print "# yapf: enable"
+    print("class {}({}): pass".format(protect(tag), cls))
+print("# yapf: enable")
 
 # code = open("_hypergen.py").read()
 # template = code.split(TEMPLATE)[1]

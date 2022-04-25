@@ -78,14 +78,14 @@ def div_ret(*children, **attrs):
 
 x = Html([10, 20, 30], {"foo": 92})
 x.meta.foo = 91919
-print x, x.meta.foo
+print(x, x.meta.foo)
 
 for y in x:
-    print y
+    print(y)
 
 x.mega = 91
-print x.mega
+print(x.mega)
 
 z = Html([9, 19])
 x.extend(z)
-print x
+print(x)
