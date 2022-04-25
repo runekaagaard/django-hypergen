@@ -30,7 +30,14 @@ def base_template():
                     fill: currentColor;
                     }
             """)
-            script("hljs.highlightAll()")
+            script("""
+                hljs.highlightAll();
+                document.addEventListener('DOMContentLoaded', (event) => {
+                    document.querySelectorAll('pre.literal-block').forEach((el) => {
+                      hljs.highlightElement(el);
+                    });
+                });
+            """)
 
         with body():
             with header():
