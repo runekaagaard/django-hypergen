@@ -40,7 +40,9 @@ __all__ = [
 ### Python 2+3 compatibility ###
 
 def make_string(s):
-    if s:
+    # TODO: WHY IS THERE AN IF STATEMENT HERE AT ALL?
+    # We had a bug where 0 int did not get rendered. I suck.
+    if s or type(s) in (int, float):
         return force_text(s)
     else:
         return ""

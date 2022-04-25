@@ -2,16 +2,13 @@
 
 from django.db import migrations
 
-
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('hypergen', '0001_initial'),
-    ]
+        ('hypergen', '0001_initial'),]
 
     operations = [
         migrations.AlterModelOptions(
-            name='kv',
-            options={'permissions': [('kv_hypergen_translations', 'Can edit translations')]},
-        ),
-    ]
+        name='kv',
+        options={'permissions': [('kv_hypergen_translations', 'Can edit translations')]},
+        ),]

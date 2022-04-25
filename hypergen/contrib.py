@@ -123,7 +123,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
         else:
             client_data = loads(c.request.POST["hypergen_data"])
             commands = hypergen(wrap_view_with_hypergen, client_data, target_id=target_id,
-                wrap_elements=wrap_elements)
+                wrap_elements=wrap_elements, translate=translate)
             if func_return["value"] is not None:
                 commands = func_return["value"]
 
