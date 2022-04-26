@@ -141,3 +141,5 @@ hypergen/ultragen.c
 hypergen/ultragen.cpp
 hypergen/ultragen.html
 
+.idea/
+
