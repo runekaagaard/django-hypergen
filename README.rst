@@ -1,3 +1,15 @@
+What is django-hypergen?
+========================
+Django hypergen consists of a small client side js library, and a
+
+As web developers we often need to switch between writing frontend code and backend code.
+In django we use python as a mean to: define application structure, extract and manipulate data from db, setup urls... Lots of good stuff.
+The purpose of django-hypergen is to let us define our view layer in pure-python, instead of resorting to some sort of template language,
+so that we never need to write html, or Javascript.
+
+Ever wish you could write frontend code in python, define callbacks on user events,
+without the need to write i single line of javascript, jQuery, or worry about serialization.
+
 Why hypergen?
 =============
 
@@ -34,6 +46,11 @@ The basic form that makes Hypergen great (for me) is exemplified in this simple 
 
     from django.templatetags.static import static
 
+    def template(n):
+        label("Current value: ")
+        input_(id_="n", type_="number", value=n)
+        button("Increment", id_="increment", onclick=cb(increment, n))
+
     @hypergen_view(perm=NO_PERM_REQUIRED)
     def counter(request):
         doctype()
@@ -47,10 +64,6 @@ The basic form that makes Hypergen great (for me) is exemplified in this simple 
     def increment(request, n):
         template(n + 1)
 
-    def template(n):
-        label("Current value: ")
-        input_(id_="n", type_="number", value=n)
-        button("Increment", id_="increment", onclick=cb(increment, n))
 
 My personal journal to Hypergen
 ===============================
