@@ -4,7 +4,7 @@ from __future__ import (absolute_import, division, unicode_literals)
 d = dict
 import re, sys
 
-from contextlib2 import ContextDecorator
+from contextlib import ContextDecorator
 from django.test.client import RequestFactory
 from pytest import raises
 
