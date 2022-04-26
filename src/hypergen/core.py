@@ -9,7 +9,7 @@ from types import GeneratorType
 from functools import wraps, update_wrapper
 from copy import deepcopy
 
-from contextlib2 import ContextDecorator, contextmanager
+from contextlib import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
 
 from django.http.response import HttpResponse, HttpResponseRedirect

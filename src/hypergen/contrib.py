@@ -7,7 +7,7 @@ try:
 except ImportError:
     import pickle
 
-from contextlib2 import contextmanager
+from contextlib import contextmanager
 
 from django.urls.base import resolve, reverse
 from django.conf.urls import url
