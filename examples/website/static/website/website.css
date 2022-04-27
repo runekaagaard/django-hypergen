@@ -13,3 +13,7 @@ nav a.current {
   color: var(--accent) !important;
   border-color: var(--accent);
 }
+
+table input, table textarea, table select {
+  width: 100%;
+}
