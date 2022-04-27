@@ -9,7 +9,7 @@ from gameofcython.views import gameofcython
 from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
 from t9n.views import page
-from templates import base_template
+from website.templates import base_template
 
 def home(request):
     @base_template()

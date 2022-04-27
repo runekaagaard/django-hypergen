@@ -17,32 +17,8 @@ def base_template():
             link("https://unpkg.com/simpledotcss/simple.min.css")
             link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
             script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
-            style("""
-                body { grid-template-columns: 1fr min(90rem,90%) 1fr; }
-                .icon {
-                    vertical-align: sub;
-                    padding-right: .25rem;
-                    display: inline-block;
-                    width: 1em;
-                    height: 1.3em;
-                    margin-right: 0.2rem;
-                    stroke-width: 0;
-                    stroke: currentColor;
-                    fill: currentColor;
-                    }
-                nav a.current {
-                    color: var(--accent) !important;
-                    border-color: var(--accent);
-                }
-            """)
-            script("""
-                hljs.highlightAll();
-                document.addEventListener('DOMContentLoaded', (event) => {
-                    document.querySelectorAll('pre.literal-block').forEach((el) => {
-                      hljs.highlightElement(el);
-                    });
-                });
-            """)
+            link(static("website/website.css"))
+            script(src=static("website/website.js"))
 
         with body():
             with header():

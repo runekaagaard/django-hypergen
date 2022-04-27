@@ -11,11 +11,12 @@ from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 from hypergen.core import *
 from hypergen.core import callback as cb
 from hypergen.core import context as c
-import templates as shared_templates
+
+from website.templates import base_template
 
 E = namedtuple("E", 'type,attrs,doc', defaults=[None] * 3)
 
-@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=shared_templates.base_template, target_id="content")
+@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template, target_id="content")
 def inputs(request):
     INPUT_TYPES = [
         E("checkbox", d(checked=True)),

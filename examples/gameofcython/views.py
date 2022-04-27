@@ -7,7 +7,7 @@ from hypergen.core import *
 from hypergen.core import callback as cb
 from hypergen.core import context as c
 
-import templates as shared_templates
+from website.templates import base_template
 
 try:
     from gameofcython.gameofcython import render, reset, step as cstep
@@ -16,7 +16,7 @@ except ModuleNotFoundError:
     module_found = False
 
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="gameofcython",
-    app_name="gameofcython", base_template=shared_templates.base_template)
+    app_name="gameofcython", base_template=base_template)
 
 RUNNING, STOPPED = "RUNNING", "STOPPED"
 STATE = STOPPED

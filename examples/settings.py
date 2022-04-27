@@ -31,8 +31,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
-    'django.contrib.messages', 'django.contrib.staticfiles', 'django_extensions', 'hypergen', 'todomvc', 'inputs',
-    'gameofcython', 'djangotemplates', 'hellohypergen', 't9n']
+    'django.contrib.messages', 'django.contrib.staticfiles', 'django_extensions', 'website', 'hypergen', 'todomvc',
+    'inputs', 'gameofcython', 'djangotemplates', 'hellohypergen', 't9n']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware',
