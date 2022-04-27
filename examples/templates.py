@@ -5,6 +5,7 @@ from django.templatetags.static import static
 
 from contextlib import contextmanager
 from hypergen.core import *
+from hypergen.core import context as c
 
 @contextmanager
 def base_template():
@@ -29,6 +30,10 @@ def base_template():
                     stroke: currentColor;
                     fill: currentColor;
                     }
+                nav a.current {
+                    color: var(--accent) !important;
+                    border-color: var(--accent);
+                }
             """)
             script("""
                 hljs.highlightAll();
@@ -42,8 +47,8 @@ def base_template():
         with body():
             with header():
                 with nav():
-                    a("Home", href="/", class_="current")
-                    a("Examples", href="/examples/")
+                    a("Home", href="/", class_="current" if c.request.path == "/" else OMIT)
+                    a("Examples", href="/examples/", class_="current" if c.request.path == "/examples/" else OMIT)
                     a("Documentation", href="https://readthedocs.com/TODOTODOTODO")
                     a("Support", href="https://github.com/runekaagaard/django-hypergen/issues")
                     with a(href="https://github.com/runekaagaard/django-hypergen/"):
