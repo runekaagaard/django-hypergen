@@ -1,24 +1,28 @@
 # coding=utf-8
-d = dict
+import os
+from glob import glob
 
-from django.templatetags.static import static
-
-from contextlib import contextmanager
 from hypergen.core import *
 from hypergen.core import context as c
+
+from django.templatetags.static import static
+from contextlib import contextmanager
+
+def base_head():
+    title("Django Hypergen")
+    link("https://unpkg.com/simpledotcss/simple.min.css")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
+    link(static("website/website.css"))
+    script(src=static("website/website.js"))
 
 @contextmanager
 def base_template():
     doctype()
     with html():
         with head():
-            title("Django Hypergen")
             script(src=static("hypergen/hypergen.min.js"))
-            link("https://unpkg.com/simpledotcss/simple.min.css")
-            link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
-            script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
-            link(static("website/website.css"))
-            script(src=static("website/website.js"))
+            base_head()
 
         with body():
             with header():
@@ -34,3 +38,16 @@ def base_template():
 
             with main():
                 yield
+
+def show_sources(file_path):
+    h2("Sources")
+
+    omits = ("__", "migrations", "css")
+    for fp in glob(os.path.dirname(file_path) + "/**/*.*", recursive=True):
+        if any(x in fp for x in omits):
+            continue
+        title = fp.replace(os.path.dirname(file_path), "").lstrip("/")
+
+        b(title)
+        with open(fp) as f:
+            pre(code(f.read()))

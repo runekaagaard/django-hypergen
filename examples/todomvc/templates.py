@@ -6,6 +6,8 @@ from hypergen.core import *
 from hypergen.core import callback as cb, context as c
 from contextlib import contextmanager
 
+from website.templates import show_sources
+
 @contextmanager
 def base():
     with html(lang="en"):
@@ -23,6 +25,8 @@ def base():
                 p("Double-click to edit a todo")
                 p(a("Django Hypergen", href="https://github.com/runekaagaard/django-hypergen"))
                 p(a("TodoMVC", href="http://todomvc.com"))
+
+        show_sources(__file__)
 
 @component
 def todo_item(item):

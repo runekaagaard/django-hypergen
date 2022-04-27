@@ -4,6 +4,7 @@ from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 
 from django.urls.base import reverse
 from django.templatetags.static import static
+from website.templates import base_head, show_sources
 
 def template(n):
     with p():
@@ -19,9 +20,10 @@ def counter(request):
     with html():
         with head():
             script(src=static("hypergen/hypergen.min.js"))
-            link("https://unpkg.com/simpledotcss/simple.min.css")
+            base_head()
         with body(), div(id_="body"):
             template(1)
+            show_sources(__file__)
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")
 def increment(request, n):
