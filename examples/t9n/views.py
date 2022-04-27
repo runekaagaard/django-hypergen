@@ -2,7 +2,8 @@ from hypergen.core import *
 from hypergen.core import callback as cb
 from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 
-from django.templatetags.static import static
+from django.urls.base import reverse
+
 from website.templates import base_template
 
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, translate=True)
@@ -15,6 +16,8 @@ def reload(request):
     template()
 
 def template():
+    p(a("Back to examples", href=reverse("website:examples")))
+
     h2("Translation")
     p("Hypergen does not have a full translation framework (YET!). What it does have is editable strings.")
     p(

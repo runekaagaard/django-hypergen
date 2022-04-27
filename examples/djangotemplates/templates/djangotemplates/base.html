@@ -1,10 +1,13 @@
-{% load hypergen %}<!DOCTYPE html>
+{% load hypergen %}{% load static %}<!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/simpledotcss/simple.min.css"></link>
   </head>
 <body>
-  <div><a href="/">Home</a></div>
-  <h1>Stack based calculator written with django templates, not hypergen templates</h1>
+  <p><a href="{% url 'website:examples' %}">Back to examples</a></p>
+  <h1>Stack based calculator</h1>
+  <p>This page is written with "normal" django templates, not the pure python hypergen templates.</p>
+  
   <div id="content">
     {% include "djangotemplates/content.html" %}
   </div>
