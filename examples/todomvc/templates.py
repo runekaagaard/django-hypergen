@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from django.templatetags.static import static
+from django.urls.base import reverse
 from hypergen.core import *
 from hypergen.core import callback as cb, context as c
 from contextlib import contextmanager
@@ -15,7 +16,7 @@ def base():
             script(src=static("hypergen/hypergen.min.js"))
             link(static("todomvc.css"))
         with body():
-            p(a("Home", href="/"))
+            p(a("Back to examples", href=reverse("website:examples")), style={"padding": "16px", "font-size": "150%"})
             with div(id_="content"):
                 yield
             with footer(class_="info"):

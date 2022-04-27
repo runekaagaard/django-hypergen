@@ -3,6 +3,7 @@
 d = dict
 import datetime
 from collections import namedtuple
+from django.urls.base import reverse
 from hypergen.core import COERCE, JS_COERCE_FUNCS, JS_VALUE_FUNCS
 
 from yapf.yapflib.yapf_api import FormatCode
@@ -50,7 +51,10 @@ def inputs(request):
         ("reset", d(value="clicked")),
         ("submit", d(value="clicked")),]
 
-    h1("Input elements")
+    with p():
+        a("Back to examples", href=reverse("website:examples"))
+
+    h2("Input elements")
     p("Input elements are mostly standard hypergen elements. They add useful defaults for reading the value",
         "of the different input types and to which datatype to coerce the read value.",
         "Value reading and value coercion can be overridden by the js_value_func and js_coerce_func kwargs.",

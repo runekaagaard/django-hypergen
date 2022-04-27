@@ -3,24 +3,21 @@ from hypergen.core import callback as cb
 from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 
 from django.templatetags.static import static
+from website.templates import base_template
 
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, translate=True)
 def page(request):
-    doctype()
-    with html():
-        with head():
-            script(src=static("hypergen/hypergen.min.js"))
-        with body(), div(id_="body"):
-            template()
+    with base_template():
+        template()
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, translate=True, target_id="body")
 def reload(request):
     template()
 
 def template():
-    h1("Translation")
+    h2("Translation")
     p("Hypergen does not have a full translation framework (YET!). What it does have is editable strings.")
-    h2(
+    p(
         "Use ctrl+shift+1 or command+shift+1 to toggle translation mode and then try to edit these strings"
         " by clicking on them. Enter the text 'RESET' to reset to the original value. ",
         "Use enter to commit and escape to cancel.")
