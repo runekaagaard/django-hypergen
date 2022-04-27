@@ -13,7 +13,7 @@ from hypergen.core import *
 from hypergen.core import callback as cb
 from hypergen.core import context as c
 
-from website.templates import base_template
+from website.templates import base_template, show_sources
 
 E = namedtuple("E", 'type,attrs,doc', defaults=[None] * 3)
 
@@ -136,6 +136,8 @@ def inputs(request):
             td(pre(code(FormatCode(repr(el))[0])))
             td(el)
             td(id_=id_)
+
+    show_sources(__file__)
 
 @hypergen_callback(perm=NO_PERM_REQUIRED)
 def submit(request, value, target_id):

@@ -4,7 +4,7 @@ from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 
 from django.urls.base import reverse
 
-from website.templates import base_template
+from website.templates import base_template, show_sources
 
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, translate=True)
 def page(request):
@@ -33,3 +33,5 @@ def template():
         " and keeps the strings cached in memory for a very fast performance.")
 
     button("Reload", id_="reload", onclick=cb(reload))
+
+    show_sources(__file__)

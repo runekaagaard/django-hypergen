@@ -4,7 +4,8 @@ import operator
 
 from django.shortcuts import render
 from django.template.loader import render_to_string
-from hypergen.core import hypergen_context_decorator, command, hypergen_response, context as c, loads
+from hypergen.core import hypergen_context_decorator, command, hypergen_response, context as c, hypergen_to_string, loads
+from website.templates import show_sources
 
 d = dict
 # Only works in a one thread, one user context.
@@ -12,7 +13,8 @@ STACK = []
 
 @hypergen_context_decorator
 def djangotemplates(request):
-    return render(request, "djangotemplates/base.html", d(stack=STACK))
+    return render(request, "djangotemplates/base.html",
+        d(stack=STACK, sources=hypergen_to_string(show_sources, __file__)))
 
 @hypergen_context_decorator
 def push(request):

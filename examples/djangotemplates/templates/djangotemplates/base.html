@@ -2,6 +2,7 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/simpledotcss/simple.min.css"></link>
+    <link rel="stylesheet" type="text/css" href="{% static 'website/website.css' %}"></link>
   </head>
 <body>
   <p><a href="{% url 'website:examples' %}">Back to examples</a></p>
@@ -12,5 +13,10 @@
     {% include "djangotemplates/content.html" %}
   </div>
   {% hypergen_footer %}
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css"></link>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+  <script src="{% static 'website/website.js' %}"></script>
+
+  {{sources|safe}}
 </body>
 </html>

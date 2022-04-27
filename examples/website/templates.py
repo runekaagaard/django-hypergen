@@ -40,14 +40,17 @@ def base_template():
                 yield
 
 def show_sources(file_path):
-    h2("Sources")
+    omits = ("__", "migrations", "css", "commands")
 
-    omits = ("__", "migrations", "css")
-    for fp in glob(os.path.dirname(file_path) + "/**/*.*", recursive=True):
-        if any(x in fp for x in omits):
-            continue
-        title = fp.replace(os.path.dirname(file_path), "").lstrip("/")
+    hr()
+    with details():
+        summary("Show sources")
 
-        b(title)
-        with open(fp) as f:
-            pre(code(f.read()))
+        for fp in glob(os.path.dirname(file_path) + "/**/*.*", recursive=True):
+            if any(x in fp for x in omits):
+                continue
+            title = fp.replace(os.path.dirname(file_path), "").lstrip("/")
+
+            b(title)
+            with open(fp) as f:
+                pre(code(f.read()))

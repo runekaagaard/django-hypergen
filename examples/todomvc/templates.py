@@ -17,6 +17,9 @@ def base():
             title("Hypergen • TodoMVC")
             script(src=static("hypergen/hypergen.min.js"))
             link(static("todomvc.css"))
+            link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
+            script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
+            script(src=static("website/website.js"))
         with body():
             p(a("Back to examples", href=reverse("website:examples")), style={"padding": "16px", "font-size": "150%"})
             with div(id_="content"):
