@@ -2,13 +2,13 @@ default:
 	echo "No default target here. Please be more specific."
 	exit 1
 cython-compile:
-	make cython-clean
 	ln -s src/hypergen hypergen
 	mv setup.cfg xxx
 	python setup_cython.py build_ext --inplace
 	mv xxx setup.cfg
 	rm hypergen
 cython-clean:
+	rm -rf build
 	find . -iname "__pycache__" -exec rm -rf '{}' \; || true
 	find . -iname "*.so" -delete
 docker-build:
