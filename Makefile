@@ -9,7 +9,7 @@ cython-compile:
 	mv xxx setup.cfg
 	rm hypergen
 cython-clean:
-	find . -iname "__pycache__" -exec rm -rf '{}' \;
+	find . -iname "__pycache__" -exec rm -rf '{}' \; || true
 	find . -iname "*.so" -delete
 docker-build:
 	docker image rm hypergen-site
