@@ -21,8 +21,10 @@ def counter(request):
         with head():
             script(src=static("hypergen/hypergen.min.js"))
             base_head()
-        with body(), div(id_="body"):
-            template(1)
+        with body():
+            with div(id_="body"):
+                template(1)
+
             show_sources(__file__)
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")

@@ -19,6 +19,7 @@ def template():
     p(a("Back to examples", href=reverse("website:examples")))
 
     h2("Translation")
+    p("Translation is in incubation and might be killed entirely. PLEASE don't use.", style={"color": "red"})
     p("Hypergen does not have a full translation framework (YET!). What it does have is editable strings.")
     p(
         "Use ctrl+shift+1 or command+shift+1 to toggle translation mode and then try to edit these strings"

@@ -12,7 +12,7 @@ cython-clean:
 	find . -iname "__pycache__" -exec rm -rf '{}' \; || true
 	find . -iname "*.so" -delete
 docker-build:
-	docker image rm hypergen-site
+	docker image rm hypergen-site || true
 	docker build -t hypergen-site .
 docker-run:
 	docker run --network=host -a STDOUT -a STDERR --rm --name hypergen-site hypergen-site
