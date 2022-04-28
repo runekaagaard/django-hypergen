@@ -20,3 +20,5 @@ docker-bash:
 	docker exec -it hypergen-site bash
 copilot-deploy:
 	copilot deploy
+copilot-bash:
+	copilot svc exec --name hypergen-site --env prod -c /bin/bash
