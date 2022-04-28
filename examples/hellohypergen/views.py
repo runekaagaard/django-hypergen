@@ -30,6 +30,11 @@ def counter(request):
 def template(n):
     # Tags can take other tags as arguments.
     p(a("Back to examples", href=reverse("website:examples")))
+
+    h2("Hypergen counter")
+    p('When you click "increment" the server tells the client to update the content on the page using morphdom.',
+        "Ajax calls, routing, (de)serialization, etc. we get for free from hypergen.", sep=" ")  # joins by " ".
+
     with p():
         label("Current value: ")
         # Names that clashes with python inbuilts are postfixed with a "_".
