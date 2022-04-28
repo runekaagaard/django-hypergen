@@ -53,4 +53,5 @@ def show_sources(file_path):
 
             b(title)
             with open(fp) as f:
-                pre(code(f.read()))
+                cls = "language-python" if title.endswith(".py") else OMIT
+                pre(code(f.read(), class_=cls))
