@@ -33,7 +33,8 @@ def template(n):
 
     h2("Hypergen counter")
     p('When you click "increment" the server tells the client to update the content on the page using morphdom.',
-        "Ajax calls, routing, (de)serialization, etc. we get for free from hypergen.", sep=" ")  # joins by " ".
+        "Ajax calls, routing, (de)serialization, page updating, etc. we get for free from hypergen.",
+        sep=" ")  # joins by " ".
 
     with p():
         label("Current value: ")
