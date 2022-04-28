@@ -1,38 +1,20 @@
-Installation
-============
+Se also Makefile.
 
-::
+Installation::
 
     copilot init
     
-Deploy new version
-==================
-
-::
+Deploy new version::
 
     copilot deploy
 
-Log in to container
-===================
-
-::
+Log in to container::
 
     copilot svc exec --name django-example --env test -c /bin/bash
 
-Show logs
-=========
-
-::
+Show logs::
 
     copilot svc logs -n hypergen-site -e prod
-
-Build and test dockerimage locally
-==================================
-
-::
-
-   docker build -t hypergen-site .
-   docker run -d hypergen-site
 
 Urls
 ====
