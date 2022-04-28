@@ -29,7 +29,7 @@ def base_template():
                 with nav():
                     a("Home", href="/", class_="current" if c.request.path == "/" else OMIT)
                     a("Examples", href="/examples/", class_="current" if c.request.path == "/examples/" else OMIT)
-                    a("Documentation", href="https://readthedocs.com/TODOTODOTODO")
+                    a("Documentation", onclick='alert("To be done")')
                     a("Support", href="https://github.com/runekaagaard/django-hypergen/issues")
                     with a(href="https://github.com/runekaagaard/django-hypergen/"):
                         img(src=static("website/github.png"), class_="icon")
