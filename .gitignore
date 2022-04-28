@@ -137,9 +137,9 @@ hypergen/static/hypergen/node_modules/
 examples/gameofcython/gameofcython.c
 examples/gameofcython/gameofcython.cpp
 examples/gameofcython/gameofcython.html
-hypergen/ultragen.c
-hypergen/ultragen.cpp
-hypergen/ultragen.html
+src/hypergen/ultragen.c
+src/hypergen/ultragen.cpp
+src/hypergen/ultragen.html
 
 .idea/
 

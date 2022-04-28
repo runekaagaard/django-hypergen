@@ -2,7 +2,7 @@ from setuptools import Extension, setup
 from Cython.Build import cythonize
 
 extensions = [
-    Extension("hypergen.ultragen", ["hypergen/ultragen.pyx"]),
+    Extension("hypergen.ultragen", ["src/hypergen/ultragen.pyx"]),
     Extension("examples.gameofcython.gameofcython", ["examples/gameofcython/gameofcython.pyx"]),]
 
 setup(
