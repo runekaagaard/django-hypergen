@@ -54,28 +54,51 @@ def inputs(request):
     with p():
         a("Back to examples", href=reverse("website:examples"))
 
-    h2("Input elements")
-    p("Input elements are mostly standard hypergen elements. They add useful defaults for reading the value",
-        "of the different input types and to which datatype to coerce the read value.",
-        "Value reading and value coercion can be overridden by the js_value_func and js_coerce_func kwargs.",
-        "Their values should exist as a dotted paths on the frontend.", sep=" ")
-    p("These are the default values for js_value_func by element type: ")
-    with dl():
-        for k, v in list(JS_VALUE_FUNCS.items()):
-            dt(k)
-            dd(v)
-        dt("everything else")
-        dd("hypergen.read.value")
-
-    p("And similarly for js_coerce_func:")
-    with dl():
-        for k, v in list(JS_COERCE_FUNCS.items()):
-            dt(k)
-            dd(v)
-    p("Check hypergen.js to see their definitions.")
+    h2("Form Input elements")
     p(
-        "Instead of js_coerce_func it's often enough to use the coerce_to shortcut kwarg that takes the following builtin types: ",
+        "Hypergen has special support for input, select and textarea elements. They can be used as arguments to ",
+        "callback functions. When the event the callback is attached to happens, the frontend will read their values and send them as arguments to the callback functions."
+    )
+    p("As an example try to experiment with what this code would send to the server:")
+    pre(
+        code("""
+inputs = [
+    input_(id_="i1", value=1, type_="number"),
+    input_(id_="i2", value=2, type_="number", coerce_to=float),]
+i3 = input_(id_="i3", value=3)
+button("send to server", onclick=cb(mycallback, inputs, i3), id_="mycallback-send")
+    """.strip()))
+    with p():
+        inputs = [
+            input_(id_="i1", value=1, type_="number"),
+            input_(id_="i2", value=2, type_="number", coerce_to=float),]
+        i3 = input_(id_="i3", value=3)
+        button("send to server", onclick=cb(mycallback, inputs, i3), id_="mycallback-send")
+        span(id_="mycallback-receive")
+
+    p('The "coerce_to" kwarg takes the following builtin types: ',
         span([x.__name__ for x in list(COERCE.keys())], sep=", "), ".")
+
+    with details():
+        summary("Low level value reading and value coercion")
+        p("Input elements has useful defaults for reading the value",
+            "of the different input types and to which datatype to coerce the read value.",
+            "Value reading and value coercion can be overridden by the js_value_func and js_coerce_func kwargs.",
+            "Their values should exist as a dotted paths on the frontend.", sep=" ")
+        p("These are the default values for js_value_func by element type: ")
+        with dl():
+            for k, v in list(JS_VALUE_FUNCS.items()):
+                dt(k)
+                dd(v)
+            dt("everything else")
+            dd("hypergen.read.value")
+
+        p("And similarly for js_coerce_func:")
+        with dl():
+            for k, v in list(JS_COERCE_FUNCS.items()):
+                dt(k)
+                dd(v)
+        p("Check hypergen.js to see their definitions.")
 
     h2("Examples for all HTML5 input types.")
 
@@ -144,3 +167,9 @@ def submit(request, value, target_id):
     c.hypergen = c.hypergen.set("target_id", target_id)
     with pre(style={"padding": 0}):
         raw(repr(value), " (", type(value).__name__, ")")
+
+@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="mycallback-receive")
+def mycallback(request, a1, a2):
+    span(" Arguments to the mycallback function: ")
+    with code():
+        raw("mycallback(request, {}, {})".format(repr(a1), repr(a2)))

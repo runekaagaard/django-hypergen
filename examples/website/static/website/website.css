@@ -17,3 +17,11 @@ nav a.current {
 table input, table textarea, table select {
   width: 100%;
 }
+
+#i1, #i2, #i3 {
+  width: 50px;
+  margin-right: 4px;
+}
+#mycallback-receive {
+  display: inline;
+}
