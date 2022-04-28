@@ -20,6 +20,10 @@ export const morph = function(id, html) {
       onBeforeElUpdated: function(fromEl, toEl) {
         let focused = document.activeElement
         if((fromEl.nodeName == "INPUT" || fromEl.nodeName == "TEXTAREA") && fromEl === focused) {
+          let types = ["checkbox", "radio"]
+          if (fromEl.nodeName === "INPUT" && types.indexOf(fromEl.type) !== -1) {
+            return true
+          }
           mergeAttrs(fromEl, toEl)
           return false
         } else if (fromEl.nodeName == "INPUT" && fromEl.type === "file" && fromEl.files.length > 0) {

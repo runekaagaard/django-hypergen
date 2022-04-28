@@ -22,6 +22,7 @@ def base():
             script(src=static("website/website.js"))
         with body():
             p(a("Back to examples", href=reverse("website:examples")), style={"padding": "16px", "font-size": "150%"})
+            p("Todos are shared between all users.", style={"padding": "16px", "font-size": "150%"})
             with div(id_="content"):
                 yield
             with footer(class_="info"):
