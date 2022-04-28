@@ -184,6 +184,12 @@ cdef void element_close(string tag, Hpg &hpg) nogil:
 cdef inline void div(Hpg &hpg, whatever s, string* attrs=TT) nogil:
     element(<char*>"div", hpg, s, attrs)
 
+cdef inline void p(Hpg &hpg, whatever s, string* attrs=TT) nogil:
+    element(<char*>"p", hpg, s, attrs)
+
+cdef inline void a(Hpg &hpg, string s, string* attrs=TT) nogil:
+    element(<char*>"a", hpg, s, attrs)
+
 cdef inline void h1(Hpg &hpg, string s, string* attrs=TT) nogil:
     element(<char*>"h1", hpg, s, attrs)
 

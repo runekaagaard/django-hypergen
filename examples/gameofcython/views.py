@@ -7,7 +7,7 @@ from hypergen.core import *
 from hypergen.core import callback as cb
 from hypergen.core import context as c
 
-from website.templates import base_template
+from website.templates import base_template, show_sources
 
 try:
     from gameofcython.gameofcython import render, reset, step as cstep
@@ -33,28 +33,33 @@ def gameofcython(request):
     style("""
         table {
             border-collapse: collapse;
+            width: 600px;
         }
         td {
             width: 6px;
             height: 6px;
             margin: 0;
             border: 0;
+            padding: 0;
         }
         td.black {
             background-color: black;
         }
     """)
+    script("""
+        function run() {
+            setInterval(function() {
+                document.getElementById("step").click()
+            }, 50)
+        }
+    """)
     with div(id_="gameoflife"):
         render(str(step.reverse()))
-    # div(id_="step", onclick=cb(step))
-    script('''
-        //ready(() => document.getElementById("step").click())
-    ''')
+
+    if not request.is_ajax():
+        show_sources(__file__)
 
 @hypergen_callback(view=gameofcython, **HYPERGEN_SETTINGS)
 def step(request, *args):
-    c.hypergen = c.hypergen.set("target_id", "content")
-    print(("STEP ARGS", args))
-    if STATE == RUNNING:
-        cstep()
+    c.hypergen = c.hypergen.set("target_id", "gameoflife")
     cstep()
