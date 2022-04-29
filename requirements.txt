@@ -1,5 +1,5 @@
 # testing
-pytest==6.2.2
+pytest
 
 # hyperfy
 beautifulsoup4==4.9.3
