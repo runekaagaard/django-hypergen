@@ -63,4 +63,5 @@ def mycallback(request):
 
         """.strip()))
 
+    p("Be sure to trust the source Luke :) ↓")
     show_sources(__file__)
