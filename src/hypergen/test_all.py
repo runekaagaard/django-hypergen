@@ -285,4 +285,4 @@ def test_repr():
     with context(is_test=True, hypergen=hypergen_context()):
         el1 = input_(id_="el1")
         el2 = input_(onclick=cb("alert", el1), id_="el2")
-        assert repr(el2) == input_(onclick=callback("alert", input_(id_="el1")), id_="el2")
+        assert repr(el2) == 'input_(onclick=callback("alert", input_(id_="el1")), id_="el2")'
