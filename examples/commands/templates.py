@@ -23,6 +23,7 @@ def show_button():
         "date": date(2022, 1, 1),}))
 
 def commands():
+    h2("Client commands")
     fn("Run a generic javascript command", "It must be available in the window scope.", alert)
     button("run", id_="alert", onclick=cb(alert, "This is an alert!"))
 
@@ -30,8 +31,13 @@ def commands():
     button("run", id_="alert2", onclick=cb(alert2, "This is an alert!"))
 
     h3("Serialization")
-    fn(None, "Data can be roundtripped from server->client and client->server, so consider this template function:",
-        show_button)
+    p("Data can be round tripped like this:")
+    ol(
+        li("server->client: As arguments to the callback (cb) function on e.g. onclick events on html elements."),
+        li("client->server: As arguments to @liveview_callback functions."),
+        li("server->client: As arguments in client commands."),
+    )
+    fn(None, "so consider this template function:", show_button)
     fn(None, "then most data types will be serialized nicely.", serialization)
 
     show_button()
