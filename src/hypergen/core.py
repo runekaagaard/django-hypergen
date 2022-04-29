@@ -13,7 +13,11 @@ from contextlib import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
 
 from django.http.response import HttpResponse, HttpResponseRedirect
-from django.utils.encoding import force_text
+try:
+    from django.utils.encoding import force_text
+except ImportError:
+    from django.utils.encoding import force_str as force_text
+
 from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
