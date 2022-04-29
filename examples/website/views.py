@@ -22,7 +22,7 @@ def home(request):
 
     return hypergen_to_response(template)
 
-def examples(request):
+def documentation(request):
     @base_template()
     def template():
         h2("App examples")
@@ -32,7 +32,7 @@ def examples(request):
             li(a("TodoMVC", href=todomvc.reverse(ALL)))
 
         h2("Live documentation")
-        p("Live examples on how Hypergen works.")
+        p("Live documentation showing how Hypergen works.")
         with ul():
             li(a("Form inputs", href=inputs.reverse()))
             li(a("Notifications from Django messages", href=notifications.reverse()))

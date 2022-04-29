@@ -21,7 +21,8 @@ def base():
             script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
             script(src=static("website/website.js"))
         with body():
-            p(a("Back to examples", href=reverse("website:examples")), style={"padding": "16px", "font-size": "150%"})
+            p(a("Back to documentation", href=reverse("website:documentation")),
+                style={"padding": "16px", "font-size": "150%"})
             p("Todos are shared between all users.", style={"padding": "16px", "font-size": "150%"})
             with div(id_="content"):
                 yield

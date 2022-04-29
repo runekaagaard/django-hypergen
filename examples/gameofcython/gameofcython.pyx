@@ -60,7 +60,7 @@ cdef void creset() nogil:
 cdef void crender(Hpg &hpg, char* step_url) nogil:
     cdef int x, y
     cdef string cls
-    a(hpg, <s>"Back to examples", [<s>"href", <s>"/examples/", T])
+    a(hpg, <s>"Back to documentation", [<s>"href", <s>"/documentation/", T])
     h1(hpg, <s>"Game of life rendered with ultragen", [<s>"style", <s>"color: black;\*æøå*\ ", T])
     p(hpg, <s>"This might look weird if more one than user is using the page at the same time :)")
     table_o(hpg)

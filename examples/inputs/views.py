@@ -52,7 +52,7 @@ def inputs(request):
         ("submit", d(value="clicked")),]
 
     with p():
-        a("Back to examples", href=reverse("website:examples"))
+        a("Back to documentation", href=reverse("website:documentation"))
 
     h2("Form Input elements")
     p(

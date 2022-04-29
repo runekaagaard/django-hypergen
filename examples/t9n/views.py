@@ -16,7 +16,7 @@ def reload(request):
     template()
 
 def template():
-    p(a("Back to examples", href=reverse("website:examples")))
+    p(a("Back to documentation", href=reverse("website:documentation")))
 
     h2("Translation")
     p("Translation is in incubation and might be killed entirely. PLEASE don't use.", style={"color": "red"})

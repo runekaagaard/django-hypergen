@@ -29,8 +29,8 @@ def base_template():
             with header():
                 with nav():
                     a("Home", href="/", class_="current" if c.request.path == "/" else OMIT)
-                    a("Examples", href="/examples/", class_="current" if c.request.path == "/examples/" else OMIT)
-                    a("Documentation", onclick='alert("To be done")')
+                    a("Documentation", href="/documentation/",
+                        class_="current" if c.request.path == "/documentation/" else OMIT)
                     a("Support", href="https://github.com/runekaagaard/django-hypergen/issues")
                     with a(href="https://github.com/runekaagaard/django-hypergen/"):
                         img(src=static("website/github.png"), class_="icon")
@@ -44,7 +44,7 @@ def base_template():
 def base_example_template():
     with base_template():
         with p():
-            a("Back to examples", href=reverse("website:examples"))
+            a("Back to documentation", href=reverse("website:documentation"))
 
         yield
 
