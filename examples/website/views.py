@@ -10,7 +10,7 @@ from gameofcython.views import gameofcython
 from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
 from t9n.views import page
-from website.templates import base_template
+from website.templates import base_template, show_sources
 
 def home(request):
     @base_template()
@@ -18,13 +18,15 @@ def home(request):
         with open("README.html") as f:
             raw(f.read())
 
+        show_sources(__file__)
+
     return hypergen_to_response(template)
 
 def examples(request):
     @base_template()
     def template():
         h2("App examples")
-        p("These are examples of writing a django app with Django Hypergen. Ranging from simplest to most complex.")
+        p("These are examples of writing a django app with Django Hypergen.", "Be sure to read the sources.")
         with ul():
             li(a("Hello hypergen", href=counter.reverse()))
             li(a("TodoMVC", href=todomvc.reverse(ALL)))
@@ -47,5 +49,7 @@ def examples(request):
             )
             li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
                 " - example of the still unstable cython implemetation.")
+
+        show_sources(__file__)
 
     return hypergen_to_response(template)

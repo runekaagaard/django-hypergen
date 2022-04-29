@@ -49,7 +49,7 @@ def base_example_template():
         yield
 
 def show_sources(file_path):
-    omits = ("__", "migrations", ".css", "commands", ".so", "gameofcython.html", ".cpp")
+    omits = ("__", "migrations", ".css", "commands", ".so", "gameofcython.html", ".cpp", ".png")
 
     hr()
     with details():
