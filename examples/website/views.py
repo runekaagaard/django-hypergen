@@ -26,7 +26,7 @@ def examples(request):
     @base_template()
     def template():
         h2("App examples")
-        p("These are examples of writing a django app with Django Hypergen.", "Be sure to read the sources.")
+        p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
         with ul():
             li(a("Hello hypergen", href=counter.reverse()))
             li(a("TodoMVC", href=todomvc.reverse(ALL)))
