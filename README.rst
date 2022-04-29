@@ -1,4 +1,4 @@
-..image :: https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg
+.. image :: https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg
 
 Why hypergen?
 =============
