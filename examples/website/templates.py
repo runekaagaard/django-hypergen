@@ -40,6 +40,9 @@ def base_template():
             with main():
                 yield
 
+            with footer():
+                p("Built with Hypergen™ and ", span("❤", style={"color": "red"}))
+
 @contextmanager
 def base_example_template():
     with base_template():
@@ -49,7 +52,7 @@ def base_example_template():
         yield
 
 def show_sources(file_path):
-    omits = ("__", "migrations", ".css", "commands", ".so", "gameofcython.html", ".cpp", ".png")
+    omits = ("__", "migrations", ".css", "management", ".so", "gameofcython.html", ".cpp", ".png")
 
     hr()
     with details():

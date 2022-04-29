@@ -11,6 +11,7 @@ from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
 from t9n.views import page
 from website.templates import base_template, show_sources
+from commands.views import commands
 
 def home(request):
     @base_template()
@@ -35,6 +36,7 @@ def documentation(request):
         p("Live documentation showing how Hypergen works.")
         with ul():
             li(a("Form inputs", href=inputs.reverse()))
+            li(a("Client commands", href=commands.reverse()))
             li(a("Notifications from Django messages", href=notifications.reverse()))
             li(strike(a("Not translation", href=page.reverse())))
 
