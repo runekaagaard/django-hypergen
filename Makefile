@@ -4,7 +4,7 @@ default:
 cython-compile:
 	ln -s src/hypergen hypergen
 	mv setup.cfg xxx
-	python3 setup_cython.py build_ext --inplace || true
+	python setup_cython.py build_ext --inplace || true
 	mv xxx setup.cfg
 	rm hypergen
 cython-clean:
