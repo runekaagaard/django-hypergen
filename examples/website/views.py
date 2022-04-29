@@ -2,6 +2,7 @@ from django.urls import reverse
 
 from hypergen.core import *
 from hypergen.core import hypergen_to_response
+from notifications.views import notifications
 
 from todomvc.views import todomvc, ALL
 from inputs.views import inputs
@@ -31,8 +32,9 @@ def examples(request):
         h2("Live documentation")
         p("Live examples on how Hypergen works.")
         with ul():
-            li(a("Inputs", href=inputs.reverse()))
-            li(a("Not translation", href=page.reverse()))
+            li(a("Form inputs", href=inputs.reverse()))
+            li(a("Notifications from Django messages", href=notifications.reverse()))
+            li(strike(a("Not translation", href=page.reverse())))
 
         h2("Alternative template implementations")
         p("While the pure python template 'language' is the main template engine, we support two alternative ",

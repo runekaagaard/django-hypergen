@@ -18,10 +18,27 @@ table input, table textarea, table select {
   width: 100%;
 }
 
-#i1, #i2, #i3 {
+#i1, #i2, #i3, #i4 {
   width: 50px;
   margin-right: 4px;
 }
 #mycallback-receive {
   display: inline;
+}
+
+dl {
+  background-color: #f3f3f3;
+  padding: 8px;
+}
+dt {
+  font-weight: bold;
+}
+
+dl em {
+  font-size: 110%;
+  color: black;
+}
+
+.alertify-notifier .ajs-info {
+  background-color: blue;
 }

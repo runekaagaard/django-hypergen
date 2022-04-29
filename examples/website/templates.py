@@ -1,6 +1,7 @@
 # coding=utf-8
 import os
 from glob import glob
+from django.urls.base import reverse
 
 from hypergen.core import *
 from hypergen.core import context as c
@@ -38,6 +39,14 @@ def base_template():
 
             with main():
                 yield
+
+@contextmanager
+def base_example_template():
+    with base_template():
+        with p():
+            a("Back to examples", href=reverse("website:examples"))
+
+        yield
 
 def show_sources(file_path):
     omits = ("__", "migrations", ".css", "commands", ".so", "gameofcython.html", ".cpp")

@@ -167,7 +167,8 @@ def hypergen(func, *args, **kwargs):
             print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return html
         else:
-            command("hypergen.morph", c.hypergen.target_id, html)
+            if c.hypergen.target_id != OMIT:
+                command("hypergen.morph", c.hypergen.target_id, html)
             print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return c.hypergen.commands
 
@@ -362,7 +363,7 @@ class THIS(object):
 NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
 
-COERCE = {str: None, str: None, int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
+COERCE = {str: "hypergen.coerce.str", int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
 
 class base_element(ContextDecorator):
     void = False

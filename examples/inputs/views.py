@@ -64,27 +64,40 @@ def inputs(request):
         code("""
 inputs = [
     input_(id_="i1", value=1, type_="number"),
-    input_(id_="i2", value=2, type_="number", coerce_to=float),]
-i3 = input_(id_="i3", value=3)
-button("send to server", onclick=cb(mycallback, inputs, i3), id_="mycallback-send")
+    input_(id_="i2", value=2, type_="number", coerce_to=float),
+    input_(id_="i3", value=None, type_="number", coerce_to=str),]
+i4 = input_(id_="i4", value=4)
+button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="mycallback-send")
     """.strip()))
     with p():
         inputs = [
             input_(id_="i1", value=1, type_="number"),
-            input_(id_="i2", value=2, type_="number", coerce_to=float),]
-        i3 = input_(id_="i3", value=3)
-        button("send to server", onclick=cb(mycallback, inputs, i3), id_="mycallback-send")
+            input_(id_="i2", value=2, type_="number", coerce_to=float),
+            input_(id_="i3", value=None, type_="number", coerce_to=str),]
+        i4 = input_(id_="i4", value=4)
+        button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="mycallback-send")
         span(id_="mycallback-receive")
 
-    p('The "coerce_to" kwarg takes the following builtin types: ',
-        span([x.__name__ for x in list(COERCE.keys())], sep=", "), ".")
+    p("The fact that multiple inputs can be nested into your datastructure of choice and sent to the server ",
+        "allows for very flexible workflows.")
+
+    dl(
+        em("class input_(coerce_to=None, js_value_func=None, js_coerce_func=None)"),
+        p("Renders an html5 <input /> tag. select() and textarea() works the same."),
+        dt("coerce_to"),
+        dd('Takes the following builtin types: ', span([x.__name__ for x in list(COERCE.keys())], sep=", "), "."),
+        dt("js_value_func"),
+        dd("Se below"),
+        dt("js_coerce_func"),
+        dd("Se below"),
+    )
 
     with details():
         summary("Low level value reading and value coercion")
         p("Input elements has useful defaults for reading the value",
             "of the different input types and to which datatype to coerce the read value.",
             "Value reading and value coercion can be overridden by the js_value_func and js_coerce_func kwargs.",
-            "Their values should exist as a dotted paths on the frontend.", sep=" ")
+            "Their values should exist as a dotted path on the frontend.", sep=" ")
         p("These are the default values for js_value_func by element type: ")
         with dl():
             for k, v in list(JS_VALUE_FUNCS.items()):
@@ -98,9 +111,11 @@ button("send to server", onclick=cb(mycallback, inputs, i3), id_="mycallback-sen
             for k, v in list(JS_COERCE_FUNCS.items()):
                 dt(k)
                 dd(v)
-        p("Check hypergen.js to see their definitions.")
+        p("Check hypergen.js to see their definitions. Should you wish to implement a custom html tag you would ",
+            "probably change these. Otherwise the default settings should be sufficient.")
 
     h2("Examples for all HTML5 input types.")
+    p("Interact with the form elements below to see which data is send to the server.")
 
     with table():
         tr(th(x) for x in ["Input type", "Code", "Rendered", "Server callback value"])
@@ -170,6 +185,6 @@ def submit(request, value, target_id):
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="mycallback-receive")
 def mycallback(request, a1, a2):
-    span(" Arguments to the mycallback function: ")
+    span(" Executed on server: ")
     with code():
         raw("mycallback(request, {}, {})".format(repr(a1), repr(a2)))
