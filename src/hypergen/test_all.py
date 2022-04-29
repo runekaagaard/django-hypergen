@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
 
+from django.utils.deprecation import MiddlewareMixin
+
 d = dict
 import re, sys
 
@@ -12,6 +14,8 @@ from hypergen.core import *
 from hypergen.core import context as c, context_middleware, ContextMiddleware, hypergen_context, join_html, dumps
 from hypergen.core import callback as cb
 from hypergen.contrib import *
+
+import django
 
 class User(object):
     pk = 1
@@ -63,6 +67,8 @@ def test_context_middleware():
     context_middleware(get_response)(Request())
 
 def test_context_middleware_old():
+    if int(django.get_version()[0]) > 3:
+        return
     middleware = ContextMiddleware()
     middleware.process_request(Request())
     assert context.request.user.pk == 1

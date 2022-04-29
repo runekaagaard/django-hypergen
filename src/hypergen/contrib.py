@@ -10,7 +10,10 @@ except ImportError:
 from contextlib import contextmanager
 
 from django.urls.base import resolve, reverse
-from django.conf.urls import url
+try:
+    from django.conf.urls import url
+except ImportError:
+    from django.urls import re_path as url
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http.response import HttpResponseRedirect
