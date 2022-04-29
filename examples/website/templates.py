@@ -55,7 +55,7 @@ def show_sources(file_path):
     with details():
         summary("Show sources")
 
-        for fp in glob(os.path.dirname(file_path) + "/**/*.*", recursive=True):
+        for fp in reversed(glob(os.path.dirname(file_path) + "/**/*.*", recursive=True)):
             if any(x in fp for x in omits):
                 continue
             title = fp.replace(os.path.dirname(file_path), "").lstrip("/")
