@@ -1,3 +1,4 @@
+# Only showing the essential code.
 from hypergen.core import *
 from hypergen.core import callback as cb
 from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
