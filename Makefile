@@ -22,3 +22,5 @@ copilot-deploy:
 	copilot deploy
 copilot-bash:
 	copilot svc exec --name hypergen-site --env prod -c /bin/bash
+tests-run:
+	~/ws/venv-hypergen/bin/pytest --tb=native -x -vvvv src/hypergen/test_all.py
