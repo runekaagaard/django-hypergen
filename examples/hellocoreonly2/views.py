@@ -31,7 +31,7 @@ def template(n):
     with p():
         label("Current value: ")
         input_(type_="number", value=n)
-        button("Increment", id_="increment", onclick=cb(reverse("hellocoreonly:increment"), n))
+        button("Increment", id_="increment", onclick=cb(reverse("hellocoreonly2:increment"), n))
 
 def increment(request):
     n, = loads(request.POST["hypergen_data"])["args"]

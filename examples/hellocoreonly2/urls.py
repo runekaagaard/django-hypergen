@@ -1,8 +1,8 @@
 from django.urls import path, include
 
-from hellocoreonly import views
+from hellocoreonly2 import views
 
-app_name = 'hellocoreonly'
+app_name = 'hellocoreonly2'
 
 urlpatterns = [
     path("counter", views.counter, name="counter"),
