@@ -2,16 +2,16 @@ name: tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test ]
   pull_request:
-    branches: [ main ]
+    branches: [ test ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 100
+      max-parallel: 20
       matrix:
         include:
           - python-version: 3.7

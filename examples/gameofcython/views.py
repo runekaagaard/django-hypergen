@@ -24,7 +24,7 @@ STATE = STOPPED
 @hypergen_view(url="^$", **HYPERGEN_SETTINGS)
 def gameofcython(request):
     if not module_found:
-        p("Cython files are not compiled. Run 'make compile-cython' from the root of the repository.")
+        p("Cython files are not compiled. Run 'make cython-compile' from the root of the repository.")
         return
 
     if not c.request.is_ajax():
