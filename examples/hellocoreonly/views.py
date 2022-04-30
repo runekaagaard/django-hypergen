@@ -27,6 +27,8 @@ def template(n):
     h2("Hypergen core only counter")
     p("This is the same as the hellohypergen example, but we are not using the fancy stuff from contrib.py, ",
         "namely the @hypergen_view and @hypergen_callback decorators.")
+    p("There is an", a("even more low level example", href=reverse("hellocoreonly2:counter")), "available as well.",
+        sep=" ")
 
     with p():
         label("Current value: ")

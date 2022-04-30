@@ -10,6 +10,7 @@ import gameofcython.urls
 import djangotemplates.urls
 import hellohypergen.urls
 import hellocoreonly.urls
+import hellocoreonly2.urls
 import t9n.urls
 import notifications.urls
 import commands.urls
@@ -24,6 +25,7 @@ urlpatterns = [
     path('djangotemplates/', include(djangotemplates.urls, namespace="djangotemplates")),
     path('hellohypergen/', include(hellohypergen.urls, namespace="hellohypergen")),
     path('hellocoreonly/', include(hellocoreonly.urls, namespace="hellocoreonly")),
+    path('hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
     path('t9n/', include(t9n.urls, namespace="t9n")),
     path('notifications/', include(notifications.urls, namespace="notifications")),
     path('commands/', include(commands.urls, namespace="commands")),]
