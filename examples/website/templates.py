@@ -16,6 +16,13 @@ def base_head():
     script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
     link(static("website/website.css"))
     script(src=static("website/website.js"))
+    link(rel="apple-touch-icon", sizes="120x120", href=static("apple-touch-icon.png"))
+    link(rel="icon", type_="image/png", sizes="32x32", href=static("favicon-32x32.png"))
+    link(rel="icon", type_="image/png", sizes="16x16", href=static("websitefavicon-16x16.png"))
+    link(rel="manifest", href=static("site.webmanifest"))
+    link(rel="mask-icon", href=static("safari-pinned-tab.svg"), color="#5bbad5")
+    meta(name="msapplication-TileColor", content="#da532c")
+    meta(name="theme-color", content="#ffffff")
 
 @contextmanager
 def base_template():
@@ -35,7 +42,7 @@ def base_template():
                     with a(href="https://github.com/runekaagaard/django-hypergen/"):
                         img(src=static("website/github.png"), class_="icon")
                         raw("Github")
-                h1("Hypergen - a Django liveview")
+                h1(img(src=static("website/hypergen-logo.png"), class_="logo"), "ypergen - a Django liveview")
 
             with main():
                 yield
@@ -52,7 +59,8 @@ def base_example_template():
         yield
 
 def show_sources(file_path):
-    omits = ("__", "migrations", ".css", "management", ".so", "gameofcython.html", ".cpp", ".png")
+    omits = ("__", "migrations", ".css", "management", ".so", "gameofcython.html", ".cpp", ".png", ".svg", ".ico",
+        "webmanifest", "jpg")
 
     hr()
     with details():

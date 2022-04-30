@@ -5,7 +5,7 @@ from hypergen.core import callback as cb
 
 from django.urls.base import reverse
 from django.templatetags.static import static
-from hypergen.core import hypergen_to_response, loads, dumps
+from hypergen.core import loads, dumps
 from website.templates import base_head, show_sources
 
 def counter(request):

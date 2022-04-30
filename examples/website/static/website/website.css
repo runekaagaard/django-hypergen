@@ -42,3 +42,15 @@ dl em {
 button {
   margin-right: 8px;
 }
+
+.logo {
+  height: 52px;
+  width: 52px;
+  margin-right: 4px;
+  margin-top: 20px;
+  display: inline-block;
+}
+
+header h1 img {
+  vertical-align: bottom;
+}
