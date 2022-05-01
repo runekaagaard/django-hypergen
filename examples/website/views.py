@@ -3,6 +3,7 @@ from django.urls import reverse
 from hypergen.core import *
 from hypergen.core import hypergen_to_response
 from notifications.views import notifications
+from partialload.views import page1
 
 from todomvc.views import todomvc, ALL
 from inputs.views import inputs
@@ -39,6 +40,7 @@ def documentation(request):
         with ul():
             li(a("Form inputs", href=inputs.reverse()))
             li(a("Client commands", href=commands.reverse()))
+            li(a("Partial loading and history support", href=page1.reverse()))
             li(a("Notifications from Django messages", href=notifications.reverse()))
             li(strike(a("Not translation", href=page.reverse())))
 

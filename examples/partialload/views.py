@@ -1,55 +1,63 @@
-# Import all html tag functions, etc.
 from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+from hypergen.contrib import hypergen_view, NO_PERM_REQUIRED
 
-from django.urls.base import reverse
-from django.templatetags.static import static
-from website.templates import base_head, show_sources
+from website.templates import base_example_template, show_func, show_sources
 
-# So this a hypergen view. If no "url" parameter is given one will be automatically assigned. "perm" is required.
-# A LOT of stuff happens under the hood and the decorator can be configured in many ways. Just go with it for now.
-@hypergen_view(perm=NO_PERM_REQUIRED)
-def counter(request):
-    # hypergen_view collects html and returns it as a Django response.
-    doctype()  # standard html5 doctype.
-    with html():  # tags can be nested
-        with head():
-            script(src=static("hypergen/hypergen.min.js"))  # html attributes are keyword arguments.
-            base_head()
-        with body():
-            # This id matches the "target_id" argument to the "increment" callback.
-            with div(id_="body"):
-                # Render the dynamic content of the page. This happens in it's own function so that functionality
-                # can be shared between the view and the callback.
-                template(1)
+@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_example_template, target_id="content")
+def page1(request):
+    h2("Welcome to page 1")
+    p("Try out how partial loading and browser back/forward buttons works automatically between theses pages.")
+    a("page2", href=page2.reverse(), id_="page2")
+    a("page3", href=page3.reverse(), id_="page3")
+    template()
 
-            show_sources(__file__)
+@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_example_template, target_id="content")
+def page2(request):
+    h2("Welcome to page 2")
+    p("Try out how partial loading and browser back/forward buttons works automatically between theses pages.")
+    a("page1", href=page1.reverse(), id_="page1")
+    a("page3", href=page3.reverse(), id_="page3")
+    template()
 
-# Hypergen html is very easy to compose, just use functions.
-def template(n):
-    # Tags can take other tags as arguments.
-    p(a("Back to documentation", href=reverse("website:documentation")))
+@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_example_template, target_id="content")
+def page3(request):
+    h2("Welcome to page 3")
+    p("Try out how partial loading and browser back/forward buttons works automatically between theses pages.")
+    a("page1", href=page1.reverse(), id_="page1")
+    a("page2", href=page2.reverse(), id_="page2")
+    template()
 
-    h2("Hypergen counter")
-    p('When you click "increment" the server tells the client to update the content on the page using morphdom.',
-        "Event binding, ajax calls, routing, (de)serialization, page updating, back button support, "
-        "etc. we get for free from hypergen.", sep=" ")  # joins by " ".
+def template():
+    h2("Partial loading with history support")
+    p(
+        "A common pattern in Hypergen is to have multiple @hypergen_views sharing the same base_template. ",
+        "Hypergen will automatically detect <a> tags linking between views with the same base template and perform a partial load with browser history support."
+    )
+    p("It might look like this:")
+    pre(
+        code("""
+@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_example_template, target_id="content")
+def page1(request):
+    h2("Welcome to page 1")
+    a("page2", href=page2.reverse(), id_="page2")
+        
+@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_example_template, target_id="content")
+def page2(request):
+    h2("Welcome to page 2")
+    a("page1", href=page1.reverse(), id_="page1")
+    """.strip()))
 
-    with p():
-        label("Current value: ")
-        # Names that clashes with python inbuilts are postfixed with a "_".
-        input_(type_="number", value=n)
-        # When this button is clicked it will call the "increment" function on the server with "n" as it's first
-        # argument after the request. All normal python types, dicts, lists, dates, etc. will be automatically
-        # serialized and deserialized between server and client.
-        #
-        # Elements with callbacks _must_ have an id.
-        button("Increment", id_="increment", onclick=cb(increment, n))
+    p("For partial loading to work these arguments are required:")
+    dl(
+        dt("base_template"),
+        dd("This base template is wrapped around the hypergen view. It should be a contextmanager callable",
+        " and the hypergen view will be called where the base template yields."), dt("target_id"),
+        dd("Just around where the hypergen_view is yielded it must be wrapped with a div with this id.",
+        " This makes hypergen understand into which html element to write the partial content."))
+    p("In our example the base_template looks like this:")
+    show_func(base_example_template)
 
-# And this is a hypergen callback. It's the ajax brother to the hypergen_view. "perm" and "target_id" are required.
-# "target_id" is where the output of "template(n+1)" will be written to on the client.
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")
-def increment(request, n):
-    # Increment "n" and render again.
-    template(n + 1)
+    p("The id from", code('with div(id_="content"):'), "should match the target_id set in the views.", sep=" ")
+    p("Check the js console to see which frontend commands are being executed!")
+
+    show_sources(__file__)

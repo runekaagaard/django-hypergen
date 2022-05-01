@@ -54,3 +54,7 @@ button {
 header h1 img {
   vertical-align: bottom;
 }
+
+#page1, #page2, #page3 {
+  margin-right: 8px;
+}

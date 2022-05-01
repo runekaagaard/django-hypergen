@@ -13,6 +13,7 @@ import hellocoreonly.urls
 import hellocoreonly2.urls
 import t9n.urls
 import notifications.urls
+import partialload.urls
 import commands.urls
 
 urlpatterns = [
@@ -28,4 +29,5 @@ urlpatterns = [
     path('hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
     path('t9n/', include(t9n.urls, namespace="t9n")),
     path('notifications/', include(notifications.urls, namespace="notifications")),
+    path('partialload/', include(partialload.urls, namespace="partialload")),
     path('commands/', include(commands.urls, namespace="commands")),]

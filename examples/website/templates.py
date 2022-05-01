@@ -1,4 +1,5 @@
 # coding=utf-8
+import inspect
 import os
 from glob import glob
 from django.urls.base import reverse
@@ -56,7 +57,8 @@ def base_example_template():
         with p():
             a("Back to documentation", href=reverse("website:documentation"))
 
-        yield
+        with div(id_="content"):
+            yield
 
 def show_sources(file_path):
     omits = ("__", "migrations", ".css", "management", ".so", "gameofcython.html", ".cpp", ".png", ".svg", ".ico",
@@ -75,3 +77,6 @@ def show_sources(file_path):
             with open(fp) as f:
                 cls = "language-python" if title.endswith(".py") else OMIT
                 pre(code(f.read(), class_=cls))
+
+def show_func(func):
+    pre(code(inspect.getsource(func)))
