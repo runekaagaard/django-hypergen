@@ -27,7 +27,7 @@ def gameofcython(request):
         p("Cython files are not compiled. Run 'make cython-compile' from the root of the repository.")
         return
 
-    if not c.request.is_ajax():
+    if not is_ajax():
         reset()
 
     style("""
@@ -56,7 +56,7 @@ def gameofcython(request):
     with div(id_="gameoflife"):
         render(str(step.reverse()))
 
-    if not request.is_ajax():
+    if not is_ajax():
         show_sources(__file__)
 
 @hypergen_callback(view=gameofcython, **HYPERGEN_SETTINGS)

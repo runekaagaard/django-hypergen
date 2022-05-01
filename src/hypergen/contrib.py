@@ -20,7 +20,7 @@ from django.http.response import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 
 from hypergen.core import (context as c, wrap2, default_wrap_elements, loads, command, hypergen, hypergen_response,
-    StringWithMeta)
+    StringWithMeta, is_ajax)
 from hypergen.core import *
 
 d = dict
@@ -116,7 +116,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
             with c(client_data=client_data, at="hypergen"):
                 func_return["value"] = func(request, *fargs, **fkwargs)
 
-        if not c.request.is_ajax():
+        if not is_ajax():
             fkwargs["wrap_elements"] = wrap_elements
             fkwargs["translate"] = translate
             html = hypergen(wrap_base_template, request, *fargs, **fkwargs)
@@ -173,7 +173,7 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
                     func_return["commands"] = c.hypergen.commands
 
         assert c.request.method == "POST", "Only POST request are supported"
-        assert c.request.is_ajax()
+        assert is_ajax()
         # Store base_template for partial loading in the <a> class.
         c.base_template = base_template
 

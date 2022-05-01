@@ -39,7 +39,7 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "command", "raw", "callback", "call_js", "THIS",
-    "OMIT", "context"]
+    "OMIT", "context", "is_ajax"]
 
 ### Python 2+3 compatibility ###
 
@@ -119,6 +119,12 @@ def wrap2(f):
 def insert(source_str, insert_str, pos):
     return ''.join((source_str[:pos], insert_str, source_str[pos:]))
 
+def is_ajax(request=None):
+    if request is None:
+        request = c.request
+
+    return request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest'
+
 ### Rendering ###
 
 def default_wrap_elements(init, self, *children, **attrs):
@@ -158,11 +164,11 @@ def hypergen(func, *args, **kwargs):
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
-        if not c.request.is_ajax() and c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
+        if not is_ajax() and c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
             from hypergen.views import translate
             command("translations", translate.reverse(), [[k, v] for k, v in TRANSLATIONS.items()])
 
-        if not c.request.is_ajax():
+        if not is_ajax():
             pos = html.find("</head")
             if pos != -1:
                 s = "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
@@ -190,20 +196,20 @@ def hypergen_to_string(func, *args, **kwargs):
 def hypergen_response(html_or_commands_or_http_response, status=None):
     value = html_or_commands_or_http_response
     if isinstance(value, HttpResponseRedirect):
-        if c.request.is_ajax():
+        if is_ajax():
             return HttpResponse(dumps([["hypergen.redirect", value["Location"]]]), status=status,
                 content_type='application/json')
         else:
             return value
     elif isinstance(value, HttpResponse):
         assert status is None
-        assert not c.request.is_ajax()
+        assert not is_ajax()
         return value
     elif type(value) in (list, tuple):
-        assert c.request.is_ajax()
+        assert is_ajax()
         return HttpResponse(dumps(value), status=status, content_type='application/json')
     elif type(value) in (str, str):
-        assert not c.request.is_ajax()
+        assert not is_ajax()
         return HttpResponse(value, status=status)
     else:
         raise Exception("Invalid response value: {}".format(repr(value)))
