@@ -441,6 +441,8 @@ export const post = function(url, formData, onSuccess, onError, params) {
   xhr.send(formData)
 }
 
+// history support.
+
 window.addEventListener("popstate", function(event) {
   if (event.state && event.state.callback_url !== undefined) {
     callback(event.state.callback_url, [], {meta: {is_popstate: true}})
@@ -449,6 +451,11 @@ window.addEventListener("popstate", function(event) {
   }
 })
 
+const pushstate = new Event('hypergen.pushstate')
+
+export const onpushstate = function() {
+  document.dispatchEvent(pushstate)
+}
 
 // Translations
 const replaceInText = function(element, pattern, replacement) {
@@ -531,14 +538,6 @@ Use "RESET" to reset back to the original content.
 window.translations = translations
 
 // On ready
-
-const pushstate = new Event('hypergen.pushstate')
-
-export const onpushstate = function() {
-  document.dispatchEvent(pushstate)
-}
-
-
 
 export const ready = function(fn, {partial=false}={}) {
   if (document.readyState != 'loading') {
