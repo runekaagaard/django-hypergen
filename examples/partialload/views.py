@@ -9,6 +9,8 @@ def page1(request):
     p("Try out how partial loading and browser back/forward buttons works automatically between theses pages.")
     a("page2", href=page2.reverse(), id_="page2")
     a("page3", href=page3.reverse(), id_="page3")
+    p("Check the js console to see which frontend commands are being executed!")
+
     template()
 
 @hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_example_template, target_id="content")
@@ -17,6 +19,8 @@ def page2(request):
     p("Try out how partial loading and browser back/forward buttons works automatically between theses pages.")
     a("page1", href=page1.reverse(), id_="page1")
     a("page3", href=page3.reverse(), id_="page3")
+    p("Check the js console to see which frontend commands are being executed!")
+
     template()
 
 @hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_example_template, target_id="content")
@@ -25,6 +29,8 @@ def page3(request):
     p("Try out how partial loading and browser back/forward buttons works automatically between theses pages.")
     a("page1", href=page1.reverse(), id_="page1")
     a("page2", href=page2.reverse(), id_="page2")
+    p("Check the js console to see which frontend commands are being executed!")
+
     template()
 
 def template():
@@ -58,6 +64,5 @@ def page2(request):
     show_func(base_example_template)
 
     p("The id from", code('with div(id_="content"):'), "should match the target_id set in the views.", sep=" ")
-    p("Check the js console to see which frontend commands are being executed!")
 
     show_sources(__file__)
