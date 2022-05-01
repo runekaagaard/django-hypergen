@@ -2,13 +2,13 @@ name: tests
 
 on:
   push:
-    branches: [ test ]
+    branches: [ main ]
   pull_request:
-    branches: [ test ]
+    branches: [ main ]
 
 jobs:
   build:
-
+    if: ${{ contains(github.event.commits[0].message, '[ci]') }}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 20
