@@ -1,3 +1,10 @@
+from collections import defaultdict
+from yaml import load
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
+
 from django.urls import reverse
 
 from hypergen.core import *
@@ -19,6 +26,26 @@ def home(request):
     def template():
         with open("README.html") as f:
             raw(f.read())
+
+        h2("Testing")
+        p("Hypergen is tested on the following combinations of Django and Python.")
+        with open("../.github/workflows/pytest.yml") as f:
+            pytest = load(f.read(), Loader=Loader)
+            adjm, xs, ys = defaultdict(list), set(), set()
+            for combination in pytest["jobs"]["build"]["strategy"]["matrix"]["include"]:
+                py, dj = combination["python-version"], combination["django-version"].replace("Django==", "")
+                adjm[py].append(dj)
+                xs.add(py)
+                ys.add(dj)
+
+            xs = sorted(xs, key=lambda x: int(str(x).split(".")[-1]))
+            ys = sorted(ys)
+            with table():
+                tr(th(), [th("python ", x) for x in xs])
+                for y in ys:
+                    tr(th("django ", y), [
+                        td("✔" if y in adjm[x] else "", style={"color": "green", "text-align": "center"})
+                        for x in xs])
 
         show_sources(__file__)
 

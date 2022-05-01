@@ -15,8 +15,6 @@ jobs:
       matrix:
         include:
           - python-version: 3.7
-            django-version: Django==1.11
-          - python-version: 3.7
             django-version: Django==1.10.8
           - python-version: 3.7
             django-version: Django==1.11.29
@@ -32,8 +30,6 @@ jobs:
             django-version: Django==3.1.14
           - python-version: 3.7
             django-version: Django==3.2.13
-          - python-version: 3.8
-            django-version: Django==1.11
           - python-version: 3.8
             django-version: Django==1.10.8
           - python-version: 3.8
@@ -52,8 +48,6 @@ jobs:
             django-version: Django==3.2.13
           - python-version: 3.8
             django-version: Django==4.0.4
-          - python-version: 3.9
-            django-version: Django==1.11
           - python-version: 3.9
             django-version: Django==1.10.8
           - python-version: 3.9

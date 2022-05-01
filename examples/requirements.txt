@@ -1,5 +1,4 @@
 Django==3.2.7
-django_extensions
 Cython==3.0a6
 cymem
 numpy
@@ -7,3 +6,4 @@ pyprof2calltree
 yapf
 pyrsistent==0.16.1
 contextlib2==0.6.0.post1
+pyyaml
