@@ -521,7 +521,15 @@ window.translations = translations
 
 // On ready
 
-const ready = function(fn) {
+const pushstate = new Event('hypergen.pushstate')
+
+export const onpushstate = function() {
+  document.dispatchEvent(pushstate)
+}
+
+
+
+const ready = function(fn, {runOnHypergenPushstate=false}={}) {
   if (document.readyState != 'loading') {
     fn();
   } else if (document.addEventListener) {
@@ -532,5 +540,6 @@ const ready = function(fn) {
         fn();
     });
   }
+  if (runOnHypergenPushstate) document.addEventListener("hypergen.pushstate", fn)
 }
 window.ready = ready

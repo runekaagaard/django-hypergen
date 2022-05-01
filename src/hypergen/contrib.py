@@ -133,6 +133,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
             if not ("meta" in client_data and "is_popstate" in client_data["meta"]
                 and client_data["meta"]["is_popstate"]) and type(commands) in (list, tuple):
                 commands.append(command("history.pushState", d(callback_url=path), "", path, return_=True))
+                commands.append(command("hypergen.onpushstate", return_=True))
             return commands
 
     _ = ensure_csrf_cookie(_)
