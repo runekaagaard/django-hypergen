@@ -2,6 +2,10 @@ import morphdom from 'morphdom'
 // https://github.com/ccampbell/mousetrap
 import mousetrap from 'mousetrap'
 import './hypergen'
+import * as hypergen from './hypergen'
+
+// Make all exported vars availabe in window.hypergen.
+window.hypergen = hypergen
 
 // Shims
 if (typeof Array.isArray === 'undefined') {
@@ -70,6 +74,7 @@ export const redirect = function(url) {
   window.location = url
 }
 
+// TODO: Dont clutter window.
 window.clientState = {}
 export const setClientState = function(at, value) {
   let clientState = window.clientState
@@ -93,6 +98,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     i++
 
     // The element function must have access to the FormData.
+    // TODO: Dont clutter window.
     window.hypergenGlobalFormdata = new FormData()
     window.hypergenUploadFiles = uploadFiles
     try {
@@ -215,6 +221,7 @@ const applyCommand = function(path, ...args) {
   document.dispatchEvent(event)
 }
 
+// TODO: Dont clutter window.
 window.e = function(event, callbackKey, eventMatches) {
   event.preventDefault()
   event.stopPropagation()
@@ -233,6 +240,7 @@ const applyCommands = function(commands) {
     applyCommand(path, ...args)
   }
 }
+// TODO: Dont clutter window.
 window.applyCommands = applyCommands
 
 const mergeAttrs = function(target, source){
@@ -343,6 +351,7 @@ const reviver = function(k, v) {
   }
   return v
 }
+// TODO: Dont clutter window.
 window.reviver = reviver
 
 const getCookie = function(name) {
@@ -460,6 +469,7 @@ const replaceInText = function(element, pattern, replacement) {
 }
 
 const translations = function(url, T) {
+  // TODO: Dont clutter window.
   window.t = {T}
   
   window.t.post = function(a, b, b0) {
@@ -517,6 +527,7 @@ Use "RESET" to reset back to the original content.
     window.t.post(x[0], b, x[1])
   }
 }
+// TODO: Dont clutter window.
 window.translations = translations
 
 // On ready
@@ -529,7 +540,7 @@ export const onpushstate = function() {
 
 
 
-const ready = function(fn, {runOnHypergenPushstate=false}={}) {
+export const ready = function(fn, {partial=false}={}) {
   if (document.readyState != 'loading') {
     fn();
   } else if (document.addEventListener) {
@@ -540,6 +551,7 @@ const ready = function(fn, {runOnHypergenPushstate=false}={}) {
         fn();
     });
   }
-  if (runOnHypergenPushstate) document.addEventListener("hypergen.pushstate", fn)
+  if (partial) document.addEventListener("hypergen.pushstate", fn)
 }
+// TODO: Dont clutter window.
 window.ready = ready
