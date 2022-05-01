@@ -8,7 +8,7 @@ fixture("Test All")
   .page(url)
   .requestHooks(logger);
 
-var queue = ["/partialload/page1"]
+var queue = ["/"]
 var visited = []
 
 async function visitPage(t, href) {
@@ -38,7 +38,7 @@ async function onclickEvents(t, href) {
     const el = await els.nth(i)
     const onclick = await el.getAttribute("onclick")
     if (onclick.includes("redirect__")) continue
-    console.log(`    running on click event ${onclick}`, i)
+    console.log(`    running onclick event: ${onclick}`, i)
     await t
       .setNativeDialogHandler(() => true)
       .click(el)
