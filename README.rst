@@ -127,8 +127,10 @@ We have a Github Action that automatically tests a matrix of Django and Python v
 And the testcafe end-to-end tests:
 
 .. code-block:: bash
-
+    
     npm i -g testcafe
     make testcafe-run
     # or
     make testcafe-run-headless
+
+Requires that the examples are running on ``127.0.0.1:8002``.
