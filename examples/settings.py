@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
     'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen', 'todomvc', 'inputs',
     'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'hellocoreonly2', 't9n', 'notifications',
-    'commands', 'partialload']
+    'commands', 'partialload', 'hellomagic']
 
 MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',

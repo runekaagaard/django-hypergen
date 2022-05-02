@@ -18,9 +18,10 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http.response import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
+from django.templatetags.static import static
 
 from hypergen.core import (context as c, wrap2, default_wrap_elements, loads, command, hypergen, hypergen_response,
-    StringWithMeta, is_ajax)
+    StringWithMeta, title as title_)
 from hypergen.core import *
 
 d = dict
@@ -85,6 +86,8 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
     target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements, translate=False):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
+    if base_template is not None and target_id is None and getattr(base_template, "target_id", None):
+        target_id = base_template.target_id
 
     if base_template_args is None:
         base_template_args = tuple()
@@ -147,6 +150,9 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
     login_url=None, raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
     wrap_elements=default_wrap_elements, translate=False):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
+
+    if base_template is not None and target_id is None and getattr(base_template, "target_id", None):
+        target_id = base_template.target_id
 
     original_func = func
 
@@ -243,3 +249,20 @@ def hypergen_permission_required(perm, login_url=None, raise_exception=False, on
         return False
 
     return user_passes_test(check_perms, login_url=login_url)
+
+# Base templates
+def base_template(title=None):
+    @contextmanager
+    def template():
+        doctype()
+        with html():
+            with head():
+                if title:
+                    title_(title)
+                script(src=static("hypergen/hypergen.min.js"))
+            with body(), div(id_="content"):
+                yield
+
+    template.target_id = "content"
+
+    return template
