@@ -26,3 +26,5 @@ tests-run:
 	~/ws/venv-hypergen/bin/pytest --tb=native -x -vvvv src/hypergen/test_all.py
 docker-system-prune:
 	docker system prune -a
+testcafe-run:
+	cd examples && testcafe chrome test_all.js

@@ -14,60 +14,60 @@ jobs:
       max-parallel: 20
       matrix:
         include:
-          - python-version: 3.7
-            django-version: Django==1.10.8
-          - python-version: 3.7
-            django-version: Django==1.11.29
-          - python-version: 3.7
-            django-version: Django==2.0.13
-          - python-version: 3.7
-            django-version: Django==2.1.15
-          - python-version: 3.7
-            django-version: Django==2.2.28
-          - python-version: 3.7
-            django-version: Django==3.0.14
-          - python-version: 3.7
-            django-version: Django==3.1.14
-          - python-version: 3.7
-            django-version: Django==3.2.13
-          - python-version: 3.8
-            django-version: Django==1.10.8
-          - python-version: 3.8
-            django-version: Django==1.11.29
-          - python-version: 3.8
-            django-version: Django==2.0.13
-          - python-version: 3.8
-            django-version: Django==2.1.15
-          - python-version: 3.8
-            django-version: Django==2.2.28
-          - python-version: 3.8
-            django-version: Django==3.0.14
-          - python-version: 3.8
-            django-version: Django==3.1.14
-          - python-version: 3.8
-            django-version: Django==3.2.13
-          - python-version: 3.8
-            django-version: Django==4.0.4
-          - python-version: 3.9
-            django-version: Django==1.10.8
-          - python-version: 3.9
-            django-version: Django==1.11.29
-          - python-version: 3.9
-            django-version: Django==2.0.13
-          - python-version: 3.9
-            django-version: Django==2.1.15
-          - python-version: 3.9
-            django-version: Django==2.2.28
-          - python-version: 3.9
-            django-version: Django==3.0.14
-          - python-version: 3.9
-            django-version: Django==3.1.14
-          - python-version: 3.9
-            django-version: Django==3.2.13
-          - python-version: 3.9
-            django-version: Django==4.0.4
-          - python-version: "3.10"
-            django-version: Django==3.2.13
+          # - python-version: 3.7
+          #   django-version: Django==1.10.8
+          # - python-version: 3.7
+          #   django-version: Django==1.11.29
+          # - python-version: 3.7
+          #   django-version: Django==2.0.13
+          # - python-version: 3.7
+          #   django-version: Django==2.1.15
+          # - python-version: 3.7
+          #   django-version: Django==2.2.28
+          # - python-version: 3.7
+          #   django-version: Django==3.0.14
+          # - python-version: 3.7
+          #   django-version: Django==3.1.14
+          # - python-version: 3.7
+          #   django-version: Django==3.2.13
+          # - python-version: 3.8
+          #   django-version: Django==1.10.8
+          # - python-version: 3.8
+          #   django-version: Django==1.11.29
+          # - python-version: 3.8
+          #   django-version: Django==2.0.13
+          # - python-version: 3.8
+          #   django-version: Django==2.1.15
+          # - python-version: 3.8
+          #   django-version: Django==2.2.28
+          # - python-version: 3.8
+          #   django-version: Django==3.0.14
+          # - python-version: 3.8
+          #   django-version: Django==3.1.14
+          # - python-version: 3.8
+          #   django-version: Django==3.2.13
+          # - python-version: 3.8
+          #   django-version: Django==4.0.4
+          # - python-version: 3.9
+          #   django-version: Django==1.10.8
+          # - python-version: 3.9
+          #   django-version: Django==1.11.29
+          # - python-version: 3.9
+          #   django-version: Django==2.0.13
+          # - python-version: 3.9
+          #   django-version: Django==2.1.15
+          # - python-version: 3.9
+          #   django-version: Django==2.2.28
+          # - python-version: 3.9
+          #   django-version: Django==3.0.14
+          # - python-version: 3.9
+          #   django-version: Django==3.1.14
+          # - python-version: 3.9
+          #   django-version: Django==3.2.13
+          # - python-version: 3.9
+          #   django-version: Django==4.0.4
+          # - python-version: "3.10"
+          #   django-version: Django==3.2.13
           - python-version: "3.10"
             django-version: Django==4.0.4
     steps:
@@ -84,3 +84,15 @@ jobs:
     - name: Run Tests
       run: |
         pytest --tb=native -vvvv src/hypergen/test_all.py
+    - name Install node
+      uses: actions/setup-node@v1
+        with:
+          node-version: 14
+    - name: Start Runserver
+      run: |
+        cd examples
+        python manage.py runserver &
+    - name: Run testcafe tests
+      run: make testcafe-run
+      
+      
