@@ -86,12 +86,12 @@ Running the examples
 Contributing
 ============
 
-Bug reports and feature requests are `very welcome https://github.com/runekaagaard/django-hypergen/issues/new>`_. So are pull requests. 
+Bug reports and feature requests are `very welcome <https://github.com/runekaagaard/django-hypergen/issues/new>`_. So are pull requests. 
 
 Authors
 =======
 
-Hypergen is written by `Jeppe Tuxen https://github.com/jeppetuxen`_ and `Rune Kaagaard https://github.com/runekaagaard`_. While we are unfortunately not working fulltime on Hypergen we are using it pretty extensively at work, so it's a big focus of ours.
+Hypergen is written by `Jeppe Tuxen <https://github.com/jeppetuxen>`_ and `Rune Kaagaard <https://github.com/runekaagaard>`_. While we are unfortunately not working fulltime on Hypergen we are using it pretty extensively at work, so it's a big focus of ours.
 
 Backend
 -------
