@@ -1,6 +1,9 @@
 from django.contrib import admin
-from django.urls import path, include
 
+try:
+    from django.conf.urls import url, include
+except ImportError:
+    from django.urls import re_path as url, include
 import hypergen.urls
 
 import website.urls
@@ -17,17 +20,17 @@ import partialload.urls
 import commands.urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include(website.urls, namespace="site")),
-    path('hypergen/', include(hypergen.urls, namespace="hypergen")),
-    path('todomvc/', include(todomvc.urls, namespace="todomvc")),
-    path('inputs/', include(inputs.urls, namespace="inputs")),
-    path('gameofcython/', include(gameofcython.urls, namespace="gameofcython")),
-    path('djangotemplates/', include(djangotemplates.urls, namespace="djangotemplates")),
-    path('hellohypergen/', include(hellohypergen.urls, namespace="hellohypergen")),
-    path('hellocoreonly/', include(hellocoreonly.urls, namespace="hellocoreonly")),
-    path('hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
-    path('t9n/', include(t9n.urls, namespace="t9n")),
-    path('notifications/', include(notifications.urls, namespace="notifications")),
-    path('partialload/', include(partialload.urls, namespace="partialload")),
-    path('commands/', include(commands.urls, namespace="commands")),]
+    url('^admin/', admin.site.urls),
+    url('', include(website.urls, namespace="site")),
+    url('^hypergen/', include(hypergen.urls, namespace="hypergen")),
+    url('^todomvc/', include(todomvc.urls, namespace="todomvc")),
+    url('^inputs/', include(inputs.urls, namespace="inputs")),
+    url('^gameofcython/', include(gameofcython.urls, namespace="gameofcython")),
+    url('^djangotemplates/', include(djangotemplates.urls, namespace="djangotemplates")),
+    url('^hellohypergen/', include(hellohypergen.urls, namespace="hellohypergen")),
+    url('^hellocoreonly/', include(hellocoreonly.urls, namespace="hellocoreonly")),
+    url('^hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
+    url('^t9n/', include(t9n.urls, namespace="t9n")),
+    url('^notifications/', include(notifications.urls, namespace="notifications")),
+    url('^partialload/', include(partialload.urls, namespace="partialload")),
+    url('^commands/', include(commands.urls, namespace="commands")),]

@@ -1,9 +1,12 @@
-from django.urls import path
+try:
+    from django.conf.urls import url
+except ImportError:
+    from django.urls import re_path as url
 
 from website import views
 
 app_name = 'website'
 
 urlpatterns = [
-    path("", views.home, name="home"),
-    path("documentation/", views.documentation, name="documentation"),]
+    url("^$", views.home, name="home"),
+    url("^documentation/$", views.documentation, name="documentation"),]
