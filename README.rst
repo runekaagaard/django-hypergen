@@ -89,7 +89,7 @@ Frontend
 
 Compile the javascript files:
 
-.. code-block:: javascript
+.. code-block:: bash
 
     yarn global add parcel-bundler
     # or
