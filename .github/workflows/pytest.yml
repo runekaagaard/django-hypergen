@@ -96,3 +96,4 @@ jobs:
       run: npm install -g testcafe
     - name: Run testcafe tests
       run: make testcafe-run-headless
+
