@@ -28,3 +28,5 @@ docker-system-prune:
 	docker system prune -a
 testcafe-run:
 	cd examples && testcafe chrome test_all.js
+testcafe-run-headless:
+	cd examples && testcafe ""chrome:headless"" test_all.js
