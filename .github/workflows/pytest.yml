@@ -14,8 +14,6 @@ jobs:
       max-parallel: 20
       matrix:
         include:
-          - python-version: 3.6
-            django-version: Django==1.10.8
           - python-version: 3.7
             django-version: Django==1.11.29
           - python-version: 3.7
