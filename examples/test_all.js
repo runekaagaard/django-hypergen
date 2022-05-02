@@ -50,6 +50,7 @@ async function onclickEvents(t, href) {
 test('test', async t => {
   while(queue.length > 0) {
     const href = queue.pop()
+    if (["/gameofcython/"].indexOf(href) !== -1) continue
     console.log(`testing url: ${href}`)
     await t
       .navigateTo(href)
