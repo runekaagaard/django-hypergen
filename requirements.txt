@@ -8,3 +8,6 @@ pyperclip==1.8.1
 # actual code
 pyrsistent==0.16.1
 Django
+
+# examples
+pyyaml
