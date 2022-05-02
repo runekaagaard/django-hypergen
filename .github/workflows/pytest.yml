@@ -92,5 +92,7 @@ jobs:
       run: |
         cd examples
         python manage.py runserver &
+    - name: Install testcafe
+      run: npm install -g testcafe
     - name: Run testcafe tests
       run: make testcafe-run
