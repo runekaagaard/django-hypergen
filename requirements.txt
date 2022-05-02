@@ -11,3 +11,4 @@ Django
 
 # examples
 pyyaml
+yapf
