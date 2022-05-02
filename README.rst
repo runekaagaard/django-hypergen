@@ -60,12 +60,12 @@ Our journal to Hypergen
 The journey leading up to building hypergen has been 15 years of experimenting with all the different methodologies of building websites for advanced business applications. It went something like this:
 
 - Custom non-frameworky PHP: Totally great cowboy style. Everything is a already a template.
-- Drupal obession: Why am I programming an UI for us programmers to build the site when we could just program the site? Try to think about the problem on your own before following current "best practices". Use a framework that is actually a framework.
-- Switch to Django. Wow there is actually all the features I need, and great docs too. Ahh python makes sense. Django forms and the request/response cycle is great. Python is not a template language, hmm i guess djangos templates are ok.
+- Drupal obession: Why are we programming an UI for us programmers to build the site when we could just program the site? Try to think about the problem on your own before following current "best practices". Use a framework that is actually a framework.
+- Switch to Django. Wow there is actually all the features we need, and great docs too. Ahh python makes sense. Django forms and the request/response cycle is great. Djangos templates works fine for most stuff.
 - Frontend level1: We need dynamic features, use the jQuery language to sprinkle behaviour where needed. State management is hard. Disconnect between server and client.
 - Frontend level2: Oh noohs the jQuery is unmanageable. Lets use handlebars templates, a persistent state and render everything on each state change. Rerendering is sluggish for large pages.
-- Frontend level3: Please save us React. State management is finally kind of nice. Everything is a template. Wow building duplicate functionality on the server and the client is annoying. A lot of the code is just about shuffling data between the server and the client. I miss python and all the great stuff in Django.
-- Why can't I just write my html in python and have frontend events call python functions? Actually I can, enter Hypergen :)
+- Frontend level3: Please save us React. State management is finally kind of nice. Everything is a template. Wow building duplicate functionality on the server and the client is annoying. A lot of the code is just about shuffling data between the server and the client. We miss python and all the great stuff in Django.
+- Why can't we just write html in python and have frontend events call python functions? Actually we can, enter Hypergen :)
 
 Running the examples
 ====================
@@ -83,14 +83,20 @@ Running the examples
     python manage.py runserver
     # open http://127.0.0.1:8000 in your browser
     
-Developing
-==========
+Contributing
+============
+
+Bug reports and feature requests are `very welcome https://github.com/runekaagaard/django-hypergen/issues/new>`_. So are pull requests. 
+
+Authors
+=======
+
+Hypergen is written by `Jeppe Tuxen https://github.com/jeppetuxen`_ and `Rune Kaagaard https://github.com/runekaagaard`_. While we are unfortunately not working fulltime on Hypergen we are using it pretty extensively at work, so it's a big focus of ours.
 
 Backend
 -------
 
-1. Format all python code with yapf
-2. Run all tests with: `pytest --tb=native -x -vvvv test_all.py`
+Format all python code with yapf.
 
 Frontend
 --------
@@ -116,3 +122,4 @@ Profiling
     #
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py inputs_profile && \
         echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
+
