@@ -84,7 +84,7 @@ jobs:
     - name: Run Tests
       run: |
         pytest --tb=native -vvvv src/hypergen/test_all.py
-    - name Install node
+    - name: Install node
       uses: actions/setup-node@v3
       with:
         node-version: 14
