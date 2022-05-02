@@ -47,7 +47,7 @@ The basic form that makes Hypergen great (for us) is exemplified in this simple 
 Running the examples
 ====================
 
-::
+.. code-block:: bash
 
     git clone git@github.com:runekaagaard/django-hypergen.git
     cd django-hypergen/
@@ -87,7 +87,9 @@ Hypergen is located in ``src/hypergen``. Format all python code with yapf, a .ya
 Frontend
 --------
 
-Compile the javascript files::
+Compile the javascript files:
+
+.. code-block:: javascript
 
     yarn global add parcel-bundler
     # or
@@ -98,7 +100,9 @@ Compile the javascript files::
 Profiling
 ---------
 
-How fast are we?::
+How fast are we?:
+
+.. code-block:: bash
 
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py runserver 127.0.0.1:8002
     echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
@@ -112,12 +116,16 @@ How fast are we?::
 Testing
 =======
 
-We have a Github Action that automatically tests a matrix of Django and Python versions. You can run the pytest tests locally like so::
+We have a Github Action that automatically tests a matrix of Django and Python versions. You can run the pytest tests locally like so:
+
+.. code-block:: bash
 
     pip install requirements.txt
     make pytest-run
 
-And the testcafe end-to-end tests::
+And the testcafe end-to-end tests:
+
+.. code-block:: bash
 
     npm i -g testcafe
     make testcafe-run
