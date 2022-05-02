@@ -86,7 +86,7 @@ Running the examples
 Contributing
 ============
 
-Bug reports and feature requests are `very welcome <https://github.com/runekaagaard/django-hypergen/issues/new>`_. So are pull requests. 
+Bug reports and feature requests are `very welcome <https://github.com/runekaagaard/django-hypergen/issues/new>`_. So are pull requests or diffs.
 
 Authors
 =======
