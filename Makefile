@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 default:
 	echo "No default target here. Please be more specific."
 	exit 1
@@ -27,6 +28,6 @@ tests-run:
 docker-system-prune:
 	docker system prune -a
 testcafe-run:
-	cd examples && testcafe chrome test_all.js
+	cd examples && testcafe chrome test_all.js |& ansi2txt
 testcafe-run-headless:
 	cd examples && testcafe ""chrome:headless"" test_all.js
