@@ -86,8 +86,8 @@ jobs:
         pytest --tb=native -vvvv src/hypergen/test_all.py
     - name Install node
       uses: actions/setup-node@v1
-        with:
-          node-version: 14
+      with:
+        node-version: 14
     - name: Start Runserver
       run: |
         cd examples
