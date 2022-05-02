@@ -16,7 +16,9 @@ Features
 Value Proposition
 =================
 
-The basic form that makes Hypergen great (for us) is exemplified in this simple counter::
+The basic form that makes Hypergen great (for us) is exemplified in this simple counter:
+
+.. code-block:: python
 
     from hypergen.core import *
     from hypergen.core import callback as cb
