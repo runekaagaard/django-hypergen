@@ -58,7 +58,8 @@ Running the examples
     cd examples
     python manage.py migrate
     python manage.py runserver
-    # open http://127.0.0.1:8000 in your browser
+
+Then browse to http://127.0.0.1:8000.
     
 Contributing
 ============
