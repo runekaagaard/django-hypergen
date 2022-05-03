@@ -2,7 +2,7 @@
 
     <p align="center">
       <a href="https://github.com/runekaagaard/django-hypergen">
-        <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png" alt="Welcome to Django Hypergen" width="100px" height="100px" />
+        <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo.png" alt="Welcome to Django Hypergen" width="75px" height="100px" />
       </a>
     </p>
 
