@@ -2,22 +2,30 @@ Se also Makefile.
 
 Installation::
 
-    copilot app init hypergenit #  --domain=page.hypergen.it DOES NOT WORK buuuuuh!
-    copilot init -a hypergenit -d Dockerfile -n hypergenit-service -t "Load Balanced Web Service"
-    copilot env init --name prod --profile default --app hypergenit --default-config
+    copilot app init hypergen --domain=hypergen.it DOES NOT WORK buuuuuh!
+    copilot init -a hypergen -d Dockerfile -n hypergen-service -t "Load Balanced Web Service"
+    copilot env init --name prod --profile default --app hypergen --default-config
 
     
 Deploy new version::
 
-    copilot deploy -n hypergenit-service -e prod
+    copilot deploy -n hypergen-service -e prod
 
+Destroy and start againzzz::
+
+    copilot app delete
+    
 Log in to container::
 
-    copilot svc exec --name hypergenit --env test -c /bin/bash
+    copilot svc exec --name hypergen --env test -c /bin/bash
 
 Show logs::
 
-    copilot svc logs -n hypergenit -e prod
+    copilot svc logs -n hypergen -e prod
+
+Pruning after messing with the overlay2 folder::
+
+    docker system prune --volumes -a
 
 Fix --domain WILL NOT WORK buuuuuuuuuh
 ======================================

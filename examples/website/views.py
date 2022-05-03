@@ -24,10 +24,12 @@ from commands.views import commands
 def home(request):
     @base_template()
     def template():
+        p(mark("UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+            "Docs are being written and corners rounded :)", sep=" ")
         with open("README.html") as f:
             raw(f.read())
 
-        h2("Testing")
+        h2("Testing Matrix")
         p("Hypergen is tested on the following combinations of Django and Python.")
         with open("../.github/workflows/pytest.yml") as f:
             pytest = load(f.read(), Loader=Loader)

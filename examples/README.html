@@ -1,67 +1,120 @@
-
-<h1>Why hypergen?</h1>
-<p>Say bye bye to:</p>
+<h2>Features</h2>
 <ul class="simple">
-<li>frontend</li>
-<li>javascript</li>
-<li>mangling making data ready for serialization</li>
-<li>serialization/deserialization</li>
-<li>template language</li>
-<li>webpack/NPM/parcel/gulp/redux/react/etc/etc/etc</li>
-</ul>
-<p>And hello to:</p>
-<ul class="simple">
-<li>automatic liveview features</li>
-<li>composable pure python templates</li>
-<li>easy dataformat to perform custom frontend actions</li>
-<li>automatic serialization/deserialization from backend-&gt;frontend and frontend-&gt;backend</li>
-</ul>
-</div>
-<div class="section" id="why-not-hypergen">
-<h1>Why not Hypergen?</h1>
-<ul class="simple">
-<li>every frontend change on the frontend requires a call to the server</li>
-<li>python templating is not for everyone. Using Django templates is possible but not as polished yet</li>
+<li>Composable - structure your app with 🔥python functions🔥</li>
+<li>Less infrastructure - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends</li>
+<li>Build truly singlepage apps - avoid abstraction gaps to a template language and javascript</li>
+<li>Async not needed - uses the vanilla Django Request-Response cycle</li>
+<li>Automatic (de)serialization - use python builtin types and move on</li>
+<li>No magic strings - reactivity is defined by referencing python functions</li>
+<li>Free partial loading and back/forward history support - no special setup needed</li>
+<li>Inbuilt confirmation dialogs, blocking and debouncing of client side events</li>
+<li>Easy uploading of files - with progress bar</li>
+<li>Still loves javascript - system to call client functions from the server</li>
 </ul>
 </div>
 <div class="section" id="value-proposition">
-<h1>Value Proposition</h1>
-<p>The basic form that makes Hypergen great (for me) is exemplified in this simple counter:</p>
-<pre class="literal-block">
-from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+<h2>Value Proposition</h2>
+<p>The basic form that makes Hypergen great (for us) is exemplified in this simple counter:</p>
+<pre class="code python literal-block">
+<span class="keyword namespace">from</span> <span class="name namespace">hypergen.core</span> <span class="keyword namespace">import</span> <span class="operator">*</span>
+<span class="keyword namespace">from</span> <span class="name namespace">hypergen.core</span> <span class="keyword namespace">import</span> <span class="name">callback</span> <span class="keyword">as</span> <span class="name">cb</span>
+<span class="keyword namespace">from</span> <span class="name namespace">hypergen.contrib</span> <span class="keyword namespace">import</span> <span class="name">hypergen_view</span><span class="punctuation">,</span> <span class="name">hypergen_callback</span><span class="punctuation">,</span> <span class="name">NO_PERM_REQUIRED</span>
 
-from django.templatetags.static import static
+<span class="keyword namespace">from</span> <span class="name namespace">django.templatetags.static</span> <span class="keyword namespace">import</span> <span class="name">static</span>
 
-&#64;hypergen_view(perm=NO_PERM_REQUIRED)
-def counter(request):
-    doctype()
-    with html():
-        with head():
-            script(src=static(&quot;hypergen/hypergen.min.js&quot;))
-        with body(id_=&quot;body&quot;):
-            template(1)
+<span class="name decorator">&#64;hypergen_view</span><span class="punctuation">(</span><span class="name">perm</span><span class="operator">=</span><span class="name">NO_PERM_REQUIRED</span><span class="punctuation">)</span>
+<span class="keyword">def</span> <span class="name function">counter</span><span class="punctuation">(</span><span class="name">request</span><span class="punctuation">):</span>
+    <span class="name">doctype</span><span class="punctuation">()</span>
+    <span class="keyword">with</span> <span class="name">html</span><span class="punctuation">():</span>
+        <span class="keyword">with</span> <span class="name">head</span><span class="punctuation">():</span>
+            <span class="name">script</span><span class="punctuation">(</span><span class="name">src</span><span class="operator">=</span><span class="name">static</span><span class="punctuation">(</span><span class="literal string double">&quot;hypergen/hypergen.min.js&quot;</span><span class="punctuation">))</span>
+        <span class="keyword">with</span> <span class="name">body</span><span class="punctuation">(</span><span class="name">id_</span><span class="operator">=</span><span class="literal string double">&quot;body&quot;</span><span class="punctuation">):</span>
+            <span class="name">template</span><span class="punctuation">(</span><span class="literal number integer">1</span><span class="punctuation">)</span>
 
-&#64;hypergen_callback(perm=NO_PERM_REQUIRED, target_id=&quot;body&quot;)
-def increment(request, n):
-    template(n + 1)
+<span class="name decorator">&#64;hypergen_callback</span><span class="punctuation">(</span><span class="name">perm</span><span class="operator">=</span><span class="name">NO_PERM_REQUIRED</span><span class="punctuation">,</span> <span class="name">target_id</span><span class="operator">=</span><span class="literal string double">&quot;body&quot;</span><span class="punctuation">)</span>
+<span class="keyword">def</span> <span class="name function">increment</span><span class="punctuation">(</span><span class="name">request</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">):</span>
+    <span class="name">template</span><span class="punctuation">(</span><span class="name">n</span> <span class="operator">+</span> <span class="literal number integer">1</span><span class="punctuation">)</span>
 
-def template(n):
-    label(&quot;Current value: &quot;)
-    input_(id_=&quot;n&quot;, type_=&quot;number&quot;, value=n)
-    button(&quot;Increment&quot;, id_=&quot;increment&quot;, onclick=cb(increment, n))
+<span class="keyword">def</span> <span class="name function">template</span><span class="punctuation">(</span><span class="name">n</span><span class="punctuation">):</span>
+    <span class="name">label</span><span class="punctuation">(</span><span class="literal string double">&quot;Current value: &quot;</span><span class="punctuation">)</span>
+    <span class="name">input_</span><span class="punctuation">(</span><span class="name">id_</span><span class="operator">=</span><span class="literal string double">&quot;n&quot;</span><span class="punctuation">,</span> <span class="name">type_</span><span class="operator">=</span><span class="literal string double">&quot;number&quot;</span><span class="punctuation">,</span> <span class="name">value</span><span class="operator">=</span><span class="name">n</span><span class="punctuation">)</span>
+    <span class="name">button</span><span class="punctuation">(</span><span class="literal string double">&quot;Increment&quot;</span><span class="punctuation">,</span> <span class="name">id_</span><span class="operator">=</span><span class="literal string double">&quot;increment&quot;</span><span class="punctuation">,</span> <span class="name">onclick</span><span class="operator">=</span><span class="name">cb</span><span class="punctuation">(</span><span class="name">increment</span><span class="punctuation">,</span> <span class="name">n</span><span class="punctuation">))</span>
 </pre>
 </div>
-<div class="section" id="my-personal-journal-to-hypergen">
-<h1>My personal journal to Hypergen</h1>
-<p>The journey leading up to building hypergen has been 15 years of experimenting with all the different methodologies of building websites for advanced business applications. It went something like this:</p>
+<div class="section" id="running-the-examples">
+<h2>Running the examples</h2>
+<pre class="code bash literal-block">
+git clone git&#64;github.com:runekaagaard/django-hypergen.git
+<span class="name builtin">cd</span> django-hypergen/
+virtualenv -p python3.9 venv
+<span class="name builtin">source</span> venv/bin/activate
+pip install -r requirements.txt
+pip install -r examples/requirements.txt
+<span class="name builtin">cd</span> examples
+python manage.py migrate
+python manage.py runserver
+</pre>
+<p>Then browse to <a class="reference external" href="http://127.0.0.1:8000">http://127.0.0.1:8000</a>.</p>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing</h2>
+<p>Bug reports and feature requests are <a class="reference external" href="https://github.com/runekaagaard/django-hypergen/issues/new">very welcome</a>. So are pull requests or diffs.</p>
+</div>
+<div class="section" id="authors">
+<h2>Authors</h2>
+<p>Hypergen is written by <a class="reference external" href="https://github.com/jeppetuxen">Jeppe Tuxen</a> and <a class="reference external" href="https://github.com/runekaagaard">Rune Kaagaard</a>. While we are unfortunately not working fulltime on Hypergen we are using it pretty extensively at work, so it's a big focus of ours.</p>
+</div>
+<div class="section" id="why-not-hypergen">
+<h2>Why not Hypergen?</h2>
 <ul class="simple">
-<li>Custom non-frameworky PHP: Totally great cowboy style. Everything is a already a template.</li>
-<li>Drupal obession: Why am I programming an UI for us programmers to build the site when we could just program the site? Try to think about the problem on your own before following current &quot;best practices&quot;. Use a framework that is actually a framework.</li>
-<li>Switch to Django. Wow there is actually all the features I need, and great docs too. Ahh python makes sense. Django forms and the request/response cycle is great. Python is not a template language, hmm i guess djangos templates are ok.</li>
-<li>Frontend level1: We need dynamic features, use the jQuery language to sprinkle behaviour where needed. State management is hard. Disconnect between server and client.</li>
-<li>Frontend level2: Oh noohs the jQuery is unmanageable. Lets use handlebars templates, a persistent state and render everything on each state change. Rerendering is sluggish for large pages.</li>
-<li>Frontend level3: Please save me React. State management is finally kind of nice. Everything is a template. Wow building duplicate functionality on the server and the client is annoying. A lot of the code is just about shuffling data between the server and the client. I miss python and all the great stuff in Django.</li>
-<li>Why can't I just write my html in python and have frontend events call python functions? Actually I can, enter Hypergen :)</li>
+<li>Every frontend change on the frontend requires a call to the server</li>
+<li>Python templating is not for everyone. Using Django templates is possible but not as polished yet</li>
 </ul>
+</div>
+<div class="section" id="developing">
+<h2>Developing</h2>
+<div class="section" id="backend">
+<h3>Backend</h3>
+<p>Hypergen is located in <tt class="docutils literal">src/hypergen</tt>. Format all python code with yapf, a .yapf config file is present in the repository.</p>
+</div>
+<div class="section" id="frontend">
+<h3>Frontend</h3>
+<p>Compile the javascript files:</p>
+<pre class="code bash literal-block">
+yarn global add parcel-bundler
+<span class="comment single"># or
+</span>npm install -g parcel-bundler
+<span class="name builtin">cd</span> hypergen/static/hypergen
+parcel watch -o hypergen.min.js -d . hypergen.js
+</pre>
+</div>
+<div class="section" id="profiling">
+<h3>Profiling</h3>
+<p>How fast are we?:</p>
+<pre class="code bash literal-block">
+rm -f /tmp/hypergen.profile <span class="operator">&amp;&amp;</span> python -m cProfile -o /tmp/hypergen.profile manage.py runserver <span class="literal number">127</span>.0.0.1:8002
+<span class="name builtin">echo</span> -e <span class="literal string single">'sort tottime\nstats'</span> <span class="punctuation">|</span> python3 -m pstats /tmp/hypergen.profile <span class="punctuation">|</span> less
+<span class="comment single"># or
+</span>pyprof2calltree -i /tmp/hypergen.profile -k
+
+<span class="comment single">#
+</span>rm -f /tmp/hypergen.profile <span class="operator">&amp;&amp;</span> python -m cProfile -o /tmp/hypergen.profile manage.py inputs_profile <span class="operator">&amp;&amp;</span> <span class="literal string escape">\
+</span>    <span class="name builtin">echo</span> -e <span class="literal string single">'sort tottime\nstats'</span> <span class="punctuation">|</span> python3 -m pstats /tmp/hypergen.profile <span class="punctuation">|</span> less
+</pre>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing</h2>
+<p>We have a Github Action that automatically tests a matrix of Django and Python versions. You can run the pytest tests locally like so:</p>
+<pre class="code bash literal-block">
+pip install requirements.txt
+make pytest-run
+</pre>
+<p>And the testcafe end-to-end tests:</p>
+<pre class="code bash literal-block">
+npm i -g testcafe
+make testcafe-run
+<span class="comment single"># or
+</span>make testcafe-run-headless
+</pre>
+<p>Requires that the examples are running on <tt class="docutils literal">127.0.0.1:8002</tt>.</p>

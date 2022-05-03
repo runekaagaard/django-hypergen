@@ -1,9 +1,9 @@
-# The manifest for the "hypergen-page-service" service.
+# The manifest for the "hypergen-service" service.
 # Read the full specification for the "Load Balanced Web Service" type at:
 #  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: hypergen-page-service
+name: hypergen-service
 type: Load Balanced Web Service
 
 # Distribute traffic to your service.
