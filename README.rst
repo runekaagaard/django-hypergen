@@ -1,10 +1,6 @@
 .. raw:: html
    <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png" align="right" width="100px" height="100px">
 
-
-.. image:: 
-   :align: center
-
 .. image :: https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg
 
 Features
