@@ -6,9 +6,7 @@
       </a>
     </p>
 
-    <a href="https://hypergen.it/">
-        <h1 align="center">Django Hypergen</h1>
-    </a>
+    <h1 align="center"><a href="https://hypergen.it">Django Hypergen</a></h1>
     
     <p align="center">
         <b>Take a break from javascript</b>
