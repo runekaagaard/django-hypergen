@@ -1,4 +1,9 @@
-.. image:: https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png
+.. raw:: html
+
+   <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png" align="center" width="250px" height="250px" alt="Welcome to Django Hypergen">
+
+
+.. image:: 
    :align: center
 
 .. image :: https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg
