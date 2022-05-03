@@ -1,6 +1,7 @@
 .. raw:: html
-
-   <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png" align="middle" width="100px" height="100px" alt="Welcome to Django Hypergen">
+   <center>
+      <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png" align="middle" width="100px" height="100px" alt="Welcome to Django Hypergen">
+   </center>
 
 
 .. image:: 
