@@ -9,6 +9,8 @@
     <h1 align="center">Django Hypergen</h1>
     <p align="center">
         <b>Take a break from javascript. </b>
+    </p>
+    <p align="center">
         Write server-rendered reactive HTML liveviews for Django in pure python.
     </p>
     <p align="center">
