@@ -1,7 +1,8 @@
-.. figure:: https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png
-    :align: center
-    :target: https://github.com/runekaagaard/django-hypergen
-    :alt: Welcome to Django Hypergen
+<p align="center">
+  <a href="https://github.com/runekaagaard/django-hypergen">
+    <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo2.png" alt="Welcome to Django Hypergen" />
+  </a>
+</p>
 
 .. image :: https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg
 
