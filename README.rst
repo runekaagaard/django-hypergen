@@ -11,8 +11,11 @@
         <b>Take a break from javascript. </b>
         Write server-rendered reactive HTML liveviews for Django in pure python.
     </p>
+    <p align="center">
+        <img src="https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg" />
+    </p>
 
-.. image :: https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg
+.. image :: 
 
 Features
 ========
