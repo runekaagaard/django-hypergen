@@ -6,7 +6,7 @@
       </a>
     </p>
 
-    <h1>Django Hypergen</h1>
+    <h1 align="center">Django Hypergen</h1>
     <p align="center">
         <b>Take a break from javascript. </b>
         Write server-rendered reactive HTML liveviews for Django in pure python.
