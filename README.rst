@@ -23,7 +23,7 @@
 Features
 ========
 
-- Composable - structure your app with ... python functions :) 🔥
+- Composable - structure your app with ... python functions 🔥🔥🔥
 - Less infrastructure - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends
 - Build truly singlepage apps - avoid abstraction gaps to a template language and javascript
 - Async not needed - uses the vanilla Django Request-Response cycle
