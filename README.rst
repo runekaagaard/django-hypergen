@@ -11,7 +11,7 @@
         <b>Take a break from javascript. </b>
     </p>
     <p align="center">
-        Write server-rendered reactive HTML liveviews for Django in pure python.
+        Write server-rendered reactive HTML liveviews for Django in pure python. 💫
     </p>
     <p align="center">
         <img src="https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg" />
