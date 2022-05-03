@@ -32,6 +32,7 @@ Features
 - Free partial loading and back/forward history support - no special setup needed
 - Inbuilt confirmation dialogs, blocking and debouncing of client side events
 - Easy uploading of files - with progress bar
+- Loves javascript - system to call client functions from the server
 
 Value Proposition
 =================
