@@ -18,6 +18,7 @@ import t9n.urls
 import notifications.urls
 import partialload.urls
 import commands.urls
+import gettingstarted.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -30,6 +31,7 @@ urlpatterns = [
     url('^hellohypergen/', include(hellohypergen.urls, namespace="hellohypergen")),
     url('^hellocoreonly/', include(hellocoreonly.urls, namespace="hellocoreonly")),
     url('^hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
+    url('^gettingstarted/', include(gettingstarted.urls, namespace="gettingstarted")),
     url('^t9n/', include(t9n.urls, namespace="t9n")),
     url('^notifications/', include(notifications.urls, namespace="notifications")),
     url('^partialload/', include(partialload.urls, namespace="partialload")),
