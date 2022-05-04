@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os, sys
 from pathlib import Path
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
@@ -23,7 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent
 SECRET_KEY = 'op^-e1e2ixoo2+8qa186!2rf4f&s)*5j8f@fz0#nu0#yyc1ckd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.environ.get("PROD", False):
+    DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
@@ -37,21 +40,18 @@ INSTALLED_APPS = [
     'commands', 'partialload', 'hellomagic']
 
 MIDDLEWARE = [
-    # 'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware' if os.environ.get("PROD", False) else None,
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',]
-
-if not os.environ.get("CSRF_DISABLE", False):
-    MIDDLEWARE += ['django.middleware.csrf.CsrfViewMiddleware']
-
-MIDDLEWARE += [
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware' if not os.environ.get("CSRF_DISABLE", False) else None,
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'hypergen.core.context_middleware',
-    #'django.middleware.cache.FetchFromCacheMiddleware',
-]
+    'django.middleware.cache.FetchFromCacheMiddleware' if os.environ.get("PROD", False) else None,]
+
+MIDDLEWARE = [x for x in MIDDLEWARE if x is not None]
 
 ROOT_URLCONF = 'urls'
 
@@ -93,16 +93,20 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
+# Static files to S3 with cache busting.
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3ManifestStaticStorage'
+AWS_STORAGE_BUCKET_NAME = "hypergen-staticfiles"
+AWS_DEFAULT_ACL = "public-read"
+
+# Log to stdout
+LOGGING = {
+    'version': 1, 'disable_existing_loggers': False,
+    'formatters': {'verbose': {'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}}, 'handlers': {
+    'console': {'level': 'INFO', 'class': 'logging.StreamHandler', 'stream': sys.stdout,
+    'formatter': 'verbose'}}, 'loggers': {'': {'handlers': ['console'], 'level': 'INFO', 'propagate': True}}}
