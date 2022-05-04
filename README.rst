@@ -30,17 +30,17 @@
 Features
 ========
 
-- Composable - structure your app with 🔥python functions🔥
-- Less infrastructure - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends
-- Build truly singlepage apps - avoid abstraction gaps to a template language and javascript
-- Async not needed - uses the vanilla Django Request-Response cycle
-- Automatic (de)serialization - use python builtin types and move on
-- No magic strings - reactivity is defined by referencing python functions
-- Free partial loading and back/forward history support - no special setup needed
-- Inbuilt confirmation dialogs, blocking and debouncing of client side events
-- Easy uploading of files - with progress bar
-- Still loves javascript - system to call client functions from the server
-- History buff? - Don't worry, Hypergen supports from Django 1.11, Python 3.6 and up
+- **Composable** - structure your app with 🔥python functions🔥
+- **Less infrastructure** - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends
+- **Build truly singlepage apps** - avoid abstraction gaps to a template language and javascript
+- **Async not needed** - uses the vanilla Django Request-Response cycle
+- **Automatic (de)serialization** - use python builtin types and move on
+- **No magic strings** - reactivity is defined by referencing python functions
+- **Free partial loading** - no special setup needed, includes back/forward history support
+- **Control over clien side events** - Inbuilt confirmation dialogs, blocking and debouncing
+- **Easy uploading of files** - with progress bar
+- **Still loves javascript** - system to call client functions from the server
+- **History buff?** - Don't worry, Hypergen supports from Django 1.11, Python 2.7 and up
 
 Value Proposition
 =================
