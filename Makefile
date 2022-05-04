@@ -23,7 +23,7 @@ docker-run:
 docker-bash:
 	docker exec -it hypergen-site bash
 copilot-deploy:
-	copilot deploy
+	copilot deploy -n hypergen-service -e prod
 copilot-bash:
 	copilot svc exec --name hypergen-site --env prod -c /bin/bash
 pytest-run:
