@@ -68,7 +68,7 @@ If you crank the magic up to 11, a simple counter looks like this:
         input_(id_="n", type_="number", value=n)
         button("Increment", id_="increment", onclick=cb(increment, n))
 
-Python functions all the way down. Notice the ``cb()`` function that automatically connects the onclick event on the frontend to the backend that then re-renders the page with the counter increased by one.
+Python functions all the way down. Notice the ``cb()`` callback function automatically connecting the frontend onclick event to the backend that then re-renders the page with the counter increased by one.
 
 Running the examples
 ====================
