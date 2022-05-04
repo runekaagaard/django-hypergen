@@ -42,29 +42,24 @@ Features
 - **Still loves javascript** - system to call client functions from the server
 - **History buff?** - Don't worry, Hypergen supports from Django 1.11, Python 2.7 and up
 
-Value Proposition
+How does it look?
 =================
 
-The basic form that makes Hypergen great (for us) is exemplified in this simple counter:
+If you crank the magic up to 11, a simple counter looks like this:
 
 .. code-block:: python
 
     from hypergen.core import *
     from hypergen.core import callback as cb
-    from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+    from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED, base_template
 
-    from django.templatetags.static import static
+    HYPER = dict(perm=NO_PERM_REQUIRED, base_template=base_template(title="Hello Hypergen"))
 
-    @hypergen_view(perm=NO_PERM_REQUIRED)
+    @hypergen_view(**HYPER)
     def counter(request):
-        doctype()
-        with html():
-            with head():
-                script(src=static("hypergen/hypergen.min.js"))
-            with body(id_="body"):
-                template(1)
+        template(0)
 
-    @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")
+    @hypergen_callback(**HYPER)
     def increment(request, n):
         template(n + 1)
 
@@ -72,6 +67,8 @@ The basic form that makes Hypergen great (for us) is exemplified in this simple 
         label("Current value: ")
         input_(id_="n", type_="number", value=n)
         button("Increment", id_="increment", onclick=cb(increment, n))
+
+Python functions all the way down. Notice the ``cb()`` function that automatically connects the onclick event on the frontend to the backend that then re-renders the page with the counter increased by one.
 
 Running the examples
 ====================
