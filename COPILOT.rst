@@ -2,7 +2,7 @@ Se also Makefile.
 
 Installation::
 
-    copilot app init hypergen --domain=hypergen.it DOES NOT WORK buuuuuh!
+    copilot app init hypergen --domain=hypergen.it
     copilot init -a hypergen -d Dockerfile -n hypergen-service -t "Load Balanced Web Service"
     copilot env init --name prod --profile default --app hypergen --default-config
 
@@ -26,16 +26,6 @@ Show logs::
 Pruning after messing with the overlay2 folder::
 
     docker system prune --volumes -a
-
-Fix --domain WILL NOT WORK buuuuuuuuuh
-======================================
-
-Here is manual on how to add custom domain for deployed application manually:
-
-a. Issue SSL certificate via ACM for your your.route53.managed.domain
-b. Bind this certificate to ALB HTTPS listener in EC2→Load Balancers (you will need to create HTTPS listener if you didn't use --domain option to copilot app init)
-c. In that same listener add one more rule “send all requests from your.route53.managed.domain to the same target group”
-d. Create A-record for this domain in Route53 and point into app load balancer (with empty subdomain if it points to domain itself). ALB can be chosen from dropdown list.
     
 Urls
 ====
