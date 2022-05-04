@@ -14,6 +14,7 @@ cython-clean:
 	find . -iname "*.so" -delete
 python-clean:
 	find . -iname "__pycache__" -exec rm -rf '{}' \; || true
+	find . -iname *.pyc -delete
 docker-build:
 	docker image rm hypergen-site || true
 	docker build -t hypergen-site .

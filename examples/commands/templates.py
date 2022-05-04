@@ -24,6 +24,32 @@ def show_button():
 
 def commands():
     h2("Client commands")
+    p(
+        "When in a hypergen context commands can be sent to the frontend for execution. A command is a list where the first element is a dotted path to a javascript function available from ",
+        code("window"), " or in the executing script. The remaining elements are used as arguments to the function.",
+        sep=" ")
+    p("This command alerts the user:")
+    pre(code('["alert", "Whats up?"]'))
+    p("Commands lives in the", code("hypergen.commands"),
+        "list in the global context. So to manually add commands one would:", sep=" ")
+    pre(
+        code("""
+from hypergen.core import context
+
+def my_view_or_callback(request):
+    context.hypergen.commands.append(["alert", "Whats up?"])
+""".strip()))
+
+    p("The function", code("command()"), "available in hypergen.core is normally used as a shortcut:", sep=" ")
+    pre(
+        code("""
+from hypergen.core import *
+
+def my_view_or_callback(request):
+    command("console.log", "Whats up?", [1, 2, 3])
+    """.strip()))
+
+    h2("Examples of client commands")
     fn("Run a generic javascript command", "It must be available in the window scope.", alert)
     button("run", id_="alert", onclick=cb(alert, "This is an alert!"))
 
@@ -45,7 +71,7 @@ def commands():
 
     h2("Hypergen commands")
     p(
-        "These are the commands hypergen provides, it's trivial to create your own! See how they are implemented at ",
+        "These are the commands hypergen provides, see how they are implemented at ",
         a(
         "the source", href=
         "https://github.com/runekaagaard/django-hypergen/blob/main/src/hypergen/static/hypergen/hypergen.js#:~:text=morph"
