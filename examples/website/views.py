@@ -24,7 +24,7 @@ from commands.views import commands
 def home(request):
     @base_template()
     def template():
-        p(mark("UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+        p(mark("2022-05-04: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
             "Docs are being written and corners rounded :)", sep=" ")
         with open("README.html") as f:
             raw(f.read())
