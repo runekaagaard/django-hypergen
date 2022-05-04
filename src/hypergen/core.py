@@ -9,7 +9,6 @@ from types import GeneratorType
 from functools import wraps, update_wrapper
 from copy import deepcopy
 
-from contextlib import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
 
 from django.http.response import HttpResponse, HttpResponseRedirect
@@ -54,13 +53,15 @@ def make_string(s):
 if sys.version_info.major > 2:
     from html import escape
     letters = string.ascii_letters
-    str = str
+    from contextlib import ContextDecorator, contextmanager
 
     def items(x):
         return list(x.items())
 else:
     from cgi import escape
     letters = string.letters
+    from contextlib2 import ContextDecorator, contextmanager
+    str = unicode
 
     def items(x):
         return iter(x.items())

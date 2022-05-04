@@ -1,3 +1,4 @@
+# coding=utf-8
 from hypergen.core import *
 from hypergen.core import callback as cb
 from hypergen.core import context as c, t

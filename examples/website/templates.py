@@ -1,14 +1,28 @@
 # coding=utf-8
-import inspect
-import os
+import inspect, os, sys
 from glob import glob
+
 from django.urls.base import reverse
 
 from hypergen.core import *
 from hypergen.core import context as c
 
 from django.templatetags.static import static
-from contextlib import contextmanager
+
+### Python 2+3 compatibility ###
+
+def make_string(s):
+    # TODO: WHY IS THERE AN IF STATEMENT HERE AT ALL?
+    # We had a bug where 0 int did not get rendered. I suck.
+    if s or type(s) in (int, float):
+        return force_text(s)
+    else:
+        return ""
+
+if sys.version_info.major > 2:
+    from contextlib import contextmanager
+else:
+    from contextlib2 import contextmanager
 
 def base_head():
     title("Django Hypergen")
@@ -68,15 +82,20 @@ def show_sources(file_path):
     with details():
         summary("Show sources")
 
-        for fp in reversed(glob(os.path.dirname(file_path) + "/**/*.*", recursive=True)):
-            if any(x in fp for x in omits):
-                continue
-            title = fp.replace(os.path.dirname(file_path), "").lstrip("/")
+        basedir = os.path.dirname(file_path)
+        walked = list(os.walk(basedir))
+        for folder, dirs, names in os.walk(basedir):
+            for name in names:
+                if any(x in name for x in omits):
+                    continue
 
-            b(title)
-            with open(fp) as f:
-                cls = "language-python" if title.endswith(".py") else OMIT
-                pre(code(f.read(), class_=cls))
+                fp = os.path.join(folder, name)
+                title = fp.replace(os.path.dirname(file_path), "").lstrip("/")
+
+                b(title)
+                with open(fp) as f:
+                    cls = "language-python" if title.endswith(".py") else OMIT
+                    pre(code(f.read(), class_=cls))
 
 def show_func(func):
     pre(code(inspect.getsource(func)))

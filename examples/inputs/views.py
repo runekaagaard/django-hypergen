@@ -15,7 +15,8 @@ from hypergen.core import context as c
 
 from website.templates import base_template, show_sources
 
-E = namedtuple("E", 'type,attrs,doc', defaults=[None] * 3)
+E = namedtuple("E", 'type,attrs,doc')
+E.__new__.__defaults__ = (None,) * 3
 
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template, target_id="content")
 def inputs(request):
