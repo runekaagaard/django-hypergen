@@ -103,10 +103,13 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3ManifestStaticStorage'
 AWS_STORAGE_BUCKET_NAME = "hypergen-staticfiles"
 AWS_DEFAULT_ACL = "public-read"
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
 
 # Log to stdout
-LOGGING = {
-    'version': 1, 'disable_existing_loggers': False,
-    'formatters': {'verbose': {'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}}, 'handlers': {
-    'console': {'level': 'INFO', 'class': 'logging.StreamHandler', 'stream': sys.stdout,
-    'formatter': 'verbose'}}, 'loggers': {'': {'handlers': ['console'], 'level': 'INFO', 'propagate': True}}}
+if os.environ.get("PROD", False):
+    LOGGING = {
+        'version': 1, 'disable_existing_loggers': False,
+        'formatters': {'verbose': {'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}}, 'handlers': {
+        'console': {'level': 'INFO', 'class': 'logging.StreamHandler', 'stream': sys.stdout,
+        'formatter': 'verbose'}}, 'loggers': {'': {'handlers': ['console'], 'level': 'INFO', 'propagate': True}}}
