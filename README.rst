@@ -18,6 +18,12 @@
         <img src="https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg" />
         <img src="https://badge.fury.io/py/django-hypergen.svg" />
     </p>
+    
+    <p align="center" dir="auto">
+        <a href="https://hypergen.it" rel="nofollow">Homepage</a> &nbsp;&nbsp;•&nbsp;&nbsp;
+      <a href="https://hypergen.it/documentation/" rel="nofollow">Documentation</a> &nbsp;&nbsp;•&nbsp;&nbsp;
+      <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
+    </p>
 
 .. image :: 
 
