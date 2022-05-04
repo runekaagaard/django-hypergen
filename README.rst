@@ -40,6 +40,7 @@ Features
 - Inbuilt confirmation dialogs, blocking and debouncing of client side events
 - Easy uploading of files - with progress bar
 - Still loves javascript - system to call client functions from the server
+- History buff? - Don't worry, Hypergen supports from Django 1.11, Python 3.6 and up
 
 Value Proposition
 =================
