@@ -11,6 +11,7 @@ cython-compile:
 cython-clean:
 	rm -rf build
 	find . -iname "__pycache__" -exec rm -rf '{}' \; || true
+	find . -iname *.pyc -delete
 	find . -iname "*.so" -delete
 python-clean:
 	find . -iname "__pycache__" -exec rm -rf '{}' \; || true

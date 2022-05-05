@@ -106,6 +106,7 @@ if os.environ.get("PROD", False):
     AWS_DEFAULT_ACL = "public-read"
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
+    USE_X_FORWARDED_HOST = True
 else:
     STATIC_URL = '/static/'
 
