@@ -8,4 +8,4 @@ RUN pip install -r requirements-prod.txt
 RUN make cython-compile
 EXPOSE 8000
 WORKDIR /code/examples/
-CMD gunicorn wsgi --bind 0.0.0.0:8000 --error-logfile - --log-level warn
+CMD gunicorn wsgi --bind 0.0.0.0:8000 --error-logfile - --log-level warn --workers 4 --max-requests 100000 --max-requests-jitter 1000
