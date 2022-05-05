@@ -100,11 +100,12 @@ USE_TZ = True
 
 # Static files to S3 with cache busting.
 STATIC_URL = '/static/'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3ManifestStaticStorage'
-AWS_STORAGE_BUCKET_NAME = "hypergen-staticfiles"
-AWS_DEFAULT_ACL = "public-read"
-AWS_QUERYSTRING_AUTH = False
-AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
+if os.environ.get("PROD", False):
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3ManifestStaticStorage'
+    AWS_STORAGE_BUCKET_NAME = os.environ["HYPERGEN_NAME"]
+    AWS_DEFAULT_ACL = "public-read"
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
 
 # Log to stdout
 if os.environ.get("PROD", False):
