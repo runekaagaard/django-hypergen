@@ -8,5 +8,5 @@ RUN pip install -r requirements-prod.txt
 RUN make cython-compile
 EXPOSE 8000
 WORKDIR /code/examples/
-CMD python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput
 CMD gunicorn wsgi --bind 0.0.0.0:8000 --error-logfile - --log-level warn
