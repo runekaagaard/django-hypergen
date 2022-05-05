@@ -98,15 +98,16 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-print("DEBUG-APP: ", os.environ.get("PROD", False), os.environ.get("HYPERGEN_NAME", False))
-# Static files to S3 with cache busting.
-STATIC_URL = '/static/'
 if os.environ.get("PROD", False):
+    # Static files to S3 with cache busting.
+    STATIC_URL = 'https://hypergen-staticfiles.s3.amazonaws.com/'
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3ManifestStaticStorage'
-    AWS_STORAGE_BUCKET_NAME = os.environ["HYPERGEN_NAME"]
+    AWS_STORAGE_BUCKET_NAME = "hypergen-staticfiles"
     AWS_DEFAULT_ACL = "public-read"
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
+else:
+    STATIC_URL = '/static/'
 
 # Log to stdout
 if os.environ.get("PROD", False):

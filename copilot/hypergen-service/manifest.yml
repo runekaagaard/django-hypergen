@@ -22,9 +22,12 @@ image:
   # Port exposed through your container to route traffic to it.
   port: 8000
 
-cpu: 256       # Number of CPU units for the task.
-memory: 512    # Amount of memory in MiB used by the task.
+cpu: 1024       # Number of CPU units for the task.
+memory: 1024    # Amount of memory in MiB used by the task.
 count: 1       # Number of tasks that should be running in your service.
+count:
+  range: 1-4
+  cpu_percentage: 70
 exec: true     # Enable running commands in your container.
 
 # Optional fields for more advanced use-cases.

@@ -23,6 +23,7 @@ docker-run:
 docker-bash:
 	docker exec -it hypergen-site bash
 copilot-deploy:
+	cd examples && PROD=1 python manage.py collectstatic --noinput
 	copilot deploy -n hypergen-service -e prod
 copilot-bash:
 	copilot svc exec --name hypergen-service env prod -c /bin/bash
