@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
     'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen', 'todomvc', 'inputs',
     'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'hellocoreonly2', 't9n', 'notifications',
-    'commands', 'partialload', 'hellomagic']
+    'commands', 'partialload', 'hellomagic', 'globalcontext']
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware' if os.environ.get("PROD", False) else None,
@@ -98,6 +98,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+print("DEBUG-APP: ", os.environ.get("PROD", False), os.environ.get("HYPERGEN_NAME", False))
 # Static files to S3 with cache busting.
 STATIC_URL = '/static/'
 if os.environ.get("PROD", False):

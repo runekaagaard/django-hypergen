@@ -1,11 +1,14 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
 
+import pytest
+
 d = dict
 import re, sys
 
 from contextlib import ContextDecorator
 from django.test.client import RequestFactory
+from pyrsistent import pmap
 from pytest import raises
 
 from hypergen.core import *
@@ -54,6 +57,53 @@ def test_context_cm():
 
         assert context["i"] == 1
         assert "foo" not in context
+
+def test_context_immutable():
+    with context(my_appname=pmap({"title": "foo", "items": [1, 2, 3]})):
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+        with context(at="my_appname", items=[4, 5]):
+            assert context.my_appname["title"] == "foo"
+            assert context.my_appname["title"] == "foo"
+            assert context["my_appname"]["title"] == "foo"
+            assert context["my_appname"]["items"] == [4, 5]
+
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+
+def test_context_mutable_update_should_fail():
+    with context(my_appname={"title": "foo", "items": [1, 2, 3]}):
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+        with pytest.raises(Exception):
+            with context(at="my_appname", items=[4, 5]):
+                # No updating of mutable data.
+                pass
+
+def test_context_at_creation():
+    with context(at="my_appname", title="foo", items=[1, 2, 3]):
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+        with context(at="my_appname", items=[4, 5]):
+            assert context.my_appname is not None
+            assert context.my_appname["title"] == "foo"
+            assert context.my_appname["title"] == "foo"
+            assert context["my_appname"]["title"] == "foo"
+            assert context["my_appname"]["items"] == [4, 5]
+
+        # Oh now, this is now not correct. Right now it's up to the user to use a pmap for fancy stuff.
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
 
 def test_context_middleware():
     def view(request):

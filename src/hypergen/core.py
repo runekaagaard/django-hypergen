@@ -920,17 +920,29 @@ class Context(threading.local):
     @contextmanager
     def __call__(self, transformer=None, at=None, **items):
         try:
+            # Store previous value.
             ctx = self.ctx
             if at is None:
                 if transformer is not None:
                     self.ctx = transformer(self.ctx)
                 self.ctx = self.ctx.update(m(**items))
             else:
+                if at not in self.ctx:
+                    self.ctx = self.ctx.set(at, pmap(items))
+                else:
+                    new_value_at = self.ctx[at].update(pmap(items))
+                    if not new_value_at:
+                        raise Exception("Not immutable context variable attempted updated. If you want to nest "
+                            "with context() statements you must use a pmap() or another immutable hashmap type.")
+
+                    self.ctx = self.ctx.set(at, new_value_at)
+
                 if transformer is not None:
                     self.ctx = self.ctx.set(at, transformer(self.ctx[at]))
-                self.ctx = self.ctx.set(at, self.ctx[at].update(m(**items)))
+
             yield
         finally:
+            # Reset to previous value.
             self.ctx = ctx
 
 context = Context()
@@ -948,5 +960,4 @@ def context_middleware(get_response):
 
 class ContextMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))

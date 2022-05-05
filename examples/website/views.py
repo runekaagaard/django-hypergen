@@ -20,6 +20,7 @@ from hellohypergen.views import counter
 from t9n.views import page
 from website.templates import base_template, show_sources
 from commands.views import commands
+from globalcontext.views import globalcontext
 
 def home(request):
     @base_template()
@@ -70,6 +71,7 @@ def documentation(request):
             li(a("Form inputs", href=inputs.reverse()))
             li(a("Client commands", href=commands.reverse()))
             li(a("Partial loading and history support", href=page1.reverse()))
+            li(a("Hypergens global immutable context", href=globalcontext.reverse()))
             li(a("Notifications from Django messages", href=notifications.reverse()))
             li(strike(a("Not translation", href=page.reverse())))
 

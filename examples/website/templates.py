@@ -49,7 +49,8 @@ def base_template():
                 yield
 
             with footer():
-                p("Built with Hypergen™ and ", span("❤", style={"color": "red"}))
+                p("Built with Hypergen, ", a("Simple.css", href="https://simplecss.org/", style={"color": "inherit"}),
+                    " and ", span("❤", style={"color": "red"}))
 
 @contextmanager
 def base_example_template():

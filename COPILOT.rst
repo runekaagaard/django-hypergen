@@ -39,3 +39,8 @@ Urls
 - https://aws.github.io/copilot-cli/docs/developing/domain/
 - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Copilot.html
 - https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+
+FAQ
+===
+
+- Cancel deploy: https://githubhot.com/repo/aws/copilot-cli/issues/2544

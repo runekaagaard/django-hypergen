@@ -19,6 +19,7 @@ import t9n.urls
 import notifications.urls
 import partialload.urls
 import commands.urls
+import globalcontext.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -35,4 +36,5 @@ urlpatterns = [
     url('^t9n/', include(t9n.urls, namespace="t9n")),
     url('^notifications/', include(notifications.urls, namespace="notifications")),
     url('^partialload/', include(partialload.urls, namespace="partialload")),
-    url('^commands/', include(commands.urls, namespace="commands")),]
+    url('^commands/', include(commands.urls, namespace="commands")),
+    url('^globalcontext/', include(globalcontext.urls, namespace="globalcontext")),]
