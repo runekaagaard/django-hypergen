@@ -44,3 +44,24 @@ FAQ
 ===
 
 - Cancel deploy: https://githubhot.com/repo/aws/copilot-cli/issues/2544
+
+More Cancel deploy
+==================
+
+As a temporary solution...
+
+Don't CTRL+C to cancel the copilot command that is stuck.
+
+To get your copilot CLI to exit as it normally would (as it does on a successful deployment) you can do the following steps in your ECS cluster. This will result in your stack being cleaned up as well and not leaving you in limbo for hours like @sanjeevtejyan said.
+
+Go to the task definition for your service
+Click the checkbox for the newest revision (the one with the number that is failing)
+Actions Menu - Update Service
+Set the "number of tasks" to zero
+Click next until you can click "update service"
+Very shortly you will see the copilot CLI and CF stack back to normal
+
+Scratch
+=======
+
+botocore.exceptions.ClientError: An error occurred (AccessDenied) when calling the PutObject operation: Access Denied

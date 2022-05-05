@@ -25,7 +25,7 @@ docker-bash:
 copilot-deploy:
 	copilot deploy -n hypergen-service -e prod
 copilot-bash:
-	copilot svc exec --name hypergen-site --env prod -c /bin/bash
+	copilot svc exec --name hypergen-service env prod -c /bin/bash
 pytest-run:
 	pytest --tb=native -x -vvvv src/hypergen/test_all.py
 docker-system-prune:
