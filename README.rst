@@ -34,7 +34,7 @@
 How does it look?
 =================
 
-If you crank the magic up to 11, a simple counter looks like this:
+Using Hypergen most high level constructs, a simple counter looks like this:
 
 .. code-block:: python
 
