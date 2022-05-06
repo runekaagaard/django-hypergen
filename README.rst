@@ -29,7 +29,7 @@
 
 **Liveview included**: Still in pure python, connect browser events like ``onclick`` to Django callback views. Bind form html elements and inbuilt python datatypes as argument to the callbacks and everything is (de)serialized by Hypergen. The callback views processes the request and sends updated html to the frontend and other commands.
 
-**1 minut to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS`` and ``'hypergen.core.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
+**1 minute to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS`` and ``'hypergen.core.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
 
 How does it look?
 =================
