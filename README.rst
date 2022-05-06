@@ -25,7 +25,7 @@
       <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
     </p>
 
-**Hypergen is short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")`` in a python function. It's simple to keep templates DRY by composing python functions. Hypergen feels a lot like writing jsx.
+**Short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")``. It's simple to keep templates DRY by composing python functions. Hypergen feels a lot like writing jsx.
 
 **Liveview included**: Still in pure python, connect browser events like ``onclick`` to callback functions. Mix frontend input html elements and python datatypes as arguments to callbacks and everything works round-trip. Callbacks are Django views that sends updated html to the frontend as well as other commands.
 
