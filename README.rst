@@ -74,7 +74,7 @@ Features
 - **Easy uploading of files** - with progress bar
 - **Still loves javascript** - trivially call client functions from the server
 - **History buff?** - don't worry, Hypergen supports from Django 1.11, Python 3.7 and up
-- **Hyperfy** - The command line app that converts html to hypergen python code
+- **Hyperfy** - the command line app that converts html to hypergen python code
 
 Running the examples
 ====================
