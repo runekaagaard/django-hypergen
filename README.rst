@@ -39,7 +39,6 @@ If you crank the magic up to 11, a simple counter looks like this:
 .. code-block:: python
 
     from hypergen.core import *
-    from hypergen.core import callback as cb
     from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED, base_template
 
     HYPER = dict(perm=NO_PERM_REQUIRED, base_template=base_template(title="Hello Hypergen"))
@@ -55,14 +54,16 @@ If you crank the magic up to 11, a simple counter looks like this:
     def template(n):
         label("Current value: ")
         input_el = input_(id_="n", type_="number", value=n)
-        button("Increment", id_="increment", onclick=cb(increment, input_el))
+        button("Increment", id_="increment", onclick=callback(increment, input_el))
 
-Python functions all the way down. Notice the ``cb()`` callback function automatically connecting the frontend onclick event to the backend that then partially re-renders the page with the counter increased by one. See the `documentation <https://hypergen.it/documentation/>`_ for full example apps.
+The ``callback(func, arg1, arg2, ..., ***settings)`` function connects the onclick event to the ``increment(request, n)`` callback. The ``n`` argument is the value of the input field.
+
+Python functions all the way down. 🔥🔥🔥
 
 Features
 ========
 
-- **Composable** - structure your app with 🔥python functions🔥
+- **Composable** - structure your app with ... TADAAA ... python functions
 - **Less infrastructure** - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends
 - **Build truly singlepage apps** - avoid abstraction gaps to a template language and javascript
 - **Async not needed** - uses the vanilla Django Request-Response cycle
