@@ -101,9 +101,9 @@ Bug reports and feature requests are `very welcome <https://github.com/runekaaga
 Authors
 =======
 
-Hypergen is written by `Jeppe Tuxen <https://github.com/jeppetuxen>`_ and `Rune Kaagaard <https://github.com/runekaagaard>`_, two grey bearded programmers living arounc Copenhagen.
+Hypergen is written by `Jeppe Tuxen <https://github.com/jeppetuxen>`_ and `Rune Kaagaard <https://github.com/runekaagaard>`_, two grey bearded programmers located in Copenhagen, Denmark.
 
-We are using Hypergen extensively at work so it's a big focus of ours. Be author#3 ;)
+We are using Hypergen extensively at work so it's a big focus of ours. Be author number 3 ;)
 
 Why not Hypergen?
 =================
