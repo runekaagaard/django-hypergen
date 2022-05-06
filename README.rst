@@ -73,7 +73,7 @@ Features
 - **Control over client side events** - Inbuilt confirmation dialogs, blocking and debouncing
 - **Easy uploading of files** - with progress bar
 - **Still loves javascript** - trivially call client functions from the server
-- **History buff?** - Don't worry, Hypergen supports from Django 1.11, Python 2.7 and up
+- **History buff?** - Don't worry, Hypergen supports from Django 1.11, Python 3.7 and up
 
 Running the examples
 ====================
