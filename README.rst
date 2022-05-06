@@ -25,22 +25,11 @@
       <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
     </p>
 
-.. image :: 
+**Hypergen is short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")`` inside a Django view. It's simple to keep templates DRY by composing python functions. Hypergen templates feel a lot like writing jsx.
 
-Features
-========
+**Liveview included**: Still in pure python, connect browser events like ``onclick`` to Django callback views. Bind form html elements and inbuilt python datatypes as argument to the callbacks and everything is (de)serialized by Hypergen. The callback views processes the request and sends updated html to the frontend and other commands.
 
-- **Composable** - structure your app with 🔥python functions🔥
-- **Less infrastructure** - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends
-- **Build truly singlepage apps** - avoid abstraction gaps to a template language and javascript
-- **Async not needed** - uses the vanilla Django Request-Response cycle
-- **Automatic (de)serialization** - use python builtin types and move on
-- **No magic strings** - reactivity is defined by referencing python functions
-- **Free partial loading** - no special setup needed, includes back/forward history support
-- **Control over client side events** - Inbuilt confirmation dialogs, blocking and debouncing
-- **Easy uploading of files** - with progress bar
-- **Still loves javascript** - system to call client functions from the server
-- **History buff?** - Don't worry, Hypergen supports from Django 1.11, Python 2.7 and up
+**1 minut to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS`` and ``'hypergen.core.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
 
 How does it look?
 =================
@@ -65,10 +54,25 @@ If you crank the magic up to 11, a simple counter looks like this:
 
     def template(n):
         label("Current value: ")
-        input_(id_="n", type_="number", value=n)
-        button("Increment", id_="increment", onclick=cb(increment, n))
+        input_el = input_(id_="n", type_="number", value=n)
+        button("Increment", id_="increment", onclick=cb(increment, input_el))
 
 Python functions all the way down. Notice the ``cb()`` callback function automatically connecting the frontend onclick event to the backend that then partially re-renders the page with the counter increased by one. See the `documentation <https://hypergen.it/documentation/>`_ for full example apps.
+
+Features
+========
+
+- **Composable** - structure your app with 🔥python functions🔥
+- **Less infrastructure** - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends
+- **Build truly singlepage apps** - avoid abstraction gaps to a template language and javascript
+- **Async not needed** - uses the vanilla Django Request-Response cycle
+- **Automatic (de)serialization** - use python builtin types and move on
+- **No magic strings** - reactivity is defined by referencing python functions
+- **Free partial loading** - no special setup needed, includes back/forward history support
+- **Control over client side events** - Inbuilt confirmation dialogs, blocking and debouncing
+- **Easy uploading of files** - with progress bar
+- **Still loves javascript** - system to call client functions from the server
+- **History buff?** - Don't worry, Hypergen supports from Django 1.11, Python 2.7 and up
 
 Running the examples
 ====================
