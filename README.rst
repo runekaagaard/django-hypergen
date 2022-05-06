@@ -109,7 +109,8 @@ Why not Hypergen?
 =================
 
 - Every frontend change on the frontend requires a call to the server
-- Python templating is not for everyone. Using Django templates is possible but not as polished yet
+- Python templating is not for everyone. Using Django templates is possible but still in alpha
+- Not realtime yet, so the server can only push data back when it receives a request
 
 Developing
 ==========
