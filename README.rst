@@ -72,7 +72,7 @@ Features
 - **Free partial loading** - no special setup needed, includes back/forward history support
 - **Control over client side events** - Inbuilt confirmation dialogs, blocking and debouncing
 - **Easy uploading of files** - with progress bar
-- **Still loves javascript** - system to call client functions from the server
+- **Still loves javascript** - trivially call client functions from the server
 - **History buff?** - Don't worry, Hypergen supports from Django 1.11, Python 2.7 and up
 
 Running the examples
