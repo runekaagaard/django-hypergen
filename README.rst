@@ -25,11 +25,11 @@
       <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
     </p>
 
-**Hypergen is short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")`` inside a Django view. It's simple to keep templates DRY by composing python functions. Hypergen templates feel a lot like writing jsx.
+**Hypergen is short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")`` in a python function. It's simple to keep templates DRY by composing python functions. Hypergen feels a lot like writing jsx.
 
-**Liveview included**: Still in pure python, connect browser events like ``onclick`` to Django callback views. Mix frontend input html elements and python datatypes as argument to callbacks and everything is (de)serialized by Hypergen. The callback views processes the request and sends updated html to the frontend and other commands.
+**Liveview included**: Still in pure python, connect browser events like ``onclick`` to Django callback views. Mix frontend input html elements and python datatypes as arguments to callbacks and everything is (de)serialized by Hypergen. The callback views processes the request and sends updated html to the frontend as well as other commands to execute.
 
-**1 minute to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS`` and ``'hypergen.core.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
+**1 minute to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS``, ``'hypergen.core.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
 
 How does it look?
 =================
