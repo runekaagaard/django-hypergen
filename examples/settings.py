@@ -107,7 +107,7 @@ if os.environ.get("PROD", False):
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
     USE_X_FORWARDED_HOST = True
     CSRF_TRUSTED_ORIGINS = ['https://hypergen.it']
-    ALLOWED_HOSTS = ["hypergen.it"]
+    ALLOWED_HOSTS = ["*"]  # We don't know the host name for the copilot healthcheck.
 else:
     ALLOWED_HOSTS = ["*"]
     STATIC_URL = '/static/'
