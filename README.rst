@@ -56,6 +56,8 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
         input_el = input_(id_="n", type_="number", value=n)
         button("Increment", id_="increment", onclick=callback(increment, input_el))
 
+You can `see it in action <https://hypergen.it/hellohypergen/counter/>`_.
+        
 The ``callback(func, arg1, arg2, ..., **settings)`` function connects the onclick event to the ``increment(request, n)`` callback. The ``n`` argument is the value of the input field.
 
 Python functions all the way down. 🔥🔥🔥
