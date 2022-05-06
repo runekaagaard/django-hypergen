@@ -42,7 +42,7 @@ print(context.request) # The middleware adds the request.
         context_example()
 
 def context_example():
-    with context(at="my_appname", title="my orignal items", items=[1, 2, 3]):
+    with context(at="my_appname", title="my original items", items=[1, 2, 3]):
         with dl():
             dt(context.my_appname["title"])
             dd(context.my_appname["items"], sep=", ")
