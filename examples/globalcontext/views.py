@@ -44,13 +44,11 @@ print(context.request) # The middleware adds the request.
 def context_example():
     with context(at="my_appname", title="my original items", items=[1, 2, 3]):
         with dl():
-            dt(context.my_appname["title"])
-            dd(context.my_appname["items"], sep=", ")
+            dt(context["my_appname"]["title"])
+            dd(context["my_appname"]["items"], sep=", ")
 
-            with context(at="my_appname", title="my nested context items", items=[4, 5]):
-                keys = context.ctx.keys()
-                ctx = context.ctx
-                dt(context.my_appname["title"])
+            with context(at="my_appname", title="my nested items", items=[4, 5]):
+                dt(context["my_appname"]["title"])
                 dd(context["my_appname"]["items"], sep=", ")
 
             dt(context.my_appname["title"])
