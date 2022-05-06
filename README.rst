@@ -34,7 +34,7 @@
 How does it look?
 =================
 
-Using Hypergens most high level constructs, a simple counter looks like this:
+Using Hypergens most high-level constructs, a simple counter looks like this:
 
 .. code-block:: python
 
