@@ -28,7 +28,6 @@ if os.environ.get("PROD", False):
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Application definition
@@ -44,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware' if not os.environ.get("CSRF_DISABLE", False) else None,
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -107,7 +106,10 @@ if os.environ.get("PROD", False):
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
     USE_X_FORWARDED_HOST = True
+    CSRF_TRUSTED_ORIGINS = ['https://hypergen.it']
+    ALLOWED_HOSTS = ["hypergen.it"]
 else:
+    ALLOWED_HOSTS = ["*"]
     STATIC_URL = '/static/'
 
 # Log to stdout
