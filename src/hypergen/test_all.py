@@ -5,6 +5,7 @@ import pytest
 
 d = dict
 import re, sys
+from datetime import date, datetime
 
 from contextlib import ContextDecorator
 from django.test.client import RequestFactory
@@ -340,3 +341,20 @@ def test_repr():
         el1 = input_(id_="el1")
         el2 = input_(onclick=cb("alert", el1), id_="el2")
         assert repr(el2) == 'input_(onclick=callback("alert", input_(id_="el1")), id_="el2")'
+
+def test_serialization():
+    x = {
+        "string": "hi",
+        "int": 42,
+        "float": 9.9,
+        "list": [1, 2, 3],
+        "range": range(1, 10, 2),
+        # Pythons json.dumps force converts tuples to list.
+        # "tuple": (1, 2, 3),
+        "dict": {"key": "value"},
+        "set": {1, 2, 3},
+        "frozenset": frozenset({1, 2, 3}),
+        "date": date(2022, 1, 1),
+        "datetime": datetime(2022, 1, 1, 10, 11, 23),}
+
+    assert loads(dumps(x)) == x

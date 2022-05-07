@@ -15,14 +15,24 @@ def fn(title, description, fun):
 
 def show_button():
     button(
-        "run", id_="serialization", onclick=cb(
-        serialization, {
-        "scalars": [1, 2.2, "string"],
-        "lists": [1, 2, 3],
-        "tuples": (1, 2, 3),
-        "dicts": {"key": "value"},
+        "run",
+        id_="serialization",
+        onclick=cb(
+        serialization,
+        {
+        "string": "hi",
+        "int": 42,
+        "float": 9.9,
+        "list": [1, 2, 3],
+        "range": range(1, 10, 2),
+        "tuple": (1, 2, 3),
+        "dict": {"key": "value"},
+        "set": {1, 2, 3},
+        "frozenset": frozenset({1, 2, 3}),
         "date": date(2022, 1, 1),
-        "datetime": datetime(2022, 1, 1, 10, 11, 23),}))
+        "datetime": datetime(2022, 1, 1, 10, 11, 23),},
+        ),
+    )
 
 def commands():
     h2("Client commands")
@@ -66,10 +76,12 @@ def my_view_or_callback(request):
         li("server->client: As arguments to client commands."),
     )
     fn(None, "Consider this template function:", show_button)
-    fn(None, "The most popular python data types are supported.", serialization)
+    fn(
+        None, "The most popular python data types are supported. Notice that pythons json.dumps force converts "
+        "tuples to lists :(", serialization)
 
     show_button()
-    pre(code(id_="serialized"))
+    pre(code("Press the button!", id_="serialized"))
 
     h2("Hypergen commands")
     p(

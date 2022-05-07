@@ -830,6 +830,14 @@ class wbr(base_element_void): pass
 # yapf: enable
 
 # Serialization
+ENCODINGS = {
+    datetime.date: lambda o: {"_": ["date", str(o)]},
+    datetime.datetime: lambda o: {"_": ["datetime", str(o)]},
+    tuple: lambda o: {"_": ["tuple", list(o)]},
+    set: lambda o: {"_": ["set", list(o)]},
+    frozenset: lambda o: {"_": ["frozenset", list(o)]},
+    range: lambda o: {"_": ["range", [o.start, o.stop, o.step]]},}
+
 def encoder(o):
     assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
@@ -838,10 +846,21 @@ def encoder(o):
     elif hasattr(o, "__weakref__"):
         # Lazy strings and urls.
         return make_string(o)
-    if type(o) is datetime.date:
-        return {"_": ["date", str(o)]}
+    fn = ENCODINGS.get(type(o), None)
+    if fn:
+        return fn(o)
     else:
         raise TypeError(repr(o) + " is not JSON serializable")
+
+DECODINGS = {
+    "float": float,
+    "date": parse_date,
+    "datetime": parse_datetime,
+    "time": parse_time,
+    "tuple": tuple,
+    "set": set,
+    "frozenset": frozenset,
+    "range": lambda v: range(*v),}
 
 def decoder(o):
     _ = o.get("_", None)
@@ -849,14 +868,9 @@ def decoder(o):
         return o
 
     datatype, value = _
-    if datatype == "float":
-        return float(value)
-    elif datatype == "date":
-        return parse_date(value)
-    elif datatype == "datetime":
-        return parse_datetime(value)
-    elif datatype == "time":
-        return parse_time(value)
+    fn = DECODINGS.get(datatype, None)
+    if fn:
+        return fn(value)
     else:
 
         raise Exception("Unknown datatype, {}".format(datatype))
