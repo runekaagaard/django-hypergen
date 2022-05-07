@@ -80,7 +80,7 @@ Features
 - **Control over client side events** - inbuilt confirmation dialogs, blocking and debouncing
 - **Easy uploading of files** - with progress bar
 - **Still loves javascript** - trivially call client functions from the server
-- **History buff?** - don't worry, Hypergen supports from Django 1.11, Python 3.6 and up
+- **History buff?** - don't worry, Hypergen supports from Django 1.11, Python 3.5 and up
 - **Hyperfy** - the command line app that converts html to hypergen python code
 
 Running the examples
