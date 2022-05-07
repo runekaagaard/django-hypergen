@@ -100,7 +100,7 @@ jobs:
     - name: Run Tests
       run: |
         pytest --tb=native -vvvv src/hypergen/test_all.py
-      if: ${{ matrix.python-version }} != 3.5 # Dict keys are not sorted, breaks html comparison.
+      if: ${{ matrix.python-version }} != "3.5" # Dict keys are not sorted, breaks html comparison.
     - name: Install node
       uses: actions/setup-node@v3
       with:
