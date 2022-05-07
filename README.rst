@@ -60,9 +60,9 @@ You can `see it in action <https://hypergen.it/hellohypergen/counter/>`_.
         
 The ``callback(func, arg1, arg2, ..., **settings)`` function connects the onclick event to the ``increment(request, n)`` callback. The ``n`` argument is the value of the input field.
 
-The ``base_template(title=None)`` function returns a python function with html5 boilerplate.
+The ``base_template(title=None)`` function returns a function with html5 boilerplate.
 
-Python functions all the way down. 🔥🔥🔥
+It's python functions all the way down. 🔥🔥🔥
 
 Features
 ========
