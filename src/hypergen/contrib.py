@@ -2,10 +2,7 @@
 from __future__ import (absolute_import, division, unicode_literals)
 from functools import wraps
 
-try:
-    import pickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 from contextlib import contextmanager
 

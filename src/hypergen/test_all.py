@@ -2,6 +2,7 @@
 from __future__ import (absolute_import, division, unicode_literals)
 
 import pytest
+from hypergen.incubation import SessionVar, pickle_dumps
 
 d = dict
 import re, sys
@@ -25,6 +26,7 @@ class User(object):
 
 class Request(object):
     user = User()
+    session = {}
 
     def is_ajax(self):
         return False
@@ -358,3 +360,11 @@ def test_serialization():
         "datetime": datetime(2022, 1, 1, 10, 11, 23),}
 
     assert loads(dumps(x)) == x
+
+def test_incubation_session_var():
+    context.replace(request=Request(), user=User())
+    x = SessionVar("foo", 92)
+    assert x.get() == 92
+    x.set(99)
+    assert x.get() == 99
+    assert c.request.session == {"hypergen_request_var__foo": pickle_dumps(99)}

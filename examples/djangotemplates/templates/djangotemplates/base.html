@@ -6,10 +6,9 @@
   </head>
 <body>
   <p><a href="{% url 'website:documentation' %}">Back to documentation</a></p>
+  
   <h1>Stack based calculator</h1>
-  <p>This page is written with "normal" django templates, not the pure python hypergen templates.
-     The stack is shared by all concurrent users so it might be weird at times :)
-  </p>
+  <p>This page is written with "normal" django templates, not the pure python hypergen templates.</p>
   
   <div id="content">
     {% include "djangotemplates/content.html" %}
