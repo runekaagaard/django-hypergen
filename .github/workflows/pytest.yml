@@ -25,7 +25,7 @@ jobs:
           # - python-version: 3.5
           #   django-version: Django==2.0.13
           # - python-version: 3.5
-            django-version: Django==1.11.29
+          #  django-version: Django==1.11.29
           - python-version: 3.6
             django-version: Django==1.11.29
           - python-version: 3.6
