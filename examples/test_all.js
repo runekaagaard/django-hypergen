@@ -31,7 +31,7 @@ async function visitPage(t, href) {
 
 async function onclickEvents(t, href) {
   // TODO: Make todomvc work.
-  if (["/gameofcython/", "/t9n/", "/todomvc/"].indexOf(href) !== -1) return
+  if (["/gameofcython/", "/t9n/", "/todomvc/", "/djangotemplates/"].indexOf(href) !== -1) return
   const els = Selector('*').withAttribute('onclick')
   const count = await els.count
   for (let i = 0; i < count; i++) {
