@@ -119,3 +119,5 @@ if os.environ.get("PROD", False):
         'formatters': {'verbose': {'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'}}, 'handlers': {
         'console': {'level': 'INFO', 'class': 'logging.StreamHandler', 'stream': sys.stdout,
         'formatter': 'verbose'}}, 'loggers': {'': {'handlers': ['console'], 'level': 'INFO', 'propagate': True}}}
+
+HYPERGEN_ENABLE_INCUBATION = True
