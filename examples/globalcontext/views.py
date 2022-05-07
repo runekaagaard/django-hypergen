@@ -36,8 +36,9 @@ print(context.request) # The middleware adds the request.
 
         h3("Using global context in your own apps")
         p("You can use your own global context like this example:")
-        context()
+
         show_func(context_example)
+
         p("And it would yield the following html:")
         context_example()
 

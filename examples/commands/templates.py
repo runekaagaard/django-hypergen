@@ -1,5 +1,6 @@
-from datetime import date
+from datetime import date, datetime
 import inspect
+
 from hypergen.core import *
 from hypergen.core import callback as cb
 
@@ -20,7 +21,8 @@ def show_button():
         "lists": [1, 2, 3],
         "tuples": (1, 2, 3),
         "dicts": {"key": "value"},
-        "date": date(2022, 1, 1),}))
+        "date": date(2022, 1, 1),
+        "datetime": datetime(2022, 1, 1, 10, 11, 23),}))
 
 def commands():
     h2("Client commands")
@@ -57,17 +59,17 @@ def my_view_or_callback(request):
     button("run", id_="alert2", onclick=cb(alert2, "This is an alert!"))
 
     h3("Serialization")
-    p("Data can be round tripped like this:")
+    p("Data can move a round in different ways:")
     ol(
         li("server->client: As arguments to the callback (cb) function on e.g. onclick events on html elements."),
         li("client->server: As arguments to @liveview_callback functions."),
-        li("server->client: As arguments in client commands."),
+        li("server->client: As arguments to client commands."),
     )
-    fn(None, "so consider this template function:", show_button)
-    fn(None, "then most data types will be serialized nicely.", serialization)
+    fn(None, "Consider this template function:", show_button)
+    fn(None, "The most popular python data types are supported.", serialization)
 
     show_button()
-    span("... then check your console")
+    pre(code(id_="serialized"))
 
     h2("Hypergen commands")
     p(

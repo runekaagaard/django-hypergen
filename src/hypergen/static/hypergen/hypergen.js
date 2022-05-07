@@ -62,12 +62,17 @@ export const morph = function(id, html) {
 
 export const remove = function(id) {
   let el = document.getElementById(id);
-  el.parentNode.removeChild(el);
+  el.parentNode.removeChild(el)
 }
 
 export const hide = function(id) {
-  let el = document.getElementById(id);
+  let el = document.getElementById(id)
   el.style.display = "none"
+}
+
+export const display = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.display = value || "block"
 }
 
 export const redirect = function(url) {

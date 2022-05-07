@@ -39,7 +39,7 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "command", "raw", "callback", "call_js", "THIS",
-    "OMIT", "context", "is_ajax"]
+    "OMIT", "context", "is_ajax", "write"]
 
 ### Python 2+3 compatibility ###
 
@@ -264,6 +264,9 @@ def join_html(html):
 
 def raw(*children):
     c.hypergen.into.extend(children)
+
+def write(*children):
+    c.hypergen.into.extend(t(x) for x in children)
 
 def t(s, quote=True, translatable=False):
     return translate(escape(make_string(s), quote=quote), translatable=translatable)
@@ -840,11 +843,6 @@ def encoder(o):
     else:
         raise TypeError(repr(o) + " is not JSON serializable")
 
-def dumps(data, default=encoder, indent=None):
-    result = json.dumps(data, default=encoder, separators=(',', ':'), indent=indent)
-
-    return result
-
 def decoder(o):
     _ = o.get("_", None)
     if _ is None or type(_) is not list or len(_) != 2:
@@ -862,6 +860,11 @@ def decoder(o):
     else:
 
         raise Exception("Unknown datatype, {}".format(datatype))
+
+def dumps(data, default=encoder, indent=None):
+    result = json.dumps(data, default=encoder, separators=(',', ':'), indent=indent)
+
+    return result
 
 def loads(data):
     return json.loads(data, object_hook=decoder)
