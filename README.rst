@@ -52,9 +52,10 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
         template(n + 1)
 
     def template(n):
-        label("Current value: ")
-        input_el = input_(id_="n", type_="number", value=n)
-        button("Increment", id_="increment", onclick=callback(increment, input_el))
+        with p():
+            label("Current value: ")
+            input_el = input_(id_="n", type_="number", value=n)
+            button("Increment", id_="increment", onclick=callback(increment, input_el))
 
 You can `see it in action <https://hypergen.it/hellohypergen/counter/>`_.
         
