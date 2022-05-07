@@ -159,7 +159,7 @@ How fast are we?:
 Testing
 =======
 
-We have a Github Action that automatically tests a matrix of Django and Python versions. You can run the pytest tests locally like so:
+We have a `Github Action <https://github.com/runekaagaard/django-hypergen/blob/main/.github/workflows/pytest.yml>`_ that automatically tests a matrix of Django and Python versions. You can run the pytest tests locally like so:
 
 .. code-block:: bash
 
