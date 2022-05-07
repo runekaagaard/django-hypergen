@@ -16,7 +16,9 @@
     </p>
     <p align="center">
         <img src="https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg" />
-        <img src="https://badge.fury.io/py/django-hypergen.svg" />
+        <a href="https://pypi.org/project/django-hypergen/">
+            <img src="https://badge.fury.io/py/django-hypergen.svg" />
+        </a>
     </p>
     
     <p align="center" dir="auto">
