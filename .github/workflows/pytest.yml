@@ -20,12 +20,12 @@ jobs:
           #   django-version: Django==2.0.13
           # - python-version: 3.4
           #   django-version: Django==2.1.15
-          - python-version: 3.5
-            django-version: Django==1.11.29
-          - python-version: 3.5
-            django-version: Django==2.0.13
-          - python-version: 3.5
-            django-version: Django==1.11.29
+          # - python-version: 3.5
+          #   django-version: Django==1.11.29
+          # - python-version: 3.5
+          #   django-version: Django==2.0.13
+          # - python-version: 3.5
+          #   django-version: Django==1.11.29
           - python-version: 3.6
             django-version: Django==2.2.28
           - python-version: 3.6
