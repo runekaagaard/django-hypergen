@@ -115,7 +115,7 @@ We are using Hypergen extensively at work so it's a big focus of ours.
 Why not Hypergen?
 =================
 
-- Every frontend change on the frontend sends a call to the server
+- Every frontend event calls to the server
 - Python templating is not for everyone. Using Django templates is possible but still in alpha
 - No realtime capabilities yet, so the server can only push data back when it receives a request
 
