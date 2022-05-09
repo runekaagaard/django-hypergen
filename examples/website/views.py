@@ -32,7 +32,7 @@ def home(request):
             "Focus on just the functionality, while having 291% more fun!", sep=" "), class_="center")
         with div(class_="terminals", id_="starter"):
             div(
-                a("start new app", onclick=call_js("showTerminal", "starter", "startapp", "b1"), id_="b1",
+                a("start new app", onmousedown=call_js("showTerminal", "starter", "startapp", "b1"), id_="b1",
                 class_="selected"),
                 a("start new project", onclick=call_js("showTerminal", "starter", "startproject", "b2"), id_="b2"),
                 sep="  ·  ",
