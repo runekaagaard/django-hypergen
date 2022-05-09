@@ -30,8 +30,15 @@ def home(request):
         p(
             i("Write responsive Django apps in pure python.",
             "Focus on just the functionality, while having 291% more fun!", sep=" "), class_="center")
-        pre(
-            code("""
+        with div(class_="terminals", id_="starter"):
+            div(
+                a("start new app", onclick=call_js("showTerminal", "starter", "startapp", "b1"), id_="b1",
+                class_="selected"),
+                a("start new project", onclick=call_js("showTerminal", "starter", "startproject", "b2"), id_="b2"),
+                sep="  ·  ",
+            )
+            pre(
+                code("""
 python3 -m venv venv
 source venv/bin/activate
 pip install django django-hypergen
@@ -41,7 +48,16 @@ django-admin startproject \\
 cd myproject
 python manage.py migrate
 python manage.py runserver 127.0.0.1:8008
-""".strip()), class_="terminal nohighlight")
+""".strip()), class_="terminal nohighlight", style={"display": "none"}, id_="startproject")
+            pre(
+                code("""
+python manage.py startapp \\
+    --template=https://github.com/runekaagaard/django-hypergen-project-template/archive/master.zip \\
+    myapp
+            """.strip()),
+                class_="terminal nohighlight",
+                id_="startapp",
+            )
 
     return hypergen_to_response(template)
 

@@ -70,11 +70,19 @@ header span {
   text-align: center;
 }
 
-pre.terminal {
-  background-color: #65748B;
+div.terminals {
   width: 80%;
   margin: auto;
+}
+
+div.terminals a.selected {
+  font-weight: bold;
+}
+
+pre.terminal {
+  background-color: #65748B;
   border-radius: 5px;
+  margin-top: 0px;
 }
 
 pre.terminal code {
@@ -89,4 +97,8 @@ pre.terminal::-webkit-scrollbar {
 /* Optional: show position indicator in red */
 pre.terminal::-webkit-scrollbar-thumb {
     background: #FF0000;
+}
+
+a {
+  cursor: pointer;
 }
