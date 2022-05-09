@@ -7,7 +7,7 @@
     </p>
 
     <h1 align="center"><a href="https://hypergen.it">Django Hypergen</a></h1>
-    
+
     <p align="center">
         <b>Take a break from javascript</b>
     </p>
@@ -20,7 +20,7 @@
             <img src="https://badge.fury.io/py/django-hypergen.svg" />
         </a>
     </p>
-    
+
     <p align="center" dir="auto">
         <a href="https://hypergen.it" rel="nofollow">Homepage</a> &nbsp;&nbsp;•&nbsp;&nbsp;
       <a href="https://hypergen.it/documentation/" rel="nofollow">Documentation</a> &nbsp;&nbsp;•&nbsp;&nbsp;

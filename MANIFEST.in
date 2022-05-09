@@ -1,0 +1,2 @@
+include src/hypergen/static/hypergen/*
+include README_PYPI.rst
