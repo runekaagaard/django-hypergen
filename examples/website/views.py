@@ -32,11 +32,15 @@ def home(request):
             "Focus on just the functionality, while having 291% more fun!", sep=" "), class_="center")
         pre(
             code("""
-pip install Django
-pip install django-hypergen
-django-admin start-project /
-    --template=https://github.com/runekaagaard/django-hypergen-project-template.zip /
-    myproject
+python3 -m venv venv
+source venv/bin/activate
+pip install django django-hypergen
+django-admin startproject \
+        --template=https://github.com/runekaagaard/django-hypergen-project-template/archive/mast>
+        myproject
+cd myproject
+python manage.py migrate
+python manage.py runserver 127.0.0.1:8008
 """.strip()), class_="terminal nohighlight")
 
     return hypergen_to_response(template)

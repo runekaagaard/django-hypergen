@@ -38,3 +38,7 @@ testcafe-run:
 	cd examples && testcafe chrome test_all.js |& ansi2txt
 testcafe-run-headless:
 	cd examples && testcafe ""chrome:headless"" test_all.js
+pypi-release:
+	rm -rf dist/*
+	python3 -m build
+	python3 -m twine upload dist/*
