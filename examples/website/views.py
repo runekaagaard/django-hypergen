@@ -25,32 +25,19 @@ from globalcontext.views import globalcontext
 def home(request):
     @base_template()
     def template():
-        p(mark("2022-05-04: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
-            "Docs are being written and corners rounded :)", sep=" ")
-        with open("README.html") as f:
-            raw(f.read())
-
-        h2("Testing Matrix")
-        p("Hypergen is tested on the following combinations of Django and Python.")
-        with open("../.github/workflows/pytest.yml") as f:
-            pytest = load(f.read(), Loader=Loader)
-            adjm, xs, ys = defaultdict(list), set(), set()
-            for combination in pytest["jobs"]["build"]["strategy"]["matrix"]["include"]:
-                py, dj = combination["python-version"], combination["django-version"].replace("Django==", "")
-                adjm[py].append(dj)
-                xs.add(py)
-                ys.add(dj)
-
-            xs = sorted(xs, key=lambda x: int(str(x).split(".")[-1]))
-            ys = sorted(ys)
-            with table():
-                tr(th(), [th("python ", x) for x in xs])
-                for y in ys:
-                    tr(th("django ", y), [
-                        td("✔" if y in adjm[x] else "", style={"color": "green", "text-align": "center"})
-                        for x in xs])
-
-        show_sources(__file__)
+        # p(mark("2022-05-04: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+        #     "Docs are being written and corners rounded :)", sep=" ")
+        p(
+            i("Write responsive Django apps in pure python.",
+            "Focus on just the functionality, while having 291% more fun!", sep=" "), class_="center")
+        pre(
+            code("""
+pip install Django
+pip install django-hypergen
+django-admin start-project /
+    --template=https://github.com/runekaagaard/django-hypergen-project-template.zip /
+    myproject
+""".strip()), class_="terminal nohighlight")
 
     return hypergen_to_response(template)
 
@@ -86,6 +73,30 @@ def documentation(request):
             )
             li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
                 " - example of the still unstable cython implemetation.")
+
+        h2("Compatability")
+        p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),
+            " on the following combinations of Django and Python:", sep=" ")
+        with open("../.github/workflows/pytest.yml") as f:
+            pytest = load(f.read(), Loader=Loader)
+            adjm, xs, ys = defaultdict(list), set(), set()
+            for combination in pytest["jobs"]["build"]["strategy"]["matrix"]["include"]:
+                py, dj = combination["python-version"], combination["django-version"].replace("Django==", "")
+                adjm[py].append(dj)
+                xs.add(py)
+                ys.add(dj)
+
+            xs = sorted(xs, key=lambda x: int(str(x).split(".")[-1]))
+            ys = sorted(ys)
+            with table():
+                tr(th(), [th("python ", x) for x in xs])
+                for y in ys:
+                    tr(th("django ", y), [
+                        td("✔" if y in adjm[x] else "", style={"color": "green", "text-align": "center"})
+                        for x in xs])
+
+        p("Both pytest integration and testcafe end-to-end tests are run over the entire matrix.")
+        p("Hypergen supports all browser versions from IE10 and forward.")
 
         show_sources(__file__)
 

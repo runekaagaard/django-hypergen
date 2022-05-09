@@ -43,13 +43,50 @@ button {
   margin-right: 8px;
 }
 
-header h1 img {
+header img {
   vertical-align: bottom;
   padding-bottom: 10px;
-  width: 75px;
-  height: 90px;
+  width: 40px;
+  height: 50px;
+}
+
+header h1 {
+  display: inline;
+}
+
+header span {
+  color: rgb(88, 88, 88);
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 8px;
+  margin-bottom: 8px;
 }
 
 #page1, #page2, #page3 {
   margin-right: 8px;
+}
+
+.center {
+  text-align: center;
+}
+
+pre.terminal {
+  background-color: #65748B;
+  width: 80%;
+  margin: auto;
+  border-radius: 5px;
+}
+
+pre.terminal code {
+  color: white;
+}
+
+pre.terminal::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    height: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+pre.terminal::-webkit-scrollbar-thumb {
+    background: #FF0000;
 }

@@ -42,7 +42,9 @@ def base_template():
                     with a(href="https://github.com/runekaagaard/django-hypergen/"):
                         img(src=static("website/github.png"), class_="icon")
                         raw("Github")
-                h1(img(src=static("website/hypergen-logo.png"), class_="logo"), "ypergen - a Django liveview")
+                with div(class_="title"):
+                    h1(img(src=static("website/hypergen-logo.png"), class_="logo"), "ypergen")
+                    span(" - take a break from javascript")
 
             with main():
                 yield
