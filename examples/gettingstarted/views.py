@@ -116,13 +116,13 @@ def template(n):
         code("""
         ....
         INSTALLED_APPS = [
-        'django.contrib.admin',
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'django.contrib.messages',
-        'django.contrib.staticfiles',
-        'myapp'
+            'django.contrib.admin',
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
+            'django.contrib.messages',
+            'django.contrib.staticfiles',
+            'myapp'
         ]
         .....
         """
@@ -302,7 +302,7 @@ def template(n):
         )
     p("""As you might have noticed our code get's a lot cleaner, now is the time for some user action.""")
     h3("Introducing hypergen callbacks")
-    p("""A hypergen callback is a function view that that can be triggered from the client. And usually changes something in the view""")
+    p("""A hypergen callback is a function view that that can be triggered from the client, And usually changes something in the view""")
     p("""In order to make hypergen callbacks available we need to include hypergen.js in the head section of the page, change your base_template so it looks like this""")
     pre(
         code("""
@@ -315,10 +315,43 @@ def template(n):
             with html():
                 with head():
                     link(href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
-                    link(src=static("hypergen/hypergen.min.js"))
-                with body(id=body):
-                    yield
-                    
+                    script(src=static("/hypergen/hypergen.min.js"))
+                with body():
+                    with div(id_="content"):
+                        yield
         ....
         """)
+
+
     )
+
+    p("And create a new step6 view and template that takes an argument, num_clicks, which is defaulted to 0")
+    pre(
+        code("""
+        .......
+        @hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
+            def step6(request):
+                template6()
+    
+            def template6(num_clicks=0):
+                if num_clicks>0:
+                    h2("Step 6: Callback is a success")
+                    p(f"You've successfully clicked on a button {num_clicks} time(s)- congratulations!")
+                    button("click again", id_="button", onclick=callback(on_click, num_clicks + 1))
+                else:
+                    h2("Step 6: Callbacks")
+                    p("Try clicking the button below - if you dare")
+                    button("click me", id_="button", onclick=callback(on_click_callback, num_clicks + 1))
+        """)
+    )
+    p("As you can see we've assigned an action on the onclick action on the button element, and referenced it to the on_click_callback, "
+      "which we will create now ")
+    pre(
+        code("""
+        ...
+        @hypergen_callback(perm=NO_PERM_REQUIRED, target_id='content')
+        def on_click(request, num_clicks=0):
+            template6(num_clicks)
+        """)
+    )
+    p("Callbacks are like views")
