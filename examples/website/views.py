@@ -35,9 +35,9 @@ def home(request):
 python3 -m venv venv
 source venv/bin/activate
 pip install django django-hypergen
-django-admin startproject \
-        --template=https://github.com/runekaagaard/django-hypergen-project-template/archive/mast>
-        myproject
+django-admin startproject \\
+    --template=https://github.com/runekaagaard/django-hypergen-project-template/archive/master.zip \\
+    myproject
 cd myproject
 python manage.py migrate
 python manage.py runserver 127.0.0.1:8008
