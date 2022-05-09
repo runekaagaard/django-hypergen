@@ -60,7 +60,7 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
             button("Increment", id_="increment", onclick=callback(increment, input_el))
 
 You can `see it in action <https://hypergen.it/hellohypergen/counter/>`_.
-        
+
 The ``callback(func, arg1, arg2, ..., **settings)`` function connects the onclick event to the ``increment(request, n)`` callback. The ``n`` argument is the value of the input field.
 
 The ``base_template(title=None)`` function returns a function with html5 boilerplate.
@@ -99,7 +99,7 @@ Running the examples
     python manage.py runserver
 
 Then browse to http://127.0.0.1:8000.
-    
+
 Contributing
 ============
 
@@ -110,7 +110,7 @@ Authors
 
 Hypergen is written by `Jeppe Tuxen <https://github.com/jeppetuxen>`_ and `Rune Kaagaard <https://github.com/runekaagaard>`_, both located around Copenhagen, Denmark.
 
-We are using Hypergen extensively at work so it's a big focus of ours. 
+We are using Hypergen extensively at work so it's a big focus of ours.
 
 Why not Hypergen?
 =================
@@ -139,7 +139,7 @@ Compile the javascript files:
     npm install -g parcel-bundler
     cd hypergen/static/hypergen
     parcel watch -o hypergen.min.js -d . hypergen.js
-    
+
 Profiling
 ---------
 
@@ -169,7 +169,7 @@ We have a `Github Action <https://github.com/runekaagaard/django-hypergen/blob/m
 And the testcafe end-to-end tests:
 
 .. code-block:: bash
-    
+
     npm i -g testcafe
     make testcafe-run
     # or
