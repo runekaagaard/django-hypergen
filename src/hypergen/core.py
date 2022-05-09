@@ -39,7 +39,7 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "command", "raw", "callback", "call_js", "THIS",
-    "OMIT", "context", "is_ajax"]
+    "OMIT", "context", "is_ajax", "write"]
 
 ### Python 2+3 compatibility ###
 
@@ -264,6 +264,9 @@ def join_html(html):
 
 def raw(*children):
     c.hypergen.into.extend(children)
+
+def write(*children):
+    c.hypergen.into.extend(t(x) for x in children)
 
 def t(s, quote=True, translatable=False):
     return translate(escape(make_string(s), quote=quote), translatable=translatable)
@@ -827,6 +830,14 @@ class wbr(base_element_void): pass
 # yapf: enable
 
 # Serialization
+ENCODINGS = {
+    datetime.date: lambda o: {"_": ["date", str(o)]},
+    datetime.datetime: lambda o: {"_": ["datetime", str(o)]},
+    tuple: lambda o: {"_": ["tuple", list(o)]},
+    set: lambda o: {"_": ["set", list(o)]},
+    frozenset: lambda o: {"_": ["frozenset", list(o)]},
+    range: lambda o: {"_": ["range", [o.start, o.stop, o.step]]},}
+
 def encoder(o):
     assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
@@ -835,15 +846,21 @@ def encoder(o):
     elif hasattr(o, "__weakref__"):
         # Lazy strings and urls.
         return make_string(o)
-    if type(o) is datetime.date:
-        return {"_": ["date", str(o)]}
+    fn = ENCODINGS.get(type(o), None)
+    if fn:
+        return fn(o)
     else:
         raise TypeError(repr(o) + " is not JSON serializable")
 
-def dumps(data, default=encoder, indent=None):
-    result = json.dumps(data, default=encoder, separators=(',', ':'), indent=indent)
-
-    return result
+DECODINGS = {
+    "float": float,
+    "date": parse_date,
+    "datetime": parse_datetime,
+    "time": parse_time,
+    "tuple": tuple,
+    "set": set,
+    "frozenset": frozenset,
+    "range": lambda v: range(*v),}
 
 def decoder(o):
     _ = o.get("_", None)
@@ -851,17 +868,17 @@ def decoder(o):
         return o
 
     datatype, value = _
-    if datatype == "float":
-        return float(value)
-    elif datatype == "date":
-        return parse_date(value)
-    elif datatype == "datetime":
-        return parse_datetime(value)
-    elif datatype == "time":
-        return parse_time(value)
+    fn = DECODINGS.get(datatype, None)
+    if fn:
+        return fn(value)
     else:
 
         raise Exception("Unknown datatype, {}".format(datatype))
+
+def dumps(data, default=encoder, indent=None):
+    result = json.dumps(data, default=encoder, separators=(',', ':'), indent=indent)
+
+    return result
 
 def loads(data):
     return json.loads(data, object_hook=decoder)
@@ -920,17 +937,29 @@ class Context(threading.local):
     @contextmanager
     def __call__(self, transformer=None, at=None, **items):
         try:
+            # Store previous value.
             ctx = self.ctx
             if at is None:
                 if transformer is not None:
                     self.ctx = transformer(self.ctx)
                 self.ctx = self.ctx.update(m(**items))
             else:
+                if at not in self.ctx:
+                    self.ctx = self.ctx.set(at, pmap(items))
+                else:
+                    new_value_at = self.ctx[at].update(pmap(items))
+                    if not new_value_at:
+                        raise Exception("Not immutable context variable attempted updated. If you want to nest "
+                            "with context() statements you must use a pmap() or another immutable hashmap type.")
+
+                    self.ctx = self.ctx.set(at, new_value_at)
+
                 if transformer is not None:
                     self.ctx = self.ctx.set(at, transformer(self.ctx[at]))
-                self.ctx = self.ctx.set(at, self.ctx[at].update(m(**items)))
+
             yield
         finally:
+            # Reset to previous value.
             self.ctx = ctx
 
 context = Context()
@@ -948,5 +977,4 @@ def context_middleware(get_response):
 
 class ContextMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))

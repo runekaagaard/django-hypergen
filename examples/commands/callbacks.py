@@ -1,5 +1,7 @@
+from pprint import pformat
+
 from hypergen.contrib import NO_PERM_REQUIRED, hypergen_callback
-from hypergen.core import OMIT, command
+from hypergen.core import OMIT, command, write
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
 def alert(request, message):
@@ -9,9 +11,9 @@ def alert(request, message):
 def alert2(request, message):
     return [["alert", message]]
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
+@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="serialized")
 def serialization(request, round_tripped_data):
-    command("console.log", round_tripped_data)
+    write(pformat(round_tripped_data))
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
 def morph(request, message):

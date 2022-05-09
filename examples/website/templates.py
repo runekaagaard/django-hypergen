@@ -12,15 +12,14 @@ from contextlib import contextmanager
 
 def base_head():
     title("Django Hypergen")
-    link("https://unpkg.com/simpledotcss/simple.min.css")
+    link("https://unpkg.com/simpledotcss@2.0.7/simple.min.css")
     link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
     link(static("website/website.css"))
     script(src=static("website/website.js"))
     link(rel="apple-touch-icon", sizes="120x120", href=static("apple-touch-icon.png"))
     link(rel="icon", type_="image/png", sizes="32x32", href=static("favicon-32x32.png"))
-    link(rel="icon", type_="image/png", sizes="16x16", href=static("websitefavicon-16x16.png"))
-    link(rel="manifest", href=static("site.webmanifest"))
+    link(rel="icon", type_="image/png", sizes="16x16", href=static("favicon-16x16.png"))
     link(rel="mask-icon", href=static("safari-pinned-tab.svg"), color="#5bbad5")
     meta(name="msapplication-TileColor", content="#da532c")
     meta(name="theme-color", content="#ffffff")
@@ -49,7 +48,8 @@ def base_template():
                 yield
 
             with footer():
-                p("Built with Hypergen™ and ", span("❤", style={"color": "red"}))
+                p("Built with Hypergen, ", a("Simple.css", href="https://simplecss.org/", style={"color": "inherit"}),
+                    " and ", span("❤", style={"color": "red"}))
 
 @contextmanager
 def base_example_template():

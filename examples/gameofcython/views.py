@@ -12,7 +12,7 @@ from website.templates import base_template, show_sources
 try:
     from gameofcython.gameofcython import render, reset, step as cstep
     module_found = True
-except ModuleNotFoundError:
+except ImportError:  # ModuleNotFoundError not in python3.5
     module_found = False
 
 HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="gameofcython",

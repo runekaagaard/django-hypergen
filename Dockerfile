@@ -4,8 +4,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 COPY . /code/
 WORKDIR /code/
-RUN pip install -r examples/requirements.txt
+RUN pip install -r requirements-prod.txt
 RUN make cython-compile
 EXPOSE 8000
 WORKDIR /code/examples/
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD gunicorn wsgi --bind 0.0.0.0:8000 --error-logfile - --log-level warn --workers 4 --max-requests 100000 --max-requests-jitter 1000

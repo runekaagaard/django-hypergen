@@ -1,11 +1,16 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
 
+import pytest
+from hypergen.incubation import SessionVar, pickle_dumps
+
 d = dict
 import re, sys
+from datetime import date, datetime
 
 from contextlib import ContextDecorator
 from django.test.client import RequestFactory
+from pyrsistent import pmap
 from pytest import raises
 
 from hypergen.core import *
@@ -21,6 +26,7 @@ class User(object):
 
 class Request(object):
     user = User()
+    session = {}
 
     def is_ajax(self):
         return False
@@ -54,6 +60,53 @@ def test_context_cm():
 
         assert context["i"] == 1
         assert "foo" not in context
+
+def test_context_immutable():
+    with context(my_appname=pmap({"title": "foo", "items": [1, 2, 3]})):
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+        with context(at="my_appname", items=[4, 5]):
+            assert context.my_appname["title"] == "foo"
+            assert context.my_appname["title"] == "foo"
+            assert context["my_appname"]["title"] == "foo"
+            assert context["my_appname"]["items"] == [4, 5]
+
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+
+def test_context_mutable_update_should_fail():
+    with context(my_appname={"title": "foo", "items": [1, 2, 3]}):
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+        with pytest.raises(Exception):
+            with context(at="my_appname", items=[4, 5]):
+                # No updating of mutable data.
+                pass
+
+def test_context_at_creation():
+    with context(at="my_appname", title="foo", items=[1, 2, 3]):
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
+        with context(at="my_appname", items=[4, 5]):
+            assert context.my_appname is not None
+            assert context.my_appname["title"] == "foo"
+            assert context.my_appname["title"] == "foo"
+            assert context["my_appname"]["title"] == "foo"
+            assert context["my_appname"]["items"] == [4, 5]
+
+        # Oh now, this is now not correct. Right now it's up to the user to use a pmap for fancy stuff.
+        assert context.my_appname["title"] == "foo"
+        assert context.my_appname["items"] == [1, 2, 3]
+        assert context["my_appname"]["title"] == "foo"
+        assert context["my_appname"]["items"] == [1, 2, 3]
 
 def test_context_middleware():
     def view(request):
@@ -290,3 +343,28 @@ def test_repr():
         el1 = input_(id_="el1")
         el2 = input_(onclick=cb("alert", el1), id_="el2")
         assert repr(el2) == 'input_(onclick=callback("alert", input_(id_="el1")), id_="el2")'
+
+def test_serialization():
+    x = {
+        "string": "hi",
+        "int": 42,
+        "float": 9.9,
+        "list": [1, 2, 3],
+        "range": range(1, 10, 2),
+        # Pythons json.dumps force converts tuples to list.
+        # "tuple": (1, 2, 3),
+        "dict": {"key": "value"},
+        "set": {1, 2, 3},
+        "frozenset": frozenset({1, 2, 3}),
+        "date": date(2022, 1, 1),
+        "datetime": datetime(2022, 1, 1, 10, 11, 23),}
+
+    assert loads(dumps(x)) == x
+
+def test_incubation_session_var():
+    context.replace(request=Request(), user=User())
+    x = SessionVar("foo", 92)
+    assert x.get() == 92
+    x.set(99)
+    assert x.get() == 99
+    assert c.request.session == {"hypergen_request_var__foo": pickle_dumps(99)}

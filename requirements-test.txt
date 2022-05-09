@@ -1,0 +1,4 @@
+pyrsistent
+pyyaml
+yapf
+pytest

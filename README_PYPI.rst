@@ -1,31 +1,12 @@
-.. raw:: html
+Welcome to Django Hypergen
+==========================
 
-    <p align="center">
-      <a href="https://github.com/runekaagaard/django-hypergen">
-        <img src="https://raw.githubusercontent.com/runekaagaard/django-hypergen/main/examples/website/static/website/hypergen-logo.png" alt="Welcome to Django Hypergen" width="75px" height="100px" />
-      </a>
-    </p>
+**Take a break from hypergen**
 
-    <h1 align="center"><a href="https://hypergen.it">Django Hypergen</a></h1>
+Write server-rendered reactive HTML liveviews for Django in pure python 💫
 
-    <p align="center">
-        <b>Take a break from javascript</b>
-    </p>
-    <p align="center">
-        Write server-rendered reactive HTML liveviews for Django in pure python 💫
-    </p>
-    <p align="center">
-        <img src="https://github.com/runekaagaard/django-hypergen/actions/workflows/pytest.yml/badge.svg" />
-        <a href="https://pypi.org/project/django-hypergen/">
-            <img src="https://badge.fury.io/py/django-hypergen.svg" />
-        </a>
-    </p>
-
-    <p align="center" dir="auto">
-        <a href="https://hypergen.it" rel="nofollow">Homepage</a> &nbsp;&nbsp;•&nbsp;&nbsp;
-      <a href="https://hypergen.it/documentation/" rel="nofollow">Documentation</a> &nbsp;&nbsp;•&nbsp;&nbsp;
-      <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
-    </p>
+- `Homepage <https://hypergen.it>`_
+- `Github <https://github.com/runekaagaard/django-hypergen/>`_
 
 **Hypergen is short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")`` inside a view. It's simple to keep templates DRY by composing python functions. Hypergen feels a lot like writing jsx.
 

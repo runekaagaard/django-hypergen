@@ -11,9 +11,11 @@ cython-compile:
 cython-clean:
 	rm -rf build
 	find . -iname "__pycache__" -exec rm -rf '{}' \; || true
+	find . -iname *.pyc -delete
 	find . -iname "*.so" -delete
 python-clean:
 	find . -iname "__pycache__" -exec rm -rf '{}' \; || true
+	find . -iname *.pyc -delete
 docker-build:
 	docker image rm hypergen-site || true
 	docker build -t hypergen-site .
@@ -22,11 +24,14 @@ docker-run:
 docker-bash:
 	docker exec -it hypergen-site bash
 copilot-deploy:
-	copilot deploy
+	cd examples && PROD=1 python manage.py collectstatic --noinput
+	copilot deploy -n hypergen-service -e prod
+copilot-deploy-no-static:
+	copilot deploy -n hypergen-service -e prod
 copilot-bash:
-	copilot svc exec --name hypergen-site --env prod -c /bin/bash
-tests-run:
-	~/ws/venv-hypergen/bin/pytest --tb=native -x -vvvv src/hypergen/test_all.py
+	copilot svc exec --name hypergen-service env prod -c /bin/bash
+pytest-run:
+	pytest --tb=native -x -vvvv src/hypergen/test_all.py
 docker-system-prune:
 	docker system prune -a
 testcafe-run:

@@ -14,11 +14,14 @@ import djangotemplates.urls
 import hellohypergen.urls
 import hellocoreonly.urls
 import hellocoreonly2.urls
+import hellomagic.urls
 import t9n.urls
 import notifications.urls
 import partialload.urls
 import commands.urls
 import gettingstarted.urls
+
+import globalcontext.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -32,7 +35,9 @@ urlpatterns = [
     url('^hellocoreonly/', include(hellocoreonly.urls, namespace="hellocoreonly")),
     url('^hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
     url('^gettingstarted/', include(gettingstarted.urls, namespace="gettingstarted")),
+    url('^hellomagic/', include(hellomagic.urls, namespace="hellomagic")),
     url('^t9n/', include(t9n.urls, namespace="t9n")),
     url('^notifications/', include(notifications.urls, namespace="notifications")),
     url('^partialload/', include(partialload.urls, namespace="partialload")),
-    url('^commands/', include(commands.urls, namespace="commands")),]
+    url('^commands/', include(commands.urls, namespace="commands")),
+    url('^globalcontext/', include(globalcontext.urls, namespace="globalcontext")),]

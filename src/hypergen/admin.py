@@ -1,7 +1,10 @@
-from django.contrib import admin
-from hypergen.models import KV
+from django.conf import settings
 
-class KVAdmin(admin.ModelAdmin):
-    list_display = ("key", "value", "id")
+if getattr(settings, "HYPERGEN_ENABLE_INCUBATION", False) is True:
+    from django.contrib import admin
+    from hypergen.models import KV
 
-admin.site.register(KV, KVAdmin)
+    class KVAdmin(admin.ModelAdmin):
+        list_display = ("key", "value", "id")
+
+    admin.site.register(KV, KVAdmin)

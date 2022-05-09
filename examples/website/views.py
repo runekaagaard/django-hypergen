@@ -20,14 +20,17 @@ from hellohypergen.views import counter
 from t9n.views import page
 from website.templates import base_template, show_sources
 from commands.views import commands
+from globalcontext.views import globalcontext
 
 def home(request):
     @base_template()
     def template():
+        p(mark("2022-05-04: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+            "Docs are being written and corners rounded :)", sep=" ")
         with open("README.html") as f:
             raw(f.read())
 
-        h2("Testing")
+        h2("Testing Matrix")
         p("Hypergen is tested on the following combinations of Django and Python.")
         with open("../.github/workflows/pytest.yml") as f:
             pytest = load(f.read(), Loader=Loader)
@@ -68,6 +71,7 @@ def documentation(request):
             li(a("Form inputs", href=inputs.reverse()))
             li(a("Client commands", href=commands.reverse()))
             li(a("Partial loading and history support", href=page1.reverse()))
+            li(a("Hypergens global immutable context", href=globalcontext.reverse()))
             li(a("Notifications from Django messages", href=notifications.reverse()))
             li(strike(a("Not translation", href=page.reverse())))
 
