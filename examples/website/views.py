@@ -57,7 +57,7 @@ python manage.py runserver
                 pre(
                     code("""
 python manage.py startapp \\
-    --template=https://github.com/runekaagaard/django-hypergen-project-template/archive/master.zip \\
+    --template=https://github.com/runekaagaard/django-hypergen-app-template/archive/master.zip \\
     myapp
             """.strip()),
                     class_="terminal nohighlight",
