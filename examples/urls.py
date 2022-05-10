@@ -22,6 +22,7 @@ import commands.urls
 import gettingstarted.urls
 
 import globalcontext.urls
+import djangolander.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -35,6 +36,7 @@ urlpatterns = [
     url('^hellocoreonly/', include(hellocoreonly.urls, namespace="hellocoreonly")),
     url('^hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
     url('^gettingstarted/', include(gettingstarted.urls, namespace="gettingstarted")),
+    url('^djangolander/', include(djangolander.urls, namespace="djangolander")),
     url('^hellomagic/', include(hellomagic.urls, namespace="hellomagic")),
     url('^t9n/', include(t9n.urls, namespace="t9n")),
     url('^notifications/', include(notifications.urls, namespace="notifications")),
