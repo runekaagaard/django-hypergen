@@ -1,5 +1,8 @@
 from collections import defaultdict
 from yaml import load
+
+from djangolander.views import lander
+
 try:
     from yaml import CLoader as Loader
 except ImportError:
@@ -94,6 +97,7 @@ def documentation(request):
             li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")),
                 " - no magic from contrib.py used")
             li(a("TodoMVC", href=todomvc.reverse(ALL)))
+            li(a("Django Lander", href=lander.reverse()))
 
         h2("Tutorials")
         ul(

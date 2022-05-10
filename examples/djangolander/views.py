@@ -30,7 +30,8 @@ def base_template():
 
         with body():
             h1("Django lander")
-            strong("Made with hypergen")
+            p(strong("Made with hypergen"))
+            p("Really stupid way to use hypergen, only here because its fun")
             p(i("Use space and arrows"))
             button("reset", id_="reset", onclick=callback(reset), focus=False)
             with div(id_="content"):
