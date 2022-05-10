@@ -77,6 +77,11 @@ div.terminals {
 
 div.terminals a.selected {
   font-weight: bold;
+  text-decoration: underline;
+}
+
+div.terminals a {
+  margin-right: 8px;
 }
 
 pre.terminal {
@@ -101,4 +106,9 @@ pre.terminal::-webkit-scrollbar-thumb {
 
 a {
   cursor: pointer;
+}
+
+.hero h2 {
+  margin-bottom: 0px;
+  font-weight: bolder;
 }

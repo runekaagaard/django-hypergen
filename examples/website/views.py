@@ -21,22 +21,42 @@ from t9n.views import page
 from website.templates import base_template, show_sources
 from commands.views import commands
 from globalcontext.views import globalcontext
+from gettingstarted.views import begin
 
 def home(request):
     @base_template()
     def template():
         # p(mark("2022-05-04: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
         #     "Docs are being written and corners rounded :)", sep=" ")
-        p(
-            i("Write responsive Django apps in pure python.",
-            "Focus on just the functionality, while having 291% more fun!", sep=" "), class_="center")
+        with div(class_="hero"):
+            h2("Responsive Django, simpler", class_="center hero")
+            p(i("Focus on just the functionality, while having 291% more fun!", sep=" "), class_="center")
         with div(class_="terminals", id_="starter"):
             div(
-                a("start new app", onmousedown=call_js("showTerminal", "starter", "startapp", "b1"), id_="b1",
+                a("new app", onmousedown=call_js("showTerminal", "starter", "startapp", "b1"), id_="b1",
                 class_="selected"),
-                a("start new project", onclick=call_js("showTerminal", "starter", "startproject", "b2"), id_="b2"),
-                sep="  ·  ",
+                a("new project", onmousedown=call_js("showTerminal", "starter", "startproject", "b2"), id_="b2"),
+                sep=" ",
             )
+            # App template
+            pre(
+                code("""
+python manage.py startapp \\
+    --template=https://github.com/runekaagaard/django-hypergen-project-template/archive/master.zip \\
+    myapp
+            """.strip()),
+                class_="terminal nohighlight",
+                id_="startapp",
+            )
+            with ol():
+                li("Add", code("'hypergen'"), "to", code("INSTALLED_APPS"), "in", code("settings.py"), sep=" ")
+                li("Add", code("'hypergen.core.context_middleware'"), "to", code("MIDDLEWARE"), "in",
+                    code("settings.py"), ", and", sep=" ")
+                li(pre(code("""path('myapp/', include(myapp.urls, namespace="myapp")),""")), "to your projects main",
+                    code("urls.py"), "file, and enjoy your new hypergen app at", code("http://127.0.0.1/myapp/"),
+                    sep=" ")
+
+            # Project template
             pre(
                 code("""
 python3 -m venv venv
@@ -47,23 +67,18 @@ django-admin startproject \\
     myproject
 cd myproject
 python manage.py migrate
-python manage.py runserver 127.0.0.1:8008
+python manage.py runserver
 """.strip()), class_="terminal nohighlight", style={"display": "none"}, id_="startproject")
-            pre(
-                code("""
-python manage.py startapp \\
-    --template=https://github.com/runekaagaard/django-hypergen-project-template/archive/master.zip \\
-    myapp
-            """.strip()),
-                class_="terminal nohighlight",
-                id_="startapp",
-            )
 
     return hypergen_to_response(template)
 
 def documentation(request):
     @base_template()
     def template():
+        h2("Tutorials")
+        p("This is the best way to learn Hypergen.")
+        ul(li(a("Getting Started", href=begin.reverse())))
+
         h2("App examples")
         p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
         with ul():
