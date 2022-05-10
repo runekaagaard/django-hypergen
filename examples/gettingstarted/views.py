@@ -12,13 +12,17 @@ def pretty_indent(txt):
     """counts num of whitespaces in firstline, and removes from rest"""
     lines = txt.split("\n")
     count = 0
-    lines = [line for line in lines if len(line.split()) > 0]
+    for line in lines:
+        if len(line.strip()) == 0:
+            del lines[0]
+        else:
+            break
     for c in lines[0]:
         if c.isspace():
             count = count + 1
         else:
             break
-    return "\n".join(x[count:] for x in lines).strip()
+    return "\n".join(x[count:] if len(x) > count else x for x in lines).strip()
 
 
 _code = code
@@ -54,8 +58,9 @@ def template(n):
     p(a("Back to documentation", href=reverse("website:documentation")))
 
     h1("Getting Started")
-    p("The purpose of this short tutorial is getting you up and running with hypergen, let you code you first liveview, and give you an idea of how Django Hypergen can contribute to your workflow")
-    h3("Django - the framework for champions - getting ready for hypergen")
+    i("- A very basic step by step getting started tutorial")
+    p("The purpose of this tutorial is getting you up and running with hypergen, let you code you first liveview, and give you an idea of how Django Hypergen can contribute to your workflow")
+    h2("Step 0: Getting ready for hypergen")
     p("Lets install Django")
     p("If you already have a Django project you can use as a testbed for hypergen, feel free to skip this section. "
       "But if you are new to Django or want to have a clean installation for messing around with hypergen, read on.")
@@ -82,7 +87,7 @@ def template(n):
 
     p("If you go to ", a("localhost:8000", href="localhost:8000"),
       " you should see a space rocket! Congrats you're now ready to dive in to the world of hypergen")
-    h3("Install hypergen")
+    h4("Install hypergen")
     p("Before we can actually work with hypergen we need to install it, ctrl-c to exit the runserver and execute the following:")
     pre(
         code("""pip install django-hypergen""")
@@ -105,7 +110,7 @@ def template(n):
         .....""")
     )
 
-    h3("Make the app")
+    h2("Step 1: Make the app")
     p("Lets start a new app, so we can give hypergen a testrun")
     pre(
         code("""python manage.py startapp myapp""")
@@ -135,26 +140,27 @@ def template(n):
         code("""
         from hypergen.core import *
         from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-
+        
         @hypergen_view(perm=NO_PERM_REQUIRED)
         def step1(request):
-        doctype()
-        html(
-            head(),
-            body(
-                h1("This is rendered with hypergen"),
-                strong("An awesome HTML rendering engine, where you define templates using python only")
+            doctype()
+            html(
+                head(),
+                body(
+                    h1("Step 1: This is rendered with hypergen"),
+                    strong("An awesome HTML rendering engine, where you define templates using python only")
+                )
             )
-        )
         """)
     )
-    p("In order to view this in a browser we can add the view to myapp/urls.py and include the namespaced app in myproject/urls.py like this")
+    p("In order to view this in a browser we can add the view to myapp/urls.py and include the namespaced app in myproject/urls.py.")
     p("In the myapp folder create a file named urls.py, and add this content")
     pre(
         code("""
         from hypergen.contrib import hypergen_urls
         from myapp import views
 
+        # app_name is important for the hypergen_view and hypergen_callback decoraters 
         app_name = 'myapp'
 
         # Automatically creates urlpatterns for all functions in views.py decorated with @hypergen_view or @hypergen_callback.
@@ -175,9 +181,10 @@ def template(n):
         """)
     )
     p("Startup the dev server (python manage.py runserver) and go to localhost:8000/myapp/step1")
-    p("If all went well you should see a beautifully rendered HTML page, like in the good old days, no css, no JS just plain HTML")
-    p("How is this exciting you might ask... And really its not.. at least not yet. So far we what we have could be acquired just as easy using normal Django template without hypergen")
-    h3("Composablity")
+    p("If all went well you should see a beautifully rendered HTML page, like in the good old days, no css, no JS just plain HTML.")
+    p("How is this exciting you might ask... And really its not.. at least not yet. So far we what we have could be acquired just as easy using normal Django template without hypergen.")
+
+    h2("Step 2: Base component functions and composablity")
     p("Lets take all this hypergen template rendering out of the view and make it into its own function. Add this new view to myapp/views.py")
     pre(
         code(""" 
@@ -193,7 +200,7 @@ def template(n):
                     link(href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
                 ),
                 body(
-                    h1("This is rendered with hypergen "),
+                    h1("Step 2: This is rendered with hypergen "),
                     strong("An awesome HTML rendering engine, where you define templates using python only"),
                     h2("And because hypergen defines html templates in pure python functions these can be refactored into separate functions")
                 )
@@ -201,15 +208,15 @@ def template(n):
         """)
     )
     p("No need to edit urls.py. Your new view is instantly available and located at localhost:8000/myapp/step2")
-    p("How come It looks a lot different now, you might ask"
+    p("How come It looks a lot different now, you might ask. "
       "That's because we took the liberty of adding the water.css stylesheet to this page, using the link() function."
       "In general: All html tags (<html><div><span><audio> etc.) has an equivalent hypergen function, which was imported from hypergen.core in the begining of views.py in "
-      "this line")
+      "this line:")
     pre(code(
         "from hypergen.core import *"
     ))
-    p("Lets call these tag rendering python functions for base components. A base component does take both args and kwargs. Args beeing either text or other components,"
-      " which will effectively be nested inside the corresponding element when rendered. Kwargs will become the named attributes of the element")
+    p("Lets call these 'tag-rendering' python functions for base components. A base component takes args and kwargs. Args beeing either text or other components,"
+      " which will be nested inside the corresponding element when rendered. Kwargs will become the named attributes of the element")
     p("Here's is an example:")
     pre(code("""
         section(
@@ -232,6 +239,8 @@ def template(n):
     p('You might have noticed that the class attribute of the a tag, is defined as class_="clickable" instead of just class. ')
     p("This is because class is a reserved keyword in django, and therefore cannot be used to name a kwarg")
     p('Whenever you want to use a reserved keyword for an attribute name you can always just add _ to the end, hypergen will know what you mean')
+
+    h2("Step 3: Behold the ", i("with"), " statement")
     p("Another way you can use base component functions is as context managers. Try adding the following to your views.py")
     pre(
         code(""" 
@@ -246,24 +255,25 @@ def template(n):
                 with head():
                     link(href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
                 with body():
-                    h1("As Context managers")
-                    strong("Hypergen base component functions can also be used as contextmanagers")
+                    h1("Step 3: As Context managers")
+                    strong("Hypergen base component functions can also be used as context managers")
         """)
     )
     p("Go to localhost:8000/myapp/step3, and enjoy the result")
-    p("Using base component functions as context managers are really great for keeping an easy readable indented structure, its easy to see whats inside what, "
-      "buts it's also handy when you want to use python other than the base component functions, i.e. a loop that generates a list")
+    p("Using base component functions as context managers with the ", i("with"), " statement is a great way to maintain an easy readable indented structure - its easy to see whats inside what - "
+      "but also handy when you want to use python other than the base component functions, i.e. a loop that generates a list")
     pre(
         code("""
         with ul():
                 for i in range(20):
-                    li(f"I'm number {i}")
+                    li("I'm number ", i)
         """)
     )
     p("(Actually hypergen is so smart that the above could be writen by sending a list of base components as an argument to ul like so): ",
-      pre(code("""ul([li(f"I'm number {i}") for i in range(20)])""")),
+      pre(code("""ul([li("I'm number ", i) for i in range(20)])""")),
       "(but don't tell anyone)")
-    p("But where context managers really shine is where we want to create a base template where we can yield only the code that changes between our views")
+
+    h2("Step 4: The base template")
     p("Let's move all the boilerplate html code out in its own function. Make it into a @contextmanager and use it in step4")
     pre(
         code("""
@@ -285,10 +295,13 @@ def template(n):
         
         def template4():
             with base_template():
-                h1("Now using a base template")
+                h1("Step 4: Now using a base template")
+                p("Our code is much simpler now")
         """)
     )
-    p("""Now that we have created a new base template, we can add our new base template as a keyword argument to the hypergen_vew decorator so that we ca avoid all the boilerplate and concentrate on the content part of our template""")
+
+    h2("Step 5: Reusing the base template")
+    p("""Now that we have created a new base template, we can add our new base template as a keyword argument to the hypergen_view decorator so that we ca avoid all the boilerplate and concentrate on the content part of our template""")
     pre(code("""
         ......
         @hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
@@ -297,11 +310,12 @@ def template(n):
         
         def template5():
             h1("Step 5: Now reusing the base template")
-            section("This view is reusing the same base template as step4")
+            section("This view is reusing the same base template as step 4")
         """)
         )
-    p("""As you might have noticed our code get's a lot cleaner, now is the time for some user action.""")
-    h3("Introducing hypergen callbacks")
+    p("""As you might have noticed our code gets a lot cleaner; now is the time for some user action.""")
+
+    h2("Step 6: Introducing hypergen callbacks")
     p("""A hypergen callback is a function view that that can be triggered from the client, And usually changes something in the view""")
     p("""In order to make hypergen callbacks available we need to include hypergen.js in the head section of the page, change your base_template so it looks like this""")
     pre(
@@ -354,4 +368,10 @@ def template(n):
             template6(num_clicks)
         """)
     )
-    p("Callbacks are like views")
+    p("Visit localhost:8000/myapp/step6")
+    p("The page is now dynamic! When you click th button it calls the on_click_callback view, and the page updates automatically.")
+
+    h2("Conclusion")
+    p("This is the end of this very basic step by step getting started tutorial.")
+    p("If you feel like it, you now have the basic setup for adding hypergen views, and experimenting with hypergen callbacks.")
+    p("Please browse the examples for more ways to build your web apps using django and hypergen.")
