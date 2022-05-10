@@ -50,7 +50,7 @@ cd myproject
 python manage.py migrate
 python manage.py runserver
 """.strip()), class_="terminal nohighlight")
-                ol(li("Enjoy your new hypergen app at ", a("http://127.0.0.1:8000/", href="http://127.0.0.1:8000/")))
+                p("Enjoy your new hypergen app at ", a("http://127.0.0.1:8000/", href="http://127.0.0.1:8000/"), " 🚀")
 
             # App template
             with div(id_="startapp", class_="inner", style={"display": "none"}):
@@ -63,7 +63,8 @@ python manage.py startapp \\
                     class_="terminal nohighlight",
                 )
                 with ol():
-                    li("Add", code("'hypergen'"), "to", code("INSTALLED_APPS"), "in", code("settings.py"), sep=" ")
+                    li("Add", code("'hypergen'"), "and", code("'myapp'"), "to", code("INSTALLED_APPS"), "in",
+                        code("settings.py"), sep=" ")
                     li("Add", code("'hypergen.core.context_middleware'"), "to", code("MIDDLEWARE"), "in",
                         code("settings.py"), ", and", sep=" ")
                     li(

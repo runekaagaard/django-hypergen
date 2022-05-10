@@ -22,6 +22,7 @@ async function visitPage(t, href) {
   for (let i = 0; i < count; i++) {
     const link = await links.nth(i)
     const href2 = await link.getAttribute("href")
+    if (!href2) continue
     const onclick = await link.getAttribute("onclick")
     if (href2.startsWith("http") || visited.indexOf(href2) !== -1 || href2.startsWith("#") || !!onclick) continue
     console.log(`    adding ${href2} to queue`)
