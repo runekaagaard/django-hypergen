@@ -1,21 +1,21 @@
 <h2>Features</h2>
 <ul class="simple">
-<li>Composable - structure your app with 🔥python functions🔥</li>
-<li>Less infrastructure - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends</li>
-<li>Build truly singlepage apps - avoid abstraction gaps to a template language and javascript</li>
-<li>Async not needed - uses the vanilla Django Request-Response cycle</li>
-<li>Automatic (de)serialization - use python builtin types and move on</li>
-<li>No magic strings - reactivity is defined by referencing python functions</li>
-<li>Free partial loading and back/forward history support - no special setup needed</li>
-<li>Inbuilt confirmation dialogs, blocking and debouncing of client side events</li>
-<li>Easy uploading of files - with progress bar</li>
-<li>Still loves javascript - system to call client functions from the server</li>
+    <li>Composable - structure your app with 🔥python functions🔥</li>
+    <li>Less infrastructure - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, template tags, angular, vue and friends</li>
+    <li>Build truly singlepage apps - avoid abstraction gaps to a template language and javascript</li>
+    <li>Async not needed - uses the vanilla Django Request-Response cycle</li>
+    <li>Automatic (de)serialization - use python builtin types and move on</li>
+    <li>No magic strings - reactivity is defined by referencing python functions</li>
+    <li>Free partial loading and back/forward history support - no special setup needed</li>
+    <li>Inbuilt confirmation dialogs, blocking and debouncing of client side events</li>
+    <li>Easy uploading of files - with progress bar</li>
+    <li>Still loves javascript - system to call client functions from the server</li>
 </ul>
 </div>
 <div class="section" id="value-proposition">
-<h2>Value Proposition</h2>
-<p>The basic form that makes Hypergen great (for us) is exemplified in this simple counter:</p>
-<pre class="code python literal-block">
+    <h2>Value Proposition</h2>
+    <p>The basic form that makes Hypergen great (for us) is exemplified in this simple counter:</p>
+    <pre class="code python literal-block">
 <span class="keyword namespace">from</span> <span class="name namespace">hypergen.core</span> <span class="keyword namespace">import</span> <span class="operator">*</span>
 <span class="keyword namespace">from</span> <span class="name namespace">hypergen.core</span> <span class="keyword namespace">import</span> <span class="name">callback</span> <span class="keyword">as</span> <span class="name">cb</span>
 <span class="keyword namespace">from</span> <span class="name namespace">hypergen.contrib</span> <span class="keyword namespace">import</span> <span class="name">hypergen_view</span><span class="punctuation">,</span> <span class="name">hypergen_callback</span><span class="punctuation">,</span> <span class="name">NO_PERM_REQUIRED</span>
@@ -42,8 +42,8 @@
 </pre>
 </div>
 <div class="section" id="running-the-examples">
-<h2>Running the examples</h2>
-<pre class="code bash literal-block">
+    <h2>Running the examples</h2>
+    <pre class="code bash literal-block">
 git clone git&#64;github.com:runekaagaard/django-hypergen.git
 <span class="name builtin">cd</span> django-hypergen/
 virtualenv -p python3.9 venv
@@ -54,44 +54,44 @@ pip install -r examples/requirements.txt
 python manage.py migrate
 python manage.py runserver
 </pre>
-<p>Then browse to <a class="reference external" href="http://127.0.0.1:8000">http://127.0.0.1:8000</a>.</p>
+    <p>Then browse to <a class="reference external" href="http://127.0.0.1:8000">http://127.0.0.1:8000</a>.</p>
 </div>
 <div class="section" id="contributing">
-<h2>Contributing</h2>
-<p>Bug reports and feature requests are <a class="reference external" href="https://github.com/runekaagaard/django-hypergen/issues/new">very welcome</a>. So are pull requests or diffs.</p>
+    <h2>Contributing</h2>
+    <p>Bug reports and feature requests are <a class="reference external" href="https://github.com/runekaagaard/django-hypergen/issues/new">very welcome</a>. So are pull requests or diffs.</p>
 </div>
 <div class="section" id="authors">
-<h2>Authors</h2>
-<p>Hypergen is written by <a class="reference external" href="https://github.com/jeppetuxen">Jeppe Tuxen</a> and <a class="reference external" href="https://github.com/runekaagaard">Rune Kaagaard</a>. While we are unfortunately not working fulltime on Hypergen we are using it pretty extensively at work, so it's a big focus of ours.</p>
+    <h2>Authors</h2>
+    <p>Hypergen is written by <a class="reference external" href="https://github.com/jeppetuxen">Jeppe Tuxen</a> and <a class="reference external" href="https://github.com/runekaagaard">Rune Kaagaard</a>. While we are unfortunately not working fulltime on Hypergen we are using it pretty extensively at work, so it's a big focus of ours.</p>
 </div>
 <div class="section" id="why-not-hypergen">
-<h2>Why not Hypergen?</h2>
-<ul class="simple">
-<li>Every frontend change on the frontend requires a call to the server</li>
-<li>Python templating is not for everyone. Using Django templates is possible but not as polished yet</li>
-</ul>
+    <h2>Why not Hypergen?</h2>
+    <ul class="simple">
+        <li>Every frontend change on the frontend requires a call to the server</li>
+        <li>Python templating is not for everyone. Using Django templates is possible but not as polished yet</li>
+    </ul>
 </div>
 <div class="section" id="developing">
-<h2>Developing</h2>
-<div class="section" id="backend">
-<h3>Backend</h3>
-<p>Hypergen is located in <tt class="docutils literal">src/hypergen</tt>. Format all python code with yapf, a .yapf config file is present in the repository.</p>
-</div>
-<div class="section" id="frontend">
-<h3>Frontend</h3>
-<p>Compile the javascript files:</p>
-<pre class="code bash literal-block">
+    <h2>Developing</h2>
+    <div class="section" id="backend">
+        <h3>Backend</h3>
+        <p>Hypergen is located in <tt class="docutils literal">src/hypergen</tt>. Format all python code with yapf, a .yapf config file is present in the repository.</p>
+    </div>
+    <div class="section" id="frontend">
+        <h3>Frontend</h3>
+        <p>Compile the javascript files:</p>
+        <pre class="code bash literal-block">
 yarn global add parcel-bundler
 <span class="comment single"># or
 </span>npm install -g parcel-bundler
 <span class="name builtin">cd</span> hypergen/static/hypergen
 parcel watch -o hypergen.min.js -d . hypergen.js
 </pre>
-</div>
-<div class="section" id="profiling">
-<h3>Profiling</h3>
-<p>How fast are we?:</p>
-<pre class="code bash literal-block">
+    </div>
+    <div class="section" id="profiling">
+        <h3>Profiling</h3>
+        <p>How fast are we?:</p>
+        <pre class="code bash literal-block">
 rm -f /tmp/hypergen.profile <span class="operator">&amp;&amp;</span> python -m cProfile -o /tmp/hypergen.profile manage.py runserver <span class="literal number">127</span>.0.0.1:8002
 <span class="name builtin">echo</span> -e <span class="literal string single">'sort tottime\nstats'</span> <span class="punctuation">|</span> python3 -m pstats /tmp/hypergen.profile <span class="punctuation">|</span> less
 <span class="comment single"># or
@@ -101,20 +101,20 @@ rm -f /tmp/hypergen.profile <span class="operator">&amp;&amp;</span> python -m c
 </span>rm -f /tmp/hypergen.profile <span class="operator">&amp;&amp;</span> python -m cProfile -o /tmp/hypergen.profile manage.py inputs_profile <span class="operator">&amp;&amp;</span> <span class="literal string escape">\
 </span>    <span class="name builtin">echo</span> -e <span class="literal string single">'sort tottime\nstats'</span> <span class="punctuation">|</span> python3 -m pstats /tmp/hypergen.profile <span class="punctuation">|</span> less
 </pre>
-</div>
+    </div>
 </div>
 <div class="section" id="testing">
-<h2>Testing</h2>
-<p>We have a Github Action that automatically tests a matrix of Django and Python versions. You can run the pytest tests locally like so:</p>
-<pre class="code bash literal-block">
+    <h2>Testing</h2>
+    <p>We have a Github Action that automatically tests a matrix of Django and Python versions. You can run the pytest tests locally like so:</p>
+    <pre class="code bash literal-block">
 pip install requirements.txt
 make pytest-run
 </pre>
-<p>And the testcafe end-to-end tests:</p>
-<pre class="code bash literal-block">
+    <p>And the testcafe end-to-end tests:</p>
+    <pre class="code bash literal-block">
 npm i -g testcafe
 make testcafe-run
 <span class="comment single"># or
 </span>make testcafe-run-headless
 </pre>
-<p>Requires that the examples are running on <tt class="docutils literal">127.0.0.1:8002</tt>.</p>
+    <p>Requires that the examples are running on <tt class="docutils literal">127.0.0.1:8002</tt>.</p>
