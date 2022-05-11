@@ -27,8 +27,34 @@ def home(request):
     @base_template()
     def template():
         with div(class_="hero"):
-            h2("Responsive Django, simpler", class_="center hero")
-            p(i("Focus on just the functionality, while having 291% more fun!", sep=" "), class_="center")
+            h2("Build reactive web apps, without leaving Django", class_="center hero")
+            p(i("Stay focused on the actual complexity of your app, while having 291% more fun!", sep=" "),
+                class_="center")
+            hr()
+
+        h2("Why hypergen?")
+        p("For a more technical explanation about the ", i("what"), " and the ", i("how"), ", check out our ",
+            a("github page", href="https://github.com/runekaagaard/django-hypergen/"), " and read the ",
+            a("documentation", href="/documentation/"), ".")
+        p("We've been building Django apps for over 12 years, and have played around with different "
+            "approaches. From nojs html pages, over jQuery enhanced apps to full blown server/client "
+            "separation with React. We love composing html with jsx but felt a lot of our time was spent "
+            "munging data between server and client, duplicating logic and keeping up with the extremely "
+            "vast and ever changing javascript ecosystem.")
+        p("We felt there was a better way. For us.")
+        p("We wanted something that feels like ", i("one single thing."), " Just like Django does. ",
+            "We felt using html templates is a thing number two and doesn't compose well. We also wanted ",
+            "pain-free binding of DOM events to server functions as well as a simple way to instruct ",
+            "the client to run javascript functions.")
+        p("And Hypergen was born.")
+        p("Thanks for reading this, drop by and ",
+            a("say hi", href="https://github.com/runekaagaard/django-hypergen/discussions"), " :)")
+
+        h2("Super duper quickstart")
+        p("Read the ", a("Getting Started",
+            href="/gettingstarted/begin/"), " tutorial for a more thorough experience. ",
+            "For the most speedy start possible, run the following in your terminal.")
+
         with div(class_="terminals", id_="starter"):
             div(
                 a("new project", onmousedown=call_js("showTerminal", "starter", "startproject", "b2"), id_="b2",
