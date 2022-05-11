@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 from yaml import load
 try:
     from yaml import CLoader as Loader
@@ -9,9 +10,10 @@ from django.urls import reverse
 
 from hypergen.core import *
 from hypergen.core import hypergen_to_response
+from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+
 from notifications.views import notifications
 from partialload.views import page1
-
 from todomvc.views import todomvc, ALL
 from inputs.views import inputs
 from gameofcython.views import gameofcython
@@ -23,6 +25,7 @@ from commands.views import commands
 from globalcontext.views import globalcontext
 from gettingstarted.views import begin
 
+@hypergen_view(url="^$", perm=NO_PERM_REQUIRED)
 def home(request):
     @base_template()
     def template():
@@ -40,7 +43,7 @@ def home(request):
             "approaches. From nojs html pages, over jQuery enhanced apps to full blown server/client "
             "separation with React. We love composing html with jsx but felt a lot of our time was spent "
             "munging data between server and client, duplicating logic and keeping up with the extremely "
-            "vast and ever changing javascript ecosystem.")
+            "vast and ever-changing javascript ecosystem.")
         p("We felt there was a better way. For us.")
         p("We wanted something that feels like ", i("one single thing."), " Just like Django does. ",
             "We felt using html templates is a thing number two and doesn't compose well. We also wanted ",
@@ -54,18 +57,56 @@ def home(request):
         p("Read the ", a("Getting Started",
             href="/gettingstarted/begin/"), " tutorial for a more thorough experience. ",
             "For the most speedy start possible, run the following in your terminal.")
+        with div(class_="terminals", id_="quickstart"):
+            quickstart_template()
 
-        with div(class_="terminals", id_="starter"):
-            div(
-                a("new project", onmousedown=call_js("showTerminal", "starter", "startproject", "b2"), id_="b2",
-                class_="selected"),
-                a("new app", onmousedown=call_js("showTerminal", "starter", "startapp", "b1"), id_="b1"),
-                sep=" ",
+        hr(style={"margin-top": "100px"})
+        p(mark("2022-05-10: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+            "Docs are being written and corners rounded :)", sep=" ")
+
+    template()
+
+@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="quickstart")
+def quickstart(request, n, app_name):
+    quickstart_template(n=n, app_name=app_name)
+
+def quickstart_template(n=0, app_name="myapp"):
+    div(
+        a("new project", onmousedown=callback(quickstart, 0, app_name), id_="b2",
+        class_="selected" if n == 0 else OMIT),
+        a("new app", onmousedown=callback(quickstart, 1, app_name), id_="b1", class_="selected" if n == 1 else OMIT),
+    )
+
+    # Project template
+    if n == 0:
+        with div(id_="startproject", class_="inner"):
+            pre(code(PROJECT), class_="terminal nohighlight")
+            p("Enjoy your new hypergen app at ", a("http://127.0.0.1:8000/", href="http://127.0.0.1:8000/"), " 🚀")
+
+    # App template
+    if n == 1:
+        with div(id_="startapp", class_="inner"):
+            pre(
+                code(APP),
+                class_="terminal nohighlight",
             )
-            # Project template
-            with div(id_="startproject", class_="inner"):
-                pre(
-                    code("""
+            with ol():
+                li("Add", code("'hypergen'"), "and", code("'myapp'"), "to", code("INSTALLED_APPS"), "in",
+                    code("settings.py"), sep=" ")
+                li("Add", code("'hypergen.core.context_middleware'"), "to", code("MIDDLEWARE"), "in",
+                    code("settings.py"), ", and", sep=" ")
+                li(code("path('myapp/', include(myapp.urls, namespace='myapp')),", title=IMPORTS), "to the ",
+                    code("urlpatterns"), "variable of your projects main", code("urls.py"), "file", sep=" ")
+                li("Enjoy your new hypergen app at", code("http://127.0.0.1:8000/myapp/my_view/"), "🤯", sep=" ")
+
+IMPORTS = """
+    Don't forget these imports:
+
+    from django.urls import path, include
+    import myapp.urls
+                        """.strip()
+
+PROJECT = """
 python3 -m venv venv
 source venv/bin/activate
 pip install django django-hypergen
@@ -75,66 +116,39 @@ django-admin startproject \\
 cd myproject
 python manage.py migrate
 python manage.py runserver
-""".strip()), class_="terminal nohighlight")
-                p("Enjoy your new hypergen app at ", a("http://127.0.0.1:8000/", href="http://127.0.0.1:8000/"), " 🚀")
+""".strip()
 
-            # App template
-            with div(id_="startapp", class_="inner", style={"display": "none"}):
-                pre(
-                    code("""
+APP = """
 python manage.py startapp \\
     --template=https://github.com/runekaagaard/django-hypergen-app-template/archive/master.zip \\
     myapp
-            """.strip()),
-                    class_="terminal nohighlight",
-                )
-                with ol():
-                    li("Add", code("'hypergen'"), "and", code("'myapp'"), "to", code("INSTALLED_APPS"), "in",
-                        code("settings.py"), sep=" ")
-                    li("Add", code("'hypergen.core.context_middleware'"), "to", code("MIDDLEWARE"), "in",
-                        code("settings.py"), ", and", sep=" ")
-                    li(
-                        code(
-                        "path('myapp/', include(myapp.urls, namespace='myapp')),", title="""
-Don't forget these imports:
+""".strip()
 
-from django.urls import path, include
-import myapp.urls
-                    """.strip()), "to the ", code("urlpatterns"), "of your projects main",
-                        code("urls.py"), "file, and enjoy your new hypergen app at",
-                        code("http://127.0.0.1:8000/myapp/my_view/"), sep=" ")
-
-        hr(style={"margin-top": "100px"})
-        p(mark("2022-05-10: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
-            "Docs are being written and corners rounded :)", sep=" ")
-
-    return hypergen_to_response(template)
-
+@hypergen_view(perm=NO_PERM_REQUIRED)
 def documentation(request):
     @base_template()
     def template():
         h2("App examples")
         p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
         with ul():
-            li(a("Hello hypergen", href=counter.reverse()))
+            li(a("Hello hypergen", href=counter.reverse(), id_="hellohypergen"))
             li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")),
                 " - no magic from contrib.py used")
             li(a("TodoMVC", href=todomvc.reverse(ALL)))
 
         h2("Tutorials")
         ul(
-            li(a("Getting Started", href=begin.reverse()),
+            li(a("Getting Started", href=begin.reverse(), id_="gettingstarted"),
             " - a walk-through from scratch that gets you up and running"))
 
         h2("Live documentation")
         p("Live documentation showing how Hypergen works.")
         with ul():
             li(a("Form inputs", href=inputs.reverse()))
-            li(a("Client commands", href=commands.reverse()))
+            li(a("Client commands", href=commands.reverse(), id_="clientcommands"))
             li(a("Partial loading and history support", href=page1.reverse()))
-            li(a("Hypergens global immutable context", href=globalcontext.reverse()))
-            li(a("Notifications from Django messages", href=notifications.reverse()))
-            li(strike(a("Not translation", href=page.reverse())))
+            li(a("Hypergens global immutable context", href=globalcontext.reverse(), id_="hyimucon"))
+            li(a("Notifications from Django messages", href=notifications.reverse(), id_="notifications"))
 
         h2("Alternative template implementations")
         p("While the pure python template 'language' is the main template engine, we support two alternative ",
@@ -148,7 +162,7 @@ def documentation(request):
             li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
                 " - example of the still unstable cython implemetation.")
 
-        h2("Compatability")
+        h2("Compatibility")
         p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),
             " on the following combinations of Django and Python:", sep=" ")
         with open("../.github/workflows/pytest.yml") as f:
