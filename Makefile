@@ -33,6 +33,8 @@ copilot-deploy-no-static:
 	copilot deploy -n hypergen-service -e prod
 copilot-bash:
 	copilot svc exec --name hypergen-service env prod -c /bin/bash
+copilot-logs:
+	copilot svc logs -n hypergen-service -e prod --follow
 pytest-run:
 	pytest --tb=native -x -vvvv src/hypergen/test_all.py
 docker-system-prune:
