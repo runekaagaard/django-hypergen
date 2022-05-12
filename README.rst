@@ -176,3 +176,10 @@ And the testcafe end-to-end tests:
     make testcafe-run-headless
 
 Requires that the examples are running on ``127.0.0.1:8002``.
+
+Thanks
+======
+
+- `Django <https://www.djangoproject.com/>`_ - for making work fun
+- `Pyrsistent <https://pyrsistent.readthedocs.io/en/latest/intro.html>`_ - for providing an immutable dict
+- `Simple.css <https://simplecss.org/>`_ - no class styling on the homepage
