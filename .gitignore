@@ -144,3 +144,4 @@ src/hypergen/ultragen.html
 .idea/
 
 node_modules
+*.swp
