@@ -24,9 +24,9 @@ docker-run:
 docker-bash:
 	docker exec -it hypergen-site bash
 copilot-deploy:
-	#cd src/hypergen/static/hypergen/ && parcel build -o hypergen.min.js -d . hypergen.js
-	git commit -am "website: Building hypergen.js"
-	git push
+	cd src/hypergen/static/hypergen/ && parcel build -o hypergen.min.js -d . hypergen.js
+	git commit -am "website: Building hypergen.js" || true
+	git push || true
 	cd examples && PROD=1 python manage.py collectstatic --noinput
 	copilot deploy -n hypergen-service -e prod
 copilot-deploy-no-static:
