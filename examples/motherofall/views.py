@@ -67,6 +67,8 @@ def mouse(item):
 def motherofall(request):
     global state
     localkey = request.session.session_key
+
+    h2("There are currently ", len(state.keys()), " on this site")
     if 'name' not in get_own_state(request):
         with label("Whats your screen name?"):
               el = input_(id_="name")
@@ -77,7 +79,6 @@ def motherofall(request):
         setTimeout(() => hypergen.callback('/motherofall/update/', [], {}), 20)""")
         for key in state:
             item = state[key]
-            print(item)
             if key != localkey:
                 mouse(item)
 

@@ -71,8 +71,8 @@ header span {
 }
 
 div.terminals {
-  width: 80%;
-  margin: auto;
+  /* width: 80%;
+     margin: auto; */
 }
 
 div.terminals a.selected {
