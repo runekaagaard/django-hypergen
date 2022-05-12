@@ -17,7 +17,7 @@ def base_template():
     doctype()
     with html():
         with head():
-            script(src=static("/hypergen/hypergen.min.js"))
+            script(src=static("hypergen/hypergen.min.js"))
             script("""
                    document.addEventListener('keydown', e => hypergen.callback('/djangolander/keydown/', [e.key], {}))
                    document.addEventListener('keyup', e => hypergen.callback('/djangolander/keyup/', [e.key], {}))
