@@ -11,6 +11,9 @@ from django.templatetags.static import static
 from contextlib import contextmanager
 
 def base_head():
+    meta(charset="utf-8")
+    meta(http_equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title("Django Hypergen")
     link("https://unpkg.com/simpledotcss@2.0.7/simple.min.css")
     link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
