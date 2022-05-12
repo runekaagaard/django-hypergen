@@ -1,6 +1,9 @@
 from collections import defaultdict
 
 from yaml import load
+
+from djangolander.views import lander
+
 try:
     from yaml import CLoader as Loader
 except ImportError:
@@ -176,3 +179,4 @@ def documentation(request):
     p("Hypergen supports all browser versions from IE10 and forward.")
 
     show_sources(__file__)
+

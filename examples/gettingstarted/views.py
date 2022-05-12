@@ -220,7 +220,7 @@ def template(n):
     p("Here's is an example:")
     pre(code("""
         section(
-            "This is a section, with an ", a("link", id="im-one-of-a-kind", class_="clickable", href="#"), " inside", br(),
+            "This is a section, with an ", a("link", id_="im-one-of-a-kind", class_="clickable", href="#"), " inside", br(),
             "The link has the id ", i("im-one-of-a-kind")
         )
         """
@@ -344,18 +344,18 @@ def template(n):
         code("""
         .......
         @hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
-            def step6(request):
-                template6()
-    
-            def template6(num_clicks=0):
-                if num_clicks>0:
-                    h2("Step 6: Callback is a success")
-                    p(f"You've successfully clicked on a button {num_clicks} time(s)- congratulations!")
-                    button("click again", id_="button", onclick=callback(on_click, num_clicks + 1))
-                else:
-                    h2("Step 6: Callbacks")
-                    p("Try clicking the button below - if you dare")
-                    button("click me", id_="button", onclick=callback(on_click_callback, num_clicks + 1))
+        def step6(request):
+            template6()
+
+        def template6(num_clicks=0):
+            if num_clicks>0:
+                h2("Step 6: Callback is a success")
+                p(f"You've successfully clicked on a button {num_clicks} time(s)- congratulations!")
+                button("click again", id_="button", onclick=callback(on_click, num_clicks + 1))
+            else:
+                h2("Step 6: Callbacks")
+                p("Try clicking the button below - if you dare")
+                button("click me", id_="button", onclick=callback(on_click_callback, num_clicks + 1))
         """)
     )
     p("As you can see we've assigned an action on the onclick action on the button element, and referenced it to the on_click_callback, "
@@ -369,7 +369,7 @@ def template(n):
         """)
     )
     p("Visit localhost:8000/myapp/step6")
-    p("The page is now dynamic! When you click th button it calls the on_click_callback view, and the page updates automatically.")
+    p("The page is now dynamic! When you click the button it calls the on_click_callback view, and the page updates automatically.")
 
     h2("Conclusion")
     p("This is the end of this very basic step by step getting started tutorial.")
