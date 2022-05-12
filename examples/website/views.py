@@ -25,46 +25,41 @@ from commands.views import commands
 from globalcontext.views import globalcontext
 from gettingstarted.views import begin
 
-@hypergen_view(url="^$", perm=NO_PERM_REQUIRED)
+@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
-    @base_template()
-    def template():
-        with div(class_="hero"):
-            h2("Build reactive web apps, without leaving Django", class_="center hero")
-            p(i("Stay focused on the actual complexity of your app, while having 291% more fun!", sep=" "),
-                class_="center")
-            hr()
+    with div(class_="hero"):
+        h2("Build reactive web apps, without leaving Django", class_="center hero")
+        p(i("Stay focused on the actual complexity of your app, while having 291% more fun!", sep=" "),
+            class_="center")
+        hr()
 
-        h2("Why hypergen?")
-        p("For a more technical explanation about the ", i("what"), " and the ", i("how"), ", check out our ",
-            a("github page", href="https://github.com/runekaagaard/django-hypergen/"), " and read the ",
-            a("documentation", href="/documentation/"), ".")
-        p("We've been building Django apps for over 12 years, and have played around with different "
-            "approaches. From nojs html pages, over jQuery enhanced apps to full blown server/client "
-            "separation with React. We love composing html with jsx but felt a lot of our time was spent "
-            "munging data between server and client, duplicating logic and keeping up with the extremely "
-            "vast and ever-changing javascript ecosystem.")
-        p("We felt there was a better way. For us.")
-        p("We wanted something that feels like ", i("one single thing."), " Just like Django does. ",
-            "We felt using html templates is a thing number two and doesn't compose well. We also wanted ",
-            "pain-free binding of DOM events to server functions as well as a simple way to instruct ",
-            "the client to run javascript functions.")
-        p("And Hypergen was born.")
-        p("Thanks for reading this, drop by and ",
-            a("say hi", href="https://github.com/runekaagaard/django-hypergen/discussions"), " :)")
+    h2("Why hypergen?")
+    p("For a more technical explanation about the ", i("what"), " and the ", i("how"), ", check out our ",
+        a("github page", href="https://github.com/runekaagaard/django-hypergen/"), " and read the ",
+        a("documentation", href="/documentation/"), ".")
+    p("We've been building Django apps for over 12 years, and have played around with different "
+        "approaches. From nojs html pages, over jQuery enhanced apps to full blown server/client "
+        "separation with React. We love composing html with jsx but felt a lot of our time was spent "
+        "munging data between server and client, duplicating logic and keeping up with the extremely "
+        "vast and ever-changing javascript ecosystem.")
+    p("We felt there was a better way. For us.")
+    p("We wanted something that feels like ", i("one single thing."), " Just like Django does. ",
+        "We felt using html templates is a thing number two and doesn't compose well. We also wanted ",
+        "pain-free binding of DOM events to server functions as well as a simple way to instruct ",
+        "the client to run javascript functions.")
+    p("And Hypergen was born.")
+    p("Thanks for reading this, drop by and ",
+        a("say hi", href="https://github.com/runekaagaard/django-hypergen/discussions"), " :)")
 
-        h2("Super duper quickstart")
-        p("Read the ", a("Getting Started",
-            href="/gettingstarted/begin/"), " tutorial for a more thorough experience. ",
-            "For the most speedy start possible, run the following in your terminal.")
-        with div(class_="terminals", id_="quickstart"):
-            quickstart_template()
+    h2("Super duper quickstart")
+    p("Read the ", a("Getting Started", href="/gettingstarted/begin/"), " tutorial for a more thorough experience. ",
+        "For the most speedy start possible, run the following in your terminal.")
+    with div(class_="terminals", id_="quickstart"):
+        quickstart_template()
 
-        hr(style={"margin-top": "100px"})
-        p(mark("2022-05-10: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
-            "Docs are being written and corners rounded :)", sep=" ")
-
-    template()
+    hr(style={"margin-top": "100px"})
+    p(mark("2022-05-10: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+        "Docs are being written and corners rounded :)", sep=" ")
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="quickstart")
 def quickstart(request, n, app_name):
@@ -124,68 +119,60 @@ python manage.py startapp \\
     myapp
 """.strip()
 
-@hypergen_view(perm=NO_PERM_REQUIRED)
+@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
 def documentation(request):
-    @base_template()
-    def template():
-        h2("App examples")
-        p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
-        with ul():
-            li(a("Hello hypergen", href=counter.reverse(), id_="hellohypergen"))
-            li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")),
-                " - no magic from contrib.py used")
-            li(a("TodoMVC", href=todomvc.reverse(ALL)))
+    h2("App examples")
+    p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
+    with ul():
+        li(a("Hello hypergen", href=counter.reverse()))
+        li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from contrib.py used")
+        li(a("TodoMVC", href=todomvc.reverse(ALL)))
 
-        h2("Tutorials")
-        ul(
-            li(a("Getting Started", href=begin.reverse(), id_="gettingstarted"),
-            " - a walk-through from scratch that gets you up and running"))
+    h2("Tutorials")
+    ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
 
-        h2("Live documentation")
-        p("Live documentation showing how Hypergen works.")
-        with ul():
-            li(a("Form inputs", href=inputs.reverse()))
-            li(a("Client commands", href=commands.reverse(), id_="clientcommands"))
-            li(a("Partial loading and history support", href=page1.reverse()))
-            li(a("Hypergens global immutable context", href=globalcontext.reverse(), id_="hyimucon"))
-            li(a("Notifications from Django messages", href=notifications.reverse(), id_="notifications"))
+    h2("Live documentation")
+    p("Live documentation showing how Hypergen works.")
+    with ul():
+        li(a("Form inputs", href=inputs.reverse()))
+        li(a("Client commands", href=commands.reverse()))
+        li(a("Partial loading and history support", href=page1.reverse()))
+        li(a("Hypergens global immutable context", href=globalcontext.reverse()))
+        li(a("Notifications from Django messages", href=notifications.reverse()))
 
-        h2("Alternative template implementations")
-        p("While the pure python template 'language' is the main template engine, we support two alternative ",
-            " implementations.")
-        with ul():
-            li(
-                a("Using liveview features from within Django Templates",
-                href=reverse("djangotemplates:djangotemplates")),
-                " - example of the mostly stable Django templates implementation. We could use some input on this, and are ready to polish it together with you."
-            )
-            li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
-                " - example of the still unstable cython implemetation.")
+    h2("Alternative template implementations")
+    p("While the pure python template 'language' is the main template engine, we support two alternative ",
+        " implementations.")
+    with ul():
+        li(
+            a("Using liveview features from within Django Templates",
+            href=reverse("djangotemplates:djangotemplates")),
+            " - example of the mostly stable Django templates implementation. We could use some input on this, and are ready to polish it together with you."
+        )
+        li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
+            " - example of the still unstable cython implemetation.")
 
-        h2("Compatibility")
-        p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),
-            " on the following combinations of Django and Python:", sep=" ")
-        with open("../.github/workflows/pytest.yml") as f:
-            pytest = load(f.read(), Loader=Loader)
-            adjm, xs, ys = defaultdict(list), set(), set()
-            for combination in pytest["jobs"]["build"]["strategy"]["matrix"]["include"]:
-                py, dj = combination["python-version"], combination["django-version"].replace("Django==", "")
-                adjm[py].append(dj)
-                xs.add(py)
-                ys.add(dj)
+    h2("Compatibility")
+    p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),
+        " on the following combinations of Django and Python:", sep=" ")
+    with open("../.github/workflows/pytest.yml") as f:
+        pytest = load(f.read(), Loader=Loader)
+        adjm, xs, ys = defaultdict(list), set(), set()
+        for combination in pytest["jobs"]["build"]["strategy"]["matrix"]["include"]:
+            py, dj = combination["python-version"], combination["django-version"].replace("Django==", "")
+            adjm[py].append(dj)
+            xs.add(py)
+            ys.add(dj)
 
-            xs = sorted(xs, key=lambda x: int(str(x).split(".")[-1]))
-            ys = sorted(ys)
-            with table():
-                tr(th(), [th("python ", x) for x in xs])
-                for y in ys:
-                    tr(th("django ", y), [
-                        td("✔" if y in adjm[x] else "", style={"color": "green", "text-align": "center"})
-                        for x in xs])
+        xs = sorted(xs, key=lambda x: int(str(x).split(".")[-1]))
+        ys = sorted(ys)
+        with table():
+            tr(th(), [th("python ", x) for x in xs])
+            for y in ys:
+                tr(th("django ", y),
+                    [td("✔" if y in adjm[x] else "", style={"color": "green", "text-align": "center"}) for x in xs])
 
-        p("Both pytest integration and testcafe end-to-end tests are run over the entire matrix.")
-        p("Hypergen supports all browser versions from IE10 and forward.")
+    p("Both pytest integration and testcafe end-to-end tests are run over the entire matrix.")
+    p("Hypergen supports all browser versions from IE10 and forward.")
 
-        show_sources(__file__)
-
-    return hypergen_to_response(template)
+    show_sources(__file__)

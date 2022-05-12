@@ -46,12 +46,14 @@ def base_template():
                     h1(img(src=static("website/hypergen-logo.png"), class_="logo"), "ypergen")
                     span(" - take a break from javascript")
 
-            with main():
+            with main(id_="main"):
                 yield
 
             with footer():
                 p("Built with Hypergen, ", a("Simple.css", href="https://simplecss.org/", style={"color": "inherit"}),
                     " and ", span("❤", style={"color": "red"}))
+
+base_template.target_id = "main"
 
 @contextmanager
 def base_example_template():

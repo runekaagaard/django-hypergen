@@ -640,7 +640,7 @@ class a(base_element):
                 base_template2 = getattr(c, "base_template", None)
                 if base_template1 == base_template2:
                     # Partial loading is possible.
-                    attrs["onclick"] = callback(href)
+                    attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
 
         super(a, self).__init__(*children, **attrs)
 

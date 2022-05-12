@@ -96,7 +96,13 @@ export const setClientState = function(at, value) {
 var i = 0
 var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
-                                             params={}, meta={}, clear=false, elementId=null, debug=false}={}) {
+                                             params={}, meta={}, clear=false, elementId=null, debug=false,
+                                             event=null}={})
+{
+  if (!!event) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
   let postIt = function() {
     let json
     console.log("REQUEST", url, args, debounce)
