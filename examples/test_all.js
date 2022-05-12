@@ -51,7 +51,7 @@ async function onclickEvents(t, href) {
 test('test', async t => {
   while(queue.length > 0) {
     const href = queue.pop()
-    if (["/todomvc/"].indexOf(href) !== -1) continue
+    if (["/todomvc/", "/gettingstarted/begin/", "/djangolander/lander/"].indexOf(href) !== -1) continue
     console.log(`testing url: ${href}`)
     await t
       .navigateTo(href)
