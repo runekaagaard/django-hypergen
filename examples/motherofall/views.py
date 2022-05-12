@@ -44,29 +44,52 @@ mouse_html = """
 
 state = {}
 
-def mouse(x, y):
+def get_own_state(request):
+    key = request.session.session_key
+    global state
+    if key not in state:
+        state[key] = {}
+    return state[key]
+
+def set_own_state(request, new_state):
+    key = request.session.session_key
+    global state
+    state[key] = {**get_own_state(request), **new_state}
+
+
+def mouse(item):
     with div(style={'position': 'fixed', 'width': '40px',
-                    'left': f'{x}px', 'top': f'{y}px'}):
+                    'left': f'{item.get("x", 0)}px', 'top': f'{item.get("y", 0)}px'}):
         raw(mouse_html)
+        div(item.get("name", "No name"))
 
 @hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
 def motherofall(request):
     global state
-    script("""
-    document.activeElement.blur();
-    setTimeout(() => hypergen.callback('/motherofall/update/', [], {}), 20)""")
     localkey = request.session.session_key
-    for key in state:
-        item = state[key]
-        if key != localkey:
-            mouse(item['x'], item['y'])
+    if 'name' not in get_own_state(request):
+        with label("Whats your screen name?"):
+              el = input_(id_="name")
+              button("Submit & Start", id_="submit", onclick=callback(submit_name, el))
+    else:
+        script("""
+        document.activeElement.blur();
+        setTimeout(() => hypergen.callback('/motherofall/update/', [], {}), 20)""")
+        for key in state:
+            item = state[key]
+            print(item)
+            if key != localkey:
+                mouse(item)
 
 
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, view=motherofall, target_id="content")
 def update(request):
-    print("updating")
+    pass
 
+@hypergen_callback(perm=NO_PERM_REQUIRED, view=motherofall, target_id="content")
+def submit_name(request, name):
+    set_own_state(request, {'name': name, 'x': 0, 'y': 0})
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
 def reset(request):
@@ -76,12 +99,7 @@ def reset(request):
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
 def mouse_move(request, x, y):
-    global state
-    key = request.session.session_key
-    if not key in state:
-        state[key] = {}
-    state[key]['x'] = x
-    state[key]['y'] = y
+    set_own_state(request, {'x': x, 'y': y})
 
 
 
