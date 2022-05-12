@@ -35,14 +35,17 @@ copilot-bash:
 	copilot svc exec --name hypergen-service env prod -c /bin/bash
 copilot-logs:
 	copilot svc logs -n hypergen-service -e prod --follow
-pytest-run:
-	pytest --tb=native -x -vvvv src/hypergen/test_all.py
 docker-system-prune:
 	docker system prune -a
+pytest-run:
+	pytest --tb=native -x -vvvv src/hypergen/test_all.py
 testcafe-run:
 	cd examples && testcafe chrome test_all.js |& ansi2txt
 testcafe-run-headless:
 	cd examples && testcafe ""chrome:headless"" test_all.js
+test-all:
+	make pytest-run
+	make testcafe-run-headless
 pypi-release:
 	rm -rf dist/*
 	python3 -m build
