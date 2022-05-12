@@ -56,7 +56,8 @@ def home(request):
 
     h2("Super duper quickstart")
     p("Read the ", a("Getting Started", href="/gettingstarted/begin/"), " tutorial for a more thorough experience. ",
-        "For the most speedy start possible, run the following in your terminal.")
+        "For the most speedy start possible, run the following in your terminal.",
+        ' Replace "myproject" and "myapp" with your own names.')
     with div(class_="terminals", id_="quickstart"):
         quickstart_template()
 
@@ -92,10 +93,10 @@ def quickstart_template(n=0, app_name="myapp"):
                 li("Add", code("'hypergen'"), "and", code("'myapp'"), "to", code("INSTALLED_APPS"), "in",
                     code("settings.py"), sep=" ")
                 li("Add", code("'hypergen.core.context_middleware'"), "to", code("MIDDLEWARE"), "in",
-                    code("settings.py"), ", and", sep=" ")
-                li(code("path('myapp/', include(myapp.urls, namespace='myapp')),", title=IMPORTS), "to the ",
+                    code("settings.py"), sep=" ")
+                li("Add", code("path('myapp/', include(myapp.urls, namespace='myapp')),", title=IMPORTS), "to the ",
                     code("urlpatterns"), "variable of your projects main", code("urls.py"), "file", sep=" ")
-                li("Enjoy your new hypergen app at", code("http://127.0.0.1:8000/myapp/my_view/"), "🤯", sep=" ")
+            p("Enjoy your new hypergen app at", code("http://127.0.0.1:8000/myapp/my_view/"), "🤯", sep=" ")
 
 IMPORTS = """
     Don't forget these imports:
@@ -179,4 +180,3 @@ def documentation(request):
     p("Hypergen supports all browser versions from IE10 and forward.")
 
     show_sources(__file__)
-
