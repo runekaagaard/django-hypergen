@@ -61,10 +61,6 @@ def home(request):
     with div(class_="terminals", id_="quickstart"):
         quickstart_template()
 
-    hr(style={"margin-top": "100px"})
-    p(mark("2022-05-10: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
-        "Docs are being written and corners rounded :)", sep=" ")
-
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="quickstart")
 def quickstart(request, n, app_name):
     quickstart_template(n=n, app_name=app_name)
@@ -125,6 +121,9 @@ python manage.py startapp \\
 
 @hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
 def documentation(request):
+    p(mark("2022-05-12: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+        "Docs are being written and corners rounded :)", sep=" ")
+
     h2("App examples")
     p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
     with ul():
