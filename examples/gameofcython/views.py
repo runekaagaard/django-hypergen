@@ -15,8 +15,8 @@ try:
 except ImportError:  # ModuleNotFoundError not in python3.5
     module_found = False
 
-HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, target_id="content", namespace="gameofcython",
-    app_name="gameofcython", base_template=base_template)
+HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, namespace="gameofcython", app_name="gameofcython",
+    base_template=base_template)
 
 RUNNING, STOPPED = "RUNNING", "STOPPED"
 STATE = STOPPED

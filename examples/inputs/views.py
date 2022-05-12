@@ -18,7 +18,7 @@ from website.templates import base_template, show_sources
 E = namedtuple("E", 'type,attrs,doc')
 E.__new__.__defaults__ = (None,) * 3  # default keyword not in py3.6
 
-@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template, target_id="content")
+@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def inputs(request):
     INPUT_TYPES = [
         E("checkbox", d(checked=True)),
