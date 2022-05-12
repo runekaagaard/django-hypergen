@@ -17,7 +17,7 @@ def base_template():
     doctype()
     with html():
         with head():
-            script(src=static("/hypergen/hypergen.min.js"))
+            script(src=static("hypergen/hypergen.min.js"))
             script("""
             window.addEventListener("mousemove", e => {
             hypergen.callback("/motherofall/mouse_move/", [e.clientX, e.clientY], {})
