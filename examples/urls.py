@@ -20,10 +20,10 @@ import notifications.urls
 import partialload.urls
 import commands.urls
 import gettingstarted.urls
-
 import globalcontext.urls
 import djangolander.urls
 import motherofall.urls
+import apptemplate.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -44,4 +44,6 @@ urlpatterns = [
     url('^notifications/', include(notifications.urls, namespace="notifications")),
     url('^partialload/', include(partialload.urls, namespace="partialload")),
     url('^commands/', include(commands.urls, namespace="commands")),
-    url('^globalcontext/', include(globalcontext.urls, namespace="globalcontext")),]
+    url('^globalcontext/', include(globalcontext.urls, namespace="globalcontext")),
+    url('^apptemplate/', include(apptemplate.urls, namespace="apptemplate")),
+]

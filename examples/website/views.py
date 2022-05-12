@@ -27,6 +27,7 @@ from website.templates import base_template, show_sources
 from commands.views import commands
 from globalcontext.views import globalcontext
 from gettingstarted.views import begin
+from apptemplate.views import my_view
 
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
@@ -130,6 +131,7 @@ def documentation(request):
         li(a("Hello hypergen", href=counter.reverse()))
         li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from contrib.py used")
         li(a("TodoMVC", href=todomvc.reverse(ALL)))
+        li(a("Hypergen App template", href=my_view.reverse()))
 
     h2("Tutorials")
     ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
