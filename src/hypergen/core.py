@@ -889,7 +889,7 @@ def decoder(o):
         raise Exception("Unknown datatype, {}".format(datatype))
 
 def dumps(data, default=encoder, indent=None):
-    result = json.dumps(data, default=encoder, separators=(',', ':'), indent=indent)
+    result = json.dumps(data, default=default, separators=(',', ':'), indent=indent)
 
     return result
 
