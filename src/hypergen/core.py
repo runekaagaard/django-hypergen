@@ -59,14 +59,11 @@ def make_string(s):
 
 if sys.version_info.major > 2:
     from html import escape
-    letters = string.ascii_letters
-    str = str
 
     def items(x):
         return list(x.items())
 else:
     from cgi import escape
-    letters = string.letters
 
     def items(x):
         return iter(x.items())
