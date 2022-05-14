@@ -3,13 +3,13 @@ from __future__ import (absolute_import, division, unicode_literals)
 
 d = dict
 
-import string, sys, time, threading, datetime, json, logging
+import string, sys, time, threading, datetime, json, logging, io
 from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps, update_wrapper
 from copy import deepcopy
 
-from contextlib import ContextDecorator, contextmanager
+from contextlib import ContextDecorator, contextmanager, redirect_stderr
 from pyrsistent import pmap, m
 
 from django.http.response import HttpResponse, HttpResponseRedirect
@@ -17,6 +17,12 @@ try:
     from django.utils.encoding import force_text
 except ImportError:
     from django.utils.encoding import force_str as force_text
+
+try:
+    import docutils.core
+    docutils_ok = True
+except ImportError:
+    docutils_ok = False
 
 from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
@@ -39,7 +45,7 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "command", "raw", "callback", "call_js", "THIS",
-    "OMIT", "context", "is_ajax", "write"]
+    "OMIT", "context", "is_ajax", "write", "rst"]
 
 ### Python 2+3 compatibility ###
 
@@ -270,6 +276,13 @@ def write(*children):
 
 def t(s, quote=True, translatable=False):
     return translate(escape(make_string(s), quote=quote), translatable=translatable)
+
+def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1):
+    if not docutils_ok:
+        raise Exception("Please 'pip install docutils' to use the rst() function.")
+    raw(
+        docutils.core.publish_parts(restructured_text, writer_name="html",
+        settings_overrides={'_disable_config': True, 'report_level': report_level})["html_body"])
 
 ### Not translation ###
 

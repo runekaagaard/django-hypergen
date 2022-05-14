@@ -24,6 +24,7 @@ import globalcontext.urls
 import djangolander.urls
 import motherofall.urls
 import apptemplate.urls
+import coredocs.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -46,4 +47,4 @@ urlpatterns = [
     url('^commands/', include(commands.urls, namespace="commands")),
     url('^globalcontext/', include(globalcontext.urls, namespace="globalcontext")),
     url('^apptemplate/', include(apptemplate.urls, namespace="apptemplate")),
-]
+    url('^coredocs/', include(coredocs.urls, namespace="coredocs")),]
