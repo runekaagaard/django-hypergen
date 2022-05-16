@@ -49,13 +49,11 @@ def tb2():
         div("OK", onclick=callback(reverse("kitchensink:c2")), id_="t2")
 
 def t2():
-    tmp = context.hypergen.set("target_id", "content")
-    context.hypergen = tmp
     div("DONE")
 
 def c2(request):
     commands = [["console.log", "HI913"]]
-    with context(hypergen=hypergen_context({"target_id": "content"})):
-        commands += hypergen(t2, target_id="content")
+    commands += hypergen(t2, target_id="content")
+    print("CCCCCC", commands)
 
     return HttpResponse(dumps(commands), content_type='application/json')

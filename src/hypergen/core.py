@@ -203,7 +203,7 @@ def hypergen(func, *args, **kwargs):
         if not is_ajax():
             s = ""
             if "/hypergen/hypergen.min." not in html:
-                s = '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+                s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
             s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
                 dumps(c.hypergen.commands))
             pos = html.find("</head")
