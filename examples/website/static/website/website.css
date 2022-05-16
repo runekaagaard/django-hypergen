@@ -27,8 +27,8 @@ table input, table textarea, table select {
 }
 
 dl {
-  background-color: #f3f3f3;
-  padding: 8px;
+  background-color: #f5f7ff;
+  padding: 16px;
 }
 dt {
   font-weight: bold;
@@ -111,4 +111,27 @@ a {
 .hero h2 {
   margin-bottom: 0px;
   font-weight: bolder;
+}
+
+code, tt {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(175,184,193,0.2);
+  border-radius: 6px;
+  color: rgb(36, 41, 47);
+}
+
+pre code.hljs {
+  padding: 0;
+}
+
+.hljs {
+  color: inherit;
+}
+
+pre {
+  padding: 16px;
+  background-color: #f3f3f3;
+  border: none;
 }

@@ -502,10 +502,8 @@ class base_element(ContextDecorator):
             elif type(x) is Component:
                 x.delete()
                 into.extend(x.into)
-            elif type(x) in (list, tuple):
+            elif type(x) in (list, tuple, GeneratorType):
                 into.extend(self.format_children(list(x)))
-            elif type(x) in (GeneratorType,):
-                into.append(x)
             elif callable(x):
                 into.append(x)
             else:
@@ -522,7 +520,7 @@ class base_element(ContextDecorator):
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if v == OMIT:
+        if v == OMIT or v is None:
             return []
         elif callable(v):
             return v(self, k, v)

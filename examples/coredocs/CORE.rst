@@ -5,10 +5,10 @@ Hypergen features a react-like templating engine in pure python. Import everythi
 
     from hypergen.core import *
 
-HTML elements
+Html elements
 -------------
 
-All HTML5 tags can be called like functions::
+All html5 tags can be called like functions::
 
     p("Hello Hypergen", class_="foo") # <p class="foo">Hello Hypergen</p>
 
@@ -21,10 +21,25 @@ sep
 coerce_to, js_values, js_coerce_func
     See `Form Input elements </inputs/>`_
 
+Html elements can take other elements as input and can be nested with the ``with`` statement. These two examples will produce the same html::
+
+    ul(li(1), li(2), li(3))
+
+and::
+
+    with ul():
+        li(1)
+        li(2)
+        li(3)
+
+Though it can be written more elegantly::
+
+    ul(li(x) for x in range(1, 4))
+
 Children
 ~~~~~~~~
 
-Arguments to HTML elements have several convinience features, consider::
+Arguments to html elements becomes children to the html tag. They have several convinience features, consider::
 
     section(
         [1, 2, 3],
@@ -42,34 +57,41 @@ Which will yield the following html::
 We can see that arguments can be:
 
 iterables
-    Things that look like an iterable will be extended into the HTML.
+    Things that look like an iterable will be extended into the html.
 non-strings
     Hypergen will try to convert stuff to strings.
 callables
-    The return of a callable will be appended to the HTML.
+    The return of a callable will be appended to the html.
 other elements
-    HTML elements are nestable.
+    html elements are nestable.
 
 Attributes
 ~~~~~~~~~~
 
-Likewise attributes have several quality of life improvements::
+Keyword arguments to html elements becomes attributes in the html tag. html attributes that clashes with python keywords or builtins can be set by postfixing the name with an underscore.
+
+.. raw:: html
+         
+        <mark>The names <tt>type_</tt> and <tt>id_</tt> MUST be postfixed with an underscore for hypergen to work
+            correctly!
+        </mark>This will soon change.
+
+Likewise, attributes have several quality of life improvements::
 
     div(
         a=OMIT,
-        b=lambda: 1,
-        c=True,
-        d=False,
-        e=None,
+        b=True,
+        c=False,
+        d=None,
         style={"background_color": "green"},
         class_=["p1", "p2", "p3"],
         id_=("mymodel", "42")
     )
 
-Which gives this HTML::
+Which gives this html::
 
-    <div b="1"
-         c
+    <div
+         b
          style="background-color: green;"
          class="p1 p2 p3"
          id="mymodel-42">
@@ -80,15 +102,14 @@ We understand that:
 a value of OMIT, False, None
     Will not create an attribute
 style
-    Parse a dict to generate css. Underscores in keys are converted to dashes. A string is also supported.
+    Takes a string or a dict. Underscores in the dicts keys are converted to dashes.
 class
-    Items of an iterable will be joined by " ". A string is also supported.
+    Takes a string or an iterable. Items of an iterable will be joined by a space. Tip: Use sets.
 id\_
-    Items of an iterable will be joined by "-". A string is also supported.
+    Takes a string or an iterable. Items of an iterable will be joined by a dash.
 trailing underscores
      are removed to allow for python keywords like ``class``.
 
-    
 Composition
 -----------
 
