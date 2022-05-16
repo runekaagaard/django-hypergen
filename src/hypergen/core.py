@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
 
+from django.templatetags.static import static
+
 d = dict
 
 import string, sys, time, threading, datetime, json, logging, io
@@ -199,11 +201,16 @@ def hypergen(func, *args, **kwargs):
             command("translations", translate.reverse(), [[k, v] for k, v in TRANSLATIONS.items()])
 
         if not is_ajax():
+            s = ""
+            if "/hypergen/hypergen.min." not in html:
+                s = '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+            s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
+                dumps(c.hypergen.commands))
             pos = html.find("</head")
-            if pos != -1:
-                s = "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
-                    dumps(c.hypergen.commands))
-                html = insert(html, s, pos)
+            if pos == -1:
+                pos = 0
+            html = insert(html, s, pos)
+
             print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return html
         else:
