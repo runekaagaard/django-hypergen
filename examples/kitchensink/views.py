@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 import codecs
+from django.http.response import HttpResponse
 
 from hypergen.core import *
 from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
@@ -7,7 +8,7 @@ from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
 from django.templatetags.static import static
 
 @hypergen_view(perm=NO_PERM_REQUIRED)
-def my_view(request):
+def sink(request):
     section(
         [1, 2, 3],
         (x for x in [4, 5, 6]),
@@ -15,6 +16,7 @@ def my_view(request):
         lambda: 8,
         b(9),
         sep=" ",
+        end=".",
     )
     hr()
 
@@ -24,3 +26,15 @@ def my_view(request):
 
     ul(li(x) for x in range(1, 4))
     hr()
+
+    p("I am good.", "So am I.", "But what", code("about this"), sep=" ", end=".")
+
+def my_view(request):
+    return hypergen_to_response(my_template, "hypergen")
+    return HttpResponse(hypergen(my_template, "hypergen"))
+
+def my_template(name):
+    doctype()
+    with html():
+        with body():
+            p("Hello ", name)

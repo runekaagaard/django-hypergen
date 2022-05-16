@@ -5,6 +5,26 @@ Hypergen features a react-like templating engine in pure python. Import everythi
 
     from hypergen.core import *
 
+The function that makes everything works is ``hypergen()``. It constructs a global context that collects invocations of html5 elements like ``div("hi")``. If you are using the ``@hypergen_view`` and ``@hypergen_callback`` from contrib you might not use it directly, but it's still called under the hood.
+
+*hypergen(template_function, *args, **kwargs)*
+    Calls the template_function with ``args`` and ``kwargs`` as arguments. Collects html and returns either:
+*normal http requests*
+    Returns html as a string.
+*ajax requests*
+    Returns a list of commands for the frontend to execute that re-renders to the correct ``target_id``.
+
+So the most basic Django view using hypergen would look like this::
+
+    def my_view(request):
+        return HttpResponse(hypergen(my_template, "hypergen"))
+
+    def my_template(name):
+        doctype()
+        with html():
+            with body():
+                p("Hello ", name)
+
 Html elements
 -------------
 
@@ -18,6 +38,8 @@ They all inherit the ``base_element`` class.
     Arguments becomes children inside the tag. Keyword arguments becomes attributes.
 sep
     Joins arguments by this separator. ``div("a", "b", sep=", ")`` becomes ``<div>a, b</div>``.
+end
+    Insert this string at the end.
 coerce_to, js_values, js_coerce_func
     See `Form Input elements </inputs/>`_
 
@@ -48,11 +70,12 @@ Arguments to html elements becomes children to the html tag. They have several c
         lambda: 8,
         b(9),
         sep=" ",
+        end=".",
     )
 
 Which will yield the following html::
 
-    <section>1 2 3 4 5 6 7 <b>9</b></section>
+    <section>1 2 3 4 5 6 7 <b>9</b>.</section>
 
 We can see that arguments can be:
 
@@ -68,13 +91,16 @@ other elements
 Attributes
 ~~~~~~~~~~
 
-Keyword arguments to html elements becomes attributes in the html tag. html attributes that clashes with python keywords or builtins can be set by postfixing the name with an underscore.
+Keyword arguments to html elements becomes attributes in the html tag.
 
 .. raw:: html
          
+    <p>
+        Html attributes that clashes with python keywords or builtins can be set by postfixing the name with an underscore.
         <mark>The names <tt>type_</tt> and <tt>id_</tt> MUST be postfixed with an underscore for hypergen to work
             correctly!
         </mark>This will soon change.
+    </p>
 
 Likewise, attributes have several quality of life improvements::
 

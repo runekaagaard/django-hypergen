@@ -44,8 +44,8 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "command", "raw", "callback", "call_js", "THIS",
-    "OMIT", "context", "is_ajax", "write", "rst"]
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "hypergen_to_string",
+    "command", "raw", "callback", "call_js", "THIS", "OMIT", "context", "is_ajax", "write", "rst"]
 
 ### Python 2+3 compatibility ###
 
@@ -154,6 +154,33 @@ def hypergen_context_decorator(func, *dargs, **dkwargs):
 
     return _
 
+TARGET_ID_ERR = """
+No "target_id" set! It sets where the content of a callback will be rendered to.
+"target_id" must be set by either:
+
+- Prefered! setting it as an attribute on the base_template:
+    def my_base_template():
+        with div(class_="so-base", id_="base"):
+            yield
+
+    my_base_template.target_id = "base"
+
+
+- setting it as a keyword argument to the @hypergen_view and/or @hypergen_callback decorators:
+    @hypergen_callback(target_id="base")
+    def my_callback(request):
+        ....
+
+  The reason it can be set on @hypergen_view's as well is to make partial loading work. Views with the same
+  base_template and target_id's supports partial loading between them.
+
+- setting it manually on context.hypergen["target_id"]:
+    @hypergen_callback(target_id=OMIT)
+    def my_callback(request):
+        with context(target_id="base", at="hypergen"):
+            ...
+""".strip()
+
 def hypergen(func, *args, **kwargs):
     a = time.time()
     with c(hypergen=hypergen_context(kwargs)):
@@ -162,7 +189,7 @@ def hypergen(func, *args, **kwargs):
         if c.hypergen.translate:
             load_translations()
         func(*args, **kwargs)
-        assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
+        assert c.hypergen.target_id is not None, TARGET_ID_ERR
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
@@ -413,6 +440,7 @@ class base_element(ContextDecorator):
 
             self.i = len(c.hypergen.into)
             self.sep = attrs.get("sep", "")
+            self.end_char = attrs.pop("end", None)
             self.js_value_func = attrs.get("js_value_func", "hypergen.read.value")
 
             coerce_to = attrs.get("coerce_to", None)
@@ -489,7 +517,7 @@ class base_element(ContextDecorator):
         for i in range(self.i, self.j):
             c.hypergen.into[i] = DELETED
 
-    def format_children(self, children):
+    def format_children(self, children, nested=False):
         into = []
         sep = self.t(self.sep)
 
@@ -503,7 +531,7 @@ class base_element(ContextDecorator):
                 x.delete()
                 into.extend(x.into)
             elif type(x) in (list, tuple, GeneratorType):
-                into.extend(self.format_children(list(x)))
+                into.extend(self.format_children(list(x), nested=True))
             elif callable(x):
                 into.append(x)
             else:
@@ -512,6 +540,9 @@ class base_element(ContextDecorator):
                 into.append(sep)
         if sep and children:
             into.pop()
+
+        if self.end_char and not nested:
+            into.append(self.t(self.end_char))
 
         return into
 
