@@ -15,7 +15,6 @@ import hellohypergen.urls
 import hellocoreonly.urls
 import hellocoreonly2.urls
 import hellomagic.urls
-import t9n.urls
 import notifications.urls
 import partialload.urls
 import commands.urls
@@ -42,7 +41,6 @@ urlpatterns = [
     url('^djangolander/', include(djangolander.urls, namespace="djangolander")),
     url('^motherofall/', include(motherofall.urls, namespace="motherofall")),
     url('^hellomagic/', include(hellomagic.urls, namespace="hellomagic")),
-    url('^t9n/', include(t9n.urls, namespace="t9n")),
     url('^notifications/', include(notifications.urls, namespace="notifications")),
     url('^partialload/', include(partialload.urls, namespace="partialload")),
     url('^commands/', include(commands.urls, namespace="commands")),

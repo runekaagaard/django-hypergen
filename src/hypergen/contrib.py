@@ -80,7 +80,7 @@ def hypergen_response_decorator(func):
 @wrap2
 def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_template=no_base_template,
     base_template_args=None, base_template_kwargs=None, namespace=None, login_url=None, raise_exception=False,
-    target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements, translate=False):
+    target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
     if base_template is not None and target_id is None and getattr(base_template, "target_id", None):
@@ -118,7 +118,6 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
 
         if not is_ajax():
             fkwargs["wrap_elements"] = wrap_elements
-            fkwargs["translate"] = translate
             html = hypergen(wrap_base_template, request, *fargs, **fkwargs)
             if func_return["value"] is not None:
                 html = func_return["value"]
@@ -126,7 +125,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
         else:
             client_data = loads(c.request.POST["hypergen_data"])
             commands = hypergen(wrap_view_with_hypergen, client_data, target_id=target_id,
-                wrap_elements=wrap_elements, translate=translate)
+                wrap_elements=wrap_elements)
             if func_return["value"] is not None:
                 commands = func_return["value"]
 
@@ -145,7 +144,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
 @wrap2
 def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, namespace=None, target_id=None,
     login_url=None, raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
-    wrap_elements=default_wrap_elements, translate=False):
+    wrap_elements=default_wrap_elements):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
 
     if base_template is not None and target_id is None and getattr(base_template, "target_id", None):
@@ -185,7 +184,7 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
         with c(referer_resolver_match=referer_resolver_match):
             func_return = {}
             commands = hypergen(wrap_view_with_hypergen, func_return, args, target_id=target_id,
-                wrap_elements=wrap_elements, translate=translate)
+                wrap_elements=wrap_elements)
             # Commands are either default hypergen commands or commands from callback
             commands = commands if func_return["value"] is None else func_return["value"]
             # Allow view to add commands
@@ -263,3 +262,38 @@ def base_template(title=None):
     template.target_id = "content"
 
     return template
+
+@contextmanager
+def liveview_behaviour():
+    if c.hypergen.event_handler_callbacks:
+        command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+
+    if not is_ajax():
+        s = ""
+        if "/hypergen/hypergen.min." not in html:
+            s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+        s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
+            dumps(c.hypergen.commands))
+        pos = html.find("</head")
+        if pos == -1:
+            pos = 0
+        html = insert(html, s, pos)
+
+        print(("Execution time:", (time.time() - a) * 1000, "ms"))
+        return html
+    else:
+        if c.hypergen.target_id != OMIT:
+            command("hypergen.morph", c.hypergen.target_id, html)
+        print(("Execution time:", (time.time() - a) * 1000, "ms"))
+        return c.hypergen.commands
+
+def hypergen_context(data=None):
+    if data is None:
+        data = {}
+
+    c_ = m(into=[], event_handler_callbacks={}, event_handler_callback_strs=[],
+        target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
+        wrap_elements=data.pop("wrap_elements", default_wrap_elements), matched_perms=set())
+
+    assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
+    return c_

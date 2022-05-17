@@ -22,7 +22,6 @@ from inputs.views import inputs
 from gameofcython.views import gameofcython
 from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
-from t9n.views import page
 from website.templates import base_template, show_sources
 from commands.views import commands
 from globalcontext.views import globalcontext

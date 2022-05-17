@@ -35,7 +35,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
     'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen', 'todomvc', 'inputs',
-    'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'hellocoreonly2', 't9n', 'notifications',
+    'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'hellocoreonly2', 'notifications',
     'commands', 'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink']
 
 MIDDLEWARE = [

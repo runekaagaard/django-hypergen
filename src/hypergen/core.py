@@ -139,10 +139,7 @@ def hypergen_context(data=None):
     if data is None:
         data = {}
 
-    c_ = m(into=[], event_handler_callbacks={}, event_handler_callback_strs=[],
-        target_id=data.pop("target_id",
-        "__main__"), commands=[], ids=set(), wrap_elements=data.pop("wrap_elements",
-        default_wrap_elements), matched_perms=set(), translate=data.pop("translate", False))
+    c_ = m(into=[], ids=set(), wrap_elements=data.pop("wrap_elements", default_wrap_elements))
 
     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
     return c_
@@ -188,36 +185,9 @@ def hypergen(func, *args, **kwargs):
     with c(hypergen=hypergen_context(kwargs)):
         assert not c.hypergen.into, "This should not happen"
         assert "target_id" not in kwargs, "This should not happen"
-        if c.hypergen.translate:
-            load_translations()
         func(*args, **kwargs)
         assert c.hypergen.target_id is not None, TARGET_ID_ERR
-        html = join_html(c.hypergen.into)
-        if c.hypergen.event_handler_callbacks:
-            command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
-
-        if not is_ajax() and c.hypergen.translate and c.user.has_perm("hypergen.kv_hypergen_translations"):
-            from hypergen.views import translate
-            command("translations", translate.reverse(), [[k, v] for k, v in TRANSLATIONS.items()])
-
-        if not is_ajax():
-            s = ""
-            if "/hypergen/hypergen.min." not in html:
-                s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
-            s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
-                dumps(c.hypergen.commands))
-            pos = html.find("</head")
-            if pos == -1:
-                pos = 0
-            html = insert(html, s, pos)
-
-            print(("Execution time:", (time.time() - a) * 1000, "ms"))
-            return html
-        else:
-            if c.hypergen.target_id != OMIT:
-                command("hypergen.morph", c.hypergen.target_id, html)
-            print(("Execution time:", (time.time() - a) * 1000, "ms"))
-            return c.hypergen.commands
+        return join_html(c.hypergen.into)
 
 def hypergen_to_string(func, *args, **kwargs):
     a = time.time()
@@ -305,8 +275,8 @@ def raw(*children):
 def write(*children):
     c.hypergen.into.extend(t(x) for x in children)
 
-def t(s, quote=True, translatable=False):
-    return translate(escape(make_string(s), quote=quote), translatable=translatable)
+def t(s, quote=True):
+    return escape(make_string(s), quote=quote)
 
 def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1):
     if not docutils_ok:
@@ -314,48 +284,6 @@ def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1
     raw(
         docutils.core.publish_parts(restructured_text, writer_name="html",
         settings_overrides={'_disable_config': True, 'report_level': report_level})["html_body"])
-
-### Not translation ###
-
-TRANSLATIONS = {}
-
-def translate(s, translatable=True):
-    if translatable and c["hypergen"]["translate"]:
-        if s in TRANSLATIONS:
-            return TRANSLATIONS[s]
-        else:
-            if c.user.has_perm("hypergen.kv_hypergen_translations"):
-                save_translation(s, s)
-
-            return s
-    else:
-        return s
-
-def load_translations():
-    from hypergen.models import KV
-    if not TRANSLATIONS:
-        try:
-            kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
-            set_translations(kv)
-        except Exception:
-            logger.exception("Can't load translations")
-
-def set_translations(kv):
-    global TRANSLATIONS
-    TRANSLATIONS = json.loads(kv.value)
-
-def save_translation(a, b):
-    from hypergen.models import KV
-    kv, _ = KV.objects.get_or_create(key="hypergen_translations", defaults=d(value='{}'))
-    t = json.loads(kv.value)
-
-    t[a] = b
-    if b == "RESET":
-        del t[a]
-
-    kv.value = json.dumps(t)
-    kv.save()
-    set_translations(kv)
 
 ### Actions happening on the frontend  ###
 
@@ -426,8 +354,6 @@ class base_element(ContextDecorator):
     void = False
     auto_id = False
     config_attrs = {"t", "sep", "coerce_to", "js_coerce_func", "js_value_func"}
-    translatable = True
-    translatable_attributes = ["placeholder", "title"]
 
     def __new__(cls, *args, **kwargs):
         instance = ContextDecorator.__new__(cls)
@@ -542,7 +468,7 @@ class base_element(ContextDecorator):
             elif callable(x):
                 into.append(x)
             else:
-                into.append(self.t(x, translatable=self.translatable))
+                into.append(self.t(x))
             if sep:
                 into.append(sep)
         if sep and children:
@@ -577,7 +503,7 @@ class base_element(ContextDecorator):
             if v is None:
                 v = ""
             else:
-                v = t(v, translatable=(k in self.translatable_attributes and type(v) is str))
+                v = t(v)
             assert '"' not in v, "How dare you put a \" in my attributes! :)"
             return [" ", k, '="', v, '"']
 
@@ -602,7 +528,6 @@ class base_element(ContextDecorator):
 
 class base_element_void(base_element):
     void = True
-    translatable = False
 
 class Component(object):
     def __init__(self, into, i, j):
@@ -693,17 +618,11 @@ class a(base_element):
 class abbr(base_element): pass
 class acronym(base_element): pass
 class address(base_element): pass
-
-class applet(base_element):
-    translatable = False
-
+class applet(base_element): pass
 class area(base_element_void): pass
 class article(base_element): pass
 class aside(base_element): pass
-
-class audio(base_element):
-    translatable = False
-
+class audio(base_element): pass
 class b(base_element): pass
 class base(base_element_void): pass
 class basefont(base_element): pass
@@ -714,10 +633,7 @@ class blockquote(base_element): pass
 class body(base_element): pass
 class br(base_element_void): pass
 class button(base_element): pass
-
-class canvas(base_element):
-    translatable = False
-
+class canvas(base_element): pass
 class caption(base_element): pass
 class center(base_element): pass
 class cite(base_element): pass
@@ -751,18 +667,12 @@ class h3(base_element): pass
 class h4(base_element): pass
 class h5(base_element): pass
 class h6(base_element): pass
-
-class head(base_element):
-    translatable = False
-
+class head(base_element): pass
 class header(base_element): pass
 class hr(base_element_void): pass
 class html(base_element): pass
 class i(base_element): pass
-
-class iframe(base_element):
-    translatable = False
-
+class iframe(base_element): pass
 class img(base_element_void): pass
 class ins(base_element): pass
 class kbd(base_element): pass
@@ -771,42 +681,26 @@ class legend(base_element): pass
 class li(base_element): pass
 
 class link(base_element):
-    translatable = False
     def __init__(self, href, rel="stylesheet", type_="text/css", **attrs):
         attrs["href"] = href
         super(link, self).__init__(rel=rel, type_=type_, **attrs)
 
 class main(base_element): pass
-
-class map_(base_element):
-    translatable = False
-
+class map_(base_element): pass
 class mark(base_element): pass
 class meta(base_element_void): pass
-
-class meter(base_element):
-    translatable = False
-
+class meter(base_element): pass
 class nav(base_element): pass
-
-class noframes(base_element):
-    translatable = False
-
+class noframes(base_element): pass
 class noscript(base_element): pass
-
-class object_(base_element):
-    translatable = False
-
+class object_(base_element): pass
 class ol(base_element): pass
 class optgroup(base_element): pass
 class option(base_element): pass
 class output(base_element): pass
 class p(base_element): pass
 class param(base_element_void): pass
-
-class picture(base_element):
-    translatable = False
-
+class picture(base_element): pass
 class pre(base_element): pass
 class progress(base_element): pass
 class q(base_element): pass
@@ -817,8 +711,6 @@ class s(base_element): pass
 class samp(base_element): pass
 
 class script(base_element):
-    translatable = False
-
     def __init__(self, *children, **attrs):
         attrs["t"] = lambda x, **kwargs: x
         super(script, self).__init__(*children, **attrs)
@@ -839,38 +731,24 @@ class style(base_element):
 class sub(base_element): pass
 class summary(base_element): pass
 class sup(base_element): pass
-
-class svg(base_element):
-    translatable = False
-
+class svg(base_element):pass
 class table(base_element): pass
 class tbody(base_element): pass
 class td(base_element): pass
-
-class template(base_element):
-    translatable = False
-
-class textarea(base_element):
-    translatable = False
-
+class template(base_element): pass
+class textarea(base_element): pass
 class tfoot(base_element): pass
 class th(base_element): pass
 class thead(base_element): pass
 class time_(base_element): pass
-
-class title(base_element):
-    translatable = False
-
+class title(base_element): pass
 class tr(base_element): pass
 class track(base_element_void): pass
 class tt(base_element): pass
 class u(base_element): pass
 class ul(base_element): pass
 class var(base_element): pass
-
-class video(base_element):
-    translatable = False
-
+class video(base_element): pass
 class wbr(base_element_void): pass
 
 # yapf: enable
