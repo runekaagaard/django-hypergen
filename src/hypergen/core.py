@@ -121,9 +121,6 @@ def wrap2(f):
 
     return _
 
-def insert(source_str, insert_str, pos):
-    return ''.join((source_str[:pos], insert_str, source_str[pos:]))
-
 def is_ajax(request=None):
     if request is None:
         request = c.request
@@ -182,12 +179,19 @@ No "target_id" set! It sets where the content of a callback will be rendered to.
 
 def hypergen(func, *args, **kwargs):
     a = time.time()
-    with c(hypergen=hypergen_context(kwargs)):
+    with c(at="hypergen", **hypergen_context(kwargs)):
         assert not c.hypergen.into, "This should not happen"
         assert "target_id" not in kwargs, "This should not happen"
         func(*args, **kwargs)
         assert c.hypergen.target_id is not None, TARGET_ID_ERR
-        return join_html(c.hypergen.into)
+        html = join_html(c.hypergen.into)
+        print("11111111111111111", c.hypergen.keys())
+
+    ctx = c.ctx
+    ctx = ctx.set("hypergen", ctx.hypergen.set("html", html))
+    c.replace(**ctx)
+
+    return html
 
 def hypergen_to_string(func, *args, **kwargs):
     a = time.time()

@@ -7,6 +7,8 @@ import pickle
 from contextlib import contextmanager
 
 from django.urls.base import resolve, reverse
+from hypergen.core import dumps, is_ajax
+
 try:
     from django.conf.urls import url
 except ImportError:
@@ -100,6 +102,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
 
     @wraps(func)
     @hypergen_response_decorator  # Convert Httpresponseredirect from permission_required to ajax commands.
+    @liveview_behaviour()
     def _(request, *fargs, **fkwargs):
         path = c.request.get_full_path()
         c.base_template = base_template
@@ -159,6 +162,7 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
 
     @wraps(func)
     @hypergen_response_decorator  # Convert Httpresponseredirect from permission_required to ajax commands.
+    @liveview_behaviour()
     def _(request, *fargs, **fkwargs):
         # The view that loaded the page the callback is on.
         referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
@@ -263,37 +267,54 @@ def base_template(title=None):
 
     return template
 
+def insert(source_str, insert_str, pos):
+    return ''.join((source_str[:pos], insert_str, source_str[pos:]))
+
 @contextmanager
 def liveview_behaviour():
-    if c.hypergen.event_handler_callbacks:
-        command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+    print("AAAAAAAAAAAAAAAAAA")
+    with context(
+            at="hypergen",
+            event_handler_callbacks={},
+            event_handler_callback_strs=[],
+            # target_id=data.pop("target_id", "__main__"), TODO
+            target_id="__main__",  # TODO
+            commands=[]):
+        print("BBBBBBBBBBBBBBBBB")
+        yield
+        print("CCCCCCCCCCCCCCCc")
+        if c.hypergen.event_handler_callbacks:
+            command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
-    if not is_ajax():
-        s = ""
-        if "/hypergen/hypergen.min." not in html:
-            s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
-        s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
-            dumps(c.hypergen.commands))
-        pos = html.find("</head")
-        if pos == -1:
-            pos = 0
-        html = insert(html, s, pos)
+        print("22222222222222222", c.hypergen.keys())
+        html = context.ctx["hypergen"]["html"]
+        # print("I AM HML", html)
 
-        print(("Execution time:", (time.time() - a) * 1000, "ms"))
-        return html
-    else:
-        if c.hypergen.target_id != OMIT:
-            command("hypergen.morph", c.hypergen.target_id, html)
-        print(("Execution time:", (time.time() - a) * 1000, "ms"))
-        return c.hypergen.commands
+        if not is_ajax():
+            s = ""
+            if "/hypergen/hypergen.min." not in html:
+                s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+            s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
+                dumps(c.hypergen.commands))
+            pos = html.find("</head")
+            if pos == -1:
+                pos = 0
+            html = insert(html, s, pos)
 
-def hypergen_context(data=None):
-    if data is None:
-        data = {}
+            # p  # rint(("Execution time:", (time.time() - a) * 1000, "ms"))
+            return html
+        else:
+            if c.hypergen.target_id != OMIT:
+                command("hypergen.morph", c.hypergen.target_id, html)
+            # print(("Execution time:", (time.time() - a) * 1000, "ms"))
+            return c.hypergen.commands
 
-    c_ = m(into=[], event_handler_callbacks={}, event_handler_callback_strs=[],
-        target_id=data.pop("target_id", "__main__"), commands=[], ids=set(),
-        wrap_elements=data.pop("wrap_elements", default_wrap_elements), matched_perms=set())
+# def hypergen_context(data=None):
+#     if data is None:
+#         data = {}
 
-    assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
-    return c_
+#     c_ = m(into=[], , ids=set(),
+#         wrap_elements=data.pop("wrap_elements", default_wrap_elements), matched_perms=set())
+
+#     assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
+#     return c_
