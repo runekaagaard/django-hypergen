@@ -1,6 +1,7 @@
 d = dict
 from hypergen.context import context as c
 from hypergen.utils import *
+from hypergen.hypergen import *
 
 import time, logging
 from collections import OrderedDict
@@ -31,8 +32,7 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "OMIT", "write",
-    "rst"]
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "write", "rst"]
 
 ### Rendering ###
 
@@ -109,9 +109,6 @@ def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1
         settings_overrides={'_disable_config': True, 'report_level': report_level})["html_body"])
 
 ### Base dom element ###
-class THIS(object):
-    pass
-
 NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
 
@@ -279,8 +276,6 @@ class base_element(ContextDecorator):
     def start(self):
         into = ["<", self.tag]
         for k, v in self.attrs.items():
-            if k in self.config_attrs:
-                continue
             into.extend(self.attribute(k, v))
 
         if self.void:

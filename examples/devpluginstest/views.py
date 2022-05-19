@@ -1,4 +1,4 @@
-from hypergen.template import *
+from hypergen.imports import *
 
 from django.http.response import HttpResponse
 

@@ -1,4 +1,12 @@
+import datetime
+
+from django.http.response import HttpResponse, HttpResponseRedirect
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
+
 __all__ = ["command", "call_js", "callback", "THIS", "is_ajax"]
+
+class THIS(object):
+    pass
 
 def is_ajax(request=None):
     if request is None:
