@@ -117,7 +117,10 @@ class base_element(ContextDecorator):
         return instance
 
     def __init__(self, *children, **attrs):
+        children = list(children)
+
         def init(self, *children, **attrs):
+            print("INIT", self.__class__.__name__)
             self.t = attrs.get("t", t)
             self.children = children
             self.attrs = attrs
@@ -128,7 +131,7 @@ class base_element(ContextDecorator):
             self.attrs["id_"] = LazyAttribute("id", id_)
 
             self.i = len(c.hypergen.into)
-            self.sep = attrs.get("sep", "")
+            self.sep = attrs.pop("sep", "")
             self.end_char = attrs.pop("end", None)
             self.js_value_func = attrs.get("js_value_func", "hypergen.read.value")
 
@@ -147,13 +150,7 @@ class base_element(ContextDecorator):
             super(base_element, self).__init__()
 
         assert "hypergen" in c, "Element called outside hypergen context."
-
-        with ExitStack() as stack:
-            [
-                stack.enter_context(cls.wrap_element(self, children, attrs)) for cls in c.hypergen.plugins
-                if hasattr(cls, "wrap_element")]
-
-            init(self, *children, **attrs)
+        init(self, *children, **attrs)
 
         # TODO: plugins
         # c.hypergen.wrap_elements(init, self, *children, **attrs)
@@ -281,7 +278,16 @@ class base_element(ContextDecorator):
         if self.void:
             into.append("/")
         into.append('>')
-        into.extend(self.format_children(self.children))
+        with c(at="hypergen", inside_plugin=True, into=into):
+            with ExitStack() as stack:
+                [
+                    stack.enter_context(cls.wrap_element(self)) for cls in c.hypergen.plugins
+                    if hasattr(cls, "wrap_element")]
+                print("INSIDE")
+                c.hypergen.into.extend(self.format_children(self.children))
+                into = c.hypergen.into
+
+        print("FOOOOOOOOO", into)
         return into
 
     def end(self):

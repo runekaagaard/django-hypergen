@@ -2,7 +2,7 @@ d = dict
 
 from hypergen.hypergen import *
 from hypergen.context import context as c
-from hypergen.template import raw, head, title
+from hypergen.template import *
 
 import datetime, json
 from contextlib import contextmanager
@@ -23,17 +23,25 @@ class LiveviewPlugin:
             yield
 
     @contextmanager
-    def wrap_element(self, element, *children, **attrs):
+    def wrap_element(self, element):
+        # before, after
+        # prepend, append
+
+        if type(element) is head:
+            # children.insert(0, "prepend")
+            # children.append("append")
+            print("AAAAAA")
+            raw("<title>AAA</title>")
+            # s = ""
+            # s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+            # s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
+            #     dumps(c.hypergen.commands))
+            # raw(s)
+
         yield
 
         if type(element) is head:
-            s = ""
-            s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
-            s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
-                dumps(c.hypergen.commands))
-            raw(s)
-
-        if type(element) is head:
+            print("BBBBB")
             raw("<title>BBB</title>")
         # if type(element) is head:
         #     s = ""
