@@ -26,6 +26,8 @@ import motherofall.urls
 import apptemplate.urls
 import coredocs.urls
 import kitchensink.urls
+import devpluginstest.urls
+
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -49,4 +51,6 @@ urlpatterns = [
     url('^globalcontext/', include(globalcontext.urls, namespace="globalcontext")),
     url('^apptemplate/', include(apptemplate.urls, namespace="apptemplate")),
     url('^coredocs/', include(coredocs.urls, namespace="coredocs")),
-    url('^kitchensink/', include(kitchensink.urls, namespace="kitchensink")),]
+    url('^kitchensink/', include(kitchensink.urls, namespace="kitchensink")),
+    url('^devpluginstest/', include(devpluginstest.urls, namespace="devpluginstest")),
+]

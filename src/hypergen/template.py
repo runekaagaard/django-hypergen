@@ -1,35 +1,23 @@
-from django.templatetags.static import static
-
 d = dict
+from hypergen.context import context as c
+from hypergen.utils import *
 
-import string, sys, time, threading, datetime, json, logging, io
+import time, logging
 from collections import OrderedDict
 from types import GeneratorType
-from functools import wraps, update_wrapper
+from functools import wraps
 from copy import deepcopy
+from contextlib import ContextDecorator
+from html import escape
 
-from contextlib import ContextDecorator, contextmanager, redirect_stderr
-from pyrsistent import pmap, m
+from pyrsistent import m
 
-from django.http.response import HttpResponse, HttpResponseRedirect
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_str as force_text
-
+from django.http.response import HttpResponse
 try:
     import docutils.core
     docutils_ok = True
 except ImportError:
     docutils_ok = False
-
-from django.utils.safestring import mark_safe
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
-from django.conf import settings
-try:
-    from django.utils.deprecation import MiddlewareMixin
-except ImportError:
-    MiddlewareMixin = object  # Backwards compatibility.
 
 logger = logging.getLogger(__name__)
 
@@ -43,80 +31,8 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "OMIT", "context",
-    "write", "rst"]
-
-### Python 2+3 compatibility ###
-
-def make_string(s):
-    # TODO: WHY IS THERE AN IF STATEMENT HERE AT ALL?
-    # We had a bug where 0 int did not get rendered. I suck.
-    if s or type(s) in (int, float):
-        return force_text(s)
-    else:
-        return ""
-
-if sys.version_info.major > 2:
-    from html import escape
-
-    def items(x):
-        return list(x.items())
-else:
-    from cgi import escape
-
-    def items(x):
-        return iter(x.items())
-
-### Constants ####
-
-OMIT = "__OMIT__"
-
-### Utilities ###
-
-def wrap2(f):
-    """
-    A a decorator decorator, allowing the decorator to be used as:
-        @decorator(with, arguments, and=kwargs)
-    or
-        @decorator
-
-    It does not work for a wrapped function that takes a callback as the only input.
-
-    It looks like this:
-
-        @wrap2
-        def mydecorator(func, *dargs, **dkwargs):
-            @wraps(func)
-            def _(*fargs, **fkwargs):
-                return func(*fargs, **fkwargs)
-
-            return _
-
-
-        @mydecorator
-        def myfunc(x, y=19):
-            return x + y
-
-
-        @mydecorator(42, foo=True)
-        def myfunc2(x, y=19):
-            return x + y
-    """
-    def _(*args, **kwargs):
-        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]):
-            f2 = f(args[0])
-            update_wrapper(f2, args[0])
-            return f2
-        else:
-
-            def f3(f4):
-                f5 = f(f4, *args, **kwargs)
-                update_wrapper(f5, f4)
-                return f5
-
-            return f3
-
-    return _
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "OMIT", "write",
+    "rst"]
 
 ### Rendering ###
 
@@ -182,8 +98,8 @@ def raw(*children):
 def write(*children):
     c.hypergen.into.extend(t(x) for x in children)
 
-def t(s, quote=True, translatable=False):
-    return translate(escape(make_string(s), quote=quote), translatable=translatable)
+def t(s, quote=True):
+    return escape(make_string(s), quote=quote)
 
 def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1):
     if not docutils_ok:
@@ -204,9 +120,6 @@ COERCE = {str: "hypergen.coerce.str", int: "hypergen.coerce.int", float: "hyperg
 class base_element(ContextDecorator):
     void = False
     auto_id = False
-    config_attrs = {"t", "sep", "coerce_to", "js_coerce_func", "js_value_func"}
-    translatable = True
-    translatable_attributes = ["placeholder", "title"]
 
     def __new__(cls, *args, **kwargs):
         instance = ContextDecorator.__new__(cls)
@@ -244,7 +157,10 @@ class base_element(ContextDecorator):
             super(base_element, self).__init__()
 
         assert "hypergen" in c, "Element called outside hypergen context."
-        c.hypergen.wrap_elements(init, self, *children, **attrs)
+        init(self, *children, **attrs)
+
+        # TODO: plugins
+        # c.hypergen.wrap_elements(init, self, *children, **attrs)
 
         if self.attrs["id_"].v is not None:
             id_ = self.attrs["id_"].v
@@ -321,7 +237,7 @@ class base_element(ContextDecorator):
             elif callable(x):
                 into.append(x)
             else:
-                into.append(self.t(x, translatable=self.translatable))
+                into.append(self.t(x))
             if sep:
                 into.append(sep)
         if sep and children:
@@ -349,27 +265,27 @@ class base_element(ContextDecorator):
             else:
                 return []
         elif k == "style" and type(v) in (dict, OrderedDict):
-            return [" ", k, '="', ";".join(t(k1.replace("_", "-")) + ":" + t(v1) for k1, v1 in items(v)), '"']
+            return [" ", k, '="', ";".join(t(k1.replace("_", "-")) + ":" + t(v1) for k1, v1 in v.items()), '"']
         elif k == "class" and type(v) in (list, tuple, set):
             return [" ", k, '="', t(" ".join(v)), '"']
         else:
             if v is None:
                 v = ""
             else:
-                v = t(v, translatable=(k in self.translatable_attributes and type(v) is str))
+                v = t(v)
             assert '"' not in v, "How dare you put a \" in my attributes! :)"
             return [" ", k, '="', v, '"']
 
     def start(self):
         into = ["<", self.tag]
-        for k, v in items(self.attrs):
+        for k, v in self.attrs.items():
             if k in self.config_attrs:
                 continue
             into.extend(self.attribute(k, v))
 
         if self.void:
-            into.append(join(("/")))
-        into.append(join('>',))
+            into.append("/")
+        into.append('>')
         into.extend(self.format_children(self.children))
         return into
 
@@ -381,7 +297,6 @@ class base_element(ContextDecorator):
 
 class base_element_void(base_element):
     void = True
-    translatable = False
 
 class Component(object):
     def __init__(self, into, i, j):
@@ -605,5 +520,6 @@ class u(base_element): pass
 class ul(base_element): pass
 class var(base_element): pass
 class video(base_element): pass
-class wbr(base_element_void): pass
-    # yapf: enable
+class wbr(base_element_void):
+    pass
+# yapf: enable

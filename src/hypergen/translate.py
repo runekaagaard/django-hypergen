@@ -53,7 +53,8 @@ def save_translation(a, b):
     set_translations(kv)
 
 def non_translatable_elements():
-    from hypergen.template import *
+    from hypergen.template import (applet, audio, canvas, head, iframe, link, map_, meter, noframes, object_, picture,
+        script, svg, template, textarea, title, video)
     return {
         applet, audio, canvas, head, iframe, link, map_, meter, noframes, object_, picture, script, svg, template,
         textarea, title, video}
