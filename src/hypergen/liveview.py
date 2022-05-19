@@ -2,22 +2,45 @@ d = dict
 
 from hypergen.hypergen import *
 from hypergen.context import context as c
+from hypergen.template import raw, head, title
 
+import datetime, json
 from contextlib import contextmanager
-import datetime
 
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
+from django.templatetags.static import static
 
-__all__ = ["command", "call_js", "callback", "THIS", "is_ajax"]
+__all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin"]
 
 ### liveview is a plugin to hypergen ###
 
-@contextmanager
-def plugin_context():
-    with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+class LiveviewPlugin:
+    @contextmanager
+    def context(self):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+            yield
+
+    @contextmanager
+    def wrap_element(self, element, *children, **attrs):
         yield
+
+        if type(element) is head:
+            s = ""
+            s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+            s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
+                dumps(c.hypergen.commands))
+            raw(s)
+
+        if type(element) is head:
+            raw("<title>BBB</title>")
+        # if type(element) is head:
+        #     s = ""
+        #     s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+        #     s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
+        #         dumps(c.hypergen.commands))
+        #     raw(s)
 
 ### constants ###
 

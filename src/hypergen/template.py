@@ -31,28 +31,28 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "write", "rst"]
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "write", "rst",
+    "TemplatePlugin"]
 
 ### template itself is a plugin to hypergen ###
-
-@contextmanager
-def plugin_context():
-    with c(at="hypergen", into=[], ids=set()):
-        yield
+class TemplatePlugin:
+    @contextmanager
+    def context(self):
+        with c(at="hypergen", into=[], ids=set()):
+            yield
 
 ### Rendering ###
 
-hypergen_context_decorator = plugin_context  # TODO REMOVE
+hypergen_context_decorator = TemplatePlugin.context  # TODO REMOVE
 
 def hypergen(func, *args, **kwargs):
     from hypergen import template
-    hypergen_plugins = kwargs.pop("hypergen_plugins", [template])
-    with ExitStack() as stack:
-        [
-            stack.enter_context(module.plugin_context()) for module in hypergen_plugins
-            if hasattr(module, "plugin_context")]
-        func(*args, **kwargs)
-        return join_html(c.hypergen.into)
+    hypergen_plugins = kwargs.pop("hypergen_plugins", [TemplatePlugin()])
+    with c(at="hypergen", plugins=hypergen_plugins):
+        with ExitStack() as stack:
+            [stack.enter_context(cls.context()) for cls in hypergen_plugins if hasattr(cls, "context")]
+            func(*args, **kwargs)
+            return join_html(c.hypergen.into)
 
 def hypergen_to_response(func, *args, **kwargs):
     status = kwargs.pop("status", None)
@@ -147,7 +147,13 @@ class base_element(ContextDecorator):
             super(base_element, self).__init__()
 
         assert "hypergen" in c, "Element called outside hypergen context."
-        init(self, *children, **attrs)
+
+        with ExitStack() as stack:
+            [
+                stack.enter_context(cls.wrap_element(self, children, attrs)) for cls in c.hypergen.plugins
+                if hasattr(cls, "wrap_element")]
+
+            init(self, *children, **attrs)
 
         # TODO: plugins
         # c.hypergen.wrap_elements(init, self, *children, **attrs)
@@ -240,7 +246,7 @@ class base_element(ContextDecorator):
         return into
 
     def ensure_id(self):
-        assert self.attrs["id_"].v is not None, "You need to set an ID for {}".format(repr(self))
+        assert self.attrs["id_"].v is not None, "This element needs an id_='myid' attribute: {}".format(repr(self))
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")

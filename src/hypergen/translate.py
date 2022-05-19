@@ -58,3 +58,7 @@ def non_translatable_elements():
     return {
         applet, audio, canvas, head, iframe, link, map_, meter, noframes, object_, picture, script, svg, template,
         textarea, title, video}
+
+config_attrs = {"t", "sep", "coerce_to", "js_coerce_func", "js_value_func"}
+translatable = True
+translatable_attributes = ["placeholder", "title"]
