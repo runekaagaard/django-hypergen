@@ -8,8 +8,7 @@ from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps
 from copy import deepcopy
-from contextlib import ContextDecorator
-from html import escape
+from contextlib import ContextDecorator, contextmanager, ExitStack
 
 from pyrsistent import m
 
@@ -34,27 +33,24 @@ __all__ = [
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "write", "rst"]
 
+### template itself is a plugin to hypergen ###
+
+@contextmanager
+def plugin_context():
+    with c(at="hypergen", into=[], ids=set()):
+        yield
+
 ### Rendering ###
 
-def hypergen_context(data=None):
-    if data is None:
-        data = {}
-
-    c_ = m(into=[], ids=set())
-
-    return c_
-
-@wrap2
-def hypergen_context_decorator(func, *dargs, **dkwargs):
-    @wraps(func)
-    def _(*fargs, **fkwargs):
-        with c(hypergen=hypergen_context()):
-            return func(*fargs, **fkwargs)
-
-    return _
+hypergen_context_decorator = plugin_context  # TODO REMOVE
 
 def hypergen(func, *args, **kwargs):
-    with c(hypergen=hypergen_context(kwargs)):
+    from hypergen import template
+    hypergen_plugins = kwargs.pop("hypergen_plugins", [template])
+    with ExitStack() as stack:
+        [
+            stack.enter_context(module.plugin_context()) for module in hypergen_plugins
+            if hasattr(module, "plugin_context")]
         func(*args, **kwargs)
         return join_html(c.hypergen.into)
 
@@ -97,9 +93,6 @@ def raw(*children):
 
 def write(*children):
     c.hypergen.into.extend(t(x) for x in children)
-
-def t(s, quote=True):
-    return escape(make_string(s), quote=quote)
 
 def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1):
     if not docutils_ok:
@@ -177,8 +170,9 @@ class base_element(ContextDecorator):
         def value(v):
             if isinstance(v, LazyAttribute):
                 return '"{}"'.format(v.v)
-            elif v is THIS:
-                return "THIS"
+            # TODO: plugin
+            # elif v is THIS:
+            #     return "THIS"
             elif callable(v) and hasattr(v, "hypergen_callback_signature"):
                 name, a, kw = v.hypergen_callback_signature
                 return "{}({})".format(name, signature(a, kw))

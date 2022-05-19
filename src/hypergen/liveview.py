@@ -1,9 +1,25 @@
+d = dict
+
+from hypergen.hypergen import *
+from hypergen.context import context as c
+
+from contextlib import contextmanager
 import datetime
 
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.conf import settings
 
 __all__ = ["command", "call_js", "callback", "THIS", "is_ajax"]
+
+### liveview is a plugin to hypergen ###
+
+@contextmanager
+def plugin_context():
+    with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+        yield
+
+### constants ###
 
 class THIS(object):
     pass
@@ -13,18 +29,6 @@ def is_ajax(request=None):
         request = c.request
 
     return request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest'
-
-def liveview_context(data=None):
-    if data is None:
-        data = {}
-
-    c_ = m(into=[], event_handler_callbacks={}, event_handler_callback_strs=[],
-        target_id=data.pop("target_id",
-        "__main__"), commands=[], ids=set(), wrap_elements=data.pop("wrap_elements",
-        default_wrap_elements), matched_perms=set(), translate=data.pop("translate", False))
-
-    assert callable(c_.wrap_elements), "wrap_elements must be a callable, is: {}".format(repr(c_.wrap_elements))
-    return c_
 
 TARGET_ID_ERR = """
 No "target_id" set! It sets where the content of a callback will be rendered to.
