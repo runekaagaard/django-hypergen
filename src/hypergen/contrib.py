@@ -281,7 +281,7 @@ def liveview_behaviour():
             target_id="__main__",  # TODO
             commands=[]):
         print("BBBBBBBBBBBBBBBBB")
-        yield
+        x = (yield)
         print("CCCCCCCCCCCCCCCc")
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
