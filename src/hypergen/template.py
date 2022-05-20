@@ -52,7 +52,16 @@ def hypergen(func, *args, **kwargs):
         with ExitStack() as stack:
             [stack.enter_context(plugin.context()) for plugin in hypergen_plugins if hasattr(plugin, "context")]
             func(*args, **kwargs)
-            return join_html(c.hypergen.into)
+            html = join_html(c.hypergen.into)
+
+            if not c.hypergen.get("processing_plugins", False):
+                with c(at="hypergen", processing_plugins=True):
+                    for plugin in c.hypergen.plugins:
+                        if not hasattr(plugin, "process_html"):
+                            continue
+                        html = plugin.process_html(html)
+
+            return html
 
 def hypergen_to_response(func, *args, **kwargs):
     status = kwargs.pop("status", None)

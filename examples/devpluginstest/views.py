@@ -25,4 +25,5 @@ def v3(request):
     return HttpResponse(hypergen(my_template2, 42, hypergen_plugins=[TemplatePlugin(), LiveviewPlugin()]))
 
 def c3(request):
-    return hypergen_to_response(my_template, 42)
+    commands = [["alert", "it works!"]]
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')

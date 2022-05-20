@@ -12,7 +12,7 @@ from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 from django.templatetags.static import static
 
-__all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin"]
+__all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin", "dumps", "loads"]
 
 ### liveview is a plugin to hypergen ###
 
@@ -20,23 +20,19 @@ class LiveviewPlugin:
     @contextmanager
     def context(self):
         with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
-            command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+            yield
 
-    def element_children_prepend(self, element, children):
-        if type(element) is head:
-            return (
-                script(src=static("hypergen/hypergen.min.js")),
-                raw("<script type='application/json' id='hypergen-apply-commands-data'>{}</script>".format(
-                dumps(c.hypergen.commands))),
-                # script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data'),
-                script("""
-                    ready(() =>
-                        window.applyCommands(JSON.parse(
-                            document.getElementById('hypergen-apply-commands-data').textContent, reviver)))
-                """),
-            )
+    def process_html(self, html):
+        assert "</body>" in html, "liveview needs a body() tag to work."
 
-        return tuple()
+        command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+        s = ""
+        if "/hypergen/hypergen.min." not in html:
+            s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
+        s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script></body>".format(
+            dumps(c.hypergen.commands))
+
+        return html.replace("</body>", s)
 
 ### constants ###
 
