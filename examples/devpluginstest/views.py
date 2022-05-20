@@ -25,6 +25,7 @@ def my_template2(n):
 def my_content_template(n):
     div("It works", n, sep=" ")
     button("Click me!", onclick=callback(reverse("devpluginstest:c3"), 100), id_="b1")
+    button("Alerts!", onclick=call_js("alert", 1234), id_="b2")
 
 def v3(request):
     return HttpResponse(hypergen(my_template2, 42, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
