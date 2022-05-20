@@ -23,16 +23,22 @@ class LiveviewPlugin:
             yield
 
     def process_html(self, html):
+        def template():
+            if "hypergen/hypergen.min." not in html:
+                raw("<!--hypergen_liveview_media-->")
+                script(src=static("hypergen/hypergen.min.js"))
+                script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data')
+                script("""
+                    ready(() => window.applyCommands(JSON.parse(document.getElementById(
+                        'hypergen-apply-commands-data').textContent, reviver)))
+                """)
+                raw("</body>")  # We are replacing existing </body>
+
         assert "</body>" in html, "liveview needs a body() tag to work."
 
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
-        s = ""
-        if "/hypergen/hypergen.min." not in html:
-            s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
-        s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script></body>".format(
-            dumps(c.hypergen.commands))
 
-        return html.replace("</body>", s)
+        return html.replace("</body>", hypergen(template))
 
 ### constants ###
 
