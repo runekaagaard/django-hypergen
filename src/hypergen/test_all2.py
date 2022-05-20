@@ -41,7 +41,7 @@ def indent_html(html):
     return indent(
         html,
         indentation='    ',
-        newline='\r\n',
+        newline='\n',
         indent_text=True,
     )
 
@@ -51,20 +51,13 @@ def mock_hypergen_callback(f):
 
 def test_plugins():
     setup()
-    html0 = hypergen(template, 2, hypergen_plugins=[TemplatePlugin(), LiveviewPlugin()])
+    html0 = hypergen(template, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()]))
     html = indent_html(html0)
-    print(html0)
-    print(html)
-    print("-------------------------")
 
-    html0 = hypergen(template2, 2, hypergen_plugins=[TemplatePlugin(), LiveviewPlugin()])
+    html0 = hypergen(template2, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()]))
     html2 = indent_html(html0)
-    print(html0)
-    print(html2)
 
-    assert html2 == html
-
-    assert html == 0
+    assert html2.strip() == html.strip() == HTML
 
 def template(n):
     with html():
@@ -75,3 +68,25 @@ def template(n):
 
 def template2(n):
     html(head(title(2)), body(h1("4")))
+
+HTML = """
+<html>
+    <head>
+        <title>
+            2
+        </title>
+    </head>
+    <body>
+        <h1>
+            4
+        </h1>
+        <!--hypergen_liveview_media-->
+        <script src="hypergen/hypergen.min.js"></script>
+        <script type="application/json" id="hypergen-apply-commands-data">[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}]]</script>
+        <script>
+                ready(() => window.applyCommands(JSON.parse(document.getElementById(
+                    'hypergen-apply-commands-data').textContent, reviver)))
+            </script>
+    </body>
+</html>
+""".strip()

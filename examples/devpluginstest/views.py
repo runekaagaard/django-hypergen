@@ -50,6 +50,27 @@ def c5(request):
     def only_commands():
         command("console.log", "So lets go!")
 
-    commands = hypergen(only_commands, hypergen=d(plugins=[TemplatePlugin(), CallbackPlugin()], returns=COMMANDS))
+    commands = hypergen(only_commands, hypergen=d(plugins=[CallbackPlugin()], returns=COMMANDS))
+
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')
+
+### v4
+
+def my_page():
+    with html(), body(), div(id_="body"):
+        my_form(0)
+
+def my_form(n):
+    h2("WOW!")
+    el = input_(type_="number", id_="i1", value=n)
+    button("MORE!", id_="i2", onclick=callback(reverse("devpluginstest:c6"), el))
+
+def v4(request):
+    return HttpResponse(hypergen(my_page, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
+
+def c6(request):
+    n, = loads(request.POST["hypergen_data"])["args"]
+    commands = hypergen(my_form, n + 1, hypergen=d(plugins=[TemplatePlugin(),
+        CallbackPlugin(target_id="body")], returns=COMMANDS))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')

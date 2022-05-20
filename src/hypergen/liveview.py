@@ -184,6 +184,7 @@ def call_js(command_path, *cb_args):
     return to_html
 
 # Serialization
+
 ENCODINGS = {
     datetime.date: lambda o: {"_": ["date", str(o)]},
     datetime.datetime: lambda o: {"_": ["datetime", str(o)]},

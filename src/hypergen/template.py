@@ -32,7 +32,7 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "write", "rst",
-    "TemplatePlugin", "HTML", "FULL", "COMMANDS"]
+    "TemplatePlugin", "HTML", "FULL", "COMMANDS", "base_element"]
 
 ### template itself is a plugin to hypergen ###
 class TemplatePlugin:
@@ -62,10 +62,8 @@ def hypergen(func, *args, **kwargs):
         with ExitStack() as stack:
             [stack.enter_context(plugin.context()) for plugin in c.hypergen.plugins if hasattr(plugin, "context")]
             func(*args, **kwargs)
-            if "into" in c.hypergen:
-                html = join_html(c.hypergen.into)
-            else:
-                html = ""
+
+            html = join_html(c.hypergen.into) if "into" in c.hypergen else ""
 
             for plugin in c.hypergen.plugins:
                 if not hasattr(plugin, "process_html"):
@@ -75,7 +73,6 @@ def hypergen(func, *args, **kwargs):
             if returns == HTML:
                 return html
             elif returns == COMMANDS:
-                print("COMMANDS ARE", repr(c.hypergen.commands))
                 return c.hypergen.commands
             elif returns == FULL:
                 return d(html=html, context=c.clone())
@@ -379,7 +376,7 @@ class input_(base_element_void):
             return super().attribute(k, v)
 
         type_ = self.attrs.get("type_", None)
-        if type_ == "datetime-local":
+        if type_ == "datetime-local" and type(v) is datetime:
             return [" ", k, '="', v.strftime("%Y-%m-%dT%H:%M:%S"), '"']
         elif type_ == "month" and type(v) is dict:
             return [" ", k, '="', "{:04}-{:02}".format(v["year"], v["month"]), '"']
