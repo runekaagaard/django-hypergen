@@ -1,3 +1,4 @@
+d = dict
 from hypergen.imports import *
 
 from django.http.response import HttpResponse
@@ -18,12 +19,20 @@ def my_template2(n):
         with head():
             title("Foo")
         with body():
-            div("It works", n, sep=" ")
-            button("Click me!", onclick=callback(reverse("devpluginstest:c3"), 100), id_="b1")
+            with div(id_="my-body-id"):
+                my_content_template(n)
+
+def my_content_template(n):
+    div("It works", n, sep=" ")
+    button("Click me!", onclick=callback(reverse("devpluginstest:c3"), 100), id_="b1")
 
 def v3(request):
-    return HttpResponse(hypergen(my_template2, 42, hypergen_plugins=[TemplatePlugin(), LiveviewPlugin()]))
+    return HttpResponse(hypergen(my_template2, 42, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
 
 def c3(request):
-    commands = [["alert", "it works!"]]
+    data = hypergen(my_content_template, 666, hypergen=d(plugins=[TemplatePlugin(),
+        CallbackPlugin()], full_return=True))
+    commands = data["context"]["hypergen"]["commands"]
+    commands.append(["hypergen.morph", "my-body-id", data["html"]])
+
     return HttpResponse(dumps(commands), status=200, content_type='application/json')

@@ -47,10 +47,12 @@ hypergen_context_decorator = TemplatePlugin.context  # TODO REMOVE
 
 def hypergen(func, *args, **kwargs):
     from hypergen import template
-    hypergen_plugins = kwargs.pop("hypergen_plugins", [TemplatePlugin()])
-    with c(at="hypergen", plugins=hypergen_plugins):
+    settings = kwargs.pop("hypergen", {})
+    plugins = settings.get("plugins", [TemplatePlugin()])
+    full_return = settings.get("full_return", False)
+    with c(at="hypergen", plugins=plugins):
         with ExitStack() as stack:
-            [stack.enter_context(plugin.context()) for plugin in hypergen_plugins if hasattr(plugin, "context")]
+            [stack.enter_context(plugin.context()) for plugin in c.hypergen.plugins if hasattr(plugin, "context")]
             func(*args, **kwargs)
             html = join_html(c.hypergen.into)
 
@@ -61,7 +63,10 @@ def hypergen(func, *args, **kwargs):
                             continue
                         html = plugin.process_html(html)
 
-            return html
+            if full_return:
+                return d(html=html, context=c.clone())
+            else:
+                return html
 
 def hypergen_to_response(func, *args, **kwargs):
     status = kwargs.pop("status", None)

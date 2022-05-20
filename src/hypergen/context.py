@@ -9,7 +9,7 @@ try:
 except ImportError:
     MiddlewareMixin = object  # Backwards compatibility.
 
-### Context ###
+__all__ = ["context"]
 
 class Context(threading.local):
     def __init__(self):
@@ -39,6 +39,12 @@ class Context(threading.local):
 
     def __contains__(self, k):
         return k in self.ctx
+
+    def clone(self):
+        c = Context()
+        c.ctx = self.ctx
+
+        return c
 
     @contextmanager
     def __call__(self, transformer=None, at=None, **items):

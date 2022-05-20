@@ -12,7 +12,7 @@ from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 from django.templatetags.static import static
 
-__all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin", "dumps", "loads"]
+__all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin"]
 
 ### liveview is a plugin to hypergen ###
 
@@ -39,6 +39,17 @@ class LiveviewPlugin:
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
         return html.replace("</body>", hypergen(template))
+
+class CallbackPlugin:
+    @contextmanager
+    def context(self):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+            yield
+
+        def process_html(self, html):
+            command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+
+            return html
 
 ### constants ###
 
