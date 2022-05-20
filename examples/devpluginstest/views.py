@@ -17,7 +17,6 @@ def my_template2(n):
     with html():
         with head():
             title("Foo")
-
         with body():
             div("It works", n, sep=" ")
             button("Click me!", onclick=callback(reverse("devpluginstest:c3"), 100), id_="b1")

@@ -2,3 +2,4 @@ pyrsistent
 pyyaml
 yapf
 pytest
+yattag

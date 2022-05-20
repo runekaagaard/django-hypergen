@@ -20,35 +20,23 @@ class LiveviewPlugin:
     @contextmanager
     def context(self):
         with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
-            yield
+            command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
-    @contextmanager
-    def wrap_element(self, element):
-        # before, after
-        # prepend, append
-
+    def element_children_prepend(self, element, children):
         if type(element) is head:
-            # children.insert(0, "prepend")
-            # children.append("append")
-            print("AAAAAA")
-            raw("<title>AAA</title>")
-            # s = ""
-            # s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
-            # s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
-            #     dumps(c.hypergen.commands))
-            # raw(s)
+            return (
+                script(src=static("hypergen/hypergen.min.js")),
+                raw("<script type='application/json' id='hypergen-apply-commands-data'>{}</script>".format(
+                dumps(c.hypergen.commands))),
+                # script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data'),
+                script("""
+                    ready(() =>
+                        window.applyCommands(JSON.parse(
+                            document.getElementById('hypergen-apply-commands-data').textContent, reviver)))
+                """),
+            )
 
-        yield
-
-        if type(element) is head:
-            print("BBBBB")
-            raw("<title>BBB</title>")
-        # if type(element) is head:
-        #     s = ""
-        #     s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
-        #     s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
-        #         dumps(c.hypergen.commands))
-        #     raw(s)
+        return tuple()
 
 ### constants ###
 

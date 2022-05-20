@@ -50,7 +50,7 @@ def hypergen(func, *args, **kwargs):
     hypergen_plugins = kwargs.pop("hypergen_plugins", [TemplatePlugin()])
     with c(at="hypergen", plugins=hypergen_plugins):
         with ExitStack() as stack:
-            [stack.enter_context(cls.context()) for cls in hypergen_plugins if hasattr(cls, "context")]
+            [stack.enter_context(plugin.context()) for plugin in hypergen_plugins if hasattr(plugin, "context")]
             func(*args, **kwargs)
             return join_html(c.hypergen.into)
 
@@ -117,11 +117,8 @@ class base_element(ContextDecorator):
         return instance
 
     def __init__(self, *children, **attrs):
-        children = list(children)
-
         def init(self, *children, **attrs):
-            print("INIT", self.__class__.__name__)
-            self.t = attrs.get("t", t)
+            self.t = attrs.pop("t", t)
             self.children = children
             self.attrs = attrs
 
@@ -150,6 +147,13 @@ class base_element(ContextDecorator):
             super(base_element, self).__init__()
 
         assert "hypergen" in c, "Element called outside hypergen context."
+        if not c.hypergen.get("processing_plugins", False):
+            with c(at="hypergen", processing_plugins=True):
+                for plugin in c.hypergen.plugins:
+                    if not hasattr(plugin, "element_children_prepend"):
+                        continue
+                    children = plugin.element_children_prepend(self, children) + children
+
         init(self, *children, **attrs)
 
         # TODO: plugins
@@ -278,16 +282,8 @@ class base_element(ContextDecorator):
         if self.void:
             into.append("/")
         into.append('>')
-        with c(at="hypergen", inside_plugin=True, into=into):
-            with ExitStack() as stack:
-                [
-                    stack.enter_context(cls.wrap_element(self)) for cls in c.hypergen.plugins
-                    if hasattr(cls, "wrap_element")]
-                print("INSIDE")
-                c.hypergen.into.extend(self.format_children(self.children))
-                into = c.hypergen.into
+        into.extend(self.format_children(self.children))
 
-        print("FOOOOOOOOO", into)
         return into
 
     def end(self):
