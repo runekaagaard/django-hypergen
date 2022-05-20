@@ -140,47 +140,35 @@ class base_element(ContextDecorator):
         return instance
 
     def __init__(self, *children, **attrs):
-        def init(self, *children, **attrs):
-            self.t = attrs.pop("t", t)
-            self.children = children
-            self.attrs = attrs
-
-            id_ = self.attrs.get("id_", None)
-            if type(id_) in (tuple, list):
-                id_ = "-".join(str(x) for x in id_)
-            self.attrs["id_"] = LazyAttribute("id", id_)
-
-            self.i = len(c.hypergen.into)
-            self.sep = attrs.pop("sep", "")
-            self.end_char = attrs.pop("end", None)
-            self.js_value_func = attrs.get("js_value_func", "hypergen.read.value")
-
-            coerce_to = attrs.get("coerce_to", None)
-            if coerce_to is not None:
-                try:
-                    self.js_coerce_func = COERCE[coerce_to]
-                except KeyError:
-                    raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
-            else:
-                self.js_coerce_func = attrs.get("js_coerce_func", None)
-
-            c.hypergen.into.extend(self.start())
-            c.hypergen.into.extend(self.end())
-            self.j = len(c.hypergen.into)
-            super(base_element, self).__init__()
-
         assert "hypergen" in c, "Element called outside hypergen context."
-        if not c.hypergen.get("processing_plugins", False):
-            with c(at="hypergen", processing_plugins=True):
-                for plugin in c.hypergen.plugins:
-                    if not hasattr(plugin, "element_children_prepend"):
-                        continue
-                    children = plugin.element_children_prepend(self, children) + children
 
-        init(self, *children, **attrs)
+        self.t = attrs.pop("t", t)
+        self.children = children
+        self.attrs = attrs
 
-        # TODO: plugins
-        # c.hypergen.wrap_elements(init, self, *children, **attrs)
+        id_ = self.attrs.get("id_", None)
+        if type(id_) in (tuple, list):
+            id_ = "-".join(str(x) for x in id_)
+        self.attrs["id_"] = LazyAttribute("id", id_)
+
+        self.i = len(c.hypergen.into)
+        self.sep = attrs.pop("sep", "")
+        self.end_char = attrs.pop("end", None)
+        self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+
+        coerce_to = attrs.pop("coerce_to", None)
+        if coerce_to is not None:
+            try:
+                self.js_coerce_func = COERCE[coerce_to]
+            except KeyError:
+                raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
+        else:
+            self.js_coerce_func = attrs.pop("js_coerce_func", None)
+
+        c.hypergen.into.extend(self.start())
+        c.hypergen.into.extend(self.end())
+        self.j = len(c.hypergen.into)
+        super(base_element, self).__init__()
 
         if self.attrs["id_"].v is not None:
             id_ = self.attrs["id_"].v
