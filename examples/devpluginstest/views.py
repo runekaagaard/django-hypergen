@@ -25,15 +25,31 @@ def my_template2(n):
 def my_content_template(n):
     div("It works", n, sep=" ")
     button("Click me!", onclick=callback(reverse("devpluginstest:c3"), 100), id_="b1")
-    button("Alerts!", onclick=call_js("alert", 1234), id_="b2")
+    button("And me!", onclick=callback(reverse("devpluginstest:c4"), 100), id_="b2")
+    button("Alerts!", onclick=call_js("alert", 1234), id_="b3")
+    button("Me too!", onclick=callback(reverse("devpluginstest:c5"), 100), id_="b4")
 
 def v3(request):
     return HttpResponse(hypergen(my_template2, 42, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
 
 def c3(request):
-    data = hypergen(my_content_template, 666, hypergen=d(plugins=[TemplatePlugin(),
-        CallbackPlugin()], full_return=True))
+    data = hypergen(my_content_template, 666, hypergen=d(plugins=[TemplatePlugin(), CallbackPlugin()], returns=FULL))
     commands = data["context"]["hypergen"]["commands"]
     commands.append(["hypergen.morph", "my-body-id", data["html"]])
+
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')
+
+def c4(request):
+    commands = hypergen(
+        my_content_template, 666, hypergen=d(plugins=[TemplatePlugin(),
+        CallbackPlugin(target_id="my-body-id")], returns=COMMANDS))
+
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')
+
+def c5(request):
+    def only_commands():
+        command("console.log", "So lets go!")
+
+    commands = hypergen(only_commands, hypergen=d(plugins=[TemplatePlugin(), CallbackPlugin()], returns=COMMANDS))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')

@@ -84,7 +84,7 @@ window.clientState = {}
 export const setClientState = function(at, value) {
   let clientState = window.clientState
   for (const path of at.split(".")) {
-    if (clientState.path === undefined) clientState[path] = {}
+    if (clientState[path] === undefined) clientState[path] = {}
     clientState = clientState[path]
   }
   Object.assign(clientState, value)

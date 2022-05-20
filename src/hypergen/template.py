@@ -32,7 +32,7 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "write", "rst",
-    "TemplatePlugin"]
+    "TemplatePlugin", "HTML", "FULL", "COMMANDS"]
 
 ### template itself is a plugin to hypergen ###
 class TemplatePlugin:
@@ -45,28 +45,40 @@ class TemplatePlugin:
 
 hypergen_context_decorator = TemplatePlugin.context  # TODO REMOVE
 
+HTML = "HTML"
+FULL = "FULL"
+COMMANDS = "COMMANDS"
+HYPERGEN_RETURNS = {HTML, FULL, COMMANDS}
+
 def hypergen(func, *args, **kwargs):
     from hypergen import template
     settings = kwargs.pop("hypergen", {})
     plugins = settings.get("plugins", [TemplatePlugin()])
-    full_return = settings.get("full_return", False)
+    returns = settings.get("returns", HTML)
+    assert returns in HYPERGEN_RETURNS, "The 'returns' hypergen setting must be one of {}".format(
+        repr(HYPERGEN_RETURNS))
+
     with c(at="hypergen", plugins=plugins):
         with ExitStack() as stack:
             [stack.enter_context(plugin.context()) for plugin in c.hypergen.plugins if hasattr(plugin, "context")]
             func(*args, **kwargs)
-            html = join_html(c.hypergen.into)
-
-            if not c.hypergen.get("processing_plugins", False):
-                with c(at="hypergen", processing_plugins=True):
-                    for plugin in c.hypergen.plugins:
-                        if not hasattr(plugin, "process_html"):
-                            continue
-                        html = plugin.process_html(html)
-
-            if full_return:
-                return d(html=html, context=c.clone())
+            if "into" in c.hypergen:
+                html = join_html(c.hypergen.into)
             else:
+                html = ""
+
+            for plugin in c.hypergen.plugins:
+                if not hasattr(plugin, "process_html"):
+                    continue
+                html = plugin.process_html(html)
+
+            if returns == HTML:
                 return html
+            elif returns == COMMANDS:
+                print("COMMANDS ARE", repr(c.hypergen.commands))
+                return c.hypergen.commands
+            elif returns == FULL:
+                return d(html=html, context=c.clone())
 
 def hypergen_to_response(func, *args, **kwargs):
     status = kwargs.pop("status", None)

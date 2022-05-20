@@ -24,15 +24,16 @@ class LiveviewPlugin:
 
     def process_html(self, html):
         def template():
+            raw("<!--hypergen_liveview_media-->")
             if "hypergen/hypergen.min." not in html:
-                raw("<!--hypergen_liveview_media-->")
                 script(src=static("hypergen/hypergen.min.js"))
-                script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data')
-                script("""
-                    ready(() => window.applyCommands(JSON.parse(document.getElementById(
-                        'hypergen-apply-commands-data').textContent, reviver)))
-                """)
-                raw("</body>")  # We are replacing existing </body>
+
+            script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data')
+            script("""
+                ready(() => window.applyCommands(JSON.parse(document.getElementById(
+                    'hypergen-apply-commands-data').textContent, reviver)))
+            """)
+            raw("</body>")  # We are replacing existing </body>
 
         assert "</body>" in html, "liveview needs a body() tag to work."
 
@@ -41,15 +42,20 @@ class LiveviewPlugin:
         return html.replace("</body>", hypergen(template))
 
 class CallbackPlugin:
+    def __init__(self, /, *, target_id=None):
+        self.target_id = target_id
+
     @contextmanager
     def context(self):
         with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
             yield
 
-        def process_html(self, html):
-            command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+    def process_html(self, html):
+        command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+        if self.target_id:
+            command("hypergen.morph", self.target_id, html)
 
-            return html
+        return html
 
 ### constants ###
 
