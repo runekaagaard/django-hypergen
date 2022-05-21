@@ -57,9 +57,16 @@ COMMANDS = "COMMANDS"
 HYPERGEN_RETURNS = {HTML, FULL, COMMANDS}
 
 def hypergen(func, *args, **kwargs):
-    from hypergen import template
     settings = kwargs.pop("hypergen", {})
+
     plugins = settings.get("plugins", [TemplatePlugin()])
+    if settings.get("liveview", False):
+        from hypergen.liveview import LiveviewPlugin
+        plugins.append(LiveviewPlugin())
+    if settings.get("callback", False):
+        from hypergen.liveview import CallbackPlugin
+        plugins.append(CallbackPlugin(target_id=settings.get("target_id", None)))
+
     returns = settings.get("returns", HTML)
     assert returns in HYPERGEN_RETURNS, "The 'returns' hypergen setting must be one of {}".format(
         repr(HYPERGEN_RETURNS))
@@ -154,43 +161,36 @@ class base_element(ContextDecorator):
         return instance
 
     def __init__(self, *children, **attrs):
-        assert "hypergen" in c, "Element called outside hypergen context."
+        with ExitStack() as stack:
+            [
+                stack.enter_context(plugin.wrap_element_init(self, children, attrs)) for plugin in c.hypergen.plugins
+                if hasattr(plugin, "wrap_element_init")]
 
-        self.t = attrs.pop("t", t)
-        self.children = children
-        self.attrs = attrs
+            assert "hypergen" in c, "Element called outside hypergen context."
 
-        id_ = self.attrs.get("id_", None)
-        if type(id_) in (tuple, list):
-            id_ = "-".join(str(x) for x in id_)
-        self.attrs["id_"] = LazyAttribute("id", id_)
+            self.t = attrs.pop("t", t)
+            self.children = children
+            self.attrs = attrs
 
-        self.i = len(c.hypergen.into)
-        self.sep = attrs.pop("sep", "")
-        self.end_char = attrs.pop("end", None)
+            id_ = self.attrs.get("id_", None)
+            if type(id_) in (tuple, list):
+                id_ = "-".join(str(x) for x in id_)
+            self.attrs["id_"] = LazyAttribute("id", id_)
 
-        if c.hypergen.get("liveview_enable", False) is True:
-            from hypergen.liveview import COERCE
-            self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+            self.i = len(c.hypergen.into)
+            self.sep = attrs.pop("sep", "")
+            self.end_char = attrs.pop("end", None)
 
-            coerce_to = attrs.pop("coerce_to", None)
-            if coerce_to is not None:
-                try:
-                    self.js_coerce_func = COERCE[coerce_to]
-                except KeyError:
-                    raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
-            else:
-                self.js_coerce_func = attrs.pop("js_coerce_func", None)
+            c.hypergen.into.extend(self.start())
+            c.hypergen.into.extend(self.end())
+            self.j = len(c.hypergen.into)
 
-        c.hypergen.into.extend(self.start())
-        c.hypergen.into.extend(self.end())
-        self.j = len(c.hypergen.into)
-        super(base_element, self).__init__()
+            super(base_element, self).__init__()
 
-        if self.attrs["id_"].v is not None:
-            id_ = self.attrs["id_"].v
-            assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
-            c.hypergen["ids"].add(id_)
+            if self.attrs["id_"].v is not None:
+                id_ = self.attrs["id_"].v
+                assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
+                c.hypergen["ids"].add(id_)
 
     def __enter__(self):
         c.hypergen.into.extend(self.start())
@@ -348,7 +348,6 @@ def component(f):
 
 ### Some special dom elements ###
 
-# TODO: Move stuff to liveview.
 class input_(base_element_void):
     void = True
 
@@ -356,14 +355,6 @@ class input_(base_element_void):
         if attrs.get("type_", None) == "radio":
             assert attrs.get("name"), "Name must be set for radio buttons."
         super(input_, self).__init__(*children, **attrs)
-
-        if c.hypergen.get("liveview_enable", False) is True:
-            from hypergen.liveview import JS_VALUE_FUNCS, JS_COERCE_FUNCS
-            self.js_value_func = attrs.pop("js_value_func",
-                JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
-            if self.js_coerce_func is None:
-                self.js_coerce_func = attrs.pop("js_coerce_func",
-                    JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
 
     def attribute(self, k, v):
         if k != "value":
@@ -385,20 +376,7 @@ def doctype(type_="html"):
 
 ### All the tags ###
 # yapf: disable
-class a(base_element):
-    def __init__(self, *children, **attrs):
-        if c.hypergen.get("liveview_enable", False) is True:
-            href = attrs.get("href")
-            if type(href) is StringWithMeta:
-                base_template1 = href.meta.get("base_template", None)
-                if base_template1 is not None:
-                    base_template2 = getattr(c, "base_template", None)
-                    if base_template1 == base_template2:
-                        # Partial loading is possible.
-                        attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
-
-        super(a, self).__init__(*children, **attrs)
-
+class a(base_element): pass
 class abbr(base_element): pass
 class acronym(base_element): pass
 class address(base_element): pass

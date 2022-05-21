@@ -38,13 +38,46 @@ JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
 
 ### liveview is a plugin to hypergen ###
 
-class LiveviewPlugin:
+class LiveviewPluginBase:
     @contextmanager
     def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
-            liveview_enable=True):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
             yield
 
+    @contextmanager
+    def wrap_element_init(self, element, childrem, attrs):
+        # Default js_value_func and js_coerce_funcs values.
+        element.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+        coerce_to = attrs.pop("coerce_to", None)
+        if coerce_to is not None:
+            try:
+                element.js_coerce_func = COERCE[coerce_to]
+            except KeyError:
+                raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
+        else:
+            element.js_coerce_func = attrs.pop("js_coerce_func", None)
+
+        # Content of base_element.__init__ method runs here
+        yield
+
+        # Some elements have special liveview features.
+        if isinstance(element, input_):
+            element.js_value_func = attrs.pop("js_value_func",
+                JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
+            if element.js_coerce_func is None:
+                element.js_coerce_func = attrs.pop("js_coerce_func",
+                    JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
+        elif isinstance(element, a):
+            href = attrs.get("href")
+            if type(href) is StringWithMeta:
+                base_template1 = href.meta.get("base_template", None)
+                if base_template1 is not None:
+                    base_template2 = getattr(c, "base_template", None)
+                    if base_template1 == base_template2:
+                        # Partial loading is possible.
+                        attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
+
+class LiveviewPlugin(LiveviewPluginBase):
     def process_html(self, html):
         def template():
             raw("<!--hypergen_liveview_media-->")
@@ -64,15 +97,9 @@ class LiveviewPlugin:
 
         return html.replace("</body>", hypergen(template))
 
-class CallbackPlugin:
+class CallbackPlugin(LiveviewPluginBase):
     def __init__(self, /, *, target_id=None):
         self.target_id = target_id
-
-    @contextmanager
-    def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
-            liveview_enable=True):
-            yield
 
     def process_html(self, html):
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)

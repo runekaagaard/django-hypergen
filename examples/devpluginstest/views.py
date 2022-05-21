@@ -74,3 +74,23 @@ def c6(request):
         CallbackPlugin(target_id="body")], returns=COMMANDS))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
+
+### v5
+
+def my_page2():
+    with html(), body(), div(id_="body"):
+        my_form2(0)
+
+def my_form2(n):
+    h2("WOW!")
+    el = input_(type_="number", id_="i1", value=n)
+    button("MORE!", id_="i2", onclick=callback(reverse("devpluginstest:c7"), el))
+
+def v5(request):
+    return HttpResponse(hypergen(my_page2, hypergen=d(liveview=True)))
+
+def c7(request):
+    n, = loads(request.POST["hypergen_data"])["args"]
+    commands = hypergen(my_form2, n + 1, hypergen=d(callback=True, returns=COMMANDS, target_id="body"))
+
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')

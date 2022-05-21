@@ -15,4 +15,6 @@ urlpatterns = [
     url("^c4/$", views.c4, name="c4"),
     url("^c5/$", views.c5, name="c5"),
     url("^v4/$", views.v4, name="v4"),
-    url("^c6/$", views.c6, name="c6"),]
+    url("^c6/$", views.c6, name="c6"),
+    url("^v5/$", views.v5, name="v5"),
+    url("^c7/$", views.c7, name="c7"),]
