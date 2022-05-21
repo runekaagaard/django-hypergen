@@ -66,7 +66,7 @@ def my_form(n):
     button("MORE!", id_="i2", onclick=callback(reverse("devpluginstest:c6"), el))
 
 def v4(request):
-    return HttpResponse(hypergen(my_page, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
+    return HttpResponse(hypergen(my_page, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True)))
 
 def c6(request):
     n, = loads(request.POST["hypergen_data"])["args"]

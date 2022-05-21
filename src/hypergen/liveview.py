@@ -14,6 +14,11 @@ from django.templatetags.static import static
 
 __all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin"]
 
+### constants ###
+
+class THIS(object):
+    pass
+
 ### liveview is a plugin to hypergen ###
 
 class LiveviewPlugin:
@@ -56,11 +61,6 @@ class CallbackPlugin:
             command("hypergen.morph", self.target_id, html)
 
         return html
-
-### constants ###
-
-class THIS(object):
-    pass
 
 def is_ajax(request=None):
     if request is None:
@@ -129,7 +129,7 @@ def command(javascript_func_path, *args, **kwargs):
 
 ### Actions happening on the frontend  ###
 
-def callback(url_or_view, *cb_args, **kwargs):
+def callback(url, *cb_args, **kwargs):
     debounce = kwargs.pop("debounce", 0)
     confirm_ = kwargs.pop("confirm", False)
     blocks = kwargs.pop("blocks", False)
@@ -138,13 +138,6 @@ def callback(url_or_view, *cb_args, **kwargs):
     clear = kwargs.pop("clear", False)
     meta = kwargs.pop("meta", {})
     assert not kwargs, "Invalid callback kwarg(s): {}".format(repr(kwargs))
-
-    if callable(url_or_view):
-        assert hasattr(url_or_view, "reverse") and callable(
-            url_or_view.reverse), "Must have a reverse() attribute {}".format(url_or_view)
-        url = url_or_view.reverse()
-    else:
-        url = url_or_view
 
     def to_html(element, k, v):
         def fix_this(x):
@@ -165,7 +158,7 @@ def callback(url_or_view, *cb_args, **kwargs):
             em = ""
         return [" ", t(k), '="', "e(event,'{}'{})".format(cmd_id, em), '"']
 
-    to_html.hypergen_callback_signature = "callback", (url_or_view,) + cb_args, kwargs
+    to_html.hypergen_callback_signature = "callback", (url,) + cb_args, kwargs
 
     return to_html
 

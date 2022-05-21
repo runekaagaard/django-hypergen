@@ -19,6 +19,12 @@ try:
 except ImportError:
     docutils_ok = False
 
+try:
+    from yattag import indent as indent_
+    yattag_ok = True
+except ImportError:
+    yattag_ok = False
+
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -57,6 +63,7 @@ def hypergen(func, *args, **kwargs):
     returns = settings.get("returns", HTML)
     assert returns in HYPERGEN_RETURNS, "The 'returns' hypergen setting must be one of {}".format(
         repr(HYPERGEN_RETURNS))
+    indent = settings.get("indent", False)
 
     with c(at="hypergen", plugins=plugins):
         with ExitStack() as stack:
@@ -69,6 +76,16 @@ def hypergen(func, *args, **kwargs):
                 if not hasattr(plugin, "process_html"):
                     continue
                 html = plugin.process_html(html)
+
+            if indent:
+                if not yattag_ok:
+                    raise Exception("Do 'pip install yattag' to use the indent feature.")
+                html = indent_(
+                    html,
+                    indentation='    ',
+                    newline='\n',
+                    indent_text=True,
+                )
 
             if returns == HTML:
                 return html

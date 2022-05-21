@@ -51,13 +51,11 @@ def mock_hypergen_callback(f):
 
 def test_plugins():
     setup()
-    html0 = hypergen(template, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()]))
-    html = indent_html(html0)
+    html1 = hypergen(template, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True))
 
-    html0 = hypergen(template2, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()]))
-    html2 = indent_html(html0)
+    html2 = hypergen(template2, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True))
 
-    assert html2.strip() == html.strip() == HTML
+    assert html1.strip() == html2.strip() == HTML
 
 def template(n):
     with html():
