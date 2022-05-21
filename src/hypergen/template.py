@@ -142,10 +142,7 @@ def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1
         settings_overrides={'_disable_config': True, 'report_level': report_level})["html_body"])
 
 ### Base dom element ###
-NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
-
-COERCE = {str: "hypergen.coerce.str", int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
 
 class base_element(ContextDecorator):
     void = False
@@ -171,16 +168,19 @@ class base_element(ContextDecorator):
         self.i = len(c.hypergen.into)
         self.sep = attrs.pop("sep", "")
         self.end_char = attrs.pop("end", None)
-        self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
 
-        coerce_to = attrs.pop("coerce_to", None)
-        if coerce_to is not None:
-            try:
-                self.js_coerce_func = COERCE[coerce_to]
-            except KeyError:
-                raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
-        else:
-            self.js_coerce_func = attrs.pop("js_coerce_func", None)
+        if c.hypergen.get("liveview_enable", False) is True:
+            from hypergen.liveview import COERCE
+            self.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+
+            coerce_to = attrs.pop("coerce_to", None)
+            if coerce_to is not None:
+                try:
+                    self.js_coerce_func = COERCE[coerce_to]
+                except KeyError:
+                    raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
+            else:
+                self.js_coerce_func = attrs.pop("js_coerce_func", None)
 
         c.hypergen.into.extend(self.start())
         c.hypergen.into.extend(self.end())
@@ -348,21 +348,6 @@ def component(f):
 
 ### Some special dom elements ###
 
-JS_VALUE_FUNCS = d(
-    checkbox="hypergen.read.checked",
-    radio="hypergen.read.radio",
-    file="hypergen.read.file",
-)
-JS_COERCE_FUNCS = dict(
-    month="hypergen.coerce.month",
-    number="hypergen.coerce.int",
-    range="hypergen.coerce.float",
-    week="hypergen.coerce.week",
-    date="hypergen.coerce.date",
-    time="hypergen.coerce.time",
-)
-JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
-
 # TODO: Move stuff to liveview.
 class input_(base_element_void):
     void = True
@@ -371,10 +356,14 @@ class input_(base_element_void):
         if attrs.get("type_", None) == "radio":
             assert attrs.get("name"), "Name must be set for radio buttons."
         super(input_, self).__init__(*children, **attrs)
-        self.js_value_func = attrs.pop("js_value_func",
-            JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
-        if self.js_coerce_func is None:
-            self.js_coerce_func = attrs.pop("js_coerce_func", JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
+
+        if c.hypergen.get("liveview_enable", False) is True:
+            from hypergen.liveview import JS_VALUE_FUNCS, JS_COERCE_FUNCS
+            self.js_value_func = attrs.pop("js_value_func",
+                JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
+            if self.js_coerce_func is None:
+                self.js_coerce_func = attrs.pop("js_coerce_func",
+                    JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
 
     def attribute(self, k, v):
         if k != "value":
@@ -391,7 +380,6 @@ class input_(base_element_void):
             return super().attribute(k, v)
 
 ### Special tags ###
-
 def doctype(type_="html"):
     raw("<!DOCTYPE ", type_, ">")
 
@@ -399,15 +387,15 @@ def doctype(type_="html"):
 # yapf: disable
 class a(base_element):
     def __init__(self, *children, **attrs):
-        # TODO: Move to liveview.
-        href = attrs.get("href")
-        if type(href) is StringWithMeta:
-            base_template1 = href.meta.get("base_template", None)
-            if base_template1 is not None:
-                base_template2 = getattr(c, "base_template", None)
-                if base_template1 == base_template2:
-                    # Partial loading is possible.
-                    attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
+        if c.hypergen.get("liveview_enable", False) is True:
+            href = attrs.get("href")
+            if type(href) is StringWithMeta:
+                base_template1 = href.meta.get("base_template", None)
+                if base_template1 is not None:
+                    base_template2 = getattr(c, "base_template", None)
+                    if base_template1 == base_template2:
+                        # Partial loading is possible.
+                        attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
 
         super(a, self).__init__(*children, **attrs)
 

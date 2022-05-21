@@ -19,12 +19,30 @@ __all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin"
 class THIS(object):
     pass
 
+COERCE = {str: "hypergen.coerce.str", int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
+
+JS_VALUE_FUNCS = d(
+    checkbox="hypergen.read.checked",
+    radio="hypergen.read.radio",
+    file="hypergen.read.file",
+)
+JS_COERCE_FUNCS = dict(
+    month="hypergen.coerce.month",
+    number="hypergen.coerce.int",
+    range="hypergen.coerce.float",
+    week="hypergen.coerce.week",
+    date="hypergen.coerce.date",
+    time="hypergen.coerce.time",
+)
+JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
+
 ### liveview is a plugin to hypergen ###
 
 class LiveviewPlugin:
     @contextmanager
     def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
+            liveview_enable=True):
             yield
 
     def process_html(self, html):
@@ -52,7 +70,8 @@ class CallbackPlugin:
 
     @contextmanager
     def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
+            liveview_enable=True):
             yield
 
     def process_html(self, html):
