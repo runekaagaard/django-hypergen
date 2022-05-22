@@ -108,12 +108,6 @@ class CallbackPlugin(LiveviewPluginBase):
 
         return html
 
-def is_ajax(request=None):
-    if request is None:
-        request = c.request
-
-    return request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest'
-
 TARGET_ID_ERR = """
 No "target_id" set! It sets where the content of a callback will be rendered to.
 "target_id" must be set by either:

@@ -49,8 +49,6 @@ class TemplatePlugin:
 
 ### Rendering ###
 
-hypergen_context_decorator = TemplatePlugin.context  # TODO REMOVE
-
 HTML = "HTML"
 FULL = "FULL"
 COMMANDS = "COMMANDS"
@@ -443,7 +441,7 @@ class legend(base_element): pass
 class li(base_element): pass
 
 class link(base_element):
-    def __init__(self, href, rel="stylesheet", type_="text/css", **attrs):
+    def __init__(self, href=OMIT, rel="stylesheet", type_="text/css", **attrs):
         attrs["href"] = href
         super(link, self).__init__(rel=rel, type_=type_, **attrs)
 
