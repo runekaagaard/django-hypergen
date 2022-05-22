@@ -11,8 +11,8 @@ from copy import deepcopy
 from contextlib import ContextDecorator, contextmanager, ExitStack
 
 from pyrsistent import m
-
 from django.http.response import HttpResponse
+
 try:
     import docutils.core
     docutils_ok = True
@@ -85,12 +85,7 @@ def hypergen(func, *args, **kwargs):
             if indent:
                 if not yattag_ok:
                     raise Exception("Do 'pip install yattag' to use the indent feature.")
-                html = indent_(
-                    html,
-                    indentation='    ',
-                    newline='\n',
-                    indent_text=True,
-                )
+                html = indent_(html, indentation='    ', newline='\n', indent_text=True)
 
             if returns == HTML:
                 return html

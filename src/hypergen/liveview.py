@@ -1,5 +1,4 @@
 d = dict
-
 from hypergen.hypergen import *
 from hypergen.context import context as c
 from hypergen.template import *
@@ -12,7 +11,7 @@ from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 from django.templatetags.static import static
 
-__all__ = ["command", "call_js", "callback", "THIS", "is_ajax", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin"]
+__all__ = ["command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin"]
 
 ### constants ###
 
@@ -26,6 +25,7 @@ JS_VALUE_FUNCS = d(
     radio="hypergen.read.radio",
     file="hypergen.read.file",
 )
+
 JS_COERCE_FUNCS = dict(
     month="hypergen.coerce.month",
     number="hypergen.coerce.int",
@@ -34,6 +34,7 @@ JS_COERCE_FUNCS = dict(
     date="hypergen.coerce.date",
     time="hypergen.coerce.time",
 )
+
 JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
 
 ### liveview is a plugin to hypergen ###
@@ -62,20 +63,23 @@ class LiveviewPluginBase:
 
         # Some elements have special liveview features.
         if isinstance(element, input_):
+            # Coerce and value func based on input type.
             element.js_value_func = attrs.pop("js_value_func",
                 JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
             if element.js_coerce_func is None:
                 element.js_coerce_func = attrs.pop("js_coerce_func",
                     JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
         elif isinstance(element, a):
-            href = attrs.get("href")
-            if type(href) is StringWithMeta:
-                base_template1 = href.meta.get("base_template", None)
-                if base_template1 is not None:
-                    base_template2 = getattr(c, "base_template", None)
-                    if base_template1 == base_template2:
-                        # Partial loading is possible.
-                        attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
+            # Partial loading
+            # TODO: Do partial loading without StringWithMeta which is a bit sucky.
+            # href = attrs.get("href")
+            # base_template1 = href.meta.get("base_template", None)
+            # if base_template1 is not None:
+            #     base_template2 = getattr(c, "base_template", None)
+            #     if base_template1 == base_template2:
+            #         # Partial loading is possible.
+            #         attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
+            pass
 
 class LiveviewPlugin(LiveviewPluginBase):
     def process_html(self, html):
@@ -108,53 +112,7 @@ class CallbackPlugin(LiveviewPluginBase):
 
         return html
 
-TARGET_ID_ERR = """
-No "target_id" set! It sets where the content of a callback will be rendered to.
-"target_id" must be set by either:
-
-- Prefered! setting it as an attribute on the base_template:
-    def my_base_template():
-        with div(class_="so-base", id_="base"):
-            yield
-
-    my_base_template.target_id = "base"
-
-
-- setting it as a keyword argument to the @hypergen_view and/or @hypergen_callback decorators:
-    @hypergen_callback(target_id="base")
-    def my_callback(request):
-        ....
-
-  The reason it can be set on @hypergen_view's as well is to make partial loading work. Views with the same
-  base_template and target_id's supports partial loading between them.
-
-- setting it manually on context.hypergen["target_id"]:
-    @hypergen_callback(target_id=OMIT)
-    def my_callback(request):
-        with context(target_id="base", at="hypergen"):
-            ...
-""".strip()
-
-def hypergen_response(html_or_commands_or_http_response, status=None):
-    value = html_or_commands_or_http_response
-    if isinstance(value, HttpResponseRedirect):
-        if is_ajax():
-            return HttpResponse(dumps([["hypergen.redirect", value["Location"]]]), status=status,
-                content_type='application/json')
-        else:
-            return value
-    elif isinstance(value, HttpResponse):
-        assert status is None
-        assert not is_ajax()
-        return value
-    elif type(value) in (list, tuple):
-        assert is_ajax()
-        return HttpResponse(dumps(value), status=status, content_type='application/json')
-    elif type(value) in (str, str):
-        assert not is_ajax()
-        return HttpResponse(value, status=status)
-    else:
-        raise Exception("Invalid response value: {}".format(repr(value)))
+### Commands happening on the frontend  ###
 
 def command(javascript_func_path, *args, **kwargs):
     prepend = kwargs.pop("prepend", False)
@@ -166,8 +124,6 @@ def command(javascript_func_path, *args, **kwargs):
         c.hypergen.commands.insert(0, item)
     else:
         c.hypergen.commands.append(item)
-
-### Actions happening on the frontend  ###
 
 def callback(url, *cb_args, **kwargs):
     debounce = kwargs.pop("debounce", 0)
@@ -216,7 +172,7 @@ def call_js(command_path, *cb_args):
 
     return to_html
 
-# Serialization
+### Serialization ###
 
 ENCODINGS = {
     datetime.date: lambda o: {"_": ["date", str(o)]},
@@ -233,6 +189,7 @@ def encoder(o):
         return ["_", "element_value", [o.js_value_func, o.js_coerce_func, o.attrs["id_"].v]]
     elif hasattr(o, "__weakref__"):
         # Lazy strings and urls.
+        # TODO: still needed?
         return make_string(o)
     fn = ENCODINGS.get(type(o), None)
     if fn:
@@ -270,23 +227,3 @@ def dumps(data, default=encoder, indent=None):
 
 def loads(data):
     return json.loads(data, object_hook=decoder)
-
-class StringWithMeta(object):
-    def __init__(self, value, meta):
-        self.value = value
-        self.meta = meta
-
-    def __str__(self):
-        return force_text(self.value)
-
-    def __unicode__(self):
-        return force_text(self.value)
-
-    def __iter__(self):
-        return iter(self.value)
-
-    def __add__(self, other):
-        return self.value + other
-
-    def __iadd__(self, other):
-        return self.value + other
