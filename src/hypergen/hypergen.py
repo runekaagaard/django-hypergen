@@ -1,8 +1,10 @@
 from hypergen.utils import *
 
 from html import escape
-from functools import wraps, update_wrapper
+from functools import update_wrapper
 
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import user_passes_test
 try:
     from django.utils.encoding import force_text as force_str
 except ImportError:
@@ -10,11 +12,17 @@ except ImportError:
 
 __all__ = ["OMIT"]
 
-### Constants ####
+### Constants ###
 
 OMIT = "__OMIT__"
 
-### Helpers internal to hypergen, DONT use these.
+### Helpers internal to hypergen, DONT use these! ###
+
+def make_string(s):
+    if s is None:
+        return ""
+    else:
+        return force_str(s)
 
 def t(s, quote=True):
     return escape(make_string(s), quote=quote)
@@ -64,8 +72,51 @@ def wrap2(f):
 
     return _
 
-def make_string(s):
-    if s is None:
-        return ""
-    else:
-        return force_str(s)
+# Permissions
+
+class PERMS_OK:
+    pass
+
+def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=False, redirect_field_name=None):
+    from hypergen.context import context as c
+    from hypergen.liveview import NO_PERM_REQUIRED
+
+    matched_perms = set()
+
+    def check_perms_for_user(user):
+        nonlocal matched_perms
+        if isinstance(perm, str):
+            perms = (perm,)
+        else:
+            perms = perm
+
+        if any_perm is not True:
+            if user.has_perms(perms):
+                matched_perms = set(perms)
+                return True
+        else:
+            for p in perms:
+                if user.has_perm(p):
+                    matched_perms.add(p)
+
+            if matched_perms:
+                return True
+
+        # In case the 403 handler should be called raise the exception
+        if raise_exception:
+            raise PermissionDenied
+        # As the last resort, show the login form
+        return False
+
+    def no_perm_required(user):
+        return True
+
+    checker = no_perm_required if perm == NO_PERM_REQUIRED else check_perms_for_user
+
+    @user_passes_test(checker, login_url=login_url, redirect_field_name=redirect_field_name)
+    def perm_fake_view(request):
+        return PERMS_OK
+
+    check = perm_fake_view(request)
+
+    return check is PERMS_OK, check, matched_perms

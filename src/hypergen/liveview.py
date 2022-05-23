@@ -1,6 +1,6 @@
 d = dict
 from hypergen.hypergen import *
-from hypergen.hypergen import wrap2, make_string, t
+from hypergen.hypergen import wrap2, make_string, t, check_perms
 from hypergen.context import context as c
 from hypergen.template import *
 
@@ -195,15 +195,22 @@ class DecoratorPlugin:
 
 @wrap2
 def view(func, path=None, /, *, url=None, base_template=None, perm=None, any_perm=False, login_url=None,
-    raise_exception=False):
+    raise_exception=False, redirect_field_name=None):
     assert not all((url, path)), "Use either 'url=' or 'path=', not both."
 
     plugins = [TemplatePlugin(), LiveviewPlugin(), DecoratorPlugin(base_template=base_template)]
 
     @wraps(func)
     def _(request, *args, **kwargs):
-        html = hypergen(func, request, *args, **kwargs, hypergen=d(plugins=plugins))
-        return HttpResponse(html)
+        # Ensure correct permissions
+        ok, response_redirect, matched_perms = check_perms(request, perm, login_url=login_url,
+            raise_exception=raise_exception, any_perm=any_perm, redirect_field_name=redirect_field_name)
+        if not ok:
+            return response_redirect
+
+        with c(at="hypergen", matched_perms=matched_perms):
+            html = hypergen(func, request, *args, **kwargs, hypergen=d(plugins=plugins))
+            return HttpResponse(html)
 
     return _
 
