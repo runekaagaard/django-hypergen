@@ -1,22 +1,28 @@
 d = dict
 from hypergen.hypergen import *
+from hypergen.hypergen import wrap2, make_string, t
 from hypergen.context import context as c
 from hypergen.template import *
 
 import datetime, json
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
+from functools import wraps
 
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 from django.templatetags.static import static
 
-__all__ = ["command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin"]
+__all__ = [
+    "command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin", "view",
+    "callback_view", "NO_PERM_REQUIRED"]
 
 ### constants ###
 
 class THIS(object):
     pass
+
+NO_PERM_REQUIRED = "__NO_PERM_REQUIRED__"
 
 COERCE = {str: "hypergen.coerce.str", int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
 
@@ -171,6 +177,38 @@ def call_js(command_path, *cb_args):
         return [" ", t(k), '="', "e(event, '{}')".format(cmd_id), '"']
 
     return to_html
+
+### Decorators for better QOL ###
+
+class DecoratorPlugin:
+    def __init__(self, base_template=None):
+        self.base_template = base_template
+
+    @contextmanager
+    def context(self):
+        if self.base_template:
+            with c(at="hypergen", base_template=self.base_template):
+                with self.base_template():
+                    yield
+        else:
+            yield
+
+@wrap2
+def view(func, path=None, /, *, url=None, base_template=None, perm=None, any_perm=False, login_url=None,
+    raise_exception=False):
+    assert not all((url, path)), "Use either 'url=' or 'path=', not both."
+
+    plugins = [TemplatePlugin(), LiveviewPlugin(), DecoratorPlugin(base_template=base_template)]
+
+    @wraps(func)
+    def _(request, *args, **kwargs):
+        html = hypergen(func, request, *args, **kwargs, hypergen=d(plugins=plugins))
+        return HttpResponse(html)
+
+    return _
+
+def callback_view():
+    pass
 
 ### Serialization ###
 

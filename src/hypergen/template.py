@@ -2,6 +2,7 @@ d = dict
 from hypergen.context import context as c
 from hypergen.utils import *
 from hypergen.hypergen import *
+from hypergen.hypergen import make_string, t
 
 import time, logging
 from collections import OrderedDict
@@ -44,7 +45,7 @@ __all__ = [
 class TemplatePlugin:
     @contextmanager
     def context(self):
-        with c(at="hypergen", into=[], ids=set()):
+        with c(at="hypergen", into=[], ids=set(), plugins=[]):
             yield
 
 ### Rendering ###

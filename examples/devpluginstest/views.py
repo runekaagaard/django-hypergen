@@ -1,6 +1,8 @@
 d = dict
 from hypergen.imports import *
 
+from contextlib import contextmanager
+
 from django.http.response import HttpResponse
 from django.urls.base import reverse
 
@@ -90,6 +92,27 @@ def v5(request):
     return HttpResponse(hypergen(my_page2, hypergen=d(liveview=True)))
 
 def c7(request):
+    n, = loads(request.POST["hypergen_data"])["args"]
+    commands = hypergen(my_form2, n + 1, hypergen=d(callback=True, returns=COMMANDS, target_id="body"))
+
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')
+
+# v6
+@contextmanager
+def v6_base_template():
+    doctype()
+    with html():
+        with head():
+            title("I am title")
+        with body():
+            h1("I am base!")
+            yield
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v6(request):
+    p("I am view!")
+
+def c8(request):
     n, = loads(request.POST["hypergen_data"])["args"]
     commands = hypergen(my_form2, n + 1, hypergen=d(callback=True, returns=COMMANDS, target_id="body"))
 
