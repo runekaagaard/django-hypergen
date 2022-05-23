@@ -74,14 +74,15 @@ def wrap2(f):
 
 # Permissions
 
-class PERMS_OK:
+class __PERMS_OK:
     pass
 
 def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=False, redirect_field_name=None):
-    from hypergen.context import context as c
     from hypergen.liveview import NO_PERM_REQUIRED
-
     matched_perms = set()
+
+    if perm == NO_PERM_REQUIRED:
+        return True, None, matched_perms
 
     def check_perms_for_user(user):
         nonlocal matched_perms
@@ -108,15 +109,13 @@ def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=F
         # As the last resort, show the login form
         return False
 
-    def no_perm_required(user):
-        return True
-
-    checker = no_perm_required if perm == NO_PERM_REQUIRED else check_perms_for_user
-
-    @user_passes_test(checker, login_url=login_url, redirect_field_name=redirect_field_name)
+    @user_passes_test(check_perms_for_user, login_url=login_url, redirect_field_name=redirect_field_name)
     def perm_fake_view(request):
-        return PERMS_OK
+        return __PERMS_OK
 
     check = perm_fake_view(request)
 
-    return check is PERMS_OK, check, matched_perms
+    if check is __PERMS_OK:
+        return True, None, matched_perms
+    else:
+        return False, check, matched_perms
