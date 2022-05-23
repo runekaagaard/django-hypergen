@@ -106,6 +106,7 @@ def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=F
         # In case the 403 handler should be called raise the exception
         if raise_exception:
             raise PermissionDenied
+
         # As the last resort, show the login form
         return False
 
