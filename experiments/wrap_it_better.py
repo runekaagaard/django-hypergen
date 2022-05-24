@@ -39,9 +39,33 @@ def wrap_t(v, quote=True, *args, **kwargs):
 def wrap_attribute(element, k, v, *args, **kwargs):
     yield
 
-from hypergen import translate, liveview
-
 @contextmanager
 def hypergen_view():
     with c(at="hypergen", plugins=[translate, liveview]):
         yield
+
+@contextmanager
+def base_template():
+    print("<body>")
+    yield
+    print("</body>")
+
+def template():
+    print("    <p>Hi</p>")
+
+print("----- A -----")
+
+with base_template():
+    template()
+
+print("----- B -----")
+
+@base_template()
+def template2():
+    print("    <p>Hi2</p>")
+
+template2()
+
+print("----- C -----")
+
+base_template()(template)()

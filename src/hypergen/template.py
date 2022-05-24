@@ -70,12 +70,12 @@ def hypergen(func, *args, **kwargs):
     assert returns in HYPERGEN_RETURNS, "The 'returns' hypergen setting must be one of {}".format(
         repr(HYPERGEN_RETURNS))
     indent = settings.get("indent", False)
+    base_template = settings.get("base_template", None)
 
     with c(at="hypergen", plugins=plugins):
         with ExitStack() as stack:
             [stack.enter_context(plugin.context()) for plugin in c.hypergen.plugins if hasattr(plugin, "context")]
-            func(*args, **kwargs)
-            assert c.hypergen.plugins, c.hypergen.plugins
+            (base_template()(func) if base_template else func)(*args, **kwargs)
 
             html = join_html(c.hypergen.into) if "into" in c.hypergen else ""
 

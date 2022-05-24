@@ -117,3 +117,7 @@ def c8(request):
     commands = hypergen(my_form2, n + 1, hypergen=d(callback=True, returns=COMMANDS, target_id="body"))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
+
+@view(perm=NO_PERM_REQUIRED)
+def v7(request):
+    body(p("I am view!"))

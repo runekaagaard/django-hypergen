@@ -180,25 +180,10 @@ def call_js(command_path, *cb_args):
 
 ### Decorators for better QOL ###
 
-class DecoratorPlugin:
-    def __init__(self, base_template=None):
-        self.base_template = base_template
-
-    @contextmanager
-    def context(self):
-        if self.base_template:
-            with c(at="hypergen", base_template=self.base_template):
-                with self.base_template():
-                    yield
-        else:
-            yield
-
 @wrap2
 def view(func, path=None, /, *, url=None, base_template=None, perm=None, any_perm=False, login_url=None,
     raise_exception=False, redirect_field_name=None):
     assert not all((url, path)), "Use either 'url=' or 'path=', not both."
-
-    plugins = [TemplatePlugin(), DecoratorPlugin(base_template=base_template), LiveviewPlugin()]
 
     @wraps(func)
     def _(request, *args, **kwargs):
@@ -209,7 +194,7 @@ def view(func, path=None, /, *, url=None, base_template=None, perm=None, any_per
             return response_redirect
 
         with c(at="hypergen", matched_perms=matched_perms):
-            html = hypergen(func, request, *args, **kwargs, hypergen=d(plugins=plugins))
+            html = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True, base_template=base_template))
             return HttpResponse(html)
 
     return _
