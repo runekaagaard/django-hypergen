@@ -45,7 +45,7 @@ __all__ = [
 class TemplatePlugin:
     @contextmanager
     def context(self):
-        with c(at="hypergen", into=[], ids=set(), plugins=[]):
+        with c(at="hypergen", into=[], ids=set()):
             yield
 
 ### Rendering ###
@@ -75,6 +75,7 @@ def hypergen(func, *args, **kwargs):
         with ExitStack() as stack:
             [stack.enter_context(plugin.context()) for plugin in c.hypergen.plugins if hasattr(plugin, "context")]
             func(*args, **kwargs)
+            assert c.hypergen.plugins, c.hypergen.plugins
 
             html = join_html(c.hypergen.into) if "into" in c.hypergen else ""
 

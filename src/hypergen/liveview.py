@@ -101,7 +101,7 @@ class LiveviewPlugin(LiveviewPluginBase):
             """)
             raw("</body>")  # We are replacing existing </body>
 
-        assert "</body>" in html, "liveview needs a body() tag to work."
+        assert "</body>" in html, "liveview needs a body() tag to work, but got: " + html
 
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
@@ -198,7 +198,7 @@ def view(func, path=None, /, *, url=None, base_template=None, perm=None, any_per
     raise_exception=False, redirect_field_name=None):
     assert not all((url, path)), "Use either 'url=' or 'path=', not both."
 
-    plugins = [TemplatePlugin(), LiveviewPlugin(), DecoratorPlugin(base_template=base_template)]
+    plugins = [TemplatePlugin(), DecoratorPlugin(base_template=base_template), LiveviewPlugin()]
 
     @wraps(func)
     def _(request, *args, **kwargs):
