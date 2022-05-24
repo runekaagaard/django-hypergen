@@ -120,4 +120,4 @@ def c8(request):
 
 @view(perm=NO_PERM_REQUIRED)
 def v7(request):
-    body(p("I am view!"))
+    body(p("I am view!", v7.reverse(), sep=" "))

@@ -1,3 +1,6 @@
+d = dict
+
+from django.urls.base import reverse
 from hypergen.utils import *
 
 from html import escape
@@ -120,3 +123,51 @@ def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=F
         return True, None, matched_perms
     else:
         return False, check, matched_perms
+
+### Auto urling ###
+
+class StringWithMeta(object):
+    def __init__(self, value, meta):
+        self.value = value
+        self.meta = meta
+
+    def __str__(self):
+        return force_text(self.value)
+
+    def __unicode__(self):
+        return force_text(self.value)
+
+    def __iter__(self):
+        return iter(self.value)
+
+    def __add__(self, other):
+        return self.value + other
+
+    def __iadd__(self, other):
+        return self.value + other
+
+_URLS = {}
+
+def view_autourl(func, namespace, base_template, url=None):
+    def _reverse(*view_args, **view_kwargs):
+        ns = namespace
+        if not ns:
+            ns = _reverse.hypergen_namespace
+            assert ns, "namespace must be defined in either hypergen_view/hypergen_callback or hypergen_urls"
+        return StringWithMeta(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
+            d(base_template=base_template))
+
+    func.reverse = _reverse
+
+    module = func.__module__
+    if module not in _URLS:
+        _URLS[module] = set()
+
+    if url is None:
+        url = r"^{}/$".format(func.__name__)
+    elif url == "":
+        raise Exception('Use "^$" for an empty url in {}.{}'.format(module, func.__name__))
+
+    _URLS[module].add((func, url))
+
+    return func

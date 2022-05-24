@@ -5,7 +5,7 @@ except ImportError:
 
 from devpluginstest import views
 
-app_name = '                  '
+app_name = 'devpluginstest'
 
 urlpatterns = [
     url("^v1/$", views.v1, name="v1"),
@@ -21,3 +21,5 @@ urlpatterns = [
     url("^v6/$", views.v6, name="v6"),
     url("^c8/$", views.c8, name="c8"),
     url("^v7/$", views.v7, name="v7"),]
+
+views.v7.register_reverse(app_name)
