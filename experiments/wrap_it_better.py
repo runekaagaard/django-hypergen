@@ -71,9 +71,9 @@ print("----- C -----")
 base_template()(template)()
 
 class metastr(str):
-    @classmethod
-    def make(cls, string, meta):
-        s = cls(string)
+    @staticmethod
+    def make(string, meta):
+        s = metastr(string)
         s.meta = meta
 
         return s
