@@ -1,3 +1,5 @@
+from hypergen.hypergen import autourls
+
 try:
     from django.conf.urls import url
 except ImportError:
@@ -22,4 +24,4 @@ urlpatterns = [
     url("^c8/$", views.c8, name="c8"),
     url("^v7/$", views.v7, name="v7"),]
 
-views.v7.register_reverse(app_name)
+urlpatterns.extend(autourls(views, app_name))

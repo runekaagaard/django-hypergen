@@ -108,7 +108,7 @@ def v6_base_template():
             h1("I am base!")
             yield
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, autourl=False)
 def v6(request):
     p("I am view!")
 
@@ -118,6 +118,26 @@ def c8(request):
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
 
-@view(perm=NO_PERM_REQUIRED)
+@view(perm=NO_PERM_REQUIRED, autourl=False)
 def v7(request):
-    body(p("I am view!", v7.reverse(), sep=" "))
+    body(p("I am view!", reverse("devpluginstest:v7"), sep=" "))
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v8(request):
+    body(p("I am view!", v8.reverse(), sep=" "))
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, path="thisv9/")
+def v9(request):
+    body(p("I am view!", v9.reverse(), sep=" "))
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, path="this10/<int:num>/<slug:title>/")
+def v10(request, num, title):
+    body(p("I am view!", num, title, v10.reverse(num=num, title=title), sep=" - "))
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, re_path=r"^v11ok/(?P<year>[0-9]{4})/(?P<username>\w+)/$")
+def v11(request, year, username):
+    body(p("I am view!", title, username, v11.reverse(year=year, username=username), sep=" - "))
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, re_path=r"^v12what/([0-9]{4})/(\w+)/$")
+def v12(request, year, username):
+    body(p("I am view!", title, username, v12.reverse(year, username), sep=" - "))

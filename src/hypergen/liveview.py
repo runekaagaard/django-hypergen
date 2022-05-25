@@ -1,9 +1,8 @@
 d = dict
 from django.urls.base import reverse
 from hypergen.hypergen import *
-from hypergen.hypergen import wrap2, make_string, t, check_perms
+from hypergen.hypergen import wrap2, make_string, t, check_perms, autourl_register
 from hypergen.context import context as c
-from hypergen.hypergen import view_autourl
 from hypergen.template import *
 
 import datetime, json
@@ -183,20 +182,8 @@ def call_js(command_path, *cb_args):
 ### Decorators for better QOL ###
 
 @wrap2
-def view(func, path=None, /, *, url=None, base_template=None, perm=None, any_perm=False, login_url=None,
-    raise_exception=False, redirect_field_name=None):
-    assert not all((url, path)), "Use either 'url=' or 'path=', not both."
-
-    def register_reverse(namespace):
-        func.hypergen_namespace = namespace
-
-    def _reverse(*args, **kwargs):
-        assert hasattr(func, "hypergen_namespace"), "register_reverse() must be called first to bind the namespace."
-        return reverse("{}:{}".format(func.hypergen_namespace, func.__name__), args=args, kwargs=kwargs)
-
-    func.register_reverse = register_reverse
-    func.reverse = _reverse
-
+def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
+    raise_exception=False, redirect_field_name=None, autourl=True):
     @wraps(func)
     def _(request, *args, **kwargs):
         # Ensure correct permissions
@@ -208,6 +195,10 @@ def view(func, path=None, /, *, url=None, base_template=None, perm=None, any_per
         with c(at="hypergen", matched_perms=matched_perms):
             html = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True, base_template=base_template))
             return HttpResponse(html)
+
+    if autourl:
+        assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"
+        autourl_register(_, base_template=base_template, path=path, re_path=re_path)
 
     return _
 

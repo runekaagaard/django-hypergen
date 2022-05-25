@@ -13,6 +13,11 @@ try:
 except ImportError:
     from django.utils.encoding import force_str
 
+try:
+    from django.conf.urls import url as re_path_, path as path_
+except ImportError:
+    from django.urls import re_path as re_path_, path as path_
+
 __all__ = ["OMIT"]
 
 ### Constants ###
@@ -124,37 +129,22 @@ def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=F
     else:
         return False, check, matched_perms
 
-### Auto urling ###
+### Auto urls ###
 
-class StringWithMeta(object):
-    def __init__(self, value, meta):
-        self.value = value
-        self.meta = meta
+class metastr(str):
+    @staticmethod
+    def make(string, meta):
+        s = metastr(string)
+        s.meta = meta
 
-    def __str__(self):
-        return force_text(self.value)
-
-    def __unicode__(self):
-        return force_text(self.value)
-
-    def __iter__(self):
-        return iter(self.value)
-
-    def __add__(self, other):
-        return self.value + other
-
-    def __iadd__(self, other):
-        return self.value + other
+        return s
 
 _URLS = {}
 
-def view_autourl(func, namespace, base_template, url=None):
+def autourl_register(func, base_template=None, path=None, re_path=None):
     def _reverse(*view_args, **view_kwargs):
-        ns = namespace
-        if not ns:
-            ns = _reverse.hypergen_namespace
-            assert ns, "namespace must be defined in either hypergen_view/hypergen_callback or hypergen_urls"
-        return StringWithMeta(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
+        ns = _reverse.hypergen_namespace
+        return metastr.make(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
             d(base_template=base_template))
 
     func.reverse = _reverse
@@ -163,11 +153,23 @@ def view_autourl(func, namespace, base_template, url=None):
     if module not in _URLS:
         _URLS[module] = set()
 
-    if url is None:
-        url = r"^{}/$".format(func.__name__)
-    elif url == "":
-        raise Exception('Use "^$" for an empty url in {}.{}'.format(module, func.__name__))
+    if (path, re_path) == (None, None):
+        tmp = (re_path_, func, r"^{}/$".format(func.__name__))
+    elif path:
+        tmp = (path_, func, path)
+    elif re_path:
+        if re_path == "":
+            raise Exception('Use "^$" for an empty re_path in {}.{}'.format(module, func.__name__))
+        tmp = (re_path_, func, re_path)
 
-    _URLS[module].add((func, url))
+    _URLS[module].add(tmp)
 
     return func
+
+def autourls(module, namespace=None):
+    patterns = []
+    for path_func, func, path_ in _URLS.get(module.__name__, []):
+        func.reverse.hypergen_namespace = namespace
+        patterns.append(path_func(path_, func, name=func.__name__))
+
+    return patterns
