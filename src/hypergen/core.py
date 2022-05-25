@@ -1,6 +1,3 @@
-# coding=utf-8
-from __future__ import (absolute_import, division, unicode_literals)
-
 from django.templatetags.static import static
 
 d = dict
@@ -661,7 +658,7 @@ class input_(base_element_void):
             return super().attribute(k, v)
 
         type_ = self.attrs.get("type_", None)
-        if type_ == "datetime-local":
+        if type_ == "datetime-local" and type(v) is datetime:
             return [" ", k, '="', v.strftime("%Y-%m-%dT%H:%M:%S"), '"']
         elif type_ == "month" and type(v) is dict:
             return [" ", k, '="', "{:04}-{:02}".format(v["year"], v["month"]), '"']

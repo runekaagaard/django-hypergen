@@ -1,6 +1,3 @@
-# coding=utf-8
-from __future__ import (absolute_import, division, unicode_literals)
-
 from django import template
 from django.urls.base import reverse
 from django.utils.safestring import SafeString, mark_safe
