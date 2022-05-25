@@ -84,4 +84,4 @@ m.meta = 200
 print("FOOOOO", m, m.meta)
 
 m2 = metastr.make("I am string", {1, 2, 3})
-print("BAR", m2, m2.meta, type(m2) is str, isinstance(m2, str))
+print("BAR", m2, m2.meta, type(m2), type(m2) is str, isinstance(m2, str))
