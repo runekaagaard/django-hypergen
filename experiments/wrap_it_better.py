@@ -69,3 +69,19 @@ template2()
 print("----- C -----")
 
 base_template()(template)()
+
+class metastr(str):
+    @classmethod
+    def make(cls, string, meta):
+        s = cls(string)
+        s.meta = meta
+
+        return s
+
+m = metastr("Hello")
+m.meta = 200
+
+print("FOOOOO", m, m.meta)
+
+m2 = metastr.make("I am string", {1, 2, 3})
+print("BAR", m2, m2.meta, type(m2) is str, isinstance(m2, str))
