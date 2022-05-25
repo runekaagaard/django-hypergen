@@ -92,6 +92,8 @@ def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=F
     if perm == NO_PERM_REQUIRED:
         return True, None, matched_perms
 
+    assert perm, "perm= is required"
+
     def check_perms_for_user(user):
         nonlocal matched_perms
         if isinstance(perm, str):

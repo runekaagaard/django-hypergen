@@ -184,6 +184,9 @@ def call_js(command_path, *cb_args):
 @wrap2
 def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
     raise_exception=False, redirect_field_name=None, autourl=True):
+    if perm != NO_PERM_REQUIRED:
+        assert perm, "perm= is a required keyword argument"
+
     @wraps(func)
     def _(request, *args, **kwargs):
         # Ensure correct permissions
