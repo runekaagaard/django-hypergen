@@ -198,21 +198,17 @@ def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any
         with c(at="hypergen", matched_perms=matched_perms, base_template=base_template):
             full = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True, base_template=base_template,
                 returns=FULL))
-            if request.GET.get("hypergen_partial", None) == "1":
-                path = request.get_full_path()
-                commands = full["context"]["hypergen"]["commands"]
-                commands.extend([[
-                    "hypergen.setClientState", 'hypergen.eventHandlerCallbacks',
-                    full["context"]["hypergen"]["event_handler_callbacks"]],
-                    ["hypergen.morph", "content", full["html"]],
-                    [
-                    "history.replaceState",
-                    d(callback_url=path),
-                    "",
-                    path,]])
-                return HttpResponse(dumps(commands), status=200, content_type='application/json')
-            else:
-                return HttpResponse(full["html"])
+
+        if request.GET.get("hypergen_partial", None) == "1":
+            path = request.get_full_path()
+            commands = full["context"]["hypergen"]["commands"]
+            commands.extend([[
+                "hypergen.setClientState", 'hypergen.eventHandlerCallbacks',
+                full["context"]["hypergen"]["event_handler_callbacks"]], ["hypergen.morph", "content", full["html"]],
+                ["history.replaceState", d(callback_url=path), "", path]])
+            return HttpResponse(dumps(commands), status=200, content_type='application/json')
+        else:
+            return HttpResponse(full["html"])
 
     if autourl:
         assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"

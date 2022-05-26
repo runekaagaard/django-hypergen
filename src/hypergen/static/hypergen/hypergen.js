@@ -97,7 +97,7 @@ var i = 0
 var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
                                              params={}, meta={}, clear=false, elementId=null, debug=false,
-                                             event=null}={})
+                                             event=null, headers={}}={})
 {
   if (!!event) {
     event.preventDefault()
@@ -153,7 +153,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
         }
         document.getElementsByTagName("html")[0].innerHTML = data
       }
-    }, params)
+    }, params, headers)
   }
   if (debounce === 0) {
     if (confirm_ === false) postIt()
@@ -389,7 +389,7 @@ function addParams(url, params) {
   else return url + "?" + ret.join('&')
 }
 
-export const post = function(url, formData, onSuccess, onError, params) {
+export const post = function(url, formData, onSuccess, onError, params, headers) {
   url = addParams(url, params)
   
   const xhr = new XMLHttpRequest()
@@ -449,6 +449,11 @@ export const post = function(url, formData, onSuccess, onError, params) {
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   xhr.setRequestHeader('X-Pathname', parent.window.location.pathname);
   xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+  if (!!headers) {
+    for (let k in headers) {
+      xhr.setRequestHeader(k, headers[k]);
+    }
+  }
   xhr.send(formData)
 }
 
@@ -456,7 +461,7 @@ export const post = function(url, formData, onSuccess, onError, params) {
 
 window.addEventListener("popstate", function(event) {
   if (event.state && event.state.callback_url !== undefined) {
-    callback(event.state.callback_url, [], {meta: {is_popstate: true}})
+    callback(event.state.callback_url, [], {meta: {is_popstate: true}, headers: {HYPERGEN_POPSTATE: 1}})
   } else {
     window.location = location.href
   }
