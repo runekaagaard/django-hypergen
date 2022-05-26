@@ -141,3 +141,15 @@ def v11(request, year, username):
 @view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, re_path=r"^v12what/([0-9]{4})/(\w+)/$")
 def v12(request, year, username):
     body(p("I am view!", title, username, v12.reverse(year, username), sep=" - "))
+
+@view(perm="no-idont-have-it", base_template=v6_base_template)
+def v13(request, year, username):
+    body(p("I am view!"))
+
+@view(perm="no-idont-have-it", base_template=v6_base_template, raise_exception=True)
+def v14(request, year, username):
+    body(p("I am view!"))
+
+@view(perm="no-idont-have-it", base_template=v6_base_template, login_url="/mitobito", redirect_field_name="nooog")
+def v15(request, year, username):
+    body(p("I am view!"))
