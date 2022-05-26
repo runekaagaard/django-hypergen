@@ -105,8 +105,9 @@ def v6_base_template():
         with head():
             title("I am title")
         with body():
-            h1("I am base!")
-            yield
+            with div(id_="content"):
+                h1("I am base!")
+                yield
 
 @view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, autourl=False)
 def v6(request):
@@ -143,13 +144,22 @@ def v12(request, year, username):
     body(p("I am view!", title, username, v12.reverse(year, username), sep=" - "))
 
 @view(perm="no-idont-have-it", base_template=v6_base_template)
-def v13(request, year, username):
+def v13(request):
     body(p("I am view!"))
 
 @view(perm="no-idont-have-it", base_template=v6_base_template, raise_exception=True)
-def v14(request, year, username):
+def v14(request):
     body(p("I am view!"))
 
 @view(perm="no-idont-have-it", base_template=v6_base_template, login_url="/mitobito", redirect_field_name="nooog")
 def v15(request, year, username):
     body(p("I am view!"))
+
+# partial
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v16(request):
+    body(a("v17", href=v17.reverse()))
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v17(request):
+    body(a("v16", href=v16.reverse()))

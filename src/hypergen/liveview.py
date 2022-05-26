@@ -3,6 +3,7 @@ from django.urls.base import reverse
 from hypergen.hypergen import *
 from hypergen.hypergen import wrap2, make_string, t, check_perms, autourl_register
 from hypergen.context import context as c
+from hypergen.hypergen import metastr
 from hypergen.template import *
 
 import datetime, json
@@ -77,16 +78,15 @@ class LiveviewPluginBase:
                 element.js_coerce_func = attrs.pop("js_coerce_func",
                     JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
         elif isinstance(element, a):
-            # Partial loading
-            # TODO: Do partial loading without StringWithMeta which is a bit sucky.
-            # href = attrs.get("href")
-            # base_template1 = href.meta.get("base_template", None)
-            # if base_template1 is not None:
-            #     base_template2 = getattr(c, "base_template", None)
-            #     if base_template1 == base_template2:
-            #         # Partial loading is possible.
-            #         attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
-            pass
+            href = attrs.get("href", None)
+            if type(href) is metastr:
+                base_template1 = href.meta.get("base_template", None)
+                if base_template1 is not None:
+                    base_template2 = c.hypergen.get("base_template", None)
+                    if base_template1 == base_template2:
+                        attrs[
+                            "onclick"] = "hypergen.callback('{}?hypergen_partial=1', [], {{'event': event}})".format(
+                            href)
 
 class LiveviewPlugin(LiveviewPluginBase):
     def process_html(self, html):
@@ -195,9 +195,24 @@ def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any
         if ok is not True:
             return response_redirect
 
-        with c(at="hypergen", matched_perms=matched_perms):
-            html = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True, base_template=base_template))
-            return HttpResponse(html)
+        with c(at="hypergen", matched_perms=matched_perms, base_template=base_template):
+            full = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True, base_template=base_template,
+                returns=FULL))
+            if request.GET.get("hypergen_partial", None) == "1":
+                path = request.get_full_path()
+                commands = full["context"]["hypergen"]["commands"]
+                commands.extend([[
+                    "hypergen.setClientState", 'hypergen.eventHandlerCallbacks',
+                    full["context"]["hypergen"]["event_handler_callbacks"]],
+                    ["hypergen.morph", "content", full["html"]],
+                    [
+                    "history.replaceState",
+                    d(callback_url=path),
+                    "",
+                    path,]])
+                return HttpResponse(dumps(commands), status=200, content_type='application/json')
+            else:
+                return HttpResponse(full["html"])
 
     if autourl:
         assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"
