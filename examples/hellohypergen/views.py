@@ -1,21 +1,17 @@
 # Import all html tag functions, etc.
-from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+from hypergen.imports import *
 
 from django.urls.base import reverse
-from django.templatetags.static import static
-from website.templates import base_head, show_sources
+from website.templates2 import base_head, show_sources
 
 # So this a hypergen view. If no "url" parameter is given one will be automatically assigned. "perm" is required.
 # A LOT of stuff happens under the hood and the decorator can be configured in many ways. Just go with it for now.
-@hypergen_view(perm=NO_PERM_REQUIRED)
+@liveview(perm=NO_PERM_REQUIRED)
 def counter(request):
     # hypergen_view collects html and returns it as a Django response.
     doctype()  # standard html5 doctype.
     with html():  # tags can be nested
         with head():
-            script(src=static("hypergen/hypergen.min.js"))  # html attributes are keyword arguments.
             base_head()
         with body():
             # This id matches the "target_id" argument to the "increment" callback.
@@ -25,6 +21,7 @@ def counter(request):
                 template(1)
 
             show_sources(__file__)
+            # hypergen automatically injects it's needed javascript just before the </body> tag.
 
 # Hypergen html is very easy to compose, just use functions.
 def template(n):
@@ -45,11 +42,11 @@ def template(n):
         # serialized and deserialized between server and client.
         #
         # Elements with callbacks _must_ have an id.
-        button("Increment", id_="increment", onclick=cb(increment, n))
+        button("Increment", id_="increment", onclick=callback(increment, n))
 
 # And this is a hypergen callback. It's the ajax brother to the hypergen_view. "perm" and "target_id" are required.
 # "target_id" is where the output of "template(n+1)" will be written to on the client.
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")
+@action(perm=NO_PERM_REQUIRED, target_id="body")
 def increment(request, n):
     # Increment "n" and render again.
     template(n + 1)
