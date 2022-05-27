@@ -57,7 +57,7 @@ def inputs(request):
 
     h2("Form Input elements")
     p(
-        "Hypergen has special support for input, select and textarea elements. They can be used as arguments to ",
+        "Hypergen has support for input, select, textarea and contenteditable elements. They can be used as arguments to ",
         "callback functions. When the event the callback is attached to happens, the frontend will read their values and send them as arguments to the callback functions."
     )
     p("As an example try to experiment with what this code would send to the server:")
@@ -66,7 +66,8 @@ def inputs(request):
 inputs = [
     input_(id_="i1", value=1, type_="number"),
     input_(id_="i2", value=2, type_="number", coerce_to=float),
-    input_(id_="i3", value=None, type_="number", coerce_to=str),]
+    input_(id_="i3", value=None, type_="number", coerce_to=str),
+        ]
 i4 = input_(id_="i4", value=4)
 button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="mycallback-send")
     """.strip()))
@@ -76,7 +77,8 @@ button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="myca
             input_(id_="i2", value=2, type_="number", coerce_to=float),
             input_(id_="i3", value=None, type_="number", coerce_to=str),]
         i4 = input_(id_="i4", value=4)
-        button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="mycallback-send")
+        i5 = span("Edit me!", contenteditable=True, id_="i5", style={"margin": "4px;"})
+        button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}, i5), id_="mycallback-send")
         span(id_="mycallback-receive")
 
     p("The fact that multiple inputs can be nested into your datastructure of choice and sent to the server ",
@@ -185,7 +187,7 @@ def submit(request, value, target_id):
         raw(repr(value), " (", type(value).__name__, ")")
 
 @hypergen_callback(perm=NO_PERM_REQUIRED, target_id="mycallback-receive")
-def mycallback(request, a1, a2):
+def mycallback(request, a1, a2, a3):
     span(" Executed on server: ")
     with code():
-        raw("mycallback(request, {}, {})".format(repr(a1), repr(a2)))
+        raw("mycallback(request, {}, {}, {})".format(repr(a1), repr(a2), repr(a3)))
