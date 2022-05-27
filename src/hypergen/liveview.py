@@ -15,7 +15,7 @@ from django.conf import settings
 from django.templatetags.static import static
 
 __all__ = [
-    "command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin", "liveview",
+    "command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "ActionPlugin", "liveview",
     "action", "NO_PERM_REQUIRED"]
 
 ### constants ###
@@ -107,7 +107,7 @@ class LiveviewPlugin(LiveviewPluginBase):
 
         return html.replace("</body>", hypergen(template))
 
-class CallbackPlugin(LiveviewPluginBase):
+class ActionPlugin(LiveviewPluginBase):
     def __init__(self, /, *, target_id=None):
         self.target_id = target_id
 
@@ -200,7 +200,7 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
                 request=request):
-                commands = hypergen(func, request, *args, **kwargs, settings=d(callback=True, returns=COMMANDS,
+                commands = hypergen(func, request, *args, **kwargs, settings=d(action=True, returns=COMMANDS,
                     target_id=target_id))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
@@ -240,7 +240,7 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
 
         with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
             request=request):
-            full = hypergen(func, request, *action_args, **kwargs, settings=d(callback=True, returns=FULL,
+            full = hypergen(func, request, *action_args, **kwargs, settings=d(action=True, returns=FULL,
                 target_id=target_id))
             if isinstance(full["func_result"], HttpResponseRedirect):
                 # Allow to return a redirect response directly from an action.

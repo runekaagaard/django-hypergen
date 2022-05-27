@@ -1,13 +1,13 @@
-from hypergen.core import *
-from hypergen.core import callback as cb
+from hypergen.imports import *
 
 from django.urls.base import reverse
 from django.templatetags.static import static
-from hypergen.core import hypergen_to_response, loads
-from website.templates import base_head, show_sources
+from django.http.response import HttpResponse
+
+from website.templates2 import base_head, show_sources
 
 def counter(request):
-    return hypergen_to_response(base_template, template, 0)
+    return HttpResponse(hypergen(base_template, template, 0, settings={"liveview": True}))
 
 def base_template(content_template, n):
     doctype()
@@ -16,7 +16,7 @@ def base_template(content_template, n):
             script(src=static("hypergen/hypergen.min.js"))
             base_head()
         with body():
-            with div(id_="body"):
+            with div(id_="content"):
                 content_template(n)
 
             show_sources(__file__)
@@ -33,9 +33,10 @@ def template(n):
     with p():
         label("Current value: ")
         input_(type_="number", value=n)
-        button("Increment", id_="increment", onclick=cb(reverse("hellocoreonly:increment"), n))
+        button("Increment", id_="increment", onclick=callback(reverse("hellocoreonly:increment"), n))
 
 def increment(request):
     n, = loads(request.POST["hypergen_data"])["args"]
 
-    return hypergen_to_response(template, n + 1, target_id="body")
+    commands = hypergen(template, n + 1, settings={"action": True, "target_id": "content", "returns": COMMANDS})
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')

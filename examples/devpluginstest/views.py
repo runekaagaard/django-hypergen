@@ -35,7 +35,7 @@ def v3(request):
     return HttpResponse(hypergen(my_template2, 42, settings=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
 
 def c3(request):
-    data = hypergen(my_content_template, 666, settings=d(plugins=[TemplatePlugin(), CallbackPlugin()], returns=FULL))
+    data = hypergen(my_content_template, 666, settings=d(plugins=[TemplatePlugin(), ActionPlugin()], returns=FULL))
     commands = data["context"]["hypergen"]["commands"]
     commands.append(["hypergen.morph", "my-body-id", data["html"]])
 
@@ -44,7 +44,7 @@ def c3(request):
 def c4(request):
     commands = hypergen(
         my_content_template, 222, settings=d(plugins=[TemplatePlugin(),
-        CallbackPlugin(target_id="my-body-id")], returns=COMMANDS))
+        ActionPlugin(target_id="my-body-id")], returns=COMMANDS))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
 
@@ -52,7 +52,7 @@ def c5(request):
     def only_commands():
         command("console.log", "So lets go!")
 
-    commands = hypergen(only_commands, settings=d(plugins=[CallbackPlugin()], returns=COMMANDS))
+    commands = hypergen(only_commands, settings=d(plugins=[ActionPlugin()], returns=COMMANDS))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
 
@@ -73,7 +73,7 @@ def v4(request):
 def c6(request):
     n, = loads(request.POST["hypergen_data"])["args"]
     commands = hypergen(my_form, n + 1, settings=d(plugins=[TemplatePlugin(),
-        CallbackPlugin(target_id="body")], returns=COMMANDS))
+        ActionPlugin(target_id="body")], returns=COMMANDS))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
 
@@ -93,7 +93,7 @@ def v5(request):
 
 def c7(request):
     n, = loads(request.POST["hypergen_data"])["args"]
-    commands = hypergen(my_form2, n + 1, settings=d(callback=True, returns=COMMANDS, target_id="body"))
+    commands = hypergen(my_form2, n + 1, settings=d(action=True, returns=COMMANDS, target_id="body"))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
 
@@ -117,7 +117,7 @@ def v6(request):
 
 def c8(request):
     n, = loads(request.POST["hypergen_data"])["args"]
-    commands = hypergen(my_form2, n + 1, settings=d(callback=True, returns=COMMANDS, target_id="body"))
+    commands = hypergen(my_form2, n + 1, settings=d(action=True, returns=COMMANDS, target_id="body"))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
 

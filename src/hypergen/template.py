@@ -38,8 +38,8 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "raw", "write", "rst",
-    "TemplatePlugin", "HTML", "FULL", "COMMANDS", "base_element"]
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "TemplatePlugin", "HTML",
+    "FULL", "COMMANDS", "base_element"]
 
 ### template itself is a plugin to hypergen ###
 class TemplatePlugin:
@@ -63,9 +63,9 @@ def hypergen(func, *args, **kwargs):
     if settings.get("liveview", False):
         from hypergen.liveview import LiveviewPlugin
         plugins.append(LiveviewPlugin())
-    if settings.get("callback", False):
-        from hypergen.liveview import CallbackPlugin
-        plugins.append(CallbackPlugin(target_id=settings.get("target_id", None)))
+    if settings.get("action", False):
+        from hypergen.liveview import ActionPlugin
+        plugins.append(ActionPlugin(target_id=settings.get("target_id", None)))
 
     returns = settings.get("returns", HTML)
     assert returns in HYPERGEN_RETURNS, "The 'returns' hypergen setting must be one of {}".format(
@@ -96,10 +96,6 @@ def hypergen(func, *args, **kwargs):
                 return c.hypergen.commands
             elif returns == FULL:
                 return d(html=html, context=c.clone(), func_result=func_result)
-
-def hypergen_to_response(func, *args, **kwargs):
-    status = kwargs.pop("status", None)
-    return HttpResponse(hypergen(func, *args, **kwargs), status)
 
 ### Helpers ###
 class LazyAttribute(object):
