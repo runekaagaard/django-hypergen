@@ -97,7 +97,7 @@ var i = 0
 var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
                                              params={}, meta={}, clear=false, elementId=null, debug=false,
-                                             event=null, headers={}}={})
+                                             event=null, headers={}, onSucces=null}={})
 {
   if (!!event) {
     event.preventDefault()
@@ -139,10 +139,10 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       }
     }
     post(url, formData, (data) => {
-      console.log("RESPONSE", data)
       if (data !== null) applyCommands(data)
       isBlocked = false
       if (clear === true) document.getElementById(elementId).value = ""
+      if (!!onSucces) onSucces()
     }, (data, jsonOk, xhr) => {
       isBlocked = false
       console.error("Hypergen post error occured", data)
@@ -159,6 +159,14 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     else if (confirm(confirm_)) postIt()
   }
   else throttle(postIt, {delay: debounce, group: url, confirm_}) 
+}
+
+export const partialLoad = function(event, url) {
+  console.log("partialLoad engaged", event, url)
+  callback(url, [], {'event': event, 'headers': {'X-Hypergen-Partial': '1'}, onSucces: function() {
+    history.pushState({callback_url: url}, "", url)
+    onpushstate()
+  }})
 }
 
 // Timing
@@ -448,7 +456,8 @@ const post = function(url, formData, onSuccess, onError, params, headers) {
 
 window.addEventListener("popstate", function(event) {
   if (event.state && event.state.callback_url !== undefined) {
-    callback(event.state.callback_url, [], {meta: {is_popstate: true}, headers: {"X-Hypergen-Popstate": 1}})
+    console.log("popstate to partial load")
+    partialLoad(event, event.state.callback_url)
   } else {
     window.location = location.href
   }

@@ -79,11 +79,8 @@ class LiveviewPluginBase:
             if type(href) is metastr:
                 base_template1 = href.meta.get("base_template", None)
                 if base_template1 is not None:
-                    base_template2 = c.hypergen.get("base_template", None)
-                    if base_template1 is base_template2:
-                        attrs[
-                            "onclick"] = "hypergen.callback('{}', [], {{'event': event, 'headers': {{'X-Hypergen-Callback': '1'}}}})".format(
-                            href)
+                    if base_template1 is c.hypergen.get("partial_base_template", None):
+                        attrs["onclick"] = "hypergen.partialLoad(event, '{}')".format(href)
 
         # Content of base_element.__init__ method runs here
         yield
@@ -103,6 +100,9 @@ class LiveviewPlugin(LiveviewPluginBase):
         assert "</body>" in html, "liveview needs a body() tag to work, but got: " + html
         assert html.count("</body>") == 1, "Ooops, multiple </body> tags found. There can be only one!"
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+
+        path = c.hypergen.request.get_full_path()
+        command("history.replaceState", d(callback_url=path), "", path)
 
         return html.replace("</body>", hypergen(template))
 
@@ -187,20 +187,17 @@ def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any
         if ok is not True:
             return response_redirect
 
-        with c(at="hypergen", matched_perms=matched_perms, base_template=base_template):
-            full = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True, base_template=base_template,
-                returns=FULL))
+        if request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
+                commands = hypergen(func, request, *args, **kwargs, hypergen=d(callback=True, returns=COMMANDS,
+                    target_id="content"))
 
-        if request.META.get("HTTP_X_HYPERGEN_CALLBACK", None) == "1":
-            path = request.get_full_path()
-            commands = full["context"]["hypergen"]["commands"]
-            commands.extend([[
-                "hypergen.setClientState", 'hypergen.eventHandlerCallbacks',
-                full["context"]["hypergen"]["event_handler_callbacks"]], ["hypergen.morph", "content", full["html"]],
-                ["history.replaceState", d(callback_url=path), "", path]])
-            return HttpResponse(dumps(commands), status=200, content_type='application/json')
+                return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
-            return HttpResponse(full["html"])
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
+                html = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True,
+                    base_template=base_template))
+                return HttpResponse(html)
 
     if autourl:
         assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"

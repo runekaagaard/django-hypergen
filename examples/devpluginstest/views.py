@@ -105,8 +105,8 @@ def v6_base_template():
         with head():
             title("I am title")
         with body():
+            h1("I am base!")
             with div(id_="content"):
-                h1("I am base!")
                 yield
 
 @view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, autourl=False)
@@ -158,6 +158,7 @@ def v15(request, year, username):
 # partial
 @view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v16(request):
+    div(a("v16", href=v16.reverse()))
     div(a("v17", href=v17.reverse()))
     a("v17", href=v17.reverse())
     with div():
@@ -166,3 +167,8 @@ def v16(request):
 @view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v17(request):
     div(a("v16", href=v16.reverse()))
+    div(a("v18", href=v18.reverse()))
+
+@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v18(request):
+    div("End of line")
