@@ -87,6 +87,12 @@ Though it can be written more elegantly::
 
     ul(li(x) for x in range(1, 4))
 
+Clashes with python builtins and keywords are mitigated by postfixing a single underscore::
+
+    input_(type_="number", id_="my-input", class_="my-class", value=92)
+
+If you prefer, ``type``, ``id`` and ``class`` can of course also be used as keyword arguments.
+
 Children
 ~~~~~~~~
 

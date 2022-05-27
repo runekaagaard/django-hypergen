@@ -130,7 +130,7 @@ def documentation(request):
     p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
     with ul():
         li(a("Hello hypergen", href=counter.reverse()))
-        li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from contrib.py used")
+        li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from liveview.py used")
         li(a("TodoMVC", href=todomvc.reverse(ALL)))
         li(a("Hypergen App template", href=my_view.reverse()))
 
