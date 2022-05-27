@@ -43,7 +43,7 @@ def c3(request):
 
 def c4(request):
     commands = hypergen(
-        my_content_template, 666, hypergen=d(plugins=[TemplatePlugin(),
+        my_content_template, 222, hypergen=d(plugins=[TemplatePlugin(),
         CallbackPlugin(target_id="my-body-id")], returns=COMMANDS))
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
@@ -158,8 +158,11 @@ def v15(request, year, username):
 # partial
 @view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v16(request):
-    body(a("v17", href=v17.reverse()))
+    div(a("v17", href=v17.reverse()))
+    a("v17", href=v17.reverse())
+    with div():
+        a("v17", href=v17.reverse())
 
 @view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v17(request):
-    body(a("v16", href=v16.reverse()))
+    div(a("v16", href=v16.reverse()))

@@ -161,6 +161,9 @@ class base_element(ContextDecorator):
                 stack.enter_context(plugin.wrap_element_init(self, children, attrs)) for plugin in c.hypergen.plugins
                 if hasattr(plugin, "wrap_element_init")]
 
+            if type(self) is a:
+                print("AAA", self.__class__.__name__, attrs)
+
             assert "hypergen" in c, "Element called outside hypergen context."
 
             self.t = attrs.pop("t", t)
@@ -186,6 +189,9 @@ class base_element(ContextDecorator):
                 id_ = self.attrs["id_"].v
                 assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
                 c.hypergen["ids"].add(id_)
+
+            if type(self) is a:
+                print("BBB", self.__class__.__name__, attrs)
 
     def __enter__(self):
         c.hypergen.into.extend(self.start())

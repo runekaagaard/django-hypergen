@@ -376,7 +376,7 @@ function addParams(url, params) {
   else return url + "?" + ret.join('&')
 }
 
-export const post = function(url, formData, onSuccess, onError, params, headers) {
+const post = function(url, formData, onSuccess, onError, params, headers) {
   url = addParams(url, params)
   
   const xhr = new XMLHttpRequest()
@@ -436,6 +436,7 @@ export const post = function(url, formData, onSuccess, onError, params, headers)
   xhr.setRequestHeader('X-Pathname', parent.window.location.pathname);
   xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
   if (!!headers) {
+    console.log("Setting custom headers", headers)
     for (let k in headers) {
       xhr.setRequestHeader(k, headers[k]);
     }
@@ -447,7 +448,7 @@ export const post = function(url, formData, onSuccess, onError, params, headers)
 
 window.addEventListener("popstate", function(event) {
   if (event.state && event.state.callback_url !== undefined) {
-    callback(event.state.callback_url, [], {meta: {is_popstate: true}, headers: {HYPERGEN_POPSTATE: 1}})
+    callback(event.state.callback_url, [], {meta: {is_popstate: true}, headers: {"X-Hypergen-Popstate": 1}})
   } else {
     window.location = location.href
   }

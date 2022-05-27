@@ -54,7 +54,7 @@ class LiveviewPluginBase:
             yield
 
     @contextmanager
-    def wrap_element_init(self, element, childrem, attrs):
+    def wrap_element_init(self, element, children, attrs):
         # Default js_value_func and js_coerce_funcs values.
         element.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
         coerce_to = attrs.pop("coerce_to", None)
@@ -65,9 +65,6 @@ class LiveviewPluginBase:
                 raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
         else:
             element.js_coerce_func = attrs.pop("js_coerce_func", None)
-
-        # Content of base_element.__init__ method runs here
-        yield
 
         # Some elements have special liveview features.
         if isinstance(element, input_):
@@ -83,10 +80,13 @@ class LiveviewPluginBase:
                 base_template1 = href.meta.get("base_template", None)
                 if base_template1 is not None:
                     base_template2 = c.hypergen.get("base_template", None)
-                    if base_template1 == base_template2:
+                    if base_template1 is base_template2:
                         attrs[
-                            "onclick"] = "hypergen.callback('{}?hypergen_partial=1', [], {{'event': event}})".format(
+                            "onclick"] = "hypergen.callback('{}', [], {{'event': event, 'headers': {{'X-Hypergen-Callback': '1'}}}})".format(
                             href)
+
+        # Content of base_element.__init__ method runs here
+        yield
 
 class LiveviewPlugin(LiveviewPluginBase):
     def process_html(self, html):
@@ -101,7 +101,7 @@ class LiveviewPlugin(LiveviewPluginBase):
             raw("</body>")  # We are replacing existing </body>
 
         assert "</body>" in html, "liveview needs a body() tag to work, but got: " + html
-
+        assert html.count("</body>") == 1, "Ooops, multiple </body> tags found. There can be only one!"
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
         return html.replace("</body>", hypergen(template))
@@ -130,15 +130,12 @@ def command(javascript_func_path, *args, **kwargs):
     else:
         c.hypergen.commands.append(item)
 
-def callback(url, *cb_args, **kwargs):
-    debounce = kwargs.pop("debounce", 0)
-    confirm_ = kwargs.pop("confirm", False)
-    blocks = kwargs.pop("blocks", False)
-    upload_files = kwargs.pop("upload_files", False)
-    event_matches = kwargs.pop("event_matches", False)
-    clear = kwargs.pop("clear", False)
-    meta = kwargs.pop("meta", {})
-    assert not kwargs, "Invalid callback kwarg(s): {}".format(repr(kwargs))
+def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_files=False, clear=False, headers=None,
+    meta=None):
+    if meta is None:
+        meta = {}
+    if headers is None:
+        headers = {}
 
     def to_html(element, k, v):
         def fix_this(x):
@@ -148,18 +145,15 @@ def callback(url, *cb_args, **kwargs):
         cmd = command(
             "hypergen.callback", url, [fix_this(x) for x in cb_args],
             d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear,
-            elementId=element.attrs["id_"].v, debug=settings.DEBUG, meta=meta), return_=True)
+            elementId=element.attrs["id_"].v, debug=settings.DEBUG, meta=meta, headers=headers), return_=True)
         cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
 
         c.hypergen.event_handler_callbacks[cmd_id] = cmd
 
-        if event_matches:
-            em = ", {}".format(escape(dumps(event_matches)))
-        else:
-            em = ""
-        return [" ", t(k), '="', "hypergen.event(event,'{}'{})".format(cmd_id, em), '"']
+        return [" ", t(k), '="', "hypergen.event(event, '{}')".format(cmd_id), '"']
 
-    to_html.hypergen_callback_signature = "callback", (url,) + cb_args, kwargs
+    to_html.hypergen_callback_signature = "callback", (url,) + cb_args, d(debounce=debounce, confirm_=confirm_,
+        blocks=blocks, upload_files=upload_files, clear=clear, meta=meta)
 
     return to_html
 
@@ -197,7 +191,7 @@ def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any
             full = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True, base_template=base_template,
                 returns=FULL))
 
-        if request.GET.get("hypergen_partial", None) == "1":
+        if request.META.get("HTTP_X_HYPERGEN_CALLBACK", None) == "1":
             path = request.get_full_path()
             commands = full["context"]["hypergen"]["commands"]
             commands.extend([[
