@@ -17,12 +17,6 @@ try:
 except ImportError:
     from django.urls import re_path as re_path_, path as path_
 
-__all__ = ["OMIT"]
-
-### Constants ###
-
-OMIT = "__OMIT__"
-
 ### Helpers internal to hypergen, DONT use these! ###
 
 def make_string(s):

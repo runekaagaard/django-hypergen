@@ -38,9 +38,14 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "TemplatePlugin", "HTML",
-    "FULL", "COMMANDS", "base_element"]
+    "FULL", "COMMANDS", "base_element", "OMIT"]
+
+### Constants ###
+
+OMIT = "__OMIT__"
 
 ### template itself is a plugin to hypergen ###
+
 class TemplatePlugin:
     @contextmanager
     def context(self):
