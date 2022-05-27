@@ -1,6 +1,4 @@
 import morphdom from 'morphdom'
-// https://github.com/ccampbell/mousetrap
-import mousetrap from 'mousetrap'
 import './hypergen'
 import * as hypergen from './hypergen'
 
