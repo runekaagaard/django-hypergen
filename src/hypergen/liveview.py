@@ -198,15 +198,13 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
             return response_redirect
 
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
-            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
-                request=request):
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
                 commands = hypergen(func, request, *args, **kwargs, settings=d(action=True, returns=COMMANDS,
                     target_id=target_id))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
-            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
-                request=request):
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
                 html = hypergen(func, request, *args, **kwargs, settings=d(liveview=True,
                     base_template=base_template))
                 return HttpResponse(html)
@@ -238,8 +236,7 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
 
         action_args = loads(request.POST["hypergen_data"])["args"]
 
-        with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
-            request=request):
+        with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
             full = hypergen(func, request, *action_args, **kwargs, settings=d(action=True, returns=FULL,
                 target_id=target_id))
             if isinstance(full["func_result"], HttpResponseRedirect):
