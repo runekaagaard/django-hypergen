@@ -3,18 +3,11 @@ Hypergen template engine
 
 Hypergen features a react-like templating engine in pure python. Import everything like this::
 
-    from hypergen.core import *
+    from hypergen.template import *
 
-The function that makes everything works is ``hypergen()``. It constructs a global context that collects invocations of html5 elements like ``div("hi")``. If you are using the ``@hypergen_view`` and ``@hypergen_callback`` from contrib you might not use it directly, but it's still called under the hood.
+The function that makes everything works is aptly named ``hypergen()``. It constructs a global context that collects invocations of html5 elements like ``div("hi")``. If you are using the ``@liveview`` and ``@action`` decorators from liveview you might not use it directly, but it's still called under the hood.
 
-*hypergen(template_function, *args, **kwargs)*
-    Calls the template_function with ``args`` and ``kwargs`` as arguments. Collects html and returns either:
-*normal http requests*
-    Returns html as a string.
-*ajax requests*
-    Returns a list of commands for the frontend to execute that re-renders to the correct ``target_id``.
-
-So the most basic Django view using hypergen would look like this::
+The most basic Django view using hypergen would look like::
 
     def my_view(request):
         return HttpResponse(hypergen(my_template, "hypergen"))
@@ -24,6 +17,39 @@ So the most basic Django view using hypergen would look like this::
         with html():
             with body():
                 p("Hello ", name)
+
+And the full definition reads:
+                
+*hypergen(func, *args, settings={}, **kwargs)*
+    Calls the given template function as ``func(*args, **kwargs)``. Returns the collected HTML as a string.
+    Takes a ``settings`` dict.
+*settings*
+    - **base_template** (None): Wrap the function with a ``base_template`` contextmanager function. ``func`` runs
+      where the ``base_template`` yields.
+    - **indent** (False): Indent HTML by 4 spaces. Requires ``pip install yattag``.
+    - **liveview** (False): Enables the liveview plugin.
+    - **action** (False): Enables the action plugin.
+    - **target_id** (None): A string passed to the action plugin that makes hypergen render to a specific div on the
+      the frontend.
+    - **returns** (HTML): One of the ``HTML``, ``COMMANDS`` or ``FULL`` constants defined in the template module.
+    - **plugins** ([TemplatePlugin()]): Use your own custom list of plugins.
+
+For normal use you would be interested in the ``base_template`` argument, the rest is mostly for liveview functionality. Different inner templates can share the same base template::
+
+    from contextlib import contextmanager
+
+    @contextmanager
+    def my_base_template():
+        doctype()
+        with html():
+            with body():
+                yield
+                
+    def my_view(request):
+        return HttpResponse(hypergen(my_template, "hypergen", settings={"base_template": my_base_template}))
+    
+    def my_template(name):
+        p("Hello ", name)
 
 Html elements
 -------------
