@@ -42,7 +42,7 @@ def template(n):
         # serialized and deserialized between server and client.
         #
         # Elements with callbacks _must_ have an id.
-        button("Increment", id_="increment", onclick=callback(increment, n))
+        button("Increment", id_="increment", onmousedown=callback(increment, n))
 
 # And this is an hypergen action. It's the ajax brother to the @liveview. "perm" is required.
 # "target_id" is the DOM element id where "template(n+1)" will be written to on the client.
