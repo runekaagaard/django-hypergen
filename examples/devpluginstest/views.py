@@ -1,5 +1,4 @@
 d = dict
-from hypergen.contrib import base_template
 from hypergen.imports import *
 
 from contextlib import contextmanager

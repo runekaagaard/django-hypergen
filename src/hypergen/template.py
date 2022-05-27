@@ -56,7 +56,7 @@ COMMANDS = "COMMANDS"
 HYPERGEN_RETURNS = {HTML, FULL, COMMANDS}
 
 def hypergen(func, *args, **kwargs):
-    assert "request" in c, "Middleware must be installed!"
+    assert "request" in c, "The 'hypergen.context.context_middleware' Middleware must be installed!"
     settings = kwargs.pop("hypergen", {})
 
     plugins = settings.get("plugins", [TemplatePlugin()])
