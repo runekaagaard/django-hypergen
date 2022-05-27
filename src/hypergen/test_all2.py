@@ -82,7 +82,7 @@ HTML = """
         <script src="hypergen/hypergen.min.js"></script>
         <script type="application/json" id="hypergen-apply-commands-data">[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}]]</script>
         <script>
-                ready(() => window.applyCommands(JSON.parse(document.getElementById(
+                hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
                     'hypergen-apply-commands-data').textContent, reviver)))
             </script>
     </body>

@@ -69,7 +69,7 @@ def page2(request):
     p("If you are running custom javascript that must act on the html inside the content div that javascript ",
         "must be triggered manually after each partial reload. This can be done in two ways.")
 
-    p("1. Use the", code("{partial:true}"), "setting to window.hypergen.ready():", sep=" ")
+    p("1. Use the", code("{partial:true}"), "setting to hypergen.ready():", sep=" ")
     pre(code("hypergen.ready(myInitFunc, {partial: true})"))
     p("Then your custom javascript code will be run both on page load and on partial loads.")
 

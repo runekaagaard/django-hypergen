@@ -92,13 +92,11 @@ class LiveviewPlugin(LiveviewPluginBase):
     def process_html(self, html):
         def template():
             raw("<!--hypergen_liveview_media-->")
-            if "hypergen/hypergen.min." not in html:
-                script(src=static("hypergen/hypergen.min.js"))
-
+            script(src=static("hypergen/v2/hypergen.min.js"))
             script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data')
             script("""
-                ready(() => window.applyCommands(JSON.parse(document.getElementById(
-                    'hypergen-apply-commands-data').textContent, reviver)))
+                hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
+                    'hypergen-apply-commands-data').textContent, hypergen.reviver)))
             """)
             raw("</body>")  # We are replacing existing </body>
 
@@ -159,7 +157,7 @@ def callback(url, *cb_args, **kwargs):
             em = ", {}".format(escape(dumps(event_matches)))
         else:
             em = ""
-        return [" ", t(k), '="', "e(event,'{}'{})".format(cmd_id, em), '"']
+        return [" ", t(k), '="', "hypergen.event(event,'{}'{})".format(cmd_id, em), '"']
 
     to_html.hypergen_callback_signature = "callback", (url,) + cb_args, kwargs
 
@@ -175,7 +173,7 @@ def call_js(command_path, *cb_args):
         cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
         c.hypergen.event_handler_callbacks[cmd_id] = cmd
 
-        return [" ", t(k), '="', "e(event, '{}')".format(cmd_id), '"']
+        return [" ", t(k), '="', "hypergen.event(event, '{}')".format(cmd_id), '"']
 
     return to_html
 

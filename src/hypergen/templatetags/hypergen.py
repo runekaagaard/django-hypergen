@@ -40,5 +40,5 @@ def hypergen_footer():
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
     return mark_safe("""
         <script src="{}"></script>
-        <script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>
+        <script>hypergen.ready(() => hypergen.applyCommands(JSON.parse('{}', hypergen.reviver)))</script>
     """.format(static("hypergen/hypergen.min.js"), dumps(c.hypergen.commands)))

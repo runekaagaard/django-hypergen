@@ -1,3 +1,5 @@
-hypergen/static/hypergen/hypergen.min.js
-hypergen/static/hypergen/hypergen.min.js.map
+src/hypergen/static/hypergen/hypergen.min.js
+src/hypergen/static/hypergen/v2/hypergen.min.js
+src/hypergen/static/hypergen/hypergen.min.js.map
+src/hypergen/static/hypergen/v2/hypergen.min.js.map
 experiments
