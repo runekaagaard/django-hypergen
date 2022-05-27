@@ -4,18 +4,18 @@ from hypergen.imports import *
 from django.urls.base import reverse
 from website.templates2 import base_head, show_sources
 
-# So this a hypergen view. If no "url" parameter is given one will be automatically assigned. "perm" is required.
+# So this a hypergen liveview. If no "path" parameter is given one will be automatically assigned. "perm" is required.
 # A LOT of stuff happens under the hood and the decorator can be configured in many ways. Just go with it for now.
 @liveview(perm=NO_PERM_REQUIRED)
 def counter(request):
-    # hypergen_view collects html and returns it as a Django response.
+    # @liveview collects html and returns it as a Django response.
     doctype()  # standard html5 doctype.
     with html():  # tags can be nested
         with head():
-            base_head()
+            base_head()  # makes the site look good. Not important.
         with body():
             # This id matches the "target_id" argument to the "increment" callback.
-            with div(id_="body"):
+            with div(id_="content"):
                 # Render the dynamic content of the page. This happens in it's own function so that functionality
                 # can be shared between the view and the callback.
                 template(1)
@@ -44,9 +44,9 @@ def template(n):
         # Elements with callbacks _must_ have an id.
         button("Increment", id_="increment", onclick=callback(increment, n))
 
-# And this is a hypergen callback. It's the ajax brother to the hypergen_view. "perm" and "target_id" are required.
-# "target_id" is where the output of "template(n+1)" will be written to on the client.
-@action(perm=NO_PERM_REQUIRED, target_id="body")
+# And this is an hypergen action. It's the ajax brother to the @liveview. "perm" is required.
+# "target_id" is the DOM element id where "template(n+1)" will be written to on the client.
+@action(perm=NO_PERM_REQUIRED, target_id="content")
 def increment(request, n):
     # Increment "n" and render again.
     template(n + 1)

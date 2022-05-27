@@ -1,26 +1,20 @@
 # Only showing the essential code.
-from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+from hypergen.imports import *
 
-from django.templatetags.static import static
-
-@hypergen_view(perm=NO_PERM_REQUIRED)
+@liveview(perm=NO_PERM_REQUIRED)
 def counter(request):
     doctype()
     with html():
-        with head():
-            script(src=static("hypergen/hypergen.min.js"))
         with body():
-            with div(id_="body"):
+            with div(id_="content"):
                 template(1)
 
 def template(n):
     with p():
         label("Current value: ")
         input_(type_="number", value=n)
-        button("Increment", id_="increment", onclick=cb(increment, n))
+        button("Increment", id_="increment", onclick=callback(increment, n))
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="body")
+@action(perm=NO_PERM_REQUIRED, target_id="content")
 def increment(request, n):
     template(n + 1)
