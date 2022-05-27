@@ -56,6 +56,7 @@ COMMANDS = "COMMANDS"
 HYPERGEN_RETURNS = {HTML, FULL, COMMANDS}
 
 def hypergen(func, *args, **kwargs):
+    assert "request" in c, "Middleware must be installed!"
     settings = kwargs.pop("hypergen", {})
 
     plugins = settings.get("plugins", [TemplatePlugin()])
@@ -75,7 +76,7 @@ def hypergen(func, *args, **kwargs):
     with c(at="hypergen", plugins=plugins, base_template=base_template):
         with ExitStack() as stack:
             [stack.enter_context(plugin.context()) for plugin in c.hypergen.plugins if hasattr(plugin, "context")]
-            (base_template()(func) if base_template else func)(*args, **kwargs)
+            func_result = (base_template()(func) if base_template else func)(*args, **kwargs)
 
             html = join_html(c.hypergen.into) if "into" in c.hypergen else ""
 
@@ -94,7 +95,7 @@ def hypergen(func, *args, **kwargs):
             elif returns == COMMANDS:
                 return c.hypergen.commands
             elif returns == FULL:
-                return d(html=html, context=c.clone())
+                return d(html=html, context=c.clone(), func_result=func_result)
 
 def hypergen_to_response(func, *args, **kwargs):
     status = kwargs.pop("status", None)

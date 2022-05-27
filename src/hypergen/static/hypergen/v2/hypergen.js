@@ -16,8 +16,13 @@ if (typeof Array.isArray === 'undefined') {
 
 // Commands that can be called from the backend.
 export const morph = function(id, html) {
+  const element = document.getElementById(id)
+  if (!element) {
+    console.error("Trying to morph into an element with id='" + id + "' that does not exist. Please check your target_id.")
+    return
+  }
   morphdom(
-    document.getElementById(id),
+    element,
     "<div>" + html + "</div>",
     {
       childrenOnly: true,
@@ -144,6 +149,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       if (clear === true) document.getElementById(elementId).value = ""
       if (!!onSucces) onSucces()
     }, (data, jsonOk, xhr) => {
+      console.log(xhr)
       isBlocked = false
       console.error("Hypergen post error occured", data)
       if (debug !== true) {
@@ -428,7 +434,7 @@ const post = function(url, formData, onSuccess, onError, params, headers) {
       data = xhr.responseText
       jsonOk = false
     }
-    if (xhr.readyState == 4 && xhr.status == 200) {
+    if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 302)) {
       onSuccess(data, xhr)
     } else {
       onError(data, jsonOk, xhr);

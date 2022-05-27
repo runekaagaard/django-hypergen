@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
     'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen', 'todomvc', 'inputs',
     'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'hellocoreonly2', 't9n', 'notifications',
-    'commands', 'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink', 'devpluginstest']
+    'commands', 'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink',
+    'devpluginstest']
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware' if os.environ.get("PROD", False) else None,
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'hypergen.core.context_middleware',
+    'hypergen.context.context_middleware',
     'django.middleware.cache.FetchFromCacheMiddleware' if os.environ.get("PROD", False) else None,]
 
 MIDDLEWARE = [x for x in MIDDLEWARE if x is not None]

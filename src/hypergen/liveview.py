@@ -1,5 +1,4 @@
 d = dict
-from django.urls.base import reverse
 from hypergen.hypergen import *
 from hypergen.hypergen import wrap2, make_string, t, check_perms, autourl_register
 from hypergen.context import context as c
@@ -7,17 +6,17 @@ from hypergen.hypergen import metastr
 from hypergen.template import *
 
 import datetime, json
-from contextlib import contextmanager, ExitStack
+from contextlib import contextmanager
 from functools import wraps
 
-from django.http.response import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 from django.templatetags.static import static
 
 __all__ = [
-    "command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin", "view",
-    "callback_view", "NO_PERM_REQUIRED"]
+    "command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "CallbackPlugin", "liveview",
+    "action", "NO_PERM_REQUIRED"]
 
 ### constants ###
 
@@ -75,6 +74,7 @@ class LiveviewPluginBase:
                 element.js_coerce_func = attrs.pop("js_coerce_func",
                     JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
         elif isinstance(element, a):
+            # Partial loading.
             href = attrs.get("href", None)
             if type(href) is metastr:
                 base_template1 = href.meta.get("base_template", None)
@@ -101,7 +101,8 @@ class LiveviewPlugin(LiveviewPluginBase):
         assert html.count("</body>") == 1, "Ooops, multiple </body> tags found. There can be only one!"
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
-        path = c.hypergen.request.get_full_path()
+        # Partial loading.
+        path = c.request.get_full_path()
         command("history.replaceState", d(callback_url=path), "", path)
 
         return html.replace("</body>", hypergen(template))
@@ -136,6 +137,9 @@ def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_fil
         meta = {}
     if headers is None:
         headers = {}
+
+    if getattr(url, "is_hypergen_action", False) is True:
+        url = url.reverse()
 
     def to_html(element, k, v):
         def fix_this(x):
@@ -174,10 +178,15 @@ def call_js(command_path, *cb_args):
 ### Decorators for better QOL ###
 
 @wrap2
-def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
-    raise_exception=False, redirect_field_name=None, autourl=True, partial=True):
+def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
+    raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None):
     if perm != NO_PERM_REQUIRED:
-        assert perm, "perm= is a required keyword argument"
+        assert perm, "perm is a required keyword argument"
+    if target_id is None:
+        target_id = getattr(base_template, "target_id", None)
+    if base_template and partial and not target_id:
+        raise Exception("{}: Partial loading requires a target_id. Either as a kwarg or"
+            " an attribute on the base_template function.".format(func))
 
     @wraps(func)
     def _(request, *args, **kwargs):
@@ -190,7 +199,7 @@ def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
                 commands = hypergen(func, request, *args, **kwargs, hypergen=d(callback=True, returns=COMMANDS,
-                    target_id="content"))
+                    target_id=target_id))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
@@ -201,13 +210,47 @@ def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any
                 return HttpResponse(html)
 
     if autourl:
-        assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"
+        assert not all((path, re_path)), "Only one of path and re_path must be set when autourl=True"
         autourl_register(_, base_template=base_template, path=path, re_path=re_path)
 
     return _
 
-def callback_view():
-    pass
+@wrap2
+def action(
+        func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
+        autourl=True):
+    if perm != NO_PERM_REQUIRED:
+        assert perm, "perm is a required keyword argument"
+    if target_id is None:
+        target_id = getattr(base_template, "target_id", None)
+
+    @wraps(func)
+    def _(request, *args, **kwargs):
+        # Ensure correct permissions
+        ok, _, matched_perms = check_perms(request, perm, any_perm=any_perm)
+        if ok is not True:
+            return HttpResponseForbidden()
+
+        action_args = loads(request.POST["hypergen_data"])["args"]
+
+        with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
+            full = hypergen(func, request, *action_args, **kwargs, hypergen=d(callback=True, returns=FULL,
+                target_id=target_id))
+            if isinstance(full["func_result"], HttpResponseRedirect):
+                # Allow to return a redirect response directly from an action.
+                return HttpResponse(dumps([["hypergen.redirect", full["func_result"]["Location"]]]), status=302,
+                    content_type='application/json')
+            else:
+                return HttpResponse(dumps(full["context"]["hypergen"]["commands"]), status=200,
+                    content_type='application/json')
+
+    if autourl:
+        assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"
+        autourl_register(_, base_template=base_template, path=path, re_path=re_path)
+
+    _.is_hypergen_action = True
+
+    return _
 
 ### Serialization ###
 

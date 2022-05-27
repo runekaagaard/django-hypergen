@@ -1,9 +1,10 @@
 d = dict
+from hypergen.contrib import base_template
 from hypergen.imports import *
 
 from contextlib import contextmanager
 
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.urls.base import reverse
 
 def my_template(n):
@@ -109,7 +110,9 @@ def v6_base_template():
             with div(id_="content"):
                 yield
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, autourl=False)
+v6_base_template.target_id = "content"
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, autourl=False, partial=False)
 def v6(request):
     p("I am view!")
 
@@ -119,44 +122,45 @@ def c8(request):
 
     return HttpResponse(dumps(commands), status=200, content_type='application/json')
 
-@view(perm=NO_PERM_REQUIRED, autourl=False)
+@liveview(perm=NO_PERM_REQUIRED, autourl=False)
 def v7(request):
     body(p("I am view!", reverse("devpluginstest:v7"), sep=" "))
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, partial=False)
 def v8(request):
-    body(p("I am view!", v8.reverse(), sep=" "))
+    p("I am view!", v8.reverse(), sep=" ")
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, path="thisv9/")
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, path="thisv9/")
 def v9(request):
-    body(p("I am view!", v9.reverse(), sep=" "))
+    p("I am view!", v9.reverse(), sep=" ")
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, path="this10/<int:num>/<slug:title>/")
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, path="this10/<int:num>/<slug:title>/")
 def v10(request, num, title):
-    body(p("I am view!", num, title, v10.reverse(num=num, title=title), sep=" - "))
+    p("I am view!", num, title, v10.reverse(num=num, title=title), sep=" - ")
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, re_path=r"^v11ok/(?P<year>[0-9]{4})/(?P<username>\w+)/$")
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template,
+    re_path=r"^v11ok/(?P<year>[0-9]{4})/(?P<username>\w+)/$")
 def v11(request, year, username):
-    body(p("I am view!", title, username, v11.reverse(year=year, username=username), sep=" - "))
+    p("I am view!", title, username, v11.reverse(year=year, username=username), sep=" - ")
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template, re_path=r"^v12what/([0-9]{4})/(\w+)/$")
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, re_path=r"^v12what/([0-9]{4})/(\w+)/$")
 def v12(request, year, username):
-    body(p("I am view!", title, username, v12.reverse(year, username), sep=" - "))
+    p("I am view!", title, username, v12.reverse(year, username), sep=" - ")
 
-@view(perm="no-idont-have-it", base_template=v6_base_template)
+@liveview(perm="no-idont-have-it", base_template=v6_base_template)
 def v13(request):
-    body(p("I am view!"))
+    p("I am view!")
 
-@view(perm="no-idont-have-it", base_template=v6_base_template, raise_exception=True)
+@liveview(perm="no-idont-have-it", base_template=v6_base_template, raise_exception=True)
 def v14(request):
     body(p("I am view!"))
 
-@view(perm="no-idont-have-it", base_template=v6_base_template, login_url="/mitobito", redirect_field_name="nooog")
+@liveview(perm="no-idont-have-it", base_template=v6_base_template, login_url="/mitobito", redirect_field_name="nooog")
 def v15(request, year, username):
-    body(p("I am view!"))
+    p("I am view!")
 
 # partial
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v16(request):
     div(a("v16", href=v16.reverse()))
     div(a("v17", href=v17.reverse()))
@@ -164,11 +168,46 @@ def v16(request):
     with div():
         a("v17", href=v17.reverse())
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v17(request):
     div(a("v16", href=v16.reverse()))
     div(a("v18", href=v18.reverse()))
 
-@view(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v18(request):
     div("End of line")
+
+# actions
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, target_id="blah")
+def v19(request):
+    button("Do it", onclick=callback(c20, 10, 20), id_="b1")
+    button("Do it2", onclick=callback(c21, 10, 20), id_="b2")
+    button("Forbidden", onclick=callback(c23, "new"), id_="b3")
+    button("Replace", onclick=callback(c22, "new content"), id_="b4")
+    button("Redirect", onclick=callback(c24), id_="b5")
+    button("Redirect2", onclick=callback(c25), id_="b6")
+    div("replace into here", id_="replaceinto")
+
+@action(perm=NO_PERM_REQUIRED, target_id="content")
+def c20(request, x, y):
+    div("I am new div!", x, y)
+
+@action(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def c21(request, x, y):
+    div("I am new div!", x, y)
+
+@action(perm=NO_PERM_REQUIRED, target_id="replaceinto")
+def c22(request, content):
+    div(content)
+
+@action(perm="forbidden", target_id="replaceinto", re_path=r"^sosupergreat/$")
+def c23(request, content):
+    div(content)
+
+@action(perm=NO_PERM_REQUIRED, path="thepathc24/")
+def c24(request):
+    command("hypergen.redirect", v18.reverse())
+
+@action(perm=NO_PERM_REQUIRED)
+def c25(request):
+    return HttpResponseRedirect(v17.reverse())
