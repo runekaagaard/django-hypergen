@@ -1,6 +1,5 @@
 d = dict
 from hypergen.context import context as c
-from hypergen.utils import *
 from hypergen.hypergen import *
 from hypergen.hypergen import make_string, t
 

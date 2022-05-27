@@ -1,7 +1,6 @@
 d = dict
 
 from django.urls.base import reverse
-from hypergen.utils import *
 
 from html import escape
 from functools import update_wrapper
