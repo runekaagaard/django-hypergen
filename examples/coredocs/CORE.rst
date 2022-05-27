@@ -9,6 +9,9 @@ The function that makes everything works is aptly named ``hypergen()``. It const
 
 The most basic Django view using hypergen would look like::
 
+    from hypergen.template import *
+    from django.http.response import HttpResponse
+    
     def my_view(request):
         return HttpResponse(hypergen(my_template, "hypergen"))
 
@@ -23,16 +26,16 @@ And the full definition reads:
 *hypergen(func, *args, settings={}, **kwargs)*
     Calls the given template function as ``func(*args, **kwargs)``. Returns the collected HTML as a string.
     Takes a ``settings`` dict.
-*settings*
-    - **base_template** (None): Wrap the function with a ``base_template`` contextmanager function. ``func`` runs
+*settings:*
+    - **base_template** (``None``): Wrap the function with a ``base_template`` contextmanager function. ``func`` runs
       where the ``base_template`` yields.
-    - **indent** (False): Indent HTML by 4 spaces. Requires ``pip install yattag``.
-    - **liveview** (False): Enables the liveview plugin.
-    - **action** (False): Enables the action plugin.
-    - **target_id** (None): A string passed to the action plugin that makes hypergen render to a specific div on the
-      the frontend.
-    - **returns** (HTML): One of the ``HTML``, ``COMMANDS`` or ``FULL`` constants defined in the template module.
-    - **plugins** ([TemplatePlugin()]): Use your own custom list of plugins.
+    - **indent** (``False``): Indent HTML by 4 spaces. Requires ``pip install yattag``.
+    - **liveview** (``False``): Enables the liveview plugin.
+    - **action** (``False``): Enables the action plugin.
+    - **target_id** (``None``): A string passed to the action plugin that makes hypergen render to a specific div on
+      the the frontend.
+    - **returns** (``HTML``): One of the ``HTML``, ``COMMANDS`` or ``FULL`` constants defined in the template module.
+    - **plugins** (``[TemplatePlugin()]``): Use your own custom list of plugins.
 
 For normal use you would be interested in the ``base_template`` argument, the rest is mostly for liveview functionality. Different inner templates can share the same base template::
 
@@ -62,9 +65,9 @@ They all inherit the ``base_element`` class.
 
 *base_element(*children, sep=None, coerce_to=None, js_value=None, js_coerce_func=None, **attributes)*
     Arguments becomes children inside the tag. Keyword arguments becomes attributes.
-sep
+sep (None)
     Joins arguments by this separator. ``div("a", "b", sep=", ")`` becomes ``<div>a, b</div>``.
-end
+end (None)
     Insert this string at the end.
 coerce_to, js_values, js_coerce_func
     See `Form Input elements </inputs/>`_
@@ -130,6 +133,8 @@ Keyword arguments to html elements becomes attributes in the html tag.
 
 Likewise, attributes have several quality of life improvements::
 
+    from hypergen.template import OMIT
+    
     div(
         a=OMIT,
         b=True,
@@ -162,59 +167,60 @@ id\_
 trailing underscores
      are removed to allow for python keywords like ``class``.
 
+Security
+~~~~~~~~~~
+
+All children given to elements have html entities escaped, so for instance it's safe to do::
+
+    div(my_obj.my_field_with_user_input)
+
 Composition
 -----------
 
-Base templates
-~~~~~~~~~~~~~~
+Since everything is pure python, composition is trivial. The following describes some useful patterns.
 
-Higher order functions
-~~~~~~~~~~~~~~~~~~~~~~
+Context managers
+~~~~~~~~~~~~~~~~
+
+Wrap the specific stuff with common functionality by using context managers::
+
+    from contextlib import contextmanager
+
+    @contextmanager
+    def form_field(label_name):
+        with div(class="form-field"):
+            label(label_name)
+            yield
+
+    def my_view(request):
+        with form_field("What's your name"):
+            input_(type="text")
+
+Components
+~~~~~~~~~~
+
+Structure common functionality into functions. If you want to use the output of a function as the input to a
+hypergen element, eg. ``div()``, implementation details forces you to decorate it as::
+
+    from hypergen.template import component
+
+    @component
+    def my_popup(title, text):
+        with div(class="popup"):
+            h1(title)
+            p(text)
+
+    div("Monday", my_popup("Tuesday", "Go, go go"), "Thursday")  
 
 Helpers
 -------
 
-write
-~~~~~
+Some additional functions are available in the template module:
 
-raw
-~~~
+*write(html)*
+    Writes the given html. Entities are escaped.
+*raw(html)*
+    Writes the given html. **Entities are NOT escaped**.
 
-rst
-~~~
-
-t
-~
-
-command
-~~~~~~~
-
-callback
-~~~~~~~~
-
-call_js
-~~~~~~~
-
-THIS
-~~~~
-
-OMIT
-~~~~
-
-is_ajax
-~~~~~~~
-
-@component
-~~~~~~~~~~
-
-Callbacks
-=========
-
-Value binding
-=============
-
-Serialization
-=============
-
-Life cycle
-==========
+*rst(string)*
+    Converts given string to html and writes it.

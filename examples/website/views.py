@@ -28,6 +28,7 @@ from commands.views import commands
 from globalcontext.views import globalcontext
 from gettingstarted.views import begin
 from apptemplate.views import my_view
+from coredocs.views import core
 
 @hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
@@ -139,6 +140,7 @@ def documentation(request):
     h2("Live documentation")
     p("Live documentation showing how Hypergen works.")
     with ul():
+        li(a("The template engine", href=core.reverse()))
         li(a("Form inputs", href=inputs.reverse()))
         li(a("Client commands", href=commands.reverse()))
         li(a("Partial loading and history support", href=page1.reverse()))
