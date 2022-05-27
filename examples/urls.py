@@ -13,7 +13,6 @@ import gameofcython.urls
 import djangotemplates.urls
 import hellohypergen.urls
 import hellocoreonly.urls
-import hellocoreonly2.urls
 import hellomagic.urls
 import t9n.urls
 import notifications.urls
@@ -28,7 +27,6 @@ import coredocs.urls
 import kitchensink.urls
 import devpluginstest.urls
 
-
 urlpatterns = [
     url('^admin/', admin.site.urls),
     url('', include(website.urls, namespace="site")),
@@ -39,7 +37,6 @@ urlpatterns = [
     url('^djangotemplates/', include(djangotemplates.urls, namespace="djangotemplates")),
     url('^hellohypergen/', include(hellohypergen.urls, namespace="hellohypergen")),
     url('^hellocoreonly/', include(hellocoreonly.urls, namespace="hellocoreonly")),
-    url('^hellocoreonly2/', include(hellocoreonly2.urls, namespace="hellocoreonly2")),
     url('^gettingstarted/', include(gettingstarted.urls, namespace="gettingstarted")),
     url('^djangolander/', include(djangolander.urls, namespace="djangolander")),
     url('^motherofall/', include(motherofall.urls, namespace="motherofall")),
@@ -52,5 +49,4 @@ urlpatterns = [
     url('^apptemplate/', include(apptemplate.urls, namespace="apptemplate")),
     url('^coredocs/', include(coredocs.urls, namespace="coredocs")),
     url('^kitchensink/', include(kitchensink.urls, namespace="kitchensink")),
-    url('^devpluginstest/', include(devpluginstest.urls, namespace="devpluginstest")),
-]
+    url('^devpluginstest/', include(devpluginstest.urls, namespace="devpluginstest")),]
