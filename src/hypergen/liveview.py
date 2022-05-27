@@ -80,7 +80,7 @@ class LiveviewPluginBase:
                 base_template1 = href.meta.get("base_template", None)
                 if base_template1 is not None:
                     if base_template1 is c.hypergen.get("partial_base_template", None):
-                        attrs["onclick"] = "hypergen.partialLoad(event, '{}')".format(href)
+                        attrs["onclick"] = "hypergen.partialLoad(event, '{}', true)".format(href)
 
         # Content of base_element.__init__ method runs here
         yield
@@ -175,7 +175,7 @@ def call_js(command_path, *cb_args):
 
 @wrap2
 def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
-    raise_exception=False, redirect_field_name=None, autourl=True):
+    raise_exception=False, redirect_field_name=None, autourl=True, partial=True):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm= is a required keyword argument"
 
@@ -187,14 +187,15 @@ def view(func, /, *, path=None, re_path=None, base_template=None, perm=None, any
         if ok is not True:
             return response_redirect
 
-        if request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
+        if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
                 commands = hypergen(func, request, *args, **kwargs, hypergen=d(callback=True, returns=COMMANDS,
                     target_id="content"))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
-            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
+            with c(at="hypergen", matched_perms=matched_perms,
+                partial_base_template=(base_template if partial else None), request=request):
                 html = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True,
                     base_template=base_template))
                 return HttpResponse(html)

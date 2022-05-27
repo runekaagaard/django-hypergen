@@ -161,11 +161,15 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
   else throttle(postIt, {delay: debounce, group: url, confirm_}) 
 }
 
-export const partialLoad = function(event, url) {
-  console.log("partialLoad engaged", event, url)
+export const partialLoad = function(event, url, pushState) {
+  console.log("partialLoad to", url, pushState)
   callback(url, [], {'event': event, 'headers': {'X-Hypergen-Partial': '1'}, onSucces: function() {
-    history.pushState({callback_url: url}, "", url)
-    onpushstate()
+    if (!!pushState) {
+      console.log("pushing state!")
+      history.pushState({callback_url: url}, "", url)
+      onpushstate()
+      history.forward()
+    }
   }})
 }
 
