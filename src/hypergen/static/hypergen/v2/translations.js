@@ -57,5 +57,23 @@ Use "RESET" to reset back to the original content.
     window.t.post(x[0], b, x[1])
   }
 }
+
+const replaceInText = function(element, pattern, replacement) {
+  if (element === null) element = document.querySelector("body")
+  
+  for (let node of element.childNodes) {
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE:
+        replaceInText(node, pattern, replacement);
+        break;
+      case Node.TEXT_NODE:
+        node.textContent = node.textContent.replace(pattern, replacement);
+        break;
+      case Node.DOCUMENT_NODE:
+        replaceInText(node, pattern, replacement);
+    }
+  }
+}
+
 // TODO: Dont clutter window.
 window.translations = translations

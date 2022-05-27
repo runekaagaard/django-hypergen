@@ -479,24 +479,6 @@ export const onpushstate = function() {
   document.dispatchEvent(pushstate)
 }
 
-// Translations
-const replaceInText = function(element, pattern, replacement) {
-  if (element === null) element = document.querySelector("body")
-  
-  for (let node of element.childNodes) {
-    switch (node.nodeType) {
-      case Node.ELEMENT_NODE:
-        replaceInText(node, pattern, replacement);
-        break;
-      case Node.TEXT_NODE:
-        node.textContent = node.textContent.replace(pattern, replacement);
-        break;
-      case Node.DOCUMENT_NODE:
-        replaceInText(node, pattern, replacement);
-    }
-  }
-}
-
 // On ready
 
 export const ready = function(fn, {partial=false}={}) {
