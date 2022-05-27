@@ -454,8 +454,8 @@ const post = function(url, formData, onSuccess, onError, params, headers) {
   xhr.setRequestHeader('X-Pathname', parent.window.location.pathname);
   xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
   if (!!headers) {
-    console.log("Setting custom headers", headers)
     for (let k in headers) {
+      console.log("Setting custom header", k, "to", headers[k])
       xhr.setRequestHeader(k, headers[k]);
     }
   }

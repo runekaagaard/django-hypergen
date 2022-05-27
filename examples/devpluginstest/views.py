@@ -160,13 +160,23 @@ def v15(request, year, username):
     p("I am view!")
 
 # partial
-@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
-def v16(request):
+def v16_template(n):
+    h2("v16 ", n)
     div(a("v16", href=v16.reverse()))
     div(a("v17", href=v17.reverse()))
     a("v17", href=v17.reverse())
     with div():
         a("v17", href=v17.reverse())
+    with div():
+        button("v16 action", onclick=callback(v16_action), id_="v16actionb1")
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v16(request):
+    v16_template("liveview")
+
+@action(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v16_action(request):
+    v16_template("action")
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v17(request):

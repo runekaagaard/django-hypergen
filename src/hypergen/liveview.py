@@ -187,6 +187,7 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
     if base_template and partial and not target_id:
         raise Exception("{}: Partial loading requires a target_id. Either as a kwarg or"
             " an attribute on the base_template function.".format(func))
+    partial_base_template = base_template if partial else None
 
     @wraps(func)
     def _(request, *args, **kwargs):
@@ -197,14 +198,15 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
             return response_redirect
 
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
-            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
+                request=request):
                 commands = hypergen(func, request, *args, **kwargs, hypergen=d(callback=True, returns=COMMANDS,
                     target_id=target_id))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
-            with c(at="hypergen", matched_perms=matched_perms,
-                partial_base_template=(base_template if partial else None), request=request):
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
+                request=request):
                 html = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True,
                     base_template=base_template))
                 return HttpResponse(html)
@@ -216,13 +218,16 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
     return _
 
 @wrap2
-def action(
-        func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
-        autourl=True):
+def action(func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
+    autourl=True, partial=True):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
         target_id = getattr(base_template, "target_id", None)
+    if base_template and partial and not target_id:
+        raise Exception("{}: Partial loading requires a target_id. Either as a kwarg or"
+            " an attribute on the base_template function.".format(func))
+    partial_base_template = base_template if partial else None
 
     @wraps(func)
     def _(request, *args, **kwargs):
@@ -233,7 +238,8 @@ def action(
 
         action_args = loads(request.POST["hypergen_data"])["args"]
 
-        with c(at="hypergen", matched_perms=matched_perms, partial_base_template=base_template, request=request):
+        with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
+            request=request):
             full = hypergen(func, request, *action_args, **kwargs, hypergen=d(callback=True, returns=FULL,
                 target_id=target_id))
             if isinstance(full["func_result"], HttpResponseRedirect):
