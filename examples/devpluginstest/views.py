@@ -178,7 +178,7 @@ def v18(request):
     div("End of line")
 
 # actions
-@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, target_id="blah")
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v19(request):
     button("Do it", onclick=callback(c20, 10, 20), id_="b1")
     button("Do it2", onclick=callback(c21, 10, 20), id_="b2")
