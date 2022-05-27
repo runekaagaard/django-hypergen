@@ -200,14 +200,14 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
                 request=request):
-                commands = hypergen(func, request, *args, **kwargs, hypergen=d(callback=True, returns=COMMANDS,
+                commands = hypergen(func, request, *args, **kwargs, settings=d(callback=True, returns=COMMANDS,
                     target_id=target_id))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
                 request=request):
-                html = hypergen(func, request, *args, **kwargs, hypergen=d(liveview=True,
+                html = hypergen(func, request, *args, **kwargs, settings=d(liveview=True,
                     base_template=base_template))
                 return HttpResponse(html)
 
@@ -240,7 +240,7 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
 
         with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
             request=request):
-            full = hypergen(func, request, *action_args, **kwargs, hypergen=d(callback=True, returns=FULL,
+            full = hypergen(func, request, *action_args, **kwargs, settings=d(callback=True, returns=FULL,
                 target_id=target_id))
             if isinstance(full["func_result"], HttpResponseRedirect):
                 # Allow to return a redirect response directly from an action.
