@@ -11,7 +11,6 @@ Or TRULY everything::
 
     from hypergen.imports import *
 
-
 Autourls
 --------
 
@@ -22,7 +21,7 @@ First a little sidenote. Hypergens liveview features works best if you are using
 
     app_name = 'myapp'
 
-    # Automatically creates urlpatterns for all functions in views.py decorated with @liveview or @callback.
+    # Automatically creates urlpatterns for all functions in views.py decorated with @liveview or @action.
     urlpatterns = autourls(views, namespace="myapp")
 
 And in your ``views.py`` file your should reverse urls to other views directly on the views as::
