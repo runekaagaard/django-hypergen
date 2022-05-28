@@ -103,20 +103,6 @@ def hypergen(func, *args, **kwargs):
                 return d(html=html, context=c.clone(), func_result=func_result)
 
 ### Helpers ###
-class LazyAttribute(object):
-    def __init__(self, k, v):
-        self.k = k
-        self.v = v
-
-    def __str__(self):
-        if not self.v:
-            return ""
-        else:
-            return ' {}="{}"'.format(t(self.k), t(self.v))
-
-    def __unicode__(self):
-        return self.__str__()
-
 def join_html(html):
     def fmt(html):
         for item in html:
@@ -173,12 +159,12 @@ class base_element(ContextDecorator):
             id_ = self.attrs.get("id_", None)
             if type(id_) in (tuple, list):
                 id_ = "-".join(str(x) for x in id_)
-            self.attrs["id_"] = LazyAttribute("id", id_)
+            self.attrs["id_"] = id_
 
             # Make sure ids are unique
             self.i = len(c.hypergen.into)
-            if self.attrs["id_"].v is not None:
-                id_ = self.attrs["id_"].v
+            if self.attrs["id_"] is not None:
+                id_ = self.attrs["id_"]
                 assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
                 c.hypergen["ids"].add(id_)
 
@@ -204,9 +190,7 @@ class base_element(ContextDecorator):
         from hypergen.liveview import THIS
 
         def value(v):
-            if isinstance(v, LazyAttribute):
-                return '"{}"'.format(v.v)
-            elif v is THIS:
+            if v is THIS:
                 return "THIS"
             elif callable(v) and hasattr(v, "hypergen_callback_signature"):
                 name, a, kw = v.hypergen_callback_signature
@@ -229,9 +213,7 @@ class base_element(ContextDecorator):
 
         def signature(a, kw):
             a, kw = deepcopy(a), deepcopy(kw)
-            return ", ".join([args(x) for x in a] + [
-                "{}={}".format(*kwargs(k, v))
-                for k, v in list(kw.items()) if not (isinstance(v, LazyAttribute) and v.v is None)])
+            return ", ".join([args(x) for x in a] + ["{}={}".format(*kwargs(k, v)) for k, v in list(kw.items())])
 
         return "{}({})".format(self.__class__.__name__, signature(self.children, self.attrs))
 
@@ -275,7 +257,7 @@ class base_element(ContextDecorator):
         return into
 
     def ensure_id(self):
-        assert self.attrs["id_"].v is not None, "This element needs an id_='myid' attribute: {}".format(repr(self))
+        assert self.attrs["id_"] is not None, "This element needs an id_='myid' attribute: {}".format(repr(self))
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
@@ -283,8 +265,6 @@ class base_element(ContextDecorator):
             return []
         elif callable(v):
             return v(self, k, v)
-        elif type(v) is LazyAttribute:
-            return [v]
         elif type(v) is bool:
             if v is True:
                 return [" ", k]

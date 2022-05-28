@@ -160,8 +160,8 @@ def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_fil
         cmd = command(
             "hypergen.callback", url, [fix_this(x) for x in cb_args],
             d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear,
-            elementId=element.attrs["id_"].v, debug=settings.DEBUG, meta=meta, headers=headers), return_=True)
-        cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
+            elementId=element.attrs["id_"], debug=settings.DEBUG, meta=meta, headers=headers), return_=True)
+        cmd_id = "{}__{}".format(element.attrs["id_"], k)
 
         c.hypergen.event_handler_callbacks[cmd_id] = cmd
 
@@ -179,7 +179,7 @@ def call_js(command_path, *cb_args):
 
         element.ensure_id()
         cmd = command(command_path, *[fix_this(x) for x in cb_args], return_=True)
-        cmd_id = "{}__{}".format(element.attrs["id_"].v, k)
+        cmd_id = "{}__{}".format(element.attrs["id_"], k)
         c.hypergen.event_handler_callbacks[cmd_id] = cmd
 
         return [" ", t(k), '="', "hypergen.event(event, '{}')".format(cmd_id), '"']
@@ -280,7 +280,7 @@ def encoder(o):
     assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
-        return ["_", "element_value", [o.js_value_func, o.js_coerce_func, o.attrs["id_"].v]]
+        return ["_", "element_value", [o.js_value_func, o.js_coerce_func, o.attrs["id_"]]]
     elif hasattr(o, "__weakref__"):
         # Lazy strings and urls.
         # TODO: still needed?
