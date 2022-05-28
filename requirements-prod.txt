@@ -32,3 +32,4 @@ toml==0.10.2
 urllib3==1.26.9
 yapf==0.31.0
 docutils==0.17.1
+yattag==1.14.0
