@@ -169,12 +169,19 @@ class base_element(ContextDecorator):
             self.children = children
             self.attrs = attrs
 
+            # Id
             id_ = self.attrs.get("id_", None)
             if type(id_) in (tuple, list):
                 id_ = "-".join(str(x) for x in id_)
             self.attrs["id_"] = LazyAttribute("id", id_)
 
+            # Make sure ids are unique
             self.i = len(c.hypergen.into)
+            if self.attrs["id_"].v is not None:
+                id_ = self.attrs["id_"].v
+                assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
+                c.hypergen["ids"].add(id_)
+
             self.sep = attrs.pop("sep", "")
             self.end_char = attrs.pop("end", None)
 
@@ -183,11 +190,6 @@ class base_element(ContextDecorator):
             self.j = len(c.hypergen.into)
 
             super(base_element, self).__init__()
-
-            if self.attrs["id_"].v is not None:
-                id_ = self.attrs["id_"].v
-                assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
-                c.hypergen["ids"].add(id_)
 
     def __enter__(self):
         c.hypergen.into.extend(self.start())
@@ -199,12 +201,13 @@ class base_element(ContextDecorator):
             c.hypergen.into.extend(self.end())
 
     def __repr__(self):
+        from hypergen.liveview import THIS
+
         def value(v):
             if isinstance(v, LazyAttribute):
                 return '"{}"'.format(v.v)
-            # TODO: plugin
-            # elif v is THIS:
-            #     return "THIS"
+            elif v is THIS:
+                return "THIS"
             elif callable(v) and hasattr(v, "hypergen_callback_signature"):
                 name, a, kw = v.hypergen_callback_signature
                 return "{}({})".format(name, signature(a, kw))
