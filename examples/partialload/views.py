@@ -51,6 +51,9 @@ def page2(request):
     a("page1", href=page1.reverse(), id_="page1")
     """.strip()))
 
+    p("It's required to use the", code("myview.reverse()"), "pattern provided by the autourls functionality.",
+        "Autourls adds metadata to the string so hypergen knows if the two views have the same base template.",
+        sep=" ")
     p("For partial loading to work this argument is required:")
     dl(
         dt("base_template"),

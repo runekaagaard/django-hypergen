@@ -25,7 +25,7 @@ from commands.views import commands
 from globalcontext.views import globalcontext
 from gettingstarted.views import begin
 from apptemplate.views import my_view
-from coredocs.views import core
+from coredocs.views import template, liveviews
 
 @liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
@@ -124,7 +124,7 @@ def documentation(request):
         "Docs are being written and corners rounded :)", sep=" ")
 
     h2("App examples")
-    p("These are examples of writing a django app with Django Hypergen. ", "Be sure to read the sources.")
+    p("These are examples of writing a Django app with Hypergen. ", "Be sure to read the sources.")
     with ul():
         li(a("Hello hypergen", href=counter.reverse()))
         li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from liveview.py used")
@@ -134,10 +134,10 @@ def documentation(request):
     h2("Tutorials")
     ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
 
-    h2("Live documentation")
-    p("Live documentation showing how Hypergen works.")
+    h2("Documentation")
+    p("Documentation explaining and showing how Hypergen works.")
     with ul():
-        li(a("The template engine", href=core.reverse()))
+        li(a("The template engine", href=template.reverse()))
         li(a("Form inputs", href=inputs.reverse()))
         li(a("Client commands", href=commands.reverse()))
         li(a("Partial loading and history support", href=page1.reverse()))
@@ -145,16 +145,14 @@ def documentation(request):
         li(a("Notifications from Django messages", href=notifications.reverse()))
 
     h2("Alternative template implementations")
-    p("While the pure python template 'language' is the main template engine, we support two alternative ",
-        " implementations.")
+    p("While the pure python template 'language' is the main template engine, two alternative ",
+        " implementations exists. These use an older version of Hypergen.")
     with ul():
-        li(
-            a("Using liveview features from within Django Templates",
-            href=reverse("djangotemplates:djangotemplates")),
-            " - example of the mostly stable Django templates implementation. We could use some input on this, and are ready to polish it together with you."
-        )
+        li(a("Django html Templates", href=reverse("djangotemplates:djangotemplates")),
+            " - Django html templates instead of python templates. ",
+            "We could use some input on this, and are ready to polish it together with you.")
         li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
-            " - example of the still unstable cython implemetation.")
+            " - example of the alpha Cython implementation.")
 
     h2("Compatibility")
     p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),

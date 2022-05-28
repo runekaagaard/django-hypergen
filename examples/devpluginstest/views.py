@@ -237,3 +237,13 @@ def v21(request):
 @action(perm=NO_PERM_REQUIRED, target_id="content")
 def c27(request):
     p("NICE")
+
+@liveview(path="view1/<int:user_id>/", perm=NO_PERM_REQUIRED)
+def view1(request, user_id):
+    with html(), body():
+        a("Go to view2", href=view2.reverse())
+
+@liveview(perm=NO_PERM_REQUIRED)
+def view2(request):
+    with html(), body():
+        a("Go to view1", href=view1.reverse(user_id=42))
