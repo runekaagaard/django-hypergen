@@ -1,12 +1,10 @@
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.core import context as c, t
+from hypergen.imports import *
+from hypergen.hypergen import t
 
 from django.contrib.messages import get_messages
 from django.contrib import messages
 
-from website.templates import base_example_template
+from website.templates2 import base_example_template
 
 from notifications import templates
 
@@ -33,7 +31,7 @@ def alert_messages(request):
     for message in get_messages(request):
         command("alertify.notify", t(message), message.level_tag)
 
-@hypergen_view(perm=NO_PERM_REQUIRED)
+@liveview(perm=NO_PERM_REQUIRED)
 def notifications(request):
     with base_example_template():
         messages.info(request, "Please notify me!")
@@ -41,7 +39,7 @@ def notifications(request):
         alert_messages(request)
         templates.notifications()
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
+@action(perm=NO_PERM_REQUIRED, target_id=OMIT)
 def mycallback(request):
-    messages.error(request, "Oh no I'm having a bad day, SRY!")
+    messages.error(request, "Consider yourself notified...")
     alert_messages(request)

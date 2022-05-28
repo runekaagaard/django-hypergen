@@ -1,14 +1,12 @@
-from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.core import context as c, t
-from website.templates import show_sources
+from hypergen.imports import *
+from website.templates2 import show_sources
 
 def notifications():
     from notifications.views import mycallback
 
     h2("How to use a notifications library")
-    p(button("Click me for a notification", onclick=cb(mycallback), id_="mycallback"))
-    p("So it's important to remember that what both @hypergen_view and @hypergen_callback does is to send a",
+    p(button("Click me for a notification", onclick=callback(mycallback), id_="mycallback"))
+    p("So it's important to remember that what both @liveview and @action does is to send a",
         " list of commands to the client to execute. Thus it's trivial to implement a frontend notification system.")
     p("Firstly include your notification library of choice: ")
     pre(
@@ -42,6 +40,8 @@ style("""
         "message:")
     pre(
         code("""
+from hypergen.hypergen import t
+       
 def alert_messages(request):
     for message in get_messages(request):
         command("alertify.notify", t(message), message.level_tag)
@@ -51,12 +51,12 @@ def alert_messages(request):
     p("Lastly call that function in both your view and your callbacks:")
     pre(
         code("""
-@hypergen_view(perm=NO_PERM_REQUIRED)
+@liveview(perm=NO_PERM_REQUIRED)
 def myview(request):
     alert_messages()
     ...
 
-@hypergen_callback(perm=NO_PERM_REQUIRED)
+@action(perm=NO_PERM_REQUIRED)
 def mycallback(request):
     alert_messages()
     ...
