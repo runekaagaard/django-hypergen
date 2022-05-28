@@ -222,9 +222,18 @@ def c25(request):
     return HttpResponseRedirect(v17.reverse())
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
-def v20(perm=NO_PERM_REQUIRED, base_template=v6_base_template):
+def v20(request):
     input_(id="v20", type="number", onchange=callback(c26, THIS))
 
 @action(perm=NO_PERM_REQUIRED)
 def c26(request, number):
     command("alert", repr(number))
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v21(request):
+    p("SUCKY")
+    button("Click me!", onclick=callback(c27), id_="b1")
+
+@action(perm=NO_PERM_REQUIRED, target_id="content")
+def c27(request):
+    p("NICE")
