@@ -167,8 +167,10 @@ def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_fil
 
         return [" ", t(k), '="', "hypergen.event(event, '{}')".format(cmd_id), '"']
 
-    to_html.hypergen_callback_signature = "callback", (url,) + cb_args, d(debounce=debounce, confirm_=confirm_,
-        blocks=blocks, upload_files=upload_files, clear=clear, meta=meta)
+    signature = {
+        k: v for k, v in d(debounce=debounce, confirm_=confirm_, blocks=blocks, upload_files=upload_files,
+        clear=clear, meta=meta).items() if v}
+    to_html.hypergen_callback_signature = "callback", (url,) + cb_args, signature
 
     return to_html
 
