@@ -17,7 +17,7 @@ def base():
             link(static("todomvc.css"))
             link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
             script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
-            script(src=static("website/website.js"))
+            script(src=static("website/website.js"), defer=True)
         with body():
             p(a("Back to documentation", href=reverse("website:documentation")),
                 style={"padding": "16px", "font-size": "150%"})
@@ -30,6 +30,8 @@ def base():
                 p(a("TodoMVC", href="http://todomvc.com"))
 
         show_sources(__file__)
+
+base.target_id = "content"
 
 @component
 def todo_item(item):
@@ -58,7 +60,8 @@ def content(items, filtering, all_completed):
         with header(class_="header"):
             h1("todos")
             input_(id_="new-todo", class_="new-todo", placeholder="What needs to be done?",
-                autofocus=not context.appstate["edit_item_pk"], clear=True)
+                autofocus=not context.appstate["edit_item_pk"],
+                onkeyup=callback(add, THIS, clear=True, when=["hypergen.when.keycode", "Enter"]))
 
         if filtering == ALL and not items:
             return

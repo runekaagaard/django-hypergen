@@ -151,7 +151,7 @@ def command(javascript_func_path, *args, **kwargs):
         c.hypergen.commands.append(item)
 
 def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_files=False, clear=False, headers=None,
-    meta=None):
+    meta=None, when=None):
     if meta is None:
         meta = {}
     if headers is None:
@@ -173,11 +173,12 @@ def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_fil
 
         c.hypergen.event_handler_callbacks[cmd_id] = cmd
 
-        return [" ", t(k), '="', "hypergen.event(event, '{}')".format(cmd_id), '"']
+        when_str = ", " + dumps(when).replace('"', "'") if when else ""
+        return [" ", t(k), '="', "hypergen.event(event, '{}'{})".format(cmd_id, when_str), '"']
 
     signature = {
         k: v for k, v in d(debounce=debounce, confirm_=confirm_, blocks=blocks, upload_files=upload_files,
-        clear=clear, meta=meta).items() if v}
+        clear=clear, meta=meta, when=when).items() if v}
     to_html.hypergen_callback_signature = "callback", (url,) + cb_args, signature
 
     return to_html

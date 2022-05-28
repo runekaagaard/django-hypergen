@@ -242,14 +242,16 @@ const resolvePath = function(path) {
 const applyCommand = function(path, ...args) {
   console.log("apply command", path, args)
   let rpath = resolvePath(path)
-  rpath(...args)
+  const result = rpath(...args)
   const event = new CustomEvent('hypergen.applyCommand.after', {detail: {path, args}})
   document.dispatchEvent(event)
+  return result
 }
 
-export const event = function(event, callbackKey) {
+export const event = function(event, callbackKey, when) {
   event.preventDefault()
   event.stopPropagation()
+  if (!!when && !applyCommand(...when, event)) return
   applyCommand(...hypergen.clientState.hypergen.eventHandlerCallbacks[callbackKey])
 }
 
@@ -353,6 +355,12 @@ read.contenteditable = function(id, formData) { // file upload
     throw MISSING_ELEMENT_EXCEPTION
   }
   return el.innerHTML
+}
+
+// When functions
+export const when = {}
+when.keycode = function(keycode, event) {
+  return event.code == keycode
 }
 
 export const element = function(valueFunc, coerceFunc, id) {
