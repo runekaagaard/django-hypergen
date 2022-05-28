@@ -67,6 +67,8 @@ def base_example_template():
         with div(id_="content"):
             yield
 
+base_example_template.target_id = "content"
+
 def show_sources(file_path):
     omits = ("__", "migrations", ".css", "management", ".so", "gameofcython.html", ".cpp", ".png", ".svg", ".ico",
         "webmanifest", "jpg", ".xml")
