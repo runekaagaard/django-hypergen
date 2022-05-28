@@ -27,15 +27,15 @@ And the full definition reads:
     Calls the given template function as ``func(*args, **kwargs)``. Returns the collected HTML as a string.
     Takes a ``settings`` dict.
 *settings:*
-    - **base_template** (``None``): Wrap the function with a ``base_template`` contextmanager function. ``func`` runs
-      where the ``base_template`` yields.
-    - **indent** (``False``): Indent HTML by 4 spaces. Requires ``pip install yattag``.
-    - **liveview** (``False``): Enables the liveview plugin.
-    - **action** (``False``): Enables the action plugin.
-    - **target_id** (``None``): A string passed to the action plugin that makes hypergen render to a specific div on
+    - **base_template** (None): Wrap the function with a ``base_template`` contextmanager function. ``func`` runs
+      where the base_template yields.
+    - **indent** (False): Indent HTML by 4 spaces. Requires ``pip install yattag``.
+    - **liveview** (False): Enables the liveview plugin.
+    - **action** (False): Enables the action plugin.
+    - **target_id** (None): A string passed to the action plugin that makes hypergen render to a specific div on
       the the frontend.
-    - **returns** (``HTML``): One of the ``HTML``, ``COMMANDS`` or ``FULL`` constants defined in the template module.
-    - **plugins** (``[TemplatePlugin()]``): Use your own custom list of plugins.
+    - **returns** (HTML): One of the ``HTML``, ``COMMANDS`` or ``FULL`` constants defined in the template module.
+    - **plugins** ([TemplatePlugin()]): Use your own custom list of plugins.
 
 For normal use you would be interested in the ``base_template`` argument, the rest is mostly for liveview functionality. Different inner templates can share the same base template::
 
