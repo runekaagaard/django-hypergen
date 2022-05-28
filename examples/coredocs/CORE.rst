@@ -220,4 +220,4 @@ Some additional functions are available in the template module:
     Writes the given html. **Entities are NOT escaped**.
 
 *rst(string)*
-    Converts given string to html and writes it. Needs ``pip install docutils``.
+    Converts given restructured text string to html and writes it. Needs ``pip install docutils``.
