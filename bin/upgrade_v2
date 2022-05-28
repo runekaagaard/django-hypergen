@@ -1,0 +1,27 @@
+#!/bin/bash
+rpl contrib hypergen urls.py
+rpl hypergen_urls autourls urls.py
+
+function fixit() {
+    git checkout $1
+    echo "from hypergen.imports import *" > tmp
+    cat $1 | grep -v "from hypergen" | grep -v "# coding = utf-8" >> tmp
+    mv tmp $1
+    rpl "cb(" "callback(" $1
+    rpl "c.hypergen" "context.hypergen" $1
+    rpl "c.request" "context.request" $1
+    rpl "c.user" "context.user" $1
+    rpl "c.appstate" "context.appstate" $1
+    rpl hypergen_view liveview $1
+    rpl hypergen_callback action
+    rpl "url=" "re_path=" $1
+    yapf -i $1
+}
+
+fixit views.py
+
+if [ -f "templates.py" ]; then
+    fixit templates.py
+fi
+
+git diff HEAD | colordiff | less -R
