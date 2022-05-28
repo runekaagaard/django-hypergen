@@ -24,4 +24,9 @@ if [ -f "templates.py" ]; then
     fixit templates.py
 fi
 
+if [ -f "callbacks.py" ]; then
+    fixit callbacks.py
+fi
+
+
 git diff HEAD | colordiff | less -R
