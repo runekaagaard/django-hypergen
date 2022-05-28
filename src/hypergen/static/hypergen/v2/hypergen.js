@@ -347,6 +347,13 @@ read.file = function(id, formData) { // file upload
   if (hypergen.hypergenUploadFiles === true) formData.append(id, el.files[0])
   return el.files[0].name
 }
+read.contenteditable = function(id, formData) { // file upload
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  return el.innerHTML
+}
 
 export const element = function(valueFunc, coerceFunc, id) {
   this.toJSON = function() {

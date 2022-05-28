@@ -5,6 +5,7 @@ from glob import glob
 from django.urls.base import reverse
 
 from hypergen.imports import *
+from hypergen.context import context as c
 
 from django.templatetags.static import static
 from contextlib import contextmanager

@@ -1,6 +1,10 @@
 # coding = utf-8
 # pylint: disable=no-value-for-parameter
 d = dict
+
+from hypergen.imports import *
+from hypergen.context import context as c
+
 import datetime
 from collections import namedtuple
 from django.urls.base import reverse
@@ -8,17 +12,12 @@ from hypergen.core import COERCE, JS_COERCE_FUNCS, JS_VALUE_FUNCS
 
 from yapf.yapflib.yapf_api import FormatCode
 
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.core import context as c
-
-from website.templates import base_template, show_sources
+from website.templates2 import base_template, show_sources
 
 E = namedtuple("E", 'type,attrs,doc')
 E.__new__.__defaults__ = (None,) * 3  # default keyword not in py3.6
 
-@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
+@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def inputs(request):
     INPUT_TYPES = [
         E("checkbox", d(checked=True)),
@@ -69,7 +68,8 @@ inputs = [
     input_(id_="i3", value=None, type_="number", coerce_to=str),
         ]
 i4 = input_(id_="i4", value=4)
-button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="mycallback-send")
+i5 = span("Edit me!", contenteditable=True, id_="i5")
+button("send to server", onclick=callback(mycallback, inputs, {"myi4": i4}, i5), id_="mycallback-send")
     """.strip()))
     with p():
         inputs = [
@@ -78,7 +78,7 @@ button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="myca
             input_(id_="i3", value=None, type_="number", coerce_to=str),]
         i4 = input_(id_="i4", value=4)
         i5 = span("Edit me!", contenteditable=True, id_="i5", style={"margin": "4px;"})
-        button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}, i5), id_="mycallback-send")
+        button("send to server", onclick=callback(mycallback, inputs, {"myi4": i4}, i5), id_="mycallback-send")
         span(id_="mycallback-receive")
 
     p("The fact that multiple inputs can be nested into your datastructure of choice and sent to the server ",
@@ -134,7 +134,7 @@ button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="myca
             id_ = "server-value-{}".format(i)
 
             with tr():
-                submit_cb = cb(submit, THIS, id_)
+                submit_cb = callback(submit, THIS, id_)
                 el = input_(id_=("element", i), type_=type_, oninput=submit_cb, **attrs)
                 th(title)
                 td(pre(code(FormatCode(repr(el))[0])), p(doc) if doc else "")
@@ -148,7 +148,7 @@ button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="myca
             id_ = "server-value-{}".format(i)
 
             with tr():
-                submit_cb = cb(submit, THIS, id_)
+                submit_cb = callback(submit, THIS, id_)
                 el = input_(id_=("element", i), type_=type_, onclick=submit_cb, **attrs)
                 th(title)
                 td(pre(code(FormatCode(repr(el))[0])))
@@ -159,7 +159,7 @@ button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="myca
             i += 1
             id_ = "server-value-{}".format(i)
             attrs = d()
-            submit_cb = cb(submit, THIS, id_)
+            submit_cb = callback(submit, THIS, id_)
             el = textarea("Who is Jeppe Tuxen?", id_=("element", i), oninput=submit_cb, **attrs)
             th("textarea")
             td(pre(code(FormatCode(repr(el))[0])))
@@ -170,23 +170,32 @@ button("send to server", onclick=cb(mycallback, inputs, {"myi4": i4}), id_="myca
             i += 1
             id_ = "server-value-{}".format(i)
             attrs = d(coerce_to=int)
-            submit_cb = cb(submit, THIS, id_)
+            submit_cb = callback(submit, THIS, id_)
             el = select([option(x, value=x, selected=x == 3) for x in range(5)], id_=("element", i),
                 onclick=submit_cb, oninput=submit_cb, **attrs)
             th("select")
             td(pre(code(FormatCode(repr(el))[0])))
             td(el)
             td(id_=id_)
+        with tr():
+            i += 1
+            id_ = "server-value-{}".format(i)
+            submit_cb = callback(submit, THIS, id_)
+            el = div("Click to edit", id_=("element", i), onkeyup=submit_cb, contenteditable=True)
+            th("contenteditable")
+            td(pre(code(FormatCode(repr(el))[0])))
+            td(el)
+            td(id_=id_)
 
     show_sources(__file__)
 
-@hypergen_callback(perm=NO_PERM_REQUIRED)
+@action(perm=NO_PERM_REQUIRED)
 def submit(request, value, target_id):
     c.hypergen = c.hypergen.set("target_id", target_id)
     with pre(style={"padding": 0}):
         raw(repr(value), " (", type(value).__name__, ")")
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="mycallback-receive")
+@action(perm=NO_PERM_REQUIRED, target_id="mycallback-receive")
 def mycallback(request, a1, a2, a3):
     span(" Executed on server: ")
     with code():

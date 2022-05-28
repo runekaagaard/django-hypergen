@@ -48,14 +48,13 @@ JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
 
 class LiveviewPluginBase:
     @contextmanager
-    def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
-            yield
-
-    @contextmanager
     def wrap_element_init(self, element, children, attrs):
         # Default js_value_func and js_coerce_funcs values.
-        element.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+        if attrs.get("contenteditable", False) is True:
+            element.js_value_func = attrs.pop("js_value_func", "hypergen.read.contenteditable")
+        else:
+            element.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
+
         coerce_to = attrs.pop("coerce_to", None)
         if coerce_to is not None:
             try:
@@ -86,6 +85,11 @@ class LiveviewPluginBase:
         yield
 
 class LiveviewPlugin(LiveviewPluginBase):
+    @contextmanager
+    def context(self):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+            yield
+
     def process_html(self, html):
         def template():
             raw("<!--hypergen_liveview_media-->")
@@ -111,10 +115,17 @@ class ActionPlugin(LiveviewPluginBase):
     def __init__(self, /, *, target_id=None):
         self.target_id = target_id
 
+    @contextmanager
+    def context(self):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
+            target_id=self.target_id):
+            yield
+
     def process_html(self, html):
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
-        if self.target_id:
-            command("hypergen.morph", self.target_id, html)
+        target_id = c.hypergen.get("target_id", None)
+        if target_id:
+            command("hypergen.morph", target_id, html)
 
         return html
 

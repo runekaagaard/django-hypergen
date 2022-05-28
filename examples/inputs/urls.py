@@ -1,5 +1,5 @@
-from hypergen.contrib import hypergen_urls
+from hypergen.hypergen import autourls
 from inputs import views
 
 app_name = 'inputs'
-urlpatterns = hypergen_urls(views, app_name)
+urlpatterns = autourls(views, app_name)

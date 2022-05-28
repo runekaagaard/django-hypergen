@@ -65,9 +65,9 @@ They all inherit the ``base_element`` class.
 
 *base_element(*children, sep=None, coerce_to=None, js_value=None, js_coerce_func=None, **attributes)*
     Arguments becomes children inside the tag. Keyword arguments becomes attributes.
-sep (None)
+sep
     Joins arguments by this separator. ``div("a", "b", sep=", ")`` becomes ``<div>a, b</div>``.
-end (None)
+end
     Insert this string at the end.
 coerce_to, js_values, js_coerce_func
     See `Form Input elements </inputs/>`_
