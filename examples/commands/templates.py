@@ -1,8 +1,6 @@
+from hypergen.imports import *
 from datetime import date, datetime
 import inspect
-
-from hypergen.core import *
-from hypergen.core import callback as cb
 
 from commands.callbacks import *
 
@@ -17,7 +15,7 @@ def show_button():
     button(
         "run",
         id_="serialization",
-        onclick=cb(
+        onclick=callback(
         serialization,
         {
         "string": "hi",
@@ -46,27 +44,27 @@ def commands():
         "list in the global context. So to manually add commands one would:", sep=" ")
     pre(
         code("""
-from hypergen.core import context
+from hypergen.context import context
 
 def my_view_or_callback(request):
     context.hypergen.commands.append(["alert", "Whats up?"])
 """.strip()))
 
-    p("The function", code("command()"), "available in hypergen.core is normally used as a shortcut:", sep=" ")
+    p("The function", code("command()"), "available in hypergen.liveview is normally used as a shortcut:", sep=" ")
     pre(
         code("""
-from hypergen.core import *
-
+from hypergen.liveview import command
+        
 def my_view_or_callback(request):
     command("console.log", "Whats up?", [1, 2, 3])
     """.strip()))
 
     h2("Examples of client commands")
     fn("Run a generic javascript command", "It must be available in the window scope.", alert)
-    button("run", id_="alert", onclick=cb(alert, "This is an alert!"))
+    button("run", id_="alert", onclick=callback(alert))
 
     fn("Run a generic javascript command 2", "Manually returns commands.", alert2)
-    button("run", id_="alert2", onclick=cb(alert2, "This is an alert!"))
+    button("run", id_="alert2", onclick=callback(alert2))
 
     h3("Serialization")
     p("Data can move a round in different ways:")
@@ -92,18 +90,18 @@ def my_view_or_callback(request):
         ), ".")
 
     fn("morph", "Takes an id and the content to replace it with.", morph)
-    button("run", id_="morph", onclick=cb(morph, "MORPHED!"))
+    button("run", id_="morph", onclick=callback(morph))
     span("Old content", id_="morphed")
     p("Uses the great DOM diff/patching tool ", a("morphdom", href="https://github.com/patrick-steele-idem/morphdom"),
         ".")
 
     fn("remove", "Takes an id and removes it.", remove)
-    button("run", id_="remove", onclick=cb(remove))
+    button("run", id_="remove", onclick=callback(remove))
     span("Still here", id_="remove-me")
 
     fn("hide", "Takes an id and hides it.", hide)
-    button("run", id_="hide", onclick=cb(hide))
+    button("run", id_="hide", onclick=callback(hide))
     span("Still displayed", id_="hide-me")
 
     fn("redirect", "Takes an url and redirects to it.", redirect)
-    button("run", id_="redirect", onclick=cb(redirect))
+    button("run", id_="redirect", onclick=callback(redirect))

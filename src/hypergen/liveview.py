@@ -272,6 +272,8 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
                 # Allow to return a redirect response directly from an action.
                 return HttpResponse(dumps([["hypergen.redirect", full["func_result"]["Location"]]]), status=302,
                     content_type='application/json')
+            elif isinstance(full["func_result"], HttpResponse):
+                return full["func_result"]
             else:
                 return HttpResponse(dumps(full["context"]["hypergen"]["commands"]), status=200,
                     content_type='application/json')

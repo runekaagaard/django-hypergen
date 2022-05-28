@@ -1,33 +1,33 @@
+from hypergen.imports import *
 from pprint import pformat
+from django.http.response import HttpResponse
 
-from hypergen.contrib import NO_PERM_REQUIRED, hypergen_callback
-from hypergen.core import OMIT, command, write
+@action(perm=NO_PERM_REQUIRED)
+def alert(request):
+    command("alert", "I am lert")
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
-def alert(request, message):
-    command("alert", message)
+@action(perm=NO_PERM_REQUIRED)
+def alert2(request):
+    commands = [["alert", "This is an alert!"]]
+    return HttpResponse(dumps(commands), status=200, content_type='application/json')
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
-def alert2(request, message):
-    return [["alert", message]]
-
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="serialized")
+@action(perm=NO_PERM_REQUIRED, target_id="serialized")
 def serialization(request, round_tripped_data):
     write(pformat(round_tripped_data))
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
-def morph(request, message):
-    command("hypergen.morph", "morphed", message)
+@action(perm=NO_PERM_REQUIRED)
+def morph(request):
+    command("hypergen.morph", "morphed", "MORPHED!")
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
+@action(perm=NO_PERM_REQUIRED)
 def remove(request):
     command("hypergen.remove", "remove-me")
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
+@action(perm=NO_PERM_REQUIRED)
 def hide(request):
     command("hypergen.hide", "hide-me")
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
+@action(perm=NO_PERM_REQUIRED)
 def redirect(request):
     command(
         "hypergen.redirect",
