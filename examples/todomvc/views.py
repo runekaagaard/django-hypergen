@@ -1,8 +1,5 @@
-# coding = utf-8
+from hypergen.imports import *
 # pylint: disable=no-value-for-parameter
-
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-from hypergen.core import context as c
 
 from todomvc import templates
 from todomvc.models import Item
@@ -11,7 +8,7 @@ HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=templates.base, ta
     namespace="todomvc", app_name="todomvc", appstate_init=lambda: {"edit_item_pk": None})
 ALL, ACTIVE, COMPLETED = "", "active", "completed"
 
-@hypergen_view(url=r'^(active|completed|)$', **HYPERGEN_SETTINGS)
+@liveview(re_path=r'^(active|completed|)$', **HYPERGEN_SETTINGS)
 def todomvc(request, filtering):
     items = Item.objects.all()
     if filtering == ACTIVE:
@@ -50,11 +47,11 @@ def toggle_all(request, is_completed):
 
 @hypergen_callback(view=todomvc, **HYPERGEN_SETTINGS)
 def start_edit(request, pk):
-    c.appstate["edit_item_pk"] = pk
+    context.appstate["edit_item_pk"] = pk
 
 @hypergen_callback(view=todomvc, **HYPERGEN_SETTINGS)
 def submit_edit(request, pk, description):
     item = Item.objects.get(pk=pk)
     item.description = description
     item.save()
-    c.appstate["edit_item_pk"] = None
+    context.appstate["edit_item_pk"] = None

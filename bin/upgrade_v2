@@ -5,7 +5,7 @@ rpl hypergen_urls autourls urls.py
 function fixit() {
     git checkout $1
     echo "from hypergen.imports import *" > tmp
-    cat $1 | grep -v "from hypergen" | grep -v "# coding = utf-8" >> tmp
+    cat $1 | grep -v "from hypergen" | grep -v "# coding = utf-8" | grep -v 'script(src=static("hypergen/hypergen.min.js"))' >> tmp
     mv tmp $1
     rpl "cb(" "callback(" $1
     rpl "c.hypergen" "context.hypergen" $1

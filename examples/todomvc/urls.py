@@ -1,5 +1,5 @@
-from hypergen.contrib import hypergen_urls
+from hypergen.hypergen import autourls
 from todomvc import views
 
 app_name = 'todomvc'
-urlpatterns = hypergen_urls(views)
+urlpatterns = autourls(views)

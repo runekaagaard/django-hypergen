@@ -1,9 +1,8 @@
+from hypergen.imports import *
 # coding=utf-8
 
 from django.templatetags.static import static
 from django.urls.base import reverse
-from hypergen.core import *
-from hypergen.core import callback as cb, context as c
 from contextlib import contextmanager
 
 from website.templates import show_sources
@@ -15,7 +14,6 @@ def base():
             meta(charset="utf-8")
             meta(name="viewport", content="width=device-width, initial-scale=1")
             title("Hypergen • TodoMVC")
-            script(src=static("hypergen/hypergen.min.js"))
             link(static("todomvc.css"))
             link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css")
             script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js")
@@ -36,7 +34,7 @@ def base():
 @component
 def todo_item(item):
     from todomvc.views import toggle_is_completed, delete, start_edit, submit_edit
-    is_editing = item.pk == c.appstate["edit_item_pk"]
+    is_editing = item.pk == context.appstate["edit_item_pk"]
     classes = []
     if item.is_completed:
         classes.append("completed")
@@ -47,13 +45,13 @@ def todo_item(item):
         if not is_editing:
             with div(class_="view"):
                 input_(id_=("toggle_is_completed", item.pk), class_="toggle", type_="checkbox",
-                    checked=item.is_completed, onclick=cb(toggle_is_completed, item.pk))
-                label(item.description, id_=("start_edit", item.pk), ondblclick=cb(start_edit, item.pk))
-                button(class_="destroy", id_=("destroy", item.pk), onclick=cb(delete, item.pk))
+                    checked=item.is_completed, onclick=callback(toggle_is_completed, item.pk))
+                label(item.description, id_=("start_edit", item.pk), ondblclick=callback(start_edit, item.pk))
+                button(class_="destroy", id_=("destroy", item.pk), onclick=callback(delete, item.pk))
         else:
             input_(id_="edit-item", class_="edit", autofocus=True, value=item.description,
-                onkeyup=cb(submit_edit, item.pk, THIS,
-                event_matches={"key": "Enter"}), onblur=cb(submit_edit, item.pk, THIS))
+                onkeyup=callback(submit_edit, item.pk, THIS,
+                event_matches={"key": "Enter"}), onblur=callback(submit_edit, item.pk, THIS))
 
 def content(items, filtering, all_completed):
     from todomvc.views import ALL, ACTIVE, COMPLETED, todomvc, add, clear_completed, toggle_all
@@ -61,15 +59,15 @@ def content(items, filtering, all_completed):
         with header(class_="header"):
             h1("todos")
             input_(id_="new-todo", class_="new-todo", placeholder="What needs to be done?",
-                autofocus=not c.appstate["edit_item_pk"], onkeyup=cb(add, THIS, event_matches={"key": "Enter"},
-                clear=True))
+                autofocus=not context.appstate["edit_item_pk"], onkeyup=callback(add, THIS,
+                event_matches={"key": "Enter"}, clear=True))
 
         if filtering == ALL and not items:
             return
 
         with section(class_="main"):
             input_(id_="toggle-all", class_="toggle-all", type_="checkbox", checked=all_completed,
-                onclick=cb(toggle_all, not all_completed))
+                onclick=callback(toggle_all, not all_completed))
             label("Mark all as complete", for_="toggle-all")
 
         ul([todo_item(item) for item in items], class_="todo-list")
@@ -90,4 +88,4 @@ def content(items, filtering, all_completed):
 
             if items.filter(is_completed=True):
                 button("Clear completed", id_="clear-completed", class_="clear-completed",
-                    onclick=cb(clear_completed))
+                    onclick=callback(clear_completed))
