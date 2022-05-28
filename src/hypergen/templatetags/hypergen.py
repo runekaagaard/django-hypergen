@@ -1,3 +1,6 @@
+# coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
+
 from django import template
 from django.urls.base import reverse
 from django.utils.safestring import SafeString, mark_safe
@@ -40,5 +43,5 @@ def hypergen_footer():
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
     return mark_safe("""
         <script src="{}"></script>
-        <script>hypergen.ready(() => window.applyCommands(JSON.parse('{}', hypergen.reviver)))</script>
+        <script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>
     """.format(static("hypergen/hypergen.min.js"), dumps(c.hypergen.commands)))

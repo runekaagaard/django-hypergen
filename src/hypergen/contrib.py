@@ -1,22 +1,28 @@
+# coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
 from functools import wraps
 
-import pickle
+try:
+    import pickle as pickle
+except ImportError:
+    import pickle
 
-from contextlib import contextmanager
+from contextlib2 import contextmanager
 
 from django.urls.base import resolve, reverse
+
 try:
     from django.conf.urls import url
 except ImportError:
     from django.urls import re_path as url
+
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http.response import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
-from django.templatetags.static import static
 
 from hypergen.core import (context as c, wrap2, default_wrap_elements, loads, command, hypergen, hypergen_response,
-    StringWithMeta, title as title_)
+    StringWithMeta)
 from hypergen.core import *
 
 d = dict
@@ -81,8 +87,6 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
     target_id=None, app_name=None, appstate_init=None, wrap_elements=default_wrap_elements, translate=False):
 
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
-    if base_template is not None and target_id is None and getattr(base_template, "target_id", None):
-        target_id = base_template.target_id
 
     if base_template_args is None:
         base_template_args = tuple()
@@ -114,7 +118,7 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
             with c(client_data=client_data, at="hypergen"):
                 func_return["value"] = func(request, *fargs, **fkwargs)
 
-        if not is_ajax():
+        if not c.request.is_ajax():
             fkwargs["wrap_elements"] = wrap_elements
             fkwargs["translate"] = translate
             html = hypergen(wrap_base_template, request, *fargs, **fkwargs)
@@ -131,7 +135,6 @@ def hypergen_view(func, url=None, perm=None, only_one_perm_required=False, base_
             if not ("meta" in client_data and "is_popstate" in client_data["meta"]
                 and client_data["meta"]["is_popstate"]) and type(commands) in (list, tuple):
                 commands.append(command("history.pushState", d(callback_url=path), "", path, return_=True))
-                commands.append(command("hypergen.onpushstate", return_=True))
             return commands
 
     _ = ensure_csrf_cookie(_)
@@ -145,9 +148,6 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
     login_url=None, raise_exception=False, base_template=None, app_name=None, appstate_init=None, view=None,
     wrap_elements=default_wrap_elements, translate=False):
     assert perm is not None or perm == NO_PERM_REQUIRED, "perm is required"
-
-    if base_template is not None and target_id is None and getattr(base_template, "target_id", None):
-        target_id = base_template.target_id
 
     original_func = func
 
@@ -174,7 +174,7 @@ def hypergen_callback(func, url=None, perm=None, only_one_perm_required=False, n
                     func_return["commands"] = c.hypergen.commands
 
         assert c.request.method == "POST", "Only POST request are supported"
-        assert is_ajax()
+        assert c.request.is_ajax()
         # Store base_template for partial loading in the <a> class.
         c.base_template = base_template
 
@@ -245,8 +245,9 @@ def hypergen_permission_required(perm, login_url=None, raise_exception=False, on
 
     return user_passes_test(check_perms, login_url=login_url)
 
-# Base templates
 def base_template(title=None):
+    from hypergen.core import title as title_
+
     @contextmanager
     def template():
         doctype()
@@ -261,3 +262,5 @@ def base_template(title=None):
     template.target_id = "content"
 
     return template
+
+base_template.target_id = "content"

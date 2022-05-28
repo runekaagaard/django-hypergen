@@ -1,27 +1,23 @@
-from django.templatetags.static import static
+# coding=utf-8
+from __future__ import (absolute_import, division, unicode_literals)
 
 d = dict
 
-import string, sys, time, threading, datetime, json, logging, io
+import string, sys, time, threading, datetime, json, logging
 from collections import OrderedDict
 from types import GeneratorType
 from functools import wraps, update_wrapper
 from copy import deepcopy
 
-from contextlib import ContextDecorator, contextmanager, redirect_stderr
+from contextlib2 import ContextDecorator, contextmanager
 from pyrsistent import pmap, m
 
 from django.http.response import HttpResponse, HttpResponseRedirect
+
 try:
     from django.utils.encoding import force_text
 except ImportError:
     from django.utils.encoding import force_str as force_text
-
-try:
-    import docutils.core
-    docutils_ok = True
-except ImportError:
-    docutils_ok = False
 
 from django.utils.safestring import mark_safe
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
@@ -43,8 +39,8 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "hypergen_to_response", "hypergen_to_string",
-    "command", "raw", "callback", "call_js", "THIS", "OMIT", "context", "is_ajax", "write", "rst"]
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "command", "raw", "callback", "call_js", "THIS",
+    "OMIT", "context"]
 
 ### Python 2+3 compatibility ###
 
@@ -58,11 +54,14 @@ def make_string(s):
 
 if sys.version_info.major > 2:
     from html import escape
+    letters = string.ascii_letters
+    str = str
 
     def items(x):
         return list(x.items())
 else:
     from cgi import escape
+    letters = string.letters
 
     def items(x):
         return iter(x.items())
@@ -121,12 +120,6 @@ def wrap2(f):
 def insert(source_str, insert_str, pos):
     return ''.join((source_str[:pos], insert_str, source_str[pos:]))
 
-def is_ajax(request=None):
-    if request is None:
-        request = c.request
-
-    return request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest'
-
 ### Rendering ###
 
 def default_wrap_elements(init, self, *children, **attrs):
@@ -153,33 +146,6 @@ def hypergen_context_decorator(func, *dargs, **dkwargs):
 
     return _
 
-TARGET_ID_ERR = """
-No "target_id" set! It sets where the content of a callback will be rendered to.
-"target_id" must be set by either:
-
-- Prefered! setting it as an attribute on the base_template:
-    def my_base_template():
-        with div(class_="so-base", id_="base"):
-            yield
-
-    my_base_template.target_id = "base"
-
-
-- setting it as a keyword argument to the @hypergen_view and/or @hypergen_callback decorators:
-    @hypergen_callback(target_id="base")
-    def my_callback(request):
-        ....
-
-  The reason it can be set on @hypergen_view's as well is to make partial loading work. Views with the same
-  base_template and target_id's supports partial loading between them.
-
-- setting it manually on context.hypergen["target_id"]:
-    @hypergen_callback(target_id=OMIT)
-    def my_callback(request):
-        with context(target_id="base", at="hypergen"):
-            ...
-""".strip()
-
 def hypergen(func, *args, **kwargs):
     a = time.time()
     with c(hypergen=hypergen_context(kwargs)):
@@ -188,7 +154,7 @@ def hypergen(func, *args, **kwargs):
         if c.hypergen.translate:
             load_translations()
         func(*args, **kwargs)
-        assert c.hypergen.target_id is not None, TARGET_ID_ERR
+        assert c.hypergen.target_id is not None, "target_id must be set. Either as an input to a hypergen function or manually"
         html = join_html(c.hypergen.into)
         if c.hypergen.event_handler_callbacks:
             command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
@@ -198,21 +164,15 @@ def hypergen(func, *args, **kwargs):
             command("translations", translate.reverse(), [[k, v] for k, v in TRANSLATIONS.items()])
 
         if not is_ajax():
-            s = ""
-            if "/hypergen/hypergen.min." not in html:
-                s += '<script src="{}"></script>'.format(static("hypergen/hypergen.min.js"))
-            s += "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
-                dumps(c.hypergen.commands))
             pos = html.find("</head")
-            if pos == -1:
-                pos = 0
-            html = insert(html, s, pos)
-
+            if pos != -1:
+                s = "<script type='application/json' id='hypergen-apply-commands-data'>{}</script><script>ready(() => window.applyCommands(JSON.parse(document.getElementById('hypergen-apply-commands-data').textContent, reviver)))</script>".format(
+                    dumps(c.hypergen.commands))
+                html = insert(html, s, pos)
             print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return html
         else:
-            if c.hypergen.target_id != OMIT:
-                command("hypergen.morph", c.hypergen.target_id, html)
+            command("hypergen.morph", c.hypergen.target_id, html)
             print(("Execution time:", (time.time() - a) * 1000, "ms"))
             return c.hypergen.commands
 
@@ -299,18 +259,8 @@ def join_html(html):
 def raw(*children):
     c.hypergen.into.extend(children)
 
-def write(*children):
-    c.hypergen.into.extend(t(x) for x in children)
-
 def t(s, quote=True, translatable=False):
     return translate(escape(make_string(s), quote=quote), translatable=translatable)
-
-def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1):
-    if not docutils_ok:
-        raise Exception("Please 'pip install docutils' to use the rst() function.")
-    raw(
-        docutils.core.publish_parts(restructured_text, writer_name="html",
-        settings_overrides={'_disable_config': True, 'report_level': report_level})["html_body"])
 
 ### Not translation ###
 
@@ -417,7 +367,7 @@ class THIS(object):
 NON_SCALARS = set((list, dict, tuple))
 DELETED = ""
 
-COERCE = {str: "hypergen.coerce.str", int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
+COERCE = {str: None, str: None, int: "hypergen.coerce.int", float: "hypergen.coerce.float"}
 
 class base_element(ContextDecorator):
     void = False
@@ -444,7 +394,6 @@ class base_element(ContextDecorator):
 
             self.i = len(c.hypergen.into)
             self.sep = attrs.get("sep", "")
-            self.end_char = attrs.pop("end", None)
             self.js_value_func = attrs.get("js_value_func", "hypergen.read.value")
 
             coerce_to = attrs.get("coerce_to", None)
@@ -488,10 +437,7 @@ class base_element(ContextDecorator):
                 name, a, kw = v.hypergen_callback_signature
                 return "{}({})".format(name, signature(a, kw))
             elif callable(v):
-                if hasattr(v, "__name__"):
-                    return ".".join((v.__module__, v.__name__)).replace("builtins.", "")
-                else:
-                    return repr(v)
+                return ".".join((v.__module__, v.__name__)).replace("builtins.", "")
             elif type(v) is str:
                 return '"{}"'.format(v)
             else:
@@ -521,7 +467,7 @@ class base_element(ContextDecorator):
         for i in range(self.i, self.j):
             c.hypergen.into[i] = DELETED
 
-    def format_children(self, children, nested=False):
+    def format_children(self, children):
         into = []
         sep = self.t(self.sep)
 
@@ -534,8 +480,10 @@ class base_element(ContextDecorator):
             elif type(x) is Component:
                 x.delete()
                 into.extend(x.into)
-            elif type(x) in (list, tuple, GeneratorType):
-                into.extend(self.format_children(list(x), nested=True))
+            elif type(x) in (list, tuple):
+                into.extend(self.format_children(list(x)))
+            elif type(x) in (GeneratorType,):
+                into.append(x)
             elif callable(x):
                 into.append(x)
             else:
@@ -545,9 +493,6 @@ class base_element(ContextDecorator):
         if sep and children:
             into.pop()
 
-        if self.end_char and not nested:
-            into.append(self.t(self.end_char))
-
         return into
 
     def ensure_id(self):
@@ -555,7 +500,7 @@ class base_element(ContextDecorator):
 
     def attribute(self, k, v):
         k = t(k).rstrip("_").replace("_", "-")
-        if v == OMIT or v is None:
+        if v == OMIT:
             return []
         elif callable(v):
             return v(self, k, v)
@@ -658,7 +603,7 @@ class input_(base_element_void):
             return super().attribute(k, v)
 
         type_ = self.attrs.get("type_", None)
-        if type_ == "datetime-local" and type(v) is datetime:
+        if type_ == "datetime-local":
             return [" ", k, '="', v.strftime("%Y-%m-%dT%H:%M:%S"), '"']
         elif type_ == "month" and type(v) is dict:
             return [" ", k, '="', "{:04}-{:02}".format(v["year"], v["month"]), '"']
@@ -683,7 +628,7 @@ class a(base_element):
                 base_template2 = getattr(c, "base_template", None)
                 if base_template1 == base_template2:
                     # Partial loading is possible.
-                    attrs["onclick"] = "hypergen.callback('{}', [], {{'event': event}})".format(href)
+                    attrs["onclick"] = callback(href)
 
         super(a, self).__init__(*children, **attrs)
 
@@ -873,14 +818,6 @@ class wbr(base_element_void): pass
 # yapf: enable
 
 # Serialization
-ENCODINGS = {
-    datetime.date: lambda o: {"_": ["date", str(o)]},
-    datetime.datetime: lambda o: {"_": ["datetime", str(o)]},
-    tuple: lambda o: {"_": ["tuple", list(o)]},
-    set: lambda o: {"_": ["set", list(o)]},
-    frozenset: lambda o: {"_": ["frozenset", list(o)]},
-    range: lambda o: {"_": ["range", [o.start, o.stop, o.step]]},}
-
 def encoder(o):
     assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
@@ -889,21 +826,15 @@ def encoder(o):
     elif hasattr(o, "__weakref__"):
         # Lazy strings and urls.
         return make_string(o)
-    fn = ENCODINGS.get(type(o), None)
-    if fn:
-        return fn(o)
+    if type(o) is datetime.date:
+        return {"_": ["date", str(o)]}
     else:
         raise TypeError(repr(o) + " is not JSON serializable")
 
-DECODINGS = {
-    "float": float,
-    "date": parse_date,
-    "datetime": parse_datetime,
-    "time": parse_time,
-    "tuple": tuple,
-    "set": set,
-    "frozenset": frozenset,
-    "range": lambda v: range(*v),}
+def dumps(data, default=encoder, indent=None):
+    result = json.dumps(data, default=encoder, separators=(',', ':'), indent=indent)
+
+    return result
 
 def decoder(o):
     _ = o.get("_", None)
@@ -911,17 +842,17 @@ def decoder(o):
         return o
 
     datatype, value = _
-    fn = DECODINGS.get(datatype, None)
-    if fn:
-        return fn(value)
+    if datatype == "float":
+        return float(value)
+    elif datatype == "date":
+        return parse_date(value)
+    elif datatype == "datetime":
+        return parse_datetime(value)
+    elif datatype == "time":
+        return parse_time(value)
     else:
 
         raise Exception("Unknown datatype, {}".format(datatype))
-
-def dumps(data, default=encoder, indent=None):
-    result = json.dumps(data, default=default, separators=(',', ':'), indent=indent)
-
-    return result
 
 def loads(data):
     return json.loads(data, object_hook=decoder)
@@ -980,29 +911,17 @@ class Context(threading.local):
     @contextmanager
     def __call__(self, transformer=None, at=None, **items):
         try:
-            # Store previous value.
             ctx = self.ctx
             if at is None:
                 if transformer is not None:
                     self.ctx = transformer(self.ctx)
                 self.ctx = self.ctx.update(m(**items))
             else:
-                if at not in self.ctx:
-                    self.ctx = self.ctx.set(at, pmap(items))
-                else:
-                    new_value_at = self.ctx[at].update(pmap(items))
-                    if not new_value_at:
-                        raise Exception("Not immutable context variable attempted updated. If you want to nest "
-                            "with context() statements you must use a pmap() or another immutable hashmap type.")
-
-                    self.ctx = self.ctx.set(at, new_value_at)
-
                 if transformer is not None:
                     self.ctx = self.ctx.set(at, transformer(self.ctx[at]))
-
+                self.ctx = self.ctx.set(at, self.ctx[at].update(m(**items)))
             yield
         finally:
-            # Reset to previous value.
             self.ctx = ctx
 
 context = Context()
@@ -1020,4 +939,11 @@ def context_middleware(get_response):
 
 class ContextMiddleware(MiddlewareMixin):
     def process_request(self, request):
+        # TODO. Change to MIDDLEWARE and not MIDDLEWARE_CLASSES
         context.replace(**_init_context(request))
+
+def is_ajax(request=None):
+    if request is None:
+        request = c.request
+
+    return request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest'
