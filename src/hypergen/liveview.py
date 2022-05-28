@@ -1,4 +1,5 @@
 d = dict
+from django.urls.base import resolve
 from hypergen.hypergen import *
 from hypergen.hypergen import wrap2, make_string, t, check_perms, autourl_register
 from hypergen.context import context as c
@@ -121,8 +122,6 @@ class ActionPlugin(LiveviewPluginBase):
         with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
             target_id=self.target_id):
             yield
-            if self.base_view:
-                assert False
 
     def process_html(self, html):
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
@@ -131,6 +130,12 @@ class ActionPlugin(LiveviewPluginBase):
             command("hypergen.morph", target_id, html)
 
         return html
+
+    def func_after(self):
+        if self.base_view:
+            referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
+            # TODO: Check for HttpResponseredirect here?
+            self.base_view.original_func(c.request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
 
 ### Commands happening on the frontend  ###
 
@@ -205,6 +210,8 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
             " an attribute on the base_template function.".format(func))
     partial_base_template = base_template if partial else None
 
+    original_func = func
+
     @wraps(func)
     def _(request, *args, **kwargs):
         # Ensure correct permissions
@@ -231,20 +238,9 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
         assert not all((path, re_path)), "Only one of path and re_path must be set when autourl=True"
         autourl_register(_, base_template=base_template, path=path, re_path=re_path)
 
+    _.original_func = original_func
+
     return _
-
-# referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
-
-#         @appstate(app_name, appstate_init)
-#         def wrap_view_with_hypergen(func_return, args):
-#             # Run the callback function.
-#             func_return["value"] = func(request, *args, **fkwargs)
-#             if type(func_return["value"]) is not HttpResponseRedirect and view is not None:
-#                 # Render from a view.
-#                 # Allow the view to issue commands. Eg. notifications.
-#                 with c(commands=[], at="hypergen"):
-#                     view.original_func(request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
-#                     func_return["commands"] = c.hypergen.commands
 
 @wrap2
 def action(func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,

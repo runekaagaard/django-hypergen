@@ -88,6 +88,7 @@ def hypergen(func, *args, **kwargs):
         with ExitStack() as stack:
             [stack.enter_context(plugin.context()) for plugin in c.hypergen.plugins if hasattr(plugin, "context")]
             func_result = (base_template()(func) if base_template else func)(*args, **kwargs)
+            [plugin.func_after() for plugin in c.hypergen.plugins if hasattr(plugin, "func_after")]
 
             html = join_html(c.hypergen.into) if "into" in c.hypergen else ""
 
