@@ -220,3 +220,11 @@ def c24(request):
 @action(perm=NO_PERM_REQUIRED)
 def c25(request):
     return HttpResponseRedirect(v17.reverse())
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
+def v20(perm=NO_PERM_REQUIRED, base_template=v6_base_template):
+    input_(id="v20", type="number", onchange=callback(c26, THIS))
+
+@action(perm=NO_PERM_REQUIRED)
+def c26(request, number):
+    command("alert", repr(number))

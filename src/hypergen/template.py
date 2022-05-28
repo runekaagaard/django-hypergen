@@ -156,7 +156,7 @@ class base_element(ContextDecorator):
             self.attrs = attrs
 
             # Id
-            id_ = self.attrs.get("id_", None)
+            id_ = self.attrs.get("id_", self.attrs.pop("id", None))
             if type(id_) in (tuple, list):
                 id_ = "-".join(str(x) for x in id_)
             self.attrs["id_"] = id_
@@ -332,7 +332,9 @@ class input_(base_element_void):
     void = True
 
     def __init__(self, *children, **attrs):
-        if attrs.get("type_", None) == "radio":
+        type_ = attrs.get("type_", attrs.pop("type", None))
+        attrs["type_"] = type_
+        if type_ == "radio":
             assert attrs.get("name"), "Name must be set for radio buttons."
         super(input_, self).__init__(*children, **attrs)
 
@@ -423,9 +425,11 @@ class legend(base_element): pass
 class li(base_element): pass
 
 class link(base_element):
-    def __init__(self, href=OMIT, rel="stylesheet", type_="text/css", **attrs):
+    def __init__(self, href=OMIT, rel="stylesheet", **attrs):
+        type_ = attrs.get("type_", attrs.pop("type", "text/css"))
+        attrs["type_"] = type_
         attrs["href"] = href
-        super(link, self).__init__(rel=rel, type_=type_, **attrs)
+        super(link, self).__init__(rel=rel, **attrs)
 
 class main(base_element): pass
 class map_(base_element): pass

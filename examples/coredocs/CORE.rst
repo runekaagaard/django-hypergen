@@ -126,16 +126,7 @@ other elements
 Attributes
 ~~~~~~~~~~
 
-Keyword arguments to html elements becomes attributes in the html tag.
-
-.. raw:: html
-         
-    <p>
-        Html attributes that clashes with python keywords or builtins can be set by postfixing the name with an underscore.
-        <mark>The names <tt>type_</tt> and <tt>id_</tt> MUST be postfixed with an underscore for hypergen to work
-            correctly!
-        </mark>This will soon change.
-    </p>
+Keyword arguments to html elements becomes attributes in the html tag. Html attributes that clashes with python keywords or builtins can be set by postfixing the name with an underscore.
 
 Likewise, attributes have several quality of life improvements::
 
@@ -229,4 +220,4 @@ Some additional functions are available in the template module:
     Writes the given html. **Entities are NOT escaped**.
 
 *rst(string)*
-    Converts given string to html and writes it.
+    Converts given string to html and writes it. Needs ``pip install docutils``.
