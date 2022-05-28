@@ -32,7 +32,6 @@ def base_template():
     doctype()
     with html():
         with head():
-            script(src=static("hypergen/hypergen.min.js"))
             base_head()
 
         with body():

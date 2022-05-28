@@ -1,3 +1,4 @@
+from hypergen.imports import *
 from collections import defaultdict
 
 from yaml import load
@@ -11,10 +12,6 @@ except ImportError:
 
 from django.urls import reverse
 
-from hypergen.core import *
-from hypergen.core import hypergen_to_response
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-
 from notifications.views import notifications
 from partialload.views import page1
 from todomvc.views import todomvc, ALL
@@ -23,14 +20,14 @@ from gameofcython.views import gameofcython
 from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
 from t9n.views import page
-from website.templates import base_template, show_sources
+from website.templates2 import base_template, show_sources
 from commands.views import commands
 from globalcontext.views import globalcontext
 from gettingstarted.views import begin
 from apptemplate.views import my_view
 from coredocs.views import core
 
-@hypergen_view(url="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
+@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
     with div(class_="hero"):
         h2("Build reactive web apps, without leaving Django", class_="center hero")
@@ -63,7 +60,7 @@ def home(request):
     with div(class_="terminals", id_="quickstart"):
         quickstart_template()
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id="quickstart")
+@action(perm=NO_PERM_REQUIRED, target_id="quickstart")
 def quickstart(request, n, app_name):
     quickstart_template(n=n, app_name=app_name)
 
@@ -121,7 +118,7 @@ python manage.py startapp \\
     myapp
 """.strip()
 
-@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
 def documentation(request):
     p(mark("2022-05-12: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
         "Docs are being written and corners rounded :)", sep=" ")

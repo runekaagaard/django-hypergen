@@ -1,11 +1,11 @@
-# coding=utf-8
+from hypergen.core import *
+from hypergen.contrib import *
+from hypergen.core import callback as cb, context as c
+
 import inspect
 import os
 from glob import glob
 from django.urls.base import reverse
-
-from hypergen.core import *
-from hypergen.core import context as c
 
 from django.templatetags.static import static
 from contextlib import contextmanager
@@ -38,9 +38,9 @@ def base_template():
         with body():
             with header():
                 with nav():
-                    a("Home", href="/", class_="current" if c.request.path == "/" else OMIT)
+                    a("Home", href="/", class_="current" if context.request.path == "/" else OMIT)
                     a("Documentation", href="/documentation/",
-                        class_="current" if c.request.path == "/documentation/" else OMIT)
+                        class_="current" if context.request.path == "/documentation/" else OMIT)
                     a("Support", href="https://github.com/runekaagaard/django-hypergen/issues")
                     with a(href="https://github.com/runekaagaard/django-hypergen/"):
                         img(src=static("website/github.png"), class_="icon")
