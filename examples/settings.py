@@ -122,3 +122,4 @@ if os.environ.get("PROD", False):
         'formatter': 'verbose'}}, 'loggers': {'': {'handlers': ['console'], 'level': 'INFO', 'propagate': True}}}
 
 HYPERGEN_ENABLE_INCUBATION = True
+HYPERGEN_ENABLE_OLD = True

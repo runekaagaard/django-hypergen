@@ -1,6 +1,10 @@
 # coding=utf-8
 from __future__ import (absolute_import, division, unicode_literals)
 
+from django.conf import settings
+if not getattr(settings, "HYPERGEN_ENABLE_OLD", False):
+    raise Exception("This is the old version of hypergen. Please use template.py, liveview.py, etc.")
+
 d = dict
 
 import string, sys, time, threading, datetime, json, logging
