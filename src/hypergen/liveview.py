@@ -112,14 +112,17 @@ class LiveviewPlugin(LiveviewPluginBase):
         return html.replace("</body>", hypergen(template))
 
 class ActionPlugin(LiveviewPluginBase):
-    def __init__(self, /, *, target_id=None):
+    def __init__(self, /, *, target_id=None, base_view=None):
         self.target_id = target_id
+        self.base_view = base_view
 
     @contextmanager
     def context(self):
         with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
             target_id=self.target_id):
             yield
+            if self.base_view:
+                assert False
 
     def process_html(self, html):
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
@@ -192,7 +195,7 @@ def call_js(command_path, *cb_args):
 
 @wrap2
 def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
-    raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None):
+    raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
@@ -212,14 +215,16 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
 
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
-                commands = hypergen(func, request, *args, **kwargs, settings=d(action=True, returns=COMMANDS,
-                    target_id=target_id))
+                commands = hypergen(
+                    func, request, *args, **kwargs, settings=d(action=True, returns=COMMANDS, target_id=target_id,
+                    appstate=appstate, namespace=_.reverse.hypergen_namespace))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
-                html = hypergen(func, request, *args, **kwargs, settings=d(liveview=True,
-                    base_template=base_template))
+                html = hypergen(
+                    func, request, *args, **kwargs, settings=d(liveview=True, base_template=base_template,
+                    appstate=appstate, namespace=_.reverse.hypergen_namespace))
                 return HttpResponse(html)
 
     if autourl:
@@ -228,9 +233,22 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
 
     return _
 
+# referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
+
+#         @appstate(app_name, appstate_init)
+#         def wrap_view_with_hypergen(func_return, args):
+#             # Run the callback function.
+#             func_return["value"] = func(request, *args, **fkwargs)
+#             if type(func_return["value"]) is not HttpResponseRedirect and view is not None:
+#                 # Render from a view.
+#                 # Allow the view to issue commands. Eg. notifications.
+#                 with c(commands=[], at="hypergen"):
+#                     view.original_func(request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
+#                     func_return["commands"] = c.hypergen.commands
+
 @wrap2
 def action(func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
-    autourl=True, partial=True, base_view=None):
+    autourl=True, partial=True, base_view=None, appstate=None):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
@@ -243,15 +261,16 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
     @wraps(func)
     def _(request, *args, **kwargs):
         # Ensure correct permissions
-        ok, _, matched_perms = check_perms(request, perm, any_perm=any_perm)
+        ok, __, matched_perms = check_perms(request, perm, any_perm=any_perm)
         if ok is not True:
             return HttpResponseForbidden()
 
         action_args = loads(request.POST["hypergen_data"])["args"]
 
         with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
-            full = hypergen(func, request, *action_args, **kwargs, settings=d(action=True, returns=FULL,
-                target_id=target_id))
+            full = hypergen(
+                func, request, *action_args, **kwargs, settings=d(action=True, returns=FULL, target_id=target_id,
+                appstate=appstate, namespace=_.reverse.hypergen_namespace, base_view=base_view))
             if isinstance(full["func_result"], HttpResponseRedirect):
                 # Allow to return a redirect response directly from an action.
                 return HttpResponse(dumps([["hypergen.redirect", full["func_result"]["Location"]]]), status=302,

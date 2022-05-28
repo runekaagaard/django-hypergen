@@ -4,12 +4,8 @@ from hypergen.imports import *
 from todomvc import templates
 from todomvc.models import Item
 
-HYPERGEN_SETTINGS = dict(
-    perm=NO_PERM_REQUIRED,
-    base_template=templates.base,
-    target_id="content",
-    # appstate_init=lambda: {"edit_item_pk": None}
-)
+HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=templates.base, target_id="content",
+    appstate=lambda: {"edit_item_pk": None})
 ALL, ACTIVE, COMPLETED = "", "active", "completed"
 
 @liveview(re_path=r'^(active|completed|)$', **HYPERGEN_SETTINGS)

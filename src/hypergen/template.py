@@ -2,6 +2,7 @@ d = dict
 from hypergen.context import context as c
 from hypergen.hypergen import *
 from hypergen.hypergen import make_string, t
+from hypergen.plugins.appstate import AppstatePlugin
 
 import time, logging
 from collections import OrderedDict
@@ -70,7 +71,12 @@ def hypergen(func, *args, **kwargs):
         plugins.append(LiveviewPlugin())
     if settings.get("action", False):
         from hypergen.liveview import ActionPlugin
-        plugins.append(ActionPlugin(target_id=settings.get("target_id", None)))
+        plugins.append(
+            ActionPlugin(target_id=settings.get("target_id", None), base_view=settings.get("base_view", None)))
+    if settings.get("appstate", False):
+        namespace = settings.get("namespace", None)
+        assert namespace, "When appstate is set, namespace must be too."
+        plugins.append(AppstatePlugin(namespace, settings["appstate"]))
 
     returns = settings.get("returns", HTML)
     assert returns in HYPERGEN_RETURNS, "The 'returns' hypergen setting must be one of {}".format(

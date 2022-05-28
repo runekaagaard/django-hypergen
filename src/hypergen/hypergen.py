@@ -161,7 +161,7 @@ def autourl_register(func, base_template=None, path=None, re_path=None):
 
     return func
 
-def autourls(module, namespace=None):
+def autourls(module, namespace):
     patterns = []
     for path_func, func, path_ in _URLS.get(module.__name__, []):
         func.reverse.hypergen_namespace = namespace

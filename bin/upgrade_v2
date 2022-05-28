@@ -16,6 +16,7 @@ function fixit() {
     rpl hypergen_callback action $1
     rpl "url=" "re_path=" $1
     rpl "view=" "base_view=" $1
+    rpl "appstate_init=" "appstate=" $1
     
     yapf -i $1
 }

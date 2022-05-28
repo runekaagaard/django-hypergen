@@ -5,7 +5,7 @@ from django.templatetags.static import static
 from django.urls.base import reverse
 from contextlib import contextmanager
 
-from website.templates import show_sources
+from website.templates2 import show_sources
 
 @contextmanager
 def base():
@@ -50,8 +50,7 @@ def todo_item(item):
                 button(class_="destroy", id_=("destroy", item.pk), onclick=callback(delete, item.pk))
         else:
             input_(id_="edit-item", class_="edit", autofocus=True, value=item.description,
-                onkeyup=callback(submit_edit, item.pk, THIS,
-                event_matches={"key": "Enter"}), onblur=callback(submit_edit, item.pk, THIS))
+                onblur=callback(submit_edit, item.pk, THIS))
 
 def content(items, filtering, all_completed):
     from todomvc.views import ALL, ACTIVE, COMPLETED, todomvc, add, clear_completed, toggle_all
@@ -59,8 +58,7 @@ def content(items, filtering, all_completed):
         with header(class_="header"):
             h1("todos")
             input_(id_="new-todo", class_="new-todo", placeholder="What needs to be done?",
-                autofocus=not context.appstate["edit_item_pk"], onkeyup=callback(add, THIS,
-                event_matches={"key": "Enter"}, clear=True))
+                autofocus=not context.appstate["edit_item_pk"], clear=True)
 
         if filtering == ALL and not items:
             return
