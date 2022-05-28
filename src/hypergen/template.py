@@ -131,7 +131,7 @@ def raw(*children):
 def write(*children):
     c.hypergen.into.extend(t(x) for x in children)
 
-def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1):
+def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1 if docutils_ok else None):
     if not docutils_ok:
         raise Exception("Please 'pip install docutils' to use the rst() function.")
     raw(
