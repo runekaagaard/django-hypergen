@@ -13,8 +13,10 @@ function fixit() {
     rpl "c.user" "context.user" $1
     rpl "c.appstate" "context.appstate" $1
     rpl hypergen_view liveview $1
-    rpl hypergen_callback action
+    rpl hypergen_callback action $1
     rpl "url=" "re_path=" $1
+    rpl "view=" "base_view=" $1
+    
     yapf -i $1
 }
 

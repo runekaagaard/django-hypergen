@@ -230,7 +230,7 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
 
 @wrap2
 def action(func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
-    autourl=True, partial=True):
+    autourl=True, partial=True, base_view=None):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
