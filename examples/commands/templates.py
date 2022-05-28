@@ -2,7 +2,7 @@ from hypergen.imports import *
 from datetime import date, datetime
 import inspect
 
-from commands.callbacks import *
+from commands.actions import *
 
 def fn(title, description, fun):
     if title:
