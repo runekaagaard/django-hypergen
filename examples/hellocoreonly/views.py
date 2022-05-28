@@ -25,7 +25,7 @@ def template(n):
     p(a("Back to documentation", href=reverse("website:documentation")))
 
     h2("Hypergen core only counter")
-    p("This is the same as the hellohypergen example, but we are not using the fancy stuff from contrib.py, ",
+    p("This is the same as the hellohypergen example, but we are not using the fancy stuff, ",
         "namely the @liveview and @action decorators and the autourls function.")
 
     with p():
