@@ -67,7 +67,10 @@ The full signature of @liveview is:
 *re_path (None)*
     Autourls registers the view using Djangos `re_path <https://docs.djangoproject.com/en/dev/ref/urls/#re-path>`_ function.
 *base_template (None)*
-    Wrap the html written inside with view with a base template contextmanager function. This makes it simple for multiple views to share the same base template, and enables automatic partial page loading.
+    Wrap the html written inside with view with a base template contextmanager function. This makes it simple for
+    multiple views to share the same base template, and enables automatic partial page loading. The base template
+    function must have a ``my_base_template.target_id = "my-inner-id"`` attribute set for partial loading to work.
+    
 *login_url (None)*
     Redirect to this url if the user doesn't have the required permissions.
 *redirect_field_name (None)*
@@ -79,9 +82,9 @@ The full signature of @liveview is:
     session storage. It's available at ``context.appstate``. Manipulate that variable and it's automatically stored
     at the end of each request.
 *target_id (None)*
-    Stub
+    Used internally, not a public variable.
 *autourl (True)*
-    Stub
+    Set to False to disable autourls for this view.
 *partial (True)*
-    Stub
+    Set to False to disable partial loading for this view.
     
