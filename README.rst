@@ -42,7 +42,7 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
 
     @liveview(perm=NO_PERM_REQUIRED)
     def counter(request):
-        with html(), body(), div(id_="content"):
+        with html(), body(), div(id="content"):
             template(0)
 
     @action(perm=NO_PERM_REQUIRED, target_id="content")
@@ -51,8 +51,9 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
 
     def template(n):
         label("Current value: ")
-        input_el = input_(id_="n", type_="number", value=n)
-        button("Increment", id_="increment", onclick=callback(increment, input_el))
+        input_el = input_(id="n", type_="number", value=n)
+        button("Increment", id="increment", onclick=callback(increment, input_el))
+
 
 
 You can `see it in action <https://hypergen.it/hellohypergen/counter/>`_.
