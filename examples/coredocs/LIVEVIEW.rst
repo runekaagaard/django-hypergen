@@ -114,13 +114,21 @@ With your newly created base template, boldly go where extremely few have ever g
 
     @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
     def page1(request):
-        h1("Hello hypergen")
+        h1("Hello page 1")
         with p():
             a("You should go to page2", href=page2.reverse())
 
     @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
     def page2(request):
-        a("You should go back", href=page1.reverse())
+        el = input_(placeholder="Write a number", type="number", id="input")
+        button("Double it", id="button", onclick=callback(double, el))
+
+    @action(perm=NO_PERM_REQUIRED, base_template=my_base_template)
+    def double(request, n):
+        p("The double of", n, "is", n * 2, sep=" ", end=".")
+
+@liveview
+---------
 
 The full signature of @liveview is:
 

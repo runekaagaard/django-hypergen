@@ -26,10 +26,10 @@ def my_template2(n):
 
 def my_content_template(n):
     div("It works", n, sep=" ")
-    button("Click me!", onclick=callback(reverse("devpluginstest:c3"), 100), id_="b1")
-    button("And me!", onclick=callback(reverse("devpluginstest:c4"), 100), id_="b2")
+    button("Click me!", onclick=callback(reverse("misc:c3"), 100), id_="b1")
+    button("And me!", onclick=callback(reverse("misc:c4"), 100), id_="b2")
     button("Alerts!", onclick=call_js("alert", 1234), id_="b3")
-    button("Me too!", onclick=callback(reverse("devpluginstest:c5"), 100), id_="b4")
+    button("Me too!", onclick=callback(reverse("misc:c5"), 100), id_="b4")
 
 def v3(request):
     return HttpResponse(hypergen(my_template2, 42, settings=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
@@ -65,7 +65,7 @@ def my_page():
 def my_form(n):
     h2("WOW!")
     el = input_(type_="number", id_="i1", value=n)
-    button("MORE!", id_="i2", onclick=callback(reverse("devpluginstest:c6"), el))
+    button("MORE!", id_="i2", onclick=callback(reverse("misc:c6"), el))
 
 def v4(request):
     return HttpResponse(hypergen(my_page, settings=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True)))
@@ -86,7 +86,7 @@ def my_page2():
 def my_form2(n):
     h2("WOW!")
     el = input_(type_="number", id_="i1", value=n)
-    button("MORE!", id_="i2", onclick=callback(reverse("devpluginstest:c7"), el))
+    button("MORE!", id_="i2", onclick=callback(reverse("misc:c7"), el))
 
 def v5(request):
     return HttpResponse(hypergen(my_page2, settings=d(liveview=True)))
@@ -123,7 +123,7 @@ def c8(request):
 
 @liveview(perm=NO_PERM_REQUIRED, autourl=False)
 def v7(request):
-    body(p("I am view!", reverse("devpluginstest:v7"), sep=" "))
+    body(p("I am view!", reverse("misc:v7"), sep=" "))
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template, partial=False)
 def v8(request):
@@ -247,3 +247,34 @@ def view1(request, user_id):
 def view2(request):
     with html(), body():
         a("Go to view1", href=view1.reverse(user_id=42))
+
+from contextlib import contextmanager
+from hypergen.template import *
+
+@contextmanager
+def my_base_template():
+    doctype()
+    with html():
+        with head():
+            title("My awesome page")
+        with body():
+            with div(id="content"):  # Matches below.
+                # Inner content goes here.
+                yield
+
+my_base_template.target_id = "content"  # Matches above.
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
+def page1(request):
+    h1("Hello page 1")
+    with p():
+        a("You should go to page2", href=page2.reverse())
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
+def page2(request):
+    el = input_(placeholder="Write a number", type="number", id="input")
+    button("Double it", id="button", onclick=callback(double, el))
+
+@action(perm=NO_PERM_REQUIRED, base_template=my_base_template)
+def double(request, n):
+    p("The double of", n, "is", n * 2, sep=" ", end=".")

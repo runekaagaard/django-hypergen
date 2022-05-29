@@ -5,9 +5,9 @@ try:
 except ImportError:
     from django.urls import re_path as url
 
-from devpluginstest import views
+from misc import views
 
-app_name = 'devpluginstest'
+app_name = 'misc'
 
 urlpatterns = [
     url("^v1/$", views.v1, name="v1"),
