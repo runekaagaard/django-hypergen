@@ -278,3 +278,4 @@ def page2(request):
 @action(perm=NO_PERM_REQUIRED, base_template=my_base_template)
 def double(request, n):
     p("The double of", n, "is", n * 2, sep=" ", end=".")
+    command("alert", n * 2)

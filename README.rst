@@ -31,7 +31,7 @@
 
 **Liveview included**: Still in pure python, connect browser events like ``onclick`` to callback functions. Mix frontend input html elements and python datatypes as arguments to callbacks and everything works round-trip. Callbacks are Django views that sends updated html to the frontend as well as other commands.
 
-**1 minute to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS``, ``'hypergen.core.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
+**1 minute to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS``, ``'hypergen.context.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
 
 How does it look?
 =================
@@ -40,16 +40,17 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
 
 .. code-block:: python
 
-    from hypergen.core import *
-    from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED, base_template
-
-    HYPER = dict(perm=NO_PERM_REQUIRED, base_template=base_template(title="Hello Hypergen"))
-
-    @hypergen_view(**HYPER)
+    @contextmanager
+    def base_template():
+        with html():
+            with body():
+                yield
+                
+    @liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
     def counter(request):
         template(0)
 
-    @hypergen_callback(**HYPER)
+    @action(perm=NO_PERM_REQUIRED, base_template=base_template)
     def increment(request, n):
         template(n + 1)
 

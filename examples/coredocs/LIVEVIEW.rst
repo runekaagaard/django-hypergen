@@ -110,7 +110,7 @@ You most set the ``target_id`` attribute!. Then just pass ``base_template=my_bas
 Actually using liveview
 -----------------------
 
-With your newly created base template, boldly go where extremely few have ever gone and make two *liveviews*, one *action* and bind a client side event to the action by defining a *callback*::
+With your autourls setup, a fresh base template, boldly go where extremely few have ever gone and make two *liveviews*, one *action* and bind a client side event to the action by defining a *callback*::
 
     @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
     def page1(request):
@@ -126,11 +126,27 @@ With your newly created base template, boldly go where extremely few have ever g
     @action(perm=NO_PERM_REQUIRED, base_template=my_base_template)
     def double(request, n):
         p("The double of", n, "is", n * 2, sep=" ", end=".")
+        command("alert", n * 2)
 
+You get a beautiful website that looks like `so </misc/page1/>`_. Lets try and unpack whats going on:
+
+- Get the url as a string with additional metadata that hypergen needs like ``page2.reverse()``. Args and kwargs
+  given to the reverse function will be reversed as argument and keywork arguments to the view. 
+- Inside both @liveview and @action just start writing html and hypergen will draw it on the screen.
+- The base_template argument to @action instructs hypergen where to put the html. In this case inside
+  the div element with the id ``content``. Remember ``my_base_template.target_id = "content"``.
+- The ``callback(double, el)`` bit invokes the double action with the n argument as the value of the input
+  element.
+- Html elements having a callback as well as elements used in the callback must have ids. Hypergen will warn you
+  if you forget.
+- The ``command("alert", n * 2)`` line instructs the frontend to show an alert.
+
+Check the documentation pages "Form inputs", "Client commands" and "Partial loading and history support".
+  
 @liveview
 ---------
 
-The full signature of @liveview is:
+@liveview outputs the html to the page, connects client side events to actions and includes hypergen.js on the page. The full signature is:
 
 *@liveview(path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None, raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None)*
     ``perm`` is required. It is configured by these keyword arguments:
@@ -163,3 +179,17 @@ The full signature of @liveview is:
 *partial (True)*
     Set to False to disable partial loading for this view.
     
+@action
+-------
+
+@callback
+---------
+
+call_js
+-------
+
+THIS
+----
+
+Life cycle
+==========
