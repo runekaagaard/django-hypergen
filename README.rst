@@ -40,25 +40,20 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
 
 .. code-block:: python
 
-    @contextmanager
-    def base_template():
-        with html():
-            with body():
-                yield
-                
-    @liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
+    @liveview(perm=NO_PERM_REQUIRED)
     def counter(request):
-        template(0)
+        with html(), body(), div(id_="content"):
+            template(0)
 
-    @action(perm=NO_PERM_REQUIRED, base_template=base_template)
+    @action(perm=NO_PERM_REQUIRED, target_id="content")
     def increment(request, n):
         template(n + 1)
 
     def template(n):
-        with p():
-            label("Current value: ")
-            input_el = input_(id_="n", type_="number", value=n)
-            button("Increment", id_="increment", onclick=callback(increment, input_el))
+        label("Current value: ")
+        input_el = input_(id_="n", type_="number", value=n)
+        button("Increment", id_="increment", onclick=callback(increment, input_el))
+
 
 You can `see it in action <https://hypergen.it/hellohypergen/counter/>`_.
         

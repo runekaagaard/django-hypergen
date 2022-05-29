@@ -279,3 +279,20 @@ def page2(request):
 def double(request, n):
     p("The double of", n, "is", n * 2, sep=" ", end=".")
     command("alert", n * 2)
+
+from hypergen.imports import *
+from contextlib import contextmanager
+
+@liveview(perm=NO_PERM_REQUIRED)
+def counter(request):
+    with html(), body(), div(id_="content"):
+        template(0)
+
+@action(perm=NO_PERM_REQUIRED, target_id="content")
+def increment(request, n):
+    template(n + 1)
+
+def template(n):
+    label("Current value: ")
+    input_el = input_(id_="n", type_="number", value=n)
+    button("Increment", id_="increment", onclick=callback(increment, input_el))
