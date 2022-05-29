@@ -29,7 +29,7 @@
 
 **Hypergen is short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")`` inside a view. It's simple to keep templates DRY by composing python functions. Hypergen feels a lot like writing jsx.
 
-**Liveview included**: Still in pure python, connect browser events like ``onclick`` to callback functions. Mix frontend input html elements and python datatypes as arguments to callbacks and everything works round-trip. Callbacks are Django views that sends updated html to the frontend as well as other commands.
+**Liveview included**: Still in pure python, connect browser events like ``onclick`` to backend views called actions. Mix frontend input html elements and python datatypes as arguments to callbacks and everything works round-trip. Actions are Django views that sends updated html to the frontend as well as other commands.
 
 **1 minute to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS``, ``'hypergen.context.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
 
@@ -58,7 +58,7 @@ Using Hypergens most high-level constructs, a simple counter looks like this:
 
 You can `see it in action <https://hypergen.it/hellohypergen/counter/>`_.
         
-The ``callback(func, arg1, arg2, ..., **settings)`` function connects the onclick event to the ``increment(request, n)`` callback. The ``n`` argument is the value of the input field.
+The ``callback(func, arg1, arg2, ..., **settings)`` function connects the onclick event to the ``increment(request, n)`` action. The ``n`` argument is the value of the input field.
 
 The ``base_template(title=None)`` function returns a function with html5 boilerplate.
 
