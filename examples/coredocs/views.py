@@ -12,5 +12,6 @@ def template(request):
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def liveviews(request):
+    p(mark("This page is under construction."))
     with open("coredocs/LIVEVIEW.rst") as f:
         rst(f.read(), report_level=0)
