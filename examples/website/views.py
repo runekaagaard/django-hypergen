@@ -46,7 +46,7 @@ def home(request):
         "vast and ever-changing javascript ecosystem.")
     p("We felt there was a better way. For us.")
     p("We wanted something that feels like ", i("one single thing."), " Just like Django does. ",
-        "We felt using html templates is a thing number two and doesn't compose well. We also wanted ",
+        "We felt using html templates creates a second language and doesn't compose well. We also wanted ",
         "pain-free binding of DOM events to server functions as well as a simple way to instruct ",
         "the client to run javascript functions.")
     p("And Hypergen was born.")
@@ -87,7 +87,7 @@ def quickstart_template(n=0, app_name="myapp"):
             with ol():
                 li("Add", code("'hypergen'"), "and", code("'myapp'"), "to", code("INSTALLED_APPS"), "in",
                     code("settings.py"), sep=" ")
-                li("Add", code("'hypergen.core.context_middleware'"), "to", code("MIDDLEWARE"), "in",
+                li("Add", code("'hypergen.context.context_middleware'"), "to", code("MIDDLEWARE"), "in",
                     code("settings.py"), sep=" ")
                 li("Add", code("path('myapp/', include(myapp.urls, namespace='myapp')),", title=IMPORTS), "to the ",
                     code("urlpatterns"), "variable of your projects main", code("urls.py"), "file", sep=" ")

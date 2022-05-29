@@ -50,31 +50,98 @@ With the autourls out of the way, you need to know about three functions and you
 2. ``callback``: Binds an event on the client to a view on the server. These kind of views are called actions.
 3. ``@action``: Decorate your view with ``@action`` and it's an action. Actions can do anything, but most of the
    time it partially updates the inner content of the html page.
-            
-The @liveview decorator
+
+See the details below.
+
+Base templates
+--------------
+
+To enjoy the full joy of Hypergens liveview always start by defining a base template with `html5 boilerplate <https://github.com/h5bp/html5-boilerplate/blob/v8.0.0/dist/doc/html.md>`_ that can be shared between your views::
+
+    from contextlib import contextmanager
+    from hypergen.template import *
+
+    @contextmanager
+    def my_base_template():
+        doctype()
+        with html():
+            with head():
+                title("My awesome page")
+            with body():
+                with div(id="content"): # Matches below.
+                    # Inner content goes here.
+                    yield
+
+    my_base_template.target_id = "content" # Matches above.
+
+You most set the ``target_id`` attribute!. Then just pass ``base_template=my_base_template`` to the ``@liveview`` and ``@action`` decorators and Hypergen loves you.
+
+.. raw:: html
+
+    <details>
+        <summary>Make your base templates configurable with a HOF</summary>
+        <p>Since we are using Python it's super easy to e.g. customize the title
+           of your base template:
+        </p>
+        
+    <pre><code>def my_base_template(title):
+        @contextmanager
+        def _my_base_template(): 
+            doctype()
+            with html():
+                with head():
+                    title(title)
+                with body():
+                    with div(id="content"): # Matches below.
+                        # Inner content goes here.
+                        yield
+
+        _my_base_template.target_id = "content" # Matches above.
+
+        return _my_base_template</code></pre>
+
+    <p>
+        Then pass <code>base_template=my_base_template(title="My awesome title")</code> to the
+        <code>@liveview</code> and <code>@action</code> decorators.
+    </p>
+
+    </details>
+
+Actually using liveview
 -----------------------
+
+With your newly created base template, boldly go where extremely few have ever gone and make two *liveviews*, one *action* and bind a client side event to the action by defining a *callback*::
+
+    @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
+    def page1(request):
+        h1("Hello hypergen")
+        with p():
+            a("You should go to page2", href=page2.reverse())
+
+    @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
+    def page2(request):
+        a("You should go back", href=page1.reverse())
 
 The full signature of @liveview is:
 
 *@liveview(path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None, raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None)*
     ``perm`` is required. It is configured by these keyword arguments:
 *perm (None)*
-    Accepts one are at list of permissions all of which the user must have. See Djangos `has_perm() <https://docs.djangoproject.com/en/dev/ref/contrib/auth/#django.contrib.auth.models.User.has_perm>`_
+    Accepts one or a list of permissions, all of which the user must have. See Djangos `has_perm() <https://docs.djangoproject.com/en/dev/ref/contrib/auth/#django.contrib.auth.models.User.has_perm>`_
 *any_perm (False)*
-    The user is only required to have one of the given perms. Check which one in ``context.hypergen.matched_perms``.
+    The user is only required to have one of the given perms. Check which he has in ``context.hypergen.matched_perms``.
 *path (None)*
     Autourls registers the view using Djangos `path <https://docs.djangoproject.com/en/dev/ref/urls/#path>`_ function.
 *re_path (None)*
     Autourls registers the view using Djangos `re_path <https://docs.djangoproject.com/en/dev/ref/urls/#re-path>`_ function.
 *base_template (None)*
-    Wrap the html written inside with view with a base template contextmanager function. This makes it simple for
+    Wrap the html written inside the view with a base template contextmanager function. This makes it simple for
     multiple views to share the same base template, and enables automatic partial page loading. The base template
     function must have a ``my_base_template.target_id = "my-inner-id"`` attribute set for partial loading to work.
-    
 *login_url (None)*
     Redirect to this url if the user doesn't have the required permissions.
 *redirect_field_name (None)*
-    Use this as this name as the next parameter on the login page, defaults to ``?next=/myapp/myview``.x
+    Use this as this name as the next parameter on the login page, defaults to ``?next=/myapp/myview``.
 *raise_exception (False)*
     Raise an exception instead if the user does not have the required permissions.
 *appstate (None)*
