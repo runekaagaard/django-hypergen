@@ -178,6 +178,7 @@ Thanks
 ======
 
 - `Django <https://www.djangoproject.com/>`_ - for making work fun
+- `Morphdom <https://github.com/patrick-steele-idem/morphdom>`_ - for fast updating of the DOM tree
 - `Pyrsistent <https://pyrsistent.readthedocs.io/en/latest/intro.html>`_ - for providing an immutable dict
 - `Simple.css <https://simplecss.org/>`_ - for the no-class styling on the homepage
 - `DALL-E mini <https://huggingface.co/spaces/dalle-mini/dalle-mini>`_ - for the logo generated with the query "a vibrant logo of the letter H"
