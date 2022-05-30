@@ -100,8 +100,8 @@ HTML = """
 """.strip()
 
 def test_multilist():
-    into = contextlist()
-    with context(at="hypergen", target_id="foo"):
+    with context(at="hypergen"):
+        into = contextlist()
         into.append(1)
         assert len(into) == 1
         assert into == [1]
@@ -109,7 +109,7 @@ def test_multilist():
         into.append(2)
         into.append(3)
 
-    assert into.targets == {'foo': [1], 'bar': [2, 3]}
+    assert into.target_ids == {'__hypergen__main__': [1], 'bar': [2, 3]}
 
 @mock_middleware()
 def test_multitargets():
