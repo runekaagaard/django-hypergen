@@ -109,7 +109,7 @@ def test_multilist():
         into.append(2)
         into.append(3)
 
-    assert into.target_ids == {'__hypergen__main__': [1], 'bar': [2, 3]}
+    assert into.context == {'__hypergen__main__': [1], 'bar': [2, 3]}
 
 @mock_middleware()
 def test_multitargets():

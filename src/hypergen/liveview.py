@@ -1,4 +1,5 @@
 d = dict
+from collections import deque
 from django.urls.base import resolve
 from hypergen.hypergen import *
 from hypergen.hypergen import wrap2, make_string, t, check_perms, autourl_register
@@ -14,6 +15,7 @@ from django.http.response import HttpResponse, HttpResponseForbidden, HttpRespon
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 from django.templatetags.static import static
+from hypergen.template import join_html
 
 __all__ = [
     "command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "ActionPlugin", "liveview",
@@ -88,7 +90,7 @@ class LiveviewPluginBase:
 class LiveviewPlugin(LiveviewPluginBase):
     @contextmanager
     def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[]):
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=deque()):
             yield
 
     def process_html(self, html):
@@ -119,23 +121,23 @@ class ActionPlugin(LiveviewPluginBase):
 
     @contextmanager
     def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=[],
+        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=deque(),
             target_id=self.target_id):
             yield
-
-    def process_html(self, html):
-        command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
-        target_id = c.hypergen.get("target_id", None)
-        if target_id:
-            command("hypergen.morph", target_id, html)
-
-        return html
 
     def func_after(self):
         if self.base_view:
             referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
             # TODO: Check for HttpResponseredirect here?
             self.base_view.original_func(c.request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
+
+        commands = [["hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks]]
+        assert not c.hypergen.into.context.get("__hypergen__main__"), "In callbacks you need to set a target_id."
+        for target_id, into in c.hypergen.into.context.items():
+            if into:
+                commands.append(["hypergen.morph", target_id, join_html(into)])
+
+        c.hypergen.commands.extendleft(reversed(commands))
 
 ### Commands happening on the frontend  ###
 
@@ -146,7 +148,7 @@ def command(javascript_func_path, *args, **kwargs):
     if return_:
         return item
     elif prepend:
-        c.hypergen.commands.insert(0, item)
+        c.hypergen.commands.appendleft(item)
     else:
         c.hypergen.commands.append(item)
 
@@ -297,7 +299,6 @@ ENCODINGS = {
     range: lambda o: {"_": ["range", [o.start, o.stop, o.step]]},}
 
 def encoder(o):
-    assert not hasattr(o, "reverse"), "Should not happen"
     if issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
         return ["_", "element_value", [o.js_value_func, o.js_coerce_func, o.attrs["id_"]]]
@@ -305,6 +306,8 @@ def encoder(o):
         # Lazy strings and urls.
         # TODO: still needed?
         return make_string(o)
+    elif isinstance(o, deque):
+        return list(o)
     fn = ENCODINGS.get(type(o), None)
     if fn:
         return fn(o)

@@ -97,13 +97,17 @@ from collections import UserList
 
 class contextlist(UserList):
     def __init__(self, *args, **kwargs):
-        self.target_ids = defaultdict(list)
+        self.context = defaultdict(list)
         super(contextlist, self).__init__(*args, **kwargs)
+
+    def _get_target_id(self):
+        target_id = context.hypergen.get("target_id", None)
+        return target_id if target_id else "__hypergen__main__"
 
     @property
     def data(self):
-        return self.target_ids[context.hypergen.get("target_id", "__hypergen__main__")]
+        return self.context[self._get_target_id()]
 
     @data.setter
     def data(self, value):
-        self.target_ids[context.hypergen.get("target_id", "__hypergen__main__")] = value
+        self.context[self._get_target_id()] = value
