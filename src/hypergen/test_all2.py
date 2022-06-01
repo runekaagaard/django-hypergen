@@ -1,6 +1,7 @@
 d = dict
 from hypergen.imports import *
 from hypergen.context import contextlist
+from hypergen.template import join_html
 
 import re, sys
 from datetime import date, datetime
@@ -101,7 +102,7 @@ HTML = """
 
 def test_multilist():
     with context(at="hypergen"):
-        into = contextlist()
+        into = contextlist("target_id")
         into.append(1)
         assert len(into) == 1
         assert into == [1]
@@ -109,13 +110,14 @@ def test_multilist():
         into.append(2)
         into.append(3)
 
-    assert into.context == {'__hypergen__main__': [1], 'bar': [2, 3]}
+    assert into.contexts == {'__default_context__': [1], 'bar': [2, 3]}
 
 @mock_middleware()
 def test_multitargets():
-    html = hypergen(multitarget_template)
-    print(html)
-    assert html == "<p>main</p>"
+    full = hypergen(multitarget_template, settings=d(returns=FULL))
+    assert full["html"] == "<p>main</p>"
+    assert {k: join_html(v) for k, v in full["context"].hypergen.into.contexts.items()
+           } == {'__default_context__': '<p>main</p>', 'foo': '<p>foo1</p>', 'bar': '<p>bar1</p>'}
 
 def multitarget_template():
     p("main")

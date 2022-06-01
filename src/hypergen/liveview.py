@@ -132,8 +132,8 @@ class ActionPlugin(LiveviewPluginBase):
             self.base_view.original_func(c.request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
 
         commands = [["hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks]]
-        assert not c.hypergen.into.context.get("__hypergen__main__"), "In callbacks you need to set a target_id."
-        for target_id, into in c.hypergen.into.context.items():
+        assert not c.hypergen.into.contexts.get("__default_context__"), "In callbacks you need to set a target_id."
+        for target_id, into in c.hypergen.into.contexts.items():
             if into:
                 commands.append(["hypergen.morph", target_id, join_html(into)])
 

@@ -96,18 +96,19 @@ class ContextMiddleware(MiddlewareMixin):
 from collections import UserList
 
 class contextlist(UserList):
-    def __init__(self, *args, **kwargs):
-        self.context = defaultdict(list)
+    def __init__(self, context_key, *args, **kwargs):
+        self.context_key = context_key
+        self.contexts = defaultdict(list)
         super(contextlist, self).__init__(*args, **kwargs)
 
-    def _get_target_id(self):
-        target_id = context.hypergen.get("target_id", None)
-        return target_id if target_id else "__hypergen__main__"
+    def _get_context_value(self):
+        target_id = context.hypergen.get(self.context_key, None)
+        return target_id if target_id else "__default_context__"
 
     @property
     def data(self):
-        return self.context[self._get_target_id()]
+        return self.contexts[self._get_context_value()]
 
     @data.setter
     def data(self, value):
-        self.context[self._get_target_id()] = value
+        self.contexts[self._get_context_value()] = value
