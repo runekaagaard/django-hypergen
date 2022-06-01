@@ -296,3 +296,22 @@ def template(n):
     label("Current value: ")
     input_el = input_(id="n", type_="number", value=n)
     button("Increment", id="increment", onclick=callback(increment, input_el))
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
+def multitarget(request):
+    for i in range(10):
+        li("I am number", i, sep=" ", id=("li", i))
+    button("Replace", id="replace", onclick=callback(multicb))
+
+@action(perm=NO_PERM_REQUIRED)
+def multicb(request):
+    with context(at="hypergen", target_id="li-3"):
+        write("A NEW WORLD")
+    with context(at="hypergen", target_id="li-5"):
+        write("WHAT!")
+    with context(at="hypergen", target_id="li-6"):
+        write("WHY")
+    with context(at="hypergen", target_id="li-7"):
+        write("WHO")
+    with context(at="hypergen", target_id="li-9"):
+        write("WHEN!?!?!")

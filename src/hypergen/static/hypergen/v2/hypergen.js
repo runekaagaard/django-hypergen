@@ -256,6 +256,9 @@ export const event = function(event, callbackKey, when) {
 }
 
 export const applyCommands = function(commands) {
+  if (!!commands._ && commands._.length === 2 && commands._[0] === "deque") {
+    commands = commands._[1]
+  }
   for (let [path, ...args] of commands) {
     applyCommand(path, ...args)
   }

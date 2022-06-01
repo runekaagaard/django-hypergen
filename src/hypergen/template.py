@@ -1,5 +1,5 @@
 d = dict
-from hypergen.context import context as c
+from hypergen.context import context as c, contextlist
 from hypergen.hypergen import *
 from hypergen.hypergen import make_string, t
 from hypergen.plugins.appstate import AppstatePlugin
@@ -51,7 +51,7 @@ OMIT = "__OMIT__"
 class TemplatePlugin:
     @contextmanager
     def context(self):
-        with c(at="hypergen", into=[], ids=set()):
+        with c(at="hypergen", into=contextlist("target_id"), ids=set()):
             yield
 
 ### Rendering ###
@@ -323,7 +323,7 @@ class Component(object):
 def component(f):
     @wraps(f)
     def _(*args, **kwargs):
-        with c(into=[], at="hypergen"):
+        with c(into=contextlist("target_id"), at="hypergen"):
             f(*args, **kwargs)
             into = c.hypergen.into
         i = len(c.hypergen.into)

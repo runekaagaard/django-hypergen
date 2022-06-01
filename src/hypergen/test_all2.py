@@ -1,10 +1,12 @@
 d = dict
 from hypergen.imports import *
+from hypergen.context import contextlist
+from hypergen.template import join_html
 
 import re, sys
 from datetime import date, datetime
 
-from contextlib import ContextDecorator
+from contextlib import ContextDecorator, contextmanager
 from django.test.client import RequestFactory
 from pyrsistent import pmap
 
@@ -23,6 +25,9 @@ class Request(object):
 
     def is_ajax(self):
         return False
+
+    def get_full_path(self):
+        return "mock"
 
 class HttpResponse(object):
     pass
@@ -49,11 +54,17 @@ def mock_hypergen_callback(f):
     f.reverse = lambda *a, **k: "/path/to/cb/"
     return f
 
+@contextmanager
+def mock_middleware():
+    with context(request=Request()):
+        yield
+
+@mock_middleware()
 def test_plugins():
     setup()
-    html1 = hypergen(template, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True))
+    html1 = hypergen(template, 2, settings=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True))
 
-    html2 = hypergen(template2, 2, hypergen=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True))
+    html2 = hypergen(template2, 2, settings=d(plugins=[TemplatePlugin(), LiveviewPlugin()], indent=True))
 
     assert html1.strip() == html2.strip() == HTML
 
@@ -79,12 +90,38 @@ HTML = """
             4
         </h1>
         <!--hypergen_liveview_media-->
-        <script src="hypergen/hypergen.min.js"></script>
-        <script type="application/json" id="hypergen-apply-commands-data">[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}]]</script>
+        <script src="hypergen/v2/hypergen.min.js"></script>
+        <script type="application/json" id="hypergen-apply-commands-data">[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]</script>
         <script>
                 hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
-                    'hypergen-apply-commands-data').textContent, reviver)))
+                    'hypergen-apply-commands-data').textContent, hypergen.reviver)))
             </script>
     </body>
 </html>
 """.strip()
+
+def test_multilist():
+    with context(at="hypergen"):
+        into = contextlist("target_id")
+        into.append(1)
+        assert len(into) == 1
+        assert into == [1]
+    with context(at="hypergen", target_id="bar"):
+        into.append(2)
+        into.append(3)
+
+    assert into.contexts == {'__default_context__': [1], 'bar': [2, 3]}
+
+@mock_middleware()
+def test_multitargets():
+    full = hypergen(multitarget_template, settings=d(returns=FULL))
+    assert full["html"] == "<p>main</p>"
+    assert {k: join_html(v) for k, v in full["context"].hypergen.into.contexts.items()
+           } == {'__default_context__': '<p>main</p>', 'foo': '<p>foo1</p>', 'bar': '<p>bar1</p>'}
+
+def multitarget_template():
+    p("main")
+    with context(at="hypergen", target_id="foo"):
+        p("foo1")
+    with context(at="hypergen", target_id="bar"):
+        p("bar1")

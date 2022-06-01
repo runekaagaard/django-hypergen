@@ -1,5 +1,7 @@
 d = dict
 
+from abc import abstractmethod
+from collections import defaultdict
 import threading
 from contextlib import contextmanager
 from pyrsistent import pmap, m
@@ -78,7 +80,7 @@ context = Context()
 c = context
 
 def _init_context(request):
-    return dict(user=request.user, request=request)
+    return dict(request=request)
 
 def context_middleware(get_response):
     def _(request):
@@ -90,3 +92,23 @@ def context_middleware(get_response):
 class ContextMiddleware(MiddlewareMixin):
     def process_request(self, request):
         context.replace(**_init_context(request))
+
+from collections import UserList
+
+class contextlist(UserList):
+    def __init__(self, context_key, *args, **kwargs):
+        self.context_key = context_key
+        self.contexts = defaultdict(list)
+        super(contextlist, self).__init__(*args, **kwargs)
+
+    def _get_context_value(self):
+        target_id = context.hypergen.get(self.context_key, None)
+        return target_id if target_id else "__default_context__"
+
+    @property
+    def data(self):
+        return self.contexts[self._get_context_value()]
+
+    @data.setter
+    def data(self, value):
+        self.contexts[self._get_context_value()] = value
