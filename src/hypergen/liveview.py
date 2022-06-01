@@ -294,6 +294,7 @@ ENCODINGS = {
     datetime.date: lambda o: {"_": ["date", str(o)]},
     datetime.datetime: lambda o: {"_": ["datetime", str(o)]},
     tuple: lambda o: {"_": ["tuple", list(o)]},
+    deque: lambda o: {"_": ["deque", list(o)]},
     set: lambda o: {"_": ["set", list(o)]},
     frozenset: lambda o: {"_": ["frozenset", list(o)]},
     range: lambda o: {"_": ["range", [o.start, o.stop, o.step]]},}
@@ -302,12 +303,7 @@ def encoder(o):
     if issubclass(type(o), base_element):
         assert o.attrs.get("id_", False), "Missing id_"
         return ["_", "element_value", [o.js_value_func, o.js_coerce_func, o.attrs["id_"]]]
-    elif hasattr(o, "__weakref__"):
-        # Lazy strings and urls.
-        # TODO: still needed?
-        return make_string(o)
-    elif isinstance(o, deque):
-        return list(o)
+
     fn = ENCODINGS.get(type(o), None)
     if fn:
         return fn(o)
@@ -320,6 +316,7 @@ DECODINGS = {
     "datetime": parse_datetime,
     "time": parse_time,
     "tuple": tuple,
+    "deque": deque,
     "set": set,
     "frozenset": frozenset,
     "range": lambda v: range(*v),}
