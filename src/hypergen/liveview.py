@@ -52,28 +52,27 @@ JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
 class LiveviewPluginBase:
     @contextmanager
     def wrap_element_init(self, element, children, attrs):
+        coerce_to = attrs.pop("coerce_to", None)
+        if coerce_to is not None:
+            try:
+                element.js_coerce_func = COERCE[coerce_to]
+            except KeyError:
+                raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
+        else:
+            element.js_coerce_func = attrs.pop("js_coerce_func", None)
+
         if isinstance(element, input_):
             # Coerce and value func based on input type.
             element.js_value_func = attrs.pop("js_value_func",
                 JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
-            element.js_coerce_func = attrs.pop("js_coerce_func",
-                JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
-            attrs.pop("coerce_to", None)
+            if not element.js_coerce_func:
+                element.js_coerce_func = JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None)
         else:
             # Default coerce and value func.
             if attrs.get("contenteditable", False) is True:
                 element.js_value_func = attrs.pop("js_value_func", "hypergen.read.contenteditable")
             else:
                 element.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
-
-            coerce_to = attrs.pop("coerce_to", None)
-            if coerce_to is not None:
-                try:
-                    element.js_coerce_func = COERCE[coerce_to]
-                except KeyError:
-                    raise Exception("coerce must be one of: {}".format(list(COERCE.keys())))
-            else:
-                element.js_coerce_func = attrs.pop("js_coerce_func", None)
 
         if isinstance(element, a):
             # Partial loading.

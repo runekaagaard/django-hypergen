@@ -286,13 +286,28 @@ def test_components2():
 
 def test_js_value_func():
     def myyemplate():
-        i = input_(type_="hidden", value=200, collect_name="pk", js_value_func="hypergen.v.i",
-            js_coerce_func="my.ccc", id_="cch{}".format(200))
+        body()
+        i = input_()
+        assert (i.js_value_func, i.js_coerce_func) == ("hypergen.read.value", None)
 
-        assert i.js_value_func == "hypergen.v.i"
-        assert i.js_coerce_func == "my.ccc"
+        i = input_(js_value_func="a", js_coerce_func="b")
+        assert (i.js_value_func, i.js_coerce_func) == ("a", "b")
+
+        i = input_(js_value_func="a", coerce_to=float)
+        assert (i.js_value_func, i.js_coerce_func) == ("a", "hypergen.coerce.float")
+        i = input_(js_value_func="a", coerce_to=int)
+        assert (i.js_value_func, i.js_coerce_func) == ("a", "hypergen.coerce.int")
+        i = input_(js_value_func="a", coerce_to=str)
+        assert (i.js_value_func, i.js_coerce_func) == ("a", "hypergen.coerce.str")
+        i = input_(js_value_func="a", type="date")
+        assert (i.js_value_func, i.js_coerce_func) == ("a", "hypergen.coerce.date")
+        i = input_(js_value_func="a", type_="datetime-local")
+        assert (i.js_value_func, i.js_coerce_func) == ("a", "hypergen.coerce.datetime")
+        i = input_(js_value_func="a", type_="weidewokvocxkokwoekvd")
+        assert (i.js_value_func, i.js_coerce_func) == ("a", None)
 
     hypergen(myyemplate, settings=d(action=True, target_id="foo"))
+    hypergen(myyemplate, settings=d(liveview=True, target_id="foo"))
 
 def test_eventhandler_cache():
     def template():
