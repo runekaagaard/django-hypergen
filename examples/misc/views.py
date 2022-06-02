@@ -266,7 +266,7 @@ my_base_template.target_id = "content"  # Matches above.
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
 def page1(request):
-    h1("Hello page 1")
+    h1("Hello page 1", b("PL"))
     with p():
         a("You should go to page2", href=page2.reverse())
 

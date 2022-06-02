@@ -290,6 +290,10 @@ class base_element(ContextDecorator):
             return [" ", k, '="', v, '"']
 
     def start(self):
+        cache = getattr(self, "_start_cache", None)
+        if cache:
+            return cache
+
         into = ["<", self.tag]
         for k, v in self.attrs.items():
             into.extend(self.attribute(k, v))
@@ -298,6 +302,8 @@ class base_element(ContextDecorator):
             into.append("/")
         into.append('>')
         into.extend(self.format_children(self.children))
+
+        self._start_cache = into
 
         return into
 
