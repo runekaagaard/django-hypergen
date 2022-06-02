@@ -102,6 +102,8 @@ class contextlist(UserList):
         super(contextlist, self).__init__(*args, **kwargs)
 
     def _get_context_value(self):
+        if "hypergen" not in context:
+            return "__default_context__"
         target_id = context.hypergen.get(self.context_key, None)
         return target_id if target_id else "__default_context__"
 

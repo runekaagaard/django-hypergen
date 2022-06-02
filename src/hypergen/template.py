@@ -349,7 +349,8 @@ class input_(base_element_void):
 
     def __init__(self, *children, **attrs):
         type_ = attrs.get("type_", attrs.pop("type", None))
-        attrs["type_"] = type_
+        if type_:
+            attrs["type_"] = type_
         if type_ == "radio":
             assert attrs.get("name"), "Name must be set for radio buttons."
         super(input_, self).__init__(*children, **attrs)
