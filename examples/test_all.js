@@ -8,13 +8,15 @@ fixture("Test All")
   .page(url)
   .requestHooks(logger);
 
-var queue = ["/", "/misc/index/", "/documentation/", "/gettingstarted/begin/"]
+var queue = ["/documentation/"]
 var visited = []
 
 async function visitPage(t, href) {
+  await t
+      .navigateTo(href)
+      .expect(logger.contains(r => r.response.statusCode === 200)).ok()
   console.log("visiting new page:", href)
   visited.push(href)
-  
   const links = Selector('a')
   const count = await links.count
   console.log(`    found ${count} links`)
@@ -27,7 +29,6 @@ async function visitPage(t, href) {
     if (href2.startsWith("http") || visited.indexOf(href2) !== -1 || href2.startsWith("#") ||
         href2.startsWith("localhost"))
     {
-      // console.log("skipping link", href2)
       continue
     }
     console.log(`    adding ${href2} to queue`)
@@ -36,8 +37,10 @@ async function visitPage(t, href) {
 }
 
 async function onclickEvents(t, href) {
-  // TODO: Make todomvc work.
   if (["/gameofcython/", "/t9n/", "/djangotemplates/", "/misc/v19/", "/misc/v16/"].indexOf(href) !== -1) return
+  await t
+      .navigateTo(href)
+      .expect(logger.contains(r => r.response.statusCode === 200)).ok()
   const els = Selector('*').withAttribute('onclick')
   const count = await els.count
   for (let i = 0; i < count; i++) {
@@ -60,9 +63,7 @@ test('test', async t => {
     if (["/djangolander/lander/", "/misc/v13/", "/misc/v14/",
          "/misc/v15/"].indexOf(href) !== -1) continue
     console.log(`testing url: ${href}`)
-    await t
-      .navigateTo(href)
-      .expect(logger.contains(r => r.response.statusCode === 200)).ok()
+    
     logger.clear()
     await onclickEvents(t, href)
     await visitPage(t, href)
