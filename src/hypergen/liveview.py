@@ -115,9 +115,10 @@ class LiveviewPlugin(LiveviewPluginBase):
         return html.replace("</body>", hypergen(template))
 
 class ActionPlugin(LiveviewPluginBase):
-    def __init__(self, /, *, target_id=None, base_view=None):
+    def __init__(self, /, *, target_id=None, base_view=None, morph=True):
         self.target_id = target_id
         self.base_view = base_view
+        self.morph = morph
 
     @contextmanager
     def context(self):
@@ -132,12 +133,14 @@ class ActionPlugin(LiveviewPluginBase):
             self.base_view.original_func(c.request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
 
         commands = [["hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks]]
-        assert not c.hypergen.into.contexts.get("__default_context__"), "In callbacks you need to set a target_id."
-        for target_id, into in c.hypergen.into.contexts.items():
-            if into:
-                commands.append(["hypergen.morph", target_id, join_html(into)])
+        if self.morph and "into" in c.hypergen:
+            assert not c.hypergen.into.contexts.get(
+                "__default_context__"), "In callbacks you need to set a target_id."
+            for target_id, into in c.hypergen.into.contexts.items():
+                if into:
+                    commands.append(["hypergen.morph", target_id, join_html(into)])
 
-        c.hypergen.commands.extendleft(reversed(commands))
+            c.hypergen.commands.extendleft(reversed(commands))
 
 ### Commands happening on the frontend  ###
 
@@ -233,8 +236,9 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
         else:
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
                 html = hypergen(
-                    func, request, *args, **kwargs, settings=d(liveview=True, base_template=base_template,
-                    appstate=appstate, namespace=_.reverse.hypergen_namespace))
+                    func, request, *args, **kwargs,
+                    settings=d(liveview=True, base_template=base_template, appstate=appstate,
+                    namespace=_.reverse.hypergen_namespace if getattr(_, "reverse", None) else None))
                 return HttpResponse(html)
 
     if autourl:

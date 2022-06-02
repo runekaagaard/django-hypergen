@@ -6,6 +6,30 @@ from contextlib import contextmanager
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.urls.base import reverse
 
+@liveview(perm=NO_PERM_REQUIRED)
+def index(request):
+    doctype()
+    with html(), body():
+        for href in [
+                "/misc/v1", "/misc/v2", "/misc/v3", "/misc/v4", "/misc/v5", "/misc/v6", "/misc/v7",
+                v8.reverse(),
+                v9.reverse(),
+                v10.reverse(888, "kfkfkf"),
+                v11.reverse(year=1944, username="fooo"),
+                v12.reverse(1299, "fjewg9"),
+                v13.reverse(),
+                v14.reverse(),
+                v15.reverse(),
+                v16.reverse(),
+                v19.reverse(),
+                view1.reverse(999),
+                view2.reverse(),
+                page1.reverse(),
+                page2.reverse(),
+                counter.reverse(),
+                multitarget.reverse()]:
+            li(a(href, href=href, target="_blank"))
+
 def my_template(n):
     div("It works", n, sep=" ")
 
@@ -35,7 +59,8 @@ def v3(request):
     return HttpResponse(hypergen(my_template2, 42, settings=d(plugins=[TemplatePlugin(), LiveviewPlugin()])))
 
 def c3(request):
-    data = hypergen(my_content_template, 666, settings=d(plugins=[TemplatePlugin(), ActionPlugin()], returns=FULL))
+    data = hypergen(my_content_template, 666, settings=d(plugins=[TemplatePlugin(),
+        ActionPlugin(morph=False)], returns=FULL))
     commands = data["context"]["hypergen"]["commands"]
     commands.append(["hypergen.morph", "my-body-id", data["html"]])
 
