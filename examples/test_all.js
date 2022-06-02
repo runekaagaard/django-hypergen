@@ -8,7 +8,7 @@ fixture("Test All")
   .page(url)
   .requestHooks(logger);
 
-var queue = ["/"]
+var queue = ["/", "/misc/index/", "/documentation/", "/gettingstarted/begin/"]
 var visited = []
 
 async function visitPage(t, href) {
@@ -24,7 +24,12 @@ async function visitPage(t, href) {
     const href2 = await link.getAttribute("href")
     if (!href2) continue
     const onclick = await link.getAttribute("onclick")
-    if (href2.startsWith("http") || visited.indexOf(href2) !== -1 || href2.startsWith("#") || !!onclick) continue
+    if (href2.startsWith("http") || visited.indexOf(href2) !== -1 || href2.startsWith("#") ||
+        href2.startsWith("localhost"))
+    {
+      // console.log("skipping link", href2)
+      continue
+    }
     console.log(`    adding ${href2} to queue`)
     queue.push(href2)
   }
@@ -32,13 +37,14 @@ async function visitPage(t, href) {
 
 async function onclickEvents(t, href) {
   // TODO: Make todomvc work.
-  if (["/gameofcython/", "/t9n/", "/todomvc/", "/djangotemplates/"].indexOf(href) !== -1) return
+  if (["/gameofcython/", "/t9n/", "/djangotemplates/", "/misc/v19/", "/misc/v16/"].indexOf(href) !== -1) return
   const els = Selector('*').withAttribute('onclick')
   const count = await els.count
   for (let i = 0; i < count; i++) {
     const el = await els.nth(i)
     const onclick = await el.getAttribute("onclick")
     if (onclick.includes("redirect__")) continue
+    if (["hypergen.event(event, 'b3__onclick')"].indexOf(onclick) !== -1) continue
     console.log(`    running onclick event: ${onclick}`, i)
     await t
       .setNativeDialogHandler(() => true)
@@ -51,7 +57,8 @@ async function onclickEvents(t, href) {
 test('test', async t => {
   while(queue.length > 0) {
     const href = queue.pop()
-    if (["/todomvc/", "/gettingstarted/begin/", "/djangolander/lander/"].indexOf(href) !== -1) continue
+    if (["/djangolander/lander/", "/misc/v13/", "/misc/v14/",
+         "/misc/v15/"].indexOf(href) !== -1) continue
     console.log(`testing url: ${href}`)
     await t
       .navigateTo(href)

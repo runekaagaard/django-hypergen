@@ -58,6 +58,7 @@ class LiveviewPluginBase:
                 JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
             element.js_coerce_func = attrs.pop("js_coerce_func",
                 JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None))
+            attrs.pop("coerce_to", None)
         else:
             # Default coerce and value func.
             if attrs.get("contenteditable", False) is True:

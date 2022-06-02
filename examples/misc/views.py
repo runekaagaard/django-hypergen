@@ -52,7 +52,7 @@ def my_content_template(n):
     div("It works", n, sep=" ")
     button("Click me!", onclick=callback(reverse("misc:c3"), 100), id_="b1")
     button("And me!", onclick=callback(reverse("misc:c4"), 100), id_="b2")
-    button("Alerts!", onclick=call_js("alert", 1234), id_="b3")
+    button("Logs!", onclick=call_js("console.log", 1234), id_="b3")
     button("Me too!", onclick=callback(reverse("misc:c5"), 100), id_="b4")
 
 def v3(request):
@@ -252,7 +252,7 @@ def v20(request):
 
 @action(perm=NO_PERM_REQUIRED)
 def c26(request, number):
-    command("alert", repr(number))
+    command("console.log", repr(number))
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=v6_base_template)
 def v21(request):
@@ -302,8 +302,10 @@ def page2(request):
 
 @action(perm=NO_PERM_REQUIRED, base_template=my_base_template)
 def double(request, n):
+    if not n:
+        n = 333
     p("The double of", n, "is", n * 2, sep=" ", end=".")
-    command("alert", n * 2)
+    command("console.log", n * 2)
 
 from hypergen.imports import *
 from contextlib import contextmanager
