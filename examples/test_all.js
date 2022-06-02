@@ -13,8 +13,8 @@ var visited = []
 
 async function visitPage(t, href) {
   await t
-      .navigateTo(href)
-      .expect(logger.contains(r => r.response.statusCode === 200)).ok()
+    .navigateTo(href)
+    .expect(logger.contains(r => r.response.statusCode === 200)).ok()
   console.log("visiting new page:", href)
   visited.push(href)
   const links = Selector('a')
