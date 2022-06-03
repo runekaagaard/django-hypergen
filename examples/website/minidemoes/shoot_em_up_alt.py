@@ -14,9 +14,6 @@ settings = dict(
     appstate=lambda: {"target_num": -1, "hits": 0, "start_time": time()},
 )
 
-def update_target_num():
-    context.appstate["target_num"] = choice(list(set(range(0, 5)) - {context.appstate["target_num"]}))
-
 @never_cache
 @liveview(**settings)
 def shoot_em_up_alt(request):
@@ -25,7 +22,7 @@ def shoot_em_up_alt(request):
             new Audio(url).play()
         }
     """)
-    update_target_num()
+    context.appstate["target_num"] = choice(list(set(range(0, 5)) - {context.appstate["target_num"]}))
 
     for i in range(0, 5):
         if i == context.appstate["target_num"]:
@@ -42,4 +39,5 @@ def shoot_em_up_alt(request):
 
 @action(base_view=shoot_em_up_alt, **settings)
 def fire_alt(request):
+    context.appstate["hits"] += 1
     command("play", static("website/gun.mp3"))
