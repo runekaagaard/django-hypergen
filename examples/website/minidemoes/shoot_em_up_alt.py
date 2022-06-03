@@ -8,20 +8,26 @@ from django.views.decorators.cache import never_cache
 
 from website.templates2 import doc_base_template
 
+def init_appstate():
+    return {"target_num": -1, "hits": 0, "start_time": time()}
+
 settings = dict(
     perm=NO_PERM_REQUIRED,
     base_template=doc_base_template(__file__, "shoot-em-up"),
-    appstate=lambda: {"target_num": -1, "hits": 0, "start_time": time()},
+    appstate=init_appstate,
 )
 
 @never_cache
 @liveview(**settings)
 def shoot_em_up_alt(request):
-    script("""
-        function play(url) {
-            new Audio(url).play()
-        }
-    """)
+    if request.method == "GET":
+        script("""
+            function play(url) {
+                new Audio(url).play()
+            }
+        """)
+        context.appstate = init_appstate()
+
     context.appstate["target_num"] = choice(list(set(range(0, 5)) - {context.appstate["target_num"]}))
 
     for i in range(0, 5):
