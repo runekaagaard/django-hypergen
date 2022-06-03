@@ -58,7 +58,7 @@ def base_template():
 base_template.target_id = "main"
 
 @contextmanager
-def base_example_template(file_):
+def base_example_template(file_=None):
     with base_template():
         with p():
             a("Back to documentation", href=reverse("website:documentation"))
