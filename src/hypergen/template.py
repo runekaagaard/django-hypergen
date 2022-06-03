@@ -164,6 +164,8 @@ class base_element(ContextDecorator):
             self.t = attrs.pop("t", t)
             self.children = children
             self.attrs = attrs
+            self.sep = attrs.pop("sep", "")
+            self.end_char = attrs.pop("end", None)
 
             # Id
             id_ = self.attrs.get("id_", self.attrs.pop("id", None))
@@ -172,15 +174,12 @@ class base_element(ContextDecorator):
             self.attrs["id_"] = id_
 
             # Make sure ids are unique
-            self.i = len(c.hypergen.into)
-            if self.attrs["id_"] is not None:
-                id_ = self.attrs["id_"]
+            if id_ is not None:
                 assert id_ not in c.hypergen["ids"], "Duplicate id: {}".format(id_)
                 c.hypergen["ids"].add(id_)
 
-            self.sep = attrs.pop("sep", "")
-            self.end_char = attrs.pop("end", None)
-
+            # Render and save position in into.
+            self.i = len(c.hypergen.into)
             c.hypergen.into.extend(self.start())
             c.hypergen.into.extend(self.end())
             self.j = len(c.hypergen.into)

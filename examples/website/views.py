@@ -26,6 +26,7 @@ from globalcontext.views import globalcontext
 from gettingstarted.views import begin
 from apptemplate.views import my_view
 from coredocs.views import template, liveviews
+from website.minidemoes.shoot_em_up import shoot_em_up
 
 @liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
@@ -130,6 +131,7 @@ def documentation(request):
         li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from liveview.py used")
         li(a("TodoMVC", href=todomvc.reverse(ALL)))
         li(a("Hypergen App template", href=my_view.reverse()))
+        li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
 
     h2("Tutorials")
     ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))

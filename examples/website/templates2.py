@@ -70,7 +70,7 @@ base_example_template.target_id = "content"
 
 def show_sources(file_path):
     omits = ("__", "migrations", ".css", "management", ".so", "gameofcython.html", ".cpp", ".png", ".svg", ".ico",
-        "webmanifest", "jpg", ".xml")
+        "webmanifest", "jpg", ".xml", ".svg", ".mp3")
 
     hr()
     with details():
