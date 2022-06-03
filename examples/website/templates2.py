@@ -58,13 +58,16 @@ def base_template():
 base_template.target_id = "main"
 
 @contextmanager
-def base_example_template():
+def base_example_template(file_):
     with base_template():
         with p():
             a("Back to documentation", href=reverse("website:documentation"))
 
         with div(id_="content"):
             yield
+
+        if file_:
+            show_sources(file_)
 
 base_example_template.target_id = "content"
 

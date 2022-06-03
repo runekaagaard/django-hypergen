@@ -2,11 +2,11 @@ from hypergen.imports import *
 from random import choice
 from time import time
 from django.templatetags.static import static
-from website.templates2 import base_example_template, show_sources
+from website.templates2 import base_example_template
 
 @liveview(perm=NO_PERM_REQUIRED)
-def shoot_em_up(request, base_template=base_example_template):
-    with base_example_template():
+def shoot_em_up(request):
+    with base_example_template(__file__):
         script("""
             function play(url) {
                 new Audio(url).play()
@@ -14,8 +14,6 @@ def shoot_em_up(request, base_template=base_example_template):
         """)
 
         template(start_time=time())
-
-        show_sources(__file__)
 
 @action(perm=NO_PERM_REQUIRED, target_id="shoot-em-up")
 def fire(request, start_time, hits, target_num):
