@@ -69,6 +69,23 @@ def base_example_template(file_=None):
         if file_:
             show_sources(file_)
 
+def doc_base_template(file_=None, target_id="content"):
+    @contextmanager
+    def _doc_base_template(file_=None):
+        with base_template():
+            with p():
+                a("Back to documentation", href=reverse("website:documentation"))
+
+            with div(id_=target_id):
+                yield
+
+            if file_:
+                show_sources(file_)
+
+    _doc_base_template.target_id = target_id
+
+    return _doc_base_template
+
 base_example_template.target_id = "content"
 
 def show_sources(file_path):

@@ -161,6 +161,8 @@ def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_fil
     if headers is None:
         headers = {}
 
+    assert getattr(url, "is_hypergen_liveview",
+        False) is not True, "You can't callback to a @liveview, only an @action."
     if getattr(url, "is_hypergen_action", False) is True:
         url = url.reverse()
 
@@ -245,6 +247,7 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
         autourl_register(_, base_template=base_template, path=path, re_path=re_path)
 
     _.original_func = original_func
+    _.is_hypergen_liveview = True
 
     return _
 
