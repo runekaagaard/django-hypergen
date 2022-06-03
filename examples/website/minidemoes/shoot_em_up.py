@@ -1,9 +1,14 @@
 from hypergen.imports import *
+
 from random import choice
 from time import time
+
 from django.templatetags.static import static
+from django.views.decorators.cache import never_cache
+
 from website.templates2 import base_example_template
 
+@never_cache
 @liveview(perm=NO_PERM_REQUIRED)
 def shoot_em_up(request):
     with base_example_template(__file__):
