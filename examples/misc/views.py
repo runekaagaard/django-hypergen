@@ -26,7 +26,7 @@ def index(request):
                 view2.reverse(),
                 page1.reverse(),
                 page2.reverse(),
-                counter.reverse(),
+                counter2.reverse(),
                 multitarget.reverse()]:
             li(a(href, href=href, target="_blank"))
 
@@ -311,18 +311,18 @@ from hypergen.imports import *
 from contextlib import contextmanager
 
 @liveview(perm=NO_PERM_REQUIRED)
-def counter(request):
+def counter2(request):
     with html(), body(), div(id="content"):
-        template(0)
+        templatex(0)
 
 @action(perm=NO_PERM_REQUIRED, target_id="content")
-def increment(request, n):
-    template(n + 1)
+def increment2(request, n):
+    templatex(n + 1)
 
-def template(n):
+def templatex(n):
     label("Current value: ")
     input_el = input_(id="n", type_="number", value=n)
-    button("Increment", id="increment", onclick=callback(increment, input_el))
+    button("Increment", id="increment2", onclick=callback(increment2, input_el))
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
 def multitarget(request):
@@ -342,3 +342,17 @@ def multicb(request):
         write("WHO")
     with context(at="hypergen", target_id="li-9"):
         write("WHEN!?!?!")
+
+@liveview(path="counter/", perm=NO_PERM_REQUIRED)
+def counter(request):
+    doctype()
+    with html(), body(), div(id="content"):
+        template(1)
+
+def template(n):
+    p("The number is", n, sep=" ", end="")
+    button("Increment", id="increment-it", onclick=callback(increment, n))
+
+@action(path="increment", perm=NO_PERM_REQUIRED, target_id="content")
+def increment(request, n):
+    template(n + 1)
