@@ -71,7 +71,7 @@ And in your ``views.py`` file your should reverse urls to other views directly o
             a("Go to view1", href=view1.reverse(user_id=42))
 
 Base templates
---------------
+==============
 
 To enjoy the full joy of Hypergens liveview define a base template with `html5 boilerplate <https://github.com/h5bp/html5-boilerplate/blob/v8.0.0/dist/doc/html.md>`_ and share it between your views::
 
@@ -125,7 +125,7 @@ Setting the ``target_id`` attribute on the base template function tells the acti
     </details>
   
 @liveview
----------
+=========
 
 @liveview outputs the html to the page, connects client side events to actions and includes javascript media on the page. The full signature is:
 
@@ -161,7 +161,7 @@ Setting the ``target_id`` attribute on the base template function tells the acti
     Set to False to disable partial loading for this view.
     
 @action
--------
+=======
 
 The @action decorator return commands to the client to execute. Most of the time partial html to update the ``target_id`` id with. However, it's capable of instructing the client to do anything you want.
     
@@ -186,8 +186,12 @@ The @action decorator return commands to the client to execute. Most of the time
 *partial (True)*
     Set to False to disable partial loading for this view.
 
-@callback
----------
+callback
+========
+
+Stub.
+
+Use the contant ``THIS`` to reference the element itself the callback is being defined on. 
 
 *callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_files=False, clear=False, headers=None, meta=None, when=None)*
     ``url`` is required. It is configured by these arguments:
@@ -213,8 +217,7 @@ The @action decorator return commands to the client to execute. Most of the time
 call_js
 -------
 
-THIS
-----
+*call_js(command_path, *args)*
 
-Life cycle
-==========
+Stub
+----
