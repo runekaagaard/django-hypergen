@@ -4,7 +4,7 @@ Liveview
 A *liveview* is a server-side view that instructs the browser to update parts of the page when DOM events occur. The
 HTML for the updated parts is also rendered on the server. The benefits of this is that you can build dynamic webpages without the overhead of a thick client.
 
-The concept was popularized by `Phoenix Liveview <https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html>`_.  Other known liveviews are `StimulusReflex <https://docs.stimulusreflex.com/>`_ for Ruby on Rails and `Liveview <https://laravel-livewire.com/>`_ for PHP's Laravel.
+The concept was popularized by `Phoenix Liveview <https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html>`_.  Other known liveviews are `StimulusReflex <https://docs.stimulusreflex.com/>`_ for Ruby on Rails and `Liveview <https://laravel-livewire.com/>`__ for PHP's Laravel.
 
 In contrast to Phoenix Liveview and Stimulusreflex, Hypergen does not communicate via websockets but uses Djangos vanilla Response/Request cycle. This avoids the land-of-async but adds a bit more latency. Hypergen is great for webpages but not for games says ours experiences.
 
@@ -19,7 +19,7 @@ or truly everything::
 Basics
 ======
 
-The cornerstones of Hypergen liveview are the two view decorators, ``@liveview`` and ``@action``. The former renders the full HTML page via a GET http response, and the latter renders partial HTML via a POST ajax response. Both are vanilla Django views under the hood. The missing link between the two is the function ``callback()`` that binds DOM events to callbacks. A simple counter with a liveview, an action and a callback looks like this::
+The cornerstones of Hypergen liveview are the two view decorators, ``@liveview`` and ``@action``. The former renders the full HTML page via a GET http response, and the latter renders partial HTML via a POST ajax response. Both are vanilla Django views under the hood. The missing link between the two is the function ``callback()`` that binds DOM events to actions. A simple counter with a liveview, an action and a callback looks like `this </misc/counter/>`__::
 
     @liveview(path="counter/", perm=NO_PERM_REQUIRED)
     def counter(request):
@@ -28,15 +28,14 @@ The cornerstones of Hypergen liveview are the two view decorators, ``@liveview``
             template(1)
 
     def template(n):
-        p("The number is", n, sep=" ", end="")
+        p("The number is", n)
         button("Increment", id="increment-it", onclick=callback(increment, n))
 
-    @action(path="increment", perm=NO_PERM_REQUIRED, target_id="content")
+    @action(path="increment/", perm=NO_PERM_REQUIRED, target_id="content")
     def increment(request, n):
         template(n + 1)
 
-Both liveviews and actions automatically collects HTML and outputs it to the page. The difference being that actions only renders the inner content of the page. We tell the action into which DOM *id* to render it's output with the ``target_id`` keyword argument.
-
+Both liveviews and actions automatically collects HTML and outputs it to the page. The difference being that actions only renders the inner content of the page. We tell the action into which DOM *id* to render it's output with the ``target_id`` keyword argument. A common pattern is to have the liveview it's actions share a common inner template.
 
 Autourls
 ========

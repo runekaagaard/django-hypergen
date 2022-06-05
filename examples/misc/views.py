@@ -350,9 +350,9 @@ def counter(request):
         template(1)
 
 def template(n):
-    p("The number is", n, sep=" ", end="")
+    p("The number is", n)
     button("Increment", id="increment-it", onclick=callback(increment, n))
 
-@action(path="increment", perm=NO_PERM_REQUIRED, target_id="content")
+@action(path="increment/", perm=NO_PERM_REQUIRED, target_id="content")
 def increment(request, n):
     template(n + 1)
