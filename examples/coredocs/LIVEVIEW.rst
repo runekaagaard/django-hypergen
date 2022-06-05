@@ -28,19 +28,25 @@ The cornerstones of Hypergen liveview are the two view decorators, ``@liveview``
             template(1)
 
     def template(n):
-        p("The number is", n)
+        p("The number is ", n)
         button("Increment", id="increment-it", onclick=callback(increment, n))
 
     @action(path="increment/", perm=NO_PERM_REQUIRED, target_id="content")
     def increment(request, n):
         template(n + 1)
 
-Both liveviews and actions automatically collects HTML and outputs it to the page. The difference being that actions only renders the inner content of the page. We tell the action into which DOM *id* to render it's output with the ``target_id`` keyword argument. A common pattern is to have the liveview it's actions share a common inner template.
+Both liveviews and actions automatically collects HTML and outputs it to the page. The difference being that actions only renders the inner content of the page. We tell the action into which DOM *id* to render it's output with the ``target_id`` keyword argument. A common pattern is to have the liveview and it's actions share a common inner template.
+
+The callback sends ``n`` to the ``increment`` action.
+
+Html elements having a callback as well as elements used in the callback must have ids. Hypergen will warn you if you forget.
+
+Liveviews, actions and callbacks can do a lot more but before we get into that, please read about autourls and base templates below. Also be sure to check out the documentation pages `Form inputs </inputs/>`__, `Client commands </commands/commands/>`_ and `Partial loading and history support </partialload/page1/>`_.
 
 Autourls
 ========
 
-First a little sidenote. Hypergens liveview features works best if you are using autourls. That means that in your apps ``urls.py`` module you should be doing::
+Hypergens liveview are smoother to work with when using autourls. That means that in your apps ``urls.py`` module you should be doing::
 
     from hypergen.hypergen import autourls
     from myapp import views
@@ -64,23 +70,10 @@ And in your ``views.py`` file your should reverse urls to other views directly o
         with html(), body():
             a("Go to view1", href=view1.reverse(user_id=42))
 
-Going live in 1...2...3
-=======================
-
-With the autourls out of the way, you need to know about three functions and you are ready to fly:
-
-1. ``@liveview``: Decorate your view with ``@liveview`` and it's a live. Liveviews generates a full HTML
-   page. 
-2. ``callback``: Binds an event on the client to a view on the server. These kind of views are called actions.
-3. ``@action``: Decorate your view with ``@action`` and it's an action. Actions can do anything, but most of the
-   time it partially updates the inner content of the html page.
-
-See the details below.
-
 Base templates
 --------------
 
-To enjoy the full joy of Hypergens liveview always start by defining a base template with `html5 boilerplate <https://github.com/h5bp/html5-boilerplate/blob/v8.0.0/dist/doc/html.md>`_ that can be shared between your views::
+To enjoy the full joy of Hypergens liveview define a base template with `html5 boilerplate <https://github.com/h5bp/html5-boilerplate/blob/v8.0.0/dist/doc/html.md>`_ and share it between your views::
 
     from contextlib import contextmanager
     from hypergen.template import *
@@ -98,7 +91,7 @@ To enjoy the full joy of Hypergens liveview always start by defining a base temp
 
     my_base_template.target_id = "content" # Matches above.
 
-You must set the ``target_id`` attribute!. Then just pass ``base_template=my_base_template`` to the ``@liveview`` and ``@action`` decorators and Hypergen loves you.
+Setting the ``target_id`` attribute on the base template function tells the action where to render it's output and makes partial loading work automatically. Just pass ``base_template=my_base_template`` to the ``@liveview`` and ``@action`` decorators and Hypergen loves you.
 
 .. raw:: html
 
@@ -130,47 +123,11 @@ You must set the ``target_id`` attribute!. Then just pass ``base_template=my_bas
     </p>
 
     </details>
-
-Actually using liveview
------------------------
-
-With your autourls setup, a fresh base template, boldly go where extremely few have ever gone and make two *liveviews*, one *action* and bind a client side event to the action by defining a *callback*::
-
-    @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
-    def page1(request):
-        h1("Hello page 1")
-        with p():
-            a("You should go to page2", href=page2.reverse())
-
-    @liveview(perm=NO_PERM_REQUIRED, base_template=my_base_template)
-    def page2(request):
-        el = input_(placeholder="Write a number", type="number", id="input")
-        button("Double it", id="button", onclick=callback(double, el))
-
-    @action(perm=NO_PERM_REQUIRED, base_template=my_base_template)
-    def double(request, n):
-        p("The double of", n, "is", n * 2, sep=" ", end=".")
-        command("alert", n * 2)
-
-You get a beautiful website that looks like `so </misc/page1/>`_. Lets try and unpack whats going on:
-
-- Get the url as a string with additional metadata that hypergen needs like ``page2.reverse()``. Args and kwargs
-  given to the reverse function will be reversed as argument and keywork arguments to the view. 
-- Inside both @liveview and @action just start writing html and hypergen will draw it on the screen.
-- The base_template argument to @action instructs hypergen where to put the html. In this case inside
-  the div element with the id ``content``. Remember ``my_base_template.target_id = "content"``.
-- The ``callback(double, el)`` bit invokes the double action with the n argument as the value of the input
-  element.
-- Html elements having a callback as well as elements used in the callback must have ids. Hypergen will warn you
-  if you forget.
-- The ``command("alert", n * 2)`` line instructs the frontend to show an alert.
-
-Check the documentation pages "Form inputs", "Client commands" and "Partial loading and history support".
   
 @liveview
 ---------
 
-@liveview outputs the html to the page, connects client side events to actions and includes hypergen.js on the page. The full signature is:
+@liveview outputs the html to the page, connects client side events to actions and includes javascript media on the page. The full signature is:
 
 *@liveview(path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None, raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None)*
     ``perm`` is required. It is configured by these keyword arguments:
@@ -206,8 +163,52 @@ Check the documentation pages "Form inputs", "Client commands" and "Partial load
 @action
 -------
 
+The @action decorator return commands to the client to execute. Most of the time partial html to update the ``target_id`` id with. However, it's capable of instructing the client to do anything you want.
+    
+*@action(path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False, autourl=True, partial=True, base_view=None, appstate=None)*
+    ``perm`` is required. It is configured by these keyword arguments:
+*target_id (None)*
+    Render the generated HTML into this DOM id.
+*base_template (None)*
+    Uses the ``target_id`` attribute from this function if present.
+*base_view* (None)*
+    Calls the base_view function after the action has executed. Will not render the base template.
+*perm (None)*
+    Accepts one or a list of permissions, all of which the user must have. See Djangos `has_perm() <https://docs.djangoproject.com/en/dev/ref/contrib/auth/#django.contrib.auth.models.User.has_perm>`__
+*any_perm (False)*
+    The user is only required to have one of the given perms. Check which he has in ``context.hypergen.matched_perms``.
+*path (None)*
+    Autourls registers the view using Djangos `path <https://docs.djangoproject.com/en/dev/ref/urls/#path>`__ function.
+*re_path (None)*
+    Autourls registers the view using Djangos `re_path <https://docs.djangoproject.com/en/dev/ref/urls/#re-path>`__ function.
+*autourl (True)*
+    Set to False to disable autourls for this view.
+*partial (True)*
+    Set to False to disable partial loading for this view.
+
 @callback
 ---------
+
+*callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_files=False, clear=False, headers=None, meta=None, when=None)*
+    ``url`` is required. It is configured by these arguments:
+*url*
+    A string or an action function to callback to.
+*debounce (0)*
+    Debounce the DOM event by this number of miliseconds.
+*confirm_ (False)*
+    Confirm event via a `confirm <https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm>`_ dialog with this confirmation message.
+*blocks (False)*
+    Block any other hypergen events until the callback has finished.
+*upload_files (False)*
+    TBD
+*clear (False)*
+    Clear the input element after the event has occured.
+*headers (None)*
+    Send these HTTP headers back to the server.
+*meta (None)*
+    Send this meta data back to the server.
+*when (None)*
+    A dotted path to a frontend predicate function that decides wether to trigger the callback.
 
 call_js
 -------
