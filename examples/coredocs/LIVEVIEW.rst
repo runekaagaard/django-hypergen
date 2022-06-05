@@ -212,7 +212,7 @@ Use the contant ``THIS`` to reference the element itself the callback is being d
 *meta (None)*
     Send this meta data back to the server.
 *when (None)*
-    A dotted path to a frontend predicate function that decides wether to trigger the callback.
+    A dotted path to a frontend predicate function that decides whether to trigger the callback.
 
 call_js
 -------
