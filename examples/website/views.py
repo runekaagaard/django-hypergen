@@ -121,7 +121,7 @@ python manage.py startapp \\
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
 def documentation(request):
-    p(mark("2022-05-28: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
+    p(mark("2022-06-06: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
         "Docs are being written and corners rounded :)", sep=" ")
 
     h2("App examples")
