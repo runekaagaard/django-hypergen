@@ -181,7 +181,7 @@ The @action decorator return commands to the client to execute. Most of the time
 
 The arguments to the action comes from the ``callback`` function and Hypergen automatically sends them to the ``action`` function after the request and the path parameters if any.
 
-Most of the time you assign a custom url to an action but you *can* use the ``path``, ``re_path`` keyword arguments to configure autourls. Hypergen will automatically assign an url to the action if ``path`` and ``re_path`` is ommitted.
+Most of the time you wouldn't assign a custom url to an action but you *can* use the ``path``, ``re_path`` keyword arguments to configure autourls. Hypergen will automatically assign an url to the action if ``path`` and ``re_path`` is ommitted.
 
 Set the required permissions with the ``perm`` and ``any_perm`` keyword arguments. Set ``perm`` to ``NO_PERM_REQUIRED`` to allow anonymous access.
 
@@ -203,6 +203,8 @@ For more advanced usages you can write to multiple locations by setting the ``ta
             with context(at="hypergen", target_id="baz"):
                 p("C") # will write to "baz"
             p("D") # will write to "bar"
+
+Use the ``base_view`` keyword argument to have that view executed after the action has completed. The base template of the base view will not be called, so the inner template will partially replace the correct content on the page.
 
 The full signature is:
     
