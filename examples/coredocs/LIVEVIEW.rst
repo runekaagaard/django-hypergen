@@ -127,7 +127,21 @@ Setting the ``target_id`` attribute on the base template function tells the acti
 @liveview
 =========
 
-@liveview outputs the html to the page, connects client side events to actions and includes javascript media on the page. The full signature is:
+@liveview outputs the html to the page, connects client side events to actions and includes javascript media on the page.
+
+Use the ``path``, ``re_path``, ``login_url``, ``redirect_field_name`` and ``raise_exception`` keyword arguments to configure autourls. Hypergen will automatically assign an url to the liveview if ``path`` and ``re_path`` is ommitted.
+
+Set the required permissions with the ``perm`` and ``any_perm`` keyword arguments. Set ``perm`` to ``NO_PERM_REQUIRED`` to allow anonymous access.
+
+Set a base template with the ``base_template`` keyword argument.
+
+You can reverse the url for a liveview by calling the ``myview.reverse(*args, **kwargs)`` function that Hypergen adds for you, e.g.::
+
+    myview.reverse(name=jack) # /myapp/myvyiew/jack/
+
+Arguments and the keyword arguments are passed to the view function.
+
+The full signature is:
 
 *@liveview(path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None, raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None)*
     ``perm`` is required. It is configured by these keyword arguments:
@@ -154,7 +168,7 @@ Setting the ``target_id`` attribute on the base template function tells the acti
     session storage. It's available at ``context.appstate``. Manipulate that variable and it's automatically stored
     at the end of each request.
 *target_id (None)*
-    Used internally, not a public variable.
+    Used internally for partial loading, not very useful in userland.
 *autourl (True)*
     Set to False to disable autourls for this view.
 *partial (True)*
@@ -163,7 +177,34 @@ Setting the ``target_id`` attribute on the base template function tells the acti
 @action
 =======
 
-The @action decorator return commands to the client to execute. Most of the time partial html to update the ``target_id`` id with. However, it's capable of instructing the client to do anything you want.
+The @action decorator return commands to the client to execute. Most of the time partial html to update the ``target_id`` id with. However, it's capable of instructing the client to do `anything you want </commands/commands/>`__.
+
+The arguments to the action comes from the ``callback`` function and Hypergen automatically sends them to the ``action`` function after the request and the path parameters if any.
+
+Most of the time you assign a custom url to an action but you *can* use the ``path``, ``re_path`` keyword arguments to configure autourls. Hypergen will automatically assign an url to the action if ``path`` and ``re_path`` is ommitted.
+
+Set the required permissions with the ``perm`` and ``any_perm`` keyword arguments. Set ``perm`` to ``NO_PERM_REQUIRED`` to allow anonymous access.
+
+Make partial loading work by setting a ``base_template`` keyword argument.
+
+You can reverse the url for a action by calling the ``myview.reverse(*args, **kwargs)`` function that Hypergen adds for you, e.g.::
+
+    myview.reverse(name=jack) # /myapp/myvyiew/jack/
+
+Arguments and the keyword arguments are passed to the action function.
+
+For more advanced usages you can write to multiple locations by setting the ``target_id`` variable in the `global context <globalcontext/globalcontext/>`_, e.g::
+
+    @action(perm=NO_PERM_REQUIRED, target_id="foo")
+    def my_action(request):
+        p("A") # will write to "foo"
+        with context(at="hypergen", target_id="bar"):
+            p("B") # will write to "bar"
+            with context(at="hypergen", target_id="baz"):
+                p("C") # will write to "baz"
+            p("D") # will write to "bar"
+
+The full signature is:
     
 *@action(path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False, autourl=True, partial=True, base_view=None, appstate=None)*
     ``perm`` is required. It is configured by these keyword arguments:

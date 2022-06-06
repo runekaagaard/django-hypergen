@@ -139,8 +139,8 @@ def documentation(request):
     h2("Documentation")
     p("Documentation explaining and showing how Hypergen works.")
     with ul():
-        li(a("The template engine", href=template.reverse()))
-        li(a("Liveview functionality", href=liveviews.reverse()))
+        li(a("Templates", href=template.reverse()))
+        li(a("Liveviews", href=liveviews.reverse()))
         li(a("Form inputs", href=inputs.reverse()))
         li(a("Client commands", href=commands.reverse()))
         li(a("Partial loading and history support", href=page1.reverse()))
