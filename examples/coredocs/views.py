@@ -1,8 +1,5 @@
 from hypergen.imports import *
-from contextlib import contextmanager
-import codecs
 
-from django.templatetags.static import static
 from website.templates2 import base_example_template
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
@@ -12,6 +9,5 @@ def template(request):
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def liveviews(request):
-    p(mark("This page is under construction."))
     with open("coredocs/LIVEVIEW.rst") as f:
         rst(f.read(), report_level=0)

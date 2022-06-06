@@ -244,6 +244,11 @@ and the signature of the corresponding action should be::
 
 Arguments can be all datatypes that can be json serialized/deserialized, and Hypergen offers special support for the following datatypes: datetime, time, deque, set, frozenset and range.
 
+Reference the value of `form input elements </inputs/>`__ with variables::
+
+    my_input = input_(id="my-input", type="number", value=10)
+    button("Submit", id="submit", onclick=callback(save_form, my_input))
+
 Use the contant ``THIS`` to reference the element itself the callback is being defined on::
 
     textarea(id="my-id", onblur=callback(my_action, THIS))
