@@ -232,9 +232,25 @@ The full signature is:
 callback
 ========
 
-Stub.
+Callback creates a binding from a client-side DOM event to a server-side @action view. Use it on event handler attributes to html elements, e.g. an ``onclick`` attribute to a ``div`` element::
 
-Use the contant ``THIS`` to reference the element itself the callback is being defined on. 
+    div("Click me!", id="my-id", onclick=callback(my_action, {"key": "value"}, [1, 2, 3], {5, 6, 7}))
+
+and the signature of the corresponding action should be::
+
+    @action(perm="myapp.myperm")
+    def my_action(request, my_list, my_list, my_set):
+        ...
+
+Arguments can be all datatypes that can be json serialized/deserialized, and Hypergen offers special support for the following datatypes: datetime, time, deque, set, frozenset and range.
+
+Use the contant ``THIS`` to reference the element itself the callback is being defined on::
+
+    textarea(id="my-id", onblur=callback(my_action, THIS))
+
+which would send the value of the textarea to the action when the onblur event occurs.
+
+The full signature is:
 
 *callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_files=False, clear=False, headers=None, meta=None, when=None)*
     ``url`` is required. It is configured by these arguments:
@@ -247,7 +263,7 @@ Use the contant ``THIS`` to reference the element itself the callback is being d
 *blocks (False)*
     Block any other hypergen events until the callback has finished.
 *upload_files (False)*
-    TBD
+    Stub
 *clear (False)*
     Clear the input element after the event has occured.
 *headers (None)*
@@ -257,10 +273,29 @@ Use the contant ``THIS`` to reference the element itself the callback is being d
 *when (None)*
     A dotted path to a frontend predicate function that decides whether to trigger the callback.
 
+
 call_js
--------
+=======
 
-*call_js(command_path, *args)*
+Use this where you would use the ``callback`` function, only it's will not call the server but execute a function on the client. The ``command_path`` should be a dotted path that is available from the ``window`` variable on the client. So for instance::
 
-Stub
-----
+        div("Hover me", onmouseover=call_js("console.log", "HI"))
+
+would ``console.log`` "HI" everytime you put the mouse over the text.
+
+*call_js(function_path, *args)*
+    It's first argument is a dotted path to the function to execute and the arguments will be used as arguments
+    to the function.
+
+command
+=======
+
+While ``call_js`` is called when a client-side event occurs, commands can be send to the server whenever you want, both inside liveviews and actions, e.g.::
+
+    command("alert", "Remember the milk!")
+
+Read more about commands on the `Client Commands </commands/commands/>`__ page.
+
+*command(function_path, *args)*
+    It's first argument is a dotted path to the function to execute and the arguments will be used as arguments
+    to the function.
