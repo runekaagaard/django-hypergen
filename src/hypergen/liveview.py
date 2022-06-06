@@ -6,6 +6,7 @@ from hypergen.hypergen import wrap2, make_string, t, check_perms, autourl_regist
 from hypergen.context import context as c
 from hypergen.hypergen import metastr
 from hypergen.template import *
+from hypergen.template import base_element
 
 import datetime, json
 from contextlib import contextmanager
@@ -17,9 +18,7 @@ from django.conf import settings
 from django.templatetags.static import static
 from hypergen.template import join_html
 
-__all__ = [
-    "command", "call_js", "callback", "THIS", "LiveviewPlugin", "dumps", "loads", "ActionPlugin", "liveview",
-    "action", "NO_PERM_REQUIRED"]
+__all__ = ["command", "call_js", "callback", "THIS", "dumps", "loads", "liveview", "action", "NO_PERM_REQUIRED"]
 
 ### constants ###
 

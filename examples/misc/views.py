@@ -1,5 +1,7 @@
 d = dict
 from hypergen.imports import *
+from hypergen.liveview import LiveviewPlugin, ActionPlugin
+from hypergen.template import TemplatePlugin
 
 from contextlib import contextmanager
 

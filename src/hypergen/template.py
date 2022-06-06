@@ -39,8 +39,8 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "TemplatePlugin", "HTML",
-    "FULL", "COMMANDS", "base_element", "OMIT", "hypergen_to_response"]
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "HTML", "FULL",
+    "COMMANDS", "OMIT", "hypergen_to_response"]
 
 ### Constants ###
 

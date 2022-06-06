@@ -3,7 +3,8 @@ from contextlib import contextmanager
 from hypergen.imports import *
 from hypergen.template import join_html
 from hypergen.context import context_middleware, ContextMiddleware, contextlist
-from hypergen.liveview import callback as cb
+from hypergen.liveview import callback as cb, LiveviewPlugin, ActionPlugin
+from hypergen.template import TemplatePlugin
 from hypergen.incubation import SessionVar, pickle_dumps
 
 import re, sys
