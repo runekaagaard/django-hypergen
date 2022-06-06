@@ -70,7 +70,7 @@ def my_view_or_callback(request):
     p("Data can move a round in different ways:")
     ol(
         li("server->client: As arguments to the callback (cb) function on e.g. onclick events on html elements."),
-        li("client->server: As arguments to @liveview_callback functions."),
+        li("client->server: As arguments to @action functions."),
         li("server->client: As arguments to client commands."),
     )
     fn(None, "Consider this template function:", show_button)
