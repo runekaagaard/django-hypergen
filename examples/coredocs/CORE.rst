@@ -11,7 +11,7 @@ Or TRULY everything::
 
     from hypergen.imports import *
 
-Hypergen()
+hypergen()
 ==========
     
 The function that makes everything works is aptly named ``hypergen()``. It constructs a global context that collects invocations of html5 elements like ``div("hi")``. If you are using the ``@liveview`` and ``@action`` decorators from liveview you might not use it directly, but it's still called under the hood.
