@@ -222,7 +222,8 @@ class base_element(ContextDecorator):
 
         def signature(a, kw):
             a, kw = deepcopy(a), deepcopy(kw)
-            return ", ".join([args(x) for x in a] + ["{}={}".format(*kwargs(k, v)) for k, v in list(kw.items())])
+            return ", ".join([args(x)
+                for x in a] + ["{}={}".format(*kwargs(k, v)) for k, v in list(kw.items()) if v is not None])
 
         return "{}({})".format(self.__class__.__name__, signature(self.children, self.attrs))
 
