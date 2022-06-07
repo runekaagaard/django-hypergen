@@ -193,7 +193,7 @@ You can reverse the url for a action by calling the ``myview.reverse(*args, **kw
 
 Arguments and the keyword arguments are passed to the action function.
 
-For more advanced usages you can write to multiple locations by setting the ``target_id`` variable in the `global context <globalcontext/globalcontext/>`_, e.g::
+For more advanced usages you can write to multiple locations by setting the ``target_id`` variable in the `global context </globalcontext/globalcontext/>`_, e.g::
 
     @action(perm=NO_PERM_REQUIRED, target_id="foo")
     def my_action(request):
