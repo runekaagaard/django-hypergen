@@ -93,6 +93,7 @@ class LiveviewPlugin(LiveviewPluginBase):
 
     def process_html(self, html):
         def template():
+            raw("<head>")  # We are replacing existing <head>
             raw("<!--hypergen_liveview_media-->")
             script(src=static("hypergen/v2/hypergen.min.js"))
             script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data')
@@ -100,17 +101,16 @@ class LiveviewPlugin(LiveviewPluginBase):
                 hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
                     'hypergen-apply-commands-data').textContent, hypergen.reviver)))
             """)
-            raw("</body>")  # We are replacing existing </body>
 
-        assert "</body>" in html, "liveview needs a body() tag to work, but got: " + html
-        assert html.count("</body>") == 1, "Ooops, multiple </body> tags found. There can be only one!"
+        assert "<head>" in html, "liveview needs a head() tag to work, but got: " + html
+        assert html.count("<head>") == 1, "Ooops, multiple <head> tags found. There can be only one!"
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
         # Partial loading.
         path = c.request.get_full_path()
         command("history.replaceState", d(callback_url=path), "", path)
 
-        return html.replace("</body>", hypergen(template))
+        return html.replace("<head>", hypergen(template))
 
 class ActionPlugin(LiveviewPluginBase):
     def __init__(self, /, *, target_id=None, base_view=None, morph=True):
