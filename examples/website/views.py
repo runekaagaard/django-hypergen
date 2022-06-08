@@ -121,8 +121,13 @@ python manage.py startapp \\
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
 def documentation(request):
-    p(mark("2022-06-06: UNDER CONSTRUCTION"), "- we are releasing a version 1.0 very soon.",
-        "Docs are being written and corners rounded :)", sep=" ")
+    h2("News")
+    ul(
+        li(
+        b("2022-06-08:"),
+        "Pushed version 0.9.9 to pypi. Everything is looking good after a major refactoring. The next version will",
+        "be a release candidate for 1.0.0 which will be the first officially stable version of Hypergen.", sep=" "),
+        li(b("2022-06-07:"), "The first version of the documentation is complete.", sep=" "))
 
     h2("App examples")
     p("These are examples of writing a Django app with Hypergen. ", "Be sure to read the sources.")
