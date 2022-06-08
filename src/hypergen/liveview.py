@@ -79,7 +79,8 @@ class LiveviewPluginBase:
             if type(href) is metastr:
                 base_template1 = href.meta.get("base_template", None)
                 if base_template1 is not None:
-                    if base_template1 is c.hypergen.get("partial_base_template", None):
+                    base_template2 = c.hypergen.get("partial_base_template", None)
+                    if base_template2 is not None and base_template1.__code__ == base_template2.__code__:
                         attrs["onclick"] = "hypergen.partialLoad(event, '{}', true)".format(href)
 
         # Content of base_element.__init__ method runs here
@@ -93,7 +94,6 @@ class LiveviewPlugin(LiveviewPluginBase):
 
     def process_html(self, html):
         def template():
-            raw("<head>")  # We are replacing existing <head>
             raw("<!--hypergen_liveview_media-->")
             script(src=static("hypergen/v2/hypergen.min.js"))
             script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data')
@@ -102,15 +102,21 @@ class LiveviewPlugin(LiveviewPluginBase):
                     'hypergen-apply-commands-data').textContent, hypergen.reviver)))
             """)
 
-        assert "<head>" in html, "liveview needs a head() tag to work, but got: " + html
-        assert html.count("<head>") == 1, "Ooops, multiple <head> tags found. There can be only one!"
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
 
         # Partial loading.
         path = c.request.get_full_path()
         command("history.replaceState", d(callback_url=path), "", path)
 
-        return html.replace("<head>", hypergen(template))
+        # Inject media.
+        if "<head>" in html:
+            assert html.count("<head>") == 1, "Ooops, multiple <head> tags found. There can be only one!"
+            return html.replace("<head>", "<head>" + hypergen(template))
+        elif "<html>" in html:
+            assert html.count("<html>") == 1, "Ooops, multiple <html> tags found. There can be only one!"
+            return html.replace("<html>", "<html><head>" + hypergen(template) + "</head>")
+        else:
+            return hypergen(template) + html
 
 class ActionPlugin(LiveviewPluginBase):
     def __init__(self, /, *, target_id=None, base_view=None, morph=True):

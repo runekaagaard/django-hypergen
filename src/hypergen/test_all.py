@@ -423,6 +423,13 @@ def template2(n):
 HTML = """
 <html>
     <head>
+        <!--hypergen_liveview_media-->
+        <script src="hypergen/v2/hypergen.min.js"></script>
+        <script type="application/json" id="hypergen-apply-commands-data">{"_":["deque",[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]]}</script>
+        <script>
+                hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
+                    'hypergen-apply-commands-data').textContent, hypergen.reviver)))
+            </script>
         <title>
             2
         </title>
@@ -431,13 +438,6 @@ HTML = """
         <h1>
             4
         </h1>
-        <!--hypergen_liveview_media-->
-        <script src="hypergen/v2/hypergen.min.js"></script>
-        <script type="application/json" id="hypergen-apply-commands-data">{"_":["deque",[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]]}</script>
-        <script>
-                hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
-                    'hypergen-apply-commands-data').textContent, hypergen.reviver)))
-            </script>
     </body>
 </html>
 """.strip()
@@ -467,3 +467,65 @@ def multitarget_template():
         p("foo1")
     with context(at="hypergen", target_id="bar"):
         p("bar1")
+
+@mock_middleware()
+def test_inject_html():
+    def template1():
+        doctype()
+        with html():
+            a("b")
+
+    def template2():
+        a("b")
+
+    x = hypergen(template1, settings=d(liveview=True, indent=True)).strip()
+    assert x == X
+
+    y = hypergen(template2, settings=d(liveview=True, indent=True)).strip()
+    assert y == Y
+
+X = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--hypergen_liveview_media-->
+        <script src="hypergen/v2/hypergen.min.js"></script>
+        <script type="application/json" id="hypergen-apply-commands-data">{"_":["deque",[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]]}</script>
+        <script>
+                hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
+                    'hypergen-apply-commands-data').textContent, hypergen.reviver)))
+            </script>
+    </head>
+    <a>
+        b
+    </a>
+</html>
+""".strip()
+
+Y = """<!--hypergen_liveview_media-->
+<script src="hypergen/v2/hypergen.min.js"></script>
+<script type="application/json" id="hypergen-apply-commands-data">{"_":["deque",[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]]}</script>
+<script>
+                hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
+                    'hypergen-apply-commands-data').textContent, hypergen.reviver)))
+            </script>
+<a>
+    b
+</a>
+""".strip()
+
+def foo():
+    def bar():
+        pass
+
+    return bar
+
+def test_function_equality():
+    a, b = foo(), foo()
+    assert a is not b
+
+    assert a.__code__ != foo.__code__
+    assert a.__code__ is not foo.__code__
+
+    assert a.__code__ == b.__code__
+    assert a.__code__ is b.__code__
