@@ -13,7 +13,6 @@ def base_template(content_template, n):
     doctype()
     with html():
         with head():
-            script(src=static("hypergen/hypergen.min.js"))
             base_head()
         with body():
             with div(id_="content"):
