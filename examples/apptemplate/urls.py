@@ -3,6 +3,6 @@ from apptemplate import views
 
 app_name = 'apptemplate'
 
-# Automatically creates urlpatterns for all functions in views.py decorated with @hypergen_view or
-# @hypergen_callback.
+# Automatically creates urlpatterns for all functions in views.py decorated with @liveview or
+# @action.
 urlpatterns = autourls(views, namespace="apptemplate")
