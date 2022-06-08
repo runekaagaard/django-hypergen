@@ -73,6 +73,9 @@ def wrap2(f):
 
     return _
 
+def compare_funcs(a, b):
+    return all(getattr(a, k) == getattr(b, k) for k in ("__doc__", "__name__", "__module__", "__qualname__"))
+
 # Permissions
 
 class __PERMS_OK:

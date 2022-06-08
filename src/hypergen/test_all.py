@@ -6,10 +6,13 @@ from hypergen.context import context_middleware, ContextMiddleware, contextlist
 from hypergen.liveview import callback as cb, LiveviewPlugin, ActionPlugin
 from hypergen.template import TemplatePlugin
 from hypergen.incubation import SessionVar, pickle_dumps
+from hypergen.hypergen import compare_funcs
 
 import re, sys
 from datetime import date, datetime
 from collections import deque
+
+sys.path.append("../../examples")
 
 import pytest
 from pyrsistent import pmap
@@ -520,12 +523,16 @@ def foo():
 
     return bar
 
+def foz():
+    def bar():
+        pass
+
+    return bar
+
 def test_function_equality():
-    a, b = foo(), foo()
-    assert a is not b
-
-    assert a.__code__ != foo.__code__
-    assert a.__code__ is not foo.__code__
-
-    assert a.__code__ == b.__code__
-    assert a.__code__ is b.__code__
+    from website.templates2 import base_example_template, base_template
+    a, b, c = foo(), foo(), foz()
+    assert not compare_funcs(base_template, base_example_template)
+    assert compare_funcs(a, b)
+    assert not compare_funcs(a, foo)
+    assert not compare_funcs(a, c)

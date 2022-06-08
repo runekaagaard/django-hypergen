@@ -36,10 +36,10 @@ def begin(request):
         with head():
             base_head()
         with body():
-            # This id matches the "target_id" argument to the "increment" callback.
+            # This id matches the "target_id" argument to the "increment" action.
             with div(id_="body"):
                 # Render the dynamic content of the page. This happens in it's own function so that functionality
-                # can be shared between the view and the callback.
+                # can be shared between the view and the action.
                 template(1)
 
             show_sources(__file__)
@@ -50,7 +50,7 @@ def template(n):
     p(a("Back to documentation", href=reverse("website:documentation")))
 
     h1("Getting Started")
-    i("- A very basic step by step getting started tutorial")
+    i("- A very basic, step by step getting started tutorial")
     p("The purpose of this tutorial is getting you up and running with hypergen, let you code you first liveview, and give you an idea of how Django Hypergen can contribute to your workflow"
      )
     h2("Step 0: Getting ready for hypergen")
@@ -96,7 +96,7 @@ def template(n):
         """))
 
     h2("Step 1: Make the app")
-    p("Lets start a new app, so we can give hypergen a testrun")
+    p("Lets start a new app, so we can give hypergen a test run")
     pre(code("""python manage.py startapp myapp"""))
     p("This will create a new folder called myapp")
     p("Add the app to INSTALLED_APPS in myproject/settings.py")
@@ -187,11 +187,11 @@ def template(n):
         """))
     p("No need to edit urls.py. Your new view is instantly available and located at localhost:8000/myapp/step2")
     p("How come It looks a lot different now, you might ask. "
-        "That's because we took the liberty of adding the water.css stylesheet to this page, using the link() function."
-        "In general: All html tags (<html><div><span><audio> etc.) has an equivalent hypergen function, which was imported from hypergen.template in the begining of views.py in "
+        "That's because we took the liberty of adding the water.css stylesheet to this page, using the link() function. "
+        "In general: All html tags (<html><div><span><audio> etc.) has an equivalent hypergen function, which was imported from hypergen.template in the beginning of views.py in "
         " this line:")
     pre(code("from hypergen.imports import *"))
-    p("Lets call these 'tag-rendering' python functions for base components. A base component takes args and kwargs. Args beeing either text or other components,"
+    p("Hypergen calls these 'tag-rendering' python functions for html elements. An element takes args and kwargs. Args beeing either text or other elements,"
         " which will be nested inside the corresponding element when rendered. Kwargs will become the named attributes of the element"
      )
     p("Here's is an example:")
@@ -210,13 +210,12 @@ def template(n):
              The link has the id <i>im-one-of-a-kind</i> and a class attribute named <i>clickable</i>
         </section>
         """))
-    p("As you can see we can define html elements with python functions; their children with other python functions as arguments; and their attributes with kwargs"
+    p("As you can see we can define html elements with python functions; their children with other python functions as arguments; and their attributes with kwargs."
      )
-    p('You might have noticed that the class attribute of the a tag, is defined as class_="clickable" instead of just class. '
-     )
-    p("This is because class is a reserved keyword in django, and therefore cannot be used to name a kwarg")
-    p('Whenever you want to use a reserved keyword for an attribute name you can always just add _ to the end, hypergen will know what you mean'
-     )
+    p(
+        'You might have noticed that the class attribute of the a tag, is defined as class_="clickable" instead of just class. ',
+        "This is because class is a reserved keyword in django, and therefore cannot be used to name a kwarg. "),
+    'Whenever you want to use a reserved keyword for an attribute name you can always just add _ to the end, hypergen will know what you mean'
 
     h2("Step 3: Behold the ", i("with"), " statement")
     p("Another way you can use base component functions is as context managers. Try adding the following to your views.py"
@@ -302,10 +301,10 @@ def template(n):
     p("""As you might have noticed our code gets a lot cleaner; now is the time for some user action.""")
 
     h2("Step 6: Introducing hypergen actions")
-    p("""A hypergen action is a function view that that can be triggered from the client, And usually changes something in the view"""
-     )
+    p(
+        "A hypergen action is a function view that that can be triggered from the client, and usually changes something in the view.",
+        "Now, create a new step6 view and template that takes an argument, num_clicks, which is defaulted to 0")
 
-    p("Now, create a new step6 view and template that takes an argument, num_clicks, which is defaulted to 0")
     pre(
         code("""
         
@@ -339,7 +338,9 @@ def template(n):
      )
 
     h2("Conclusion")
-    p("This is the end of this very basic step by step getting started tutorial.")
-    p("If you feel like it, you now have the basic setup for adding hypergen views, and experimenting with hypergen callbacks."
+    p("This is the end of this very basic step by step getting started tutorial. You now have the basic knowledge for building hypergen liveviews, and using callbacks and actions 💪."
      )
-    p("Please browse the examples for more ways to build your web apps using django and hypergen.")
+    p("Please check out the", a("examples and documentation", href=reverse("website:documentation")),
+        "for more ways to build your web apps using django and hypergen.", "Specifically read up on",
+        a("Templates", href=reverse("coredocs:template")), "and", a("Liveviews",
+        href=reverse("coredocs:liveviews")), sep=" ", end=".")

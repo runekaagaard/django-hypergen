@@ -80,7 +80,7 @@ class LiveviewPluginBase:
                 base_template1 = href.meta.get("base_template", None)
                 if base_template1 is not None:
                     base_template2 = c.hypergen.get("partial_base_template", None)
-                    if base_template2 is not None and base_template1.__code__ == base_template2.__code__:
+                    if base_template2 is not None and compare_funcs(base_template1, base_template2):
                         attrs["onclick"] = "hypergen.partialLoad(event, '{}', true)".format(href)
 
         # Content of base_element.__init__ method runs here

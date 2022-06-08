@@ -76,7 +76,7 @@ def quickstart_template(n=0, app_name="myapp"):
     if n == 0:
         with div(id_="startproject", class_="inner"):
             pre(code(PROJECT), class_="terminal nohighlight")
-            p("Enjoy your new hypergen app at ", a("http://127.0.0.1:8000/", href="http://127.0.0.1:8000/"), " 🚀")
+            p("Enjoy your new hypergen project at ", a("http://127.0.0.1:8000/", href="http://127.0.0.1:8000/"), " 🚀")
 
     # App template
     if n == 1:

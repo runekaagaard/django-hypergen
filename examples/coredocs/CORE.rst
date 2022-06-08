@@ -100,7 +100,7 @@ Clashes with python builtins and keywords are mitigated by postfixing a single u
 
     input_(type_="number", id_="my-input", class_="my-class", value=92)
 
-If you prefer, ``type``, ``id`` and ``class`` can of course also be used as keyword arguments.
+If you prefer, keyword arguments that matches builtins like ``type``, ``id`` and can of course be used without the postfix.
 
 Children
 ~~~~~~~~
@@ -194,7 +194,7 @@ Wrap the specific stuff with common functionality by using context managers::
 
     @contextmanager
     def form_field(label_name):
-        with div(class="form-field"):
+        with div(class_="form-field"):
             label(label_name)
             yield
 
@@ -212,7 +212,7 @@ hypergen element, eg. ``div()``, implementation details forces you to decorate i
 
     @component
     def my_popup(title, text):
-        with div(class="popup"):
+        with div(class_="popup"):
             h1(title)
             p(text)
 
@@ -223,9 +223,9 @@ Helpers
 
 Some additional functions are available in the template module:
 
-*write(html)*
+*write(string)*
     Writes the given html. Entities are escaped.
-*raw(html)*
+*raw(string)*
     Writes the given html. **Entities are NOT escaped**.
 
 *rst(string)*
