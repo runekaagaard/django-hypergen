@@ -112,7 +112,7 @@ We are using Hypergen extensively at work so it's a big focus of ours.
 Why not Hypergen?
 =================
 
-- Every frontend event calls to the server
+- Every frontend event calls the server. Not good for e.g. games.
 - Python templating might not be for everyone. We found it works great in practice.
 - No realtime capabilities yet, so the server can only push data back when it receives a request
 
