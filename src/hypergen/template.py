@@ -72,7 +72,11 @@ def hypergen(func, *args, **kwargs):
     if settings.get("action", False):
         from hypergen.liveview import ActionPlugin
         plugins.append(
-            ActionPlugin(target_id=settings.get("target_id", None), base_view=settings.get("base_view", None)))
+            ActionPlugin(
+            target_id=settings.get("target_id", None),
+            base_view=settings.get("base_view", None),
+            prepend_commands=settings.get("prepend_commands", True),
+            ))
     if settings.get("appstate", False):
         namespace = settings.get("namespace", None)
         assert namespace, "When appstate is set, namespace must be too."

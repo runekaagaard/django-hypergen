@@ -119,10 +119,11 @@ class LiveviewPlugin(LiveviewPluginBase):
             return hypergen(template) + html
 
 class ActionPlugin(LiveviewPluginBase):
-    def __init__(self, /, *, target_id=None, base_view=None, morph=True):
+    def __init__(self, /, *, target_id=None, base_view=None, morph=True, prepend_commands=True):
         self.target_id = target_id
         self.base_view = base_view
         self.morph = morph
+        self.prepend_commands = prepend_commands
 
     @contextmanager
     def context(self):
@@ -144,7 +145,10 @@ class ActionPlugin(LiveviewPluginBase):
                 if into:
                     commands.append(["hypergen.morph", target_id, join_html(into)])
 
+        if self.prepend_commands:
             c.hypergen.commands.extendleft(reversed(commands))
+        else:
+            c.hypergen.commands.extend(commands)
 
 ### Commands happening on the frontend  ###
 
@@ -236,7 +240,7 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
                 commands = hypergen(
                     func, request, *args, **kwargs, settings=d(action=True, returns=COMMANDS, target_id=target_id,
-                    appstate=appstate, namespace=_.reverse.hypergen_namespace))
+                    appstate=appstate, namespace=_.reverse.hypergen_namespace, prepend_commands=False))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
