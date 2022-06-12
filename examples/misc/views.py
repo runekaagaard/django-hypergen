@@ -358,3 +358,25 @@ def template(n):
 @action(path="increment/", perm=NO_PERM_REQUIRED, target_id="content")
 def increment(request, n):
     template(n + 1)
+
+@liveview(perm=NO_PERM_REQUIRED)
+def commands_ordering(request):
+    with html(), body():
+        script("""
+            function yo() {
+                try {
+                    console.log("yo:", hypergen.clientState.hypergen.eventHandlerCallbacks)
+                } catch(error) {
+                    console.log("yo: NOT FOUND")
+                }
+            }
+        """)
+        with div(id="yo"):
+            p("HEJ", onclick=callback(action_ordering), id="ofof")
+
+    command("yo")
+
+@action(perm=NO_PERM_REQUIRED, target_id="yo")
+def action_ordering(request):
+    p("HEJ", onclick=callback(action_ordering), id="ofof")
+    command("yo")

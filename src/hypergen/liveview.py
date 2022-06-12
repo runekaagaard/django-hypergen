@@ -89,7 +89,7 @@ class LiveviewPluginBase:
 class LiveviewPlugin(LiveviewPluginBase):
     @contextmanager
     def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=deque()):
+        with c(at="hypergen", event_handler_callbacks={}, commands=deque()):
             yield
 
     def process_html(self, html):
@@ -127,11 +127,10 @@ class ActionPlugin(LiveviewPluginBase):
 
     @contextmanager
     def context(self):
-        with c(at="hypergen", event_handler_callbacks={}, event_handler_callback_strs=[], commands=deque(),
-            target_id=self.target_id):
+        with c(at="hypergen", event_handler_callbacks={}, commands=deque(), target_id=self.target_id):
             yield
 
-    def func_after(self):
+    def template_after(self):
         if self.base_view:
             referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
             # TODO: Check for HttpResponseredirect here?
@@ -149,6 +148,19 @@ class ActionPlugin(LiveviewPluginBase):
             c.hypergen.commands.extendleft(reversed(commands))
         else:
             c.hypergen.commands.extend(commands)
+
+class PartialPlugin(LiveviewPluginBase):
+    def __init__(self, /, *, target_id=None):
+        self.target_id = target_id
+
+    @contextmanager
+    def context(self):
+        with c(at="hypergen", event_handler_callbacks={}, commands=deque(), target_id=self.target_id):
+            yield
+
+    def template_before(self):
+        command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks)
+        command("hypergen.morph", self.target_id, join_html(c.hypergen.into))
 
 ### Commands happening on the frontend  ###
 
@@ -285,12 +297,12 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
             full = hypergen(
                 func, request, *action_args, **kwargs, settings=d(action=True, returns=FULL, target_id=target_id,
                 appstate=appstate, namespace=_.reverse.hypergen_namespace, base_view=base_view))
-            if isinstance(full["func_result"], HttpResponseRedirect):
+            if isinstance(full["template_result"], HttpResponseRedirect):
                 # Allow to return a redirect response directly from an action.
-                return HttpResponse(dumps([["hypergen.redirect", full["func_result"]["Location"]]]), status=302,
+                return HttpResponse(dumps([["hypergen.redirect", full["template_result"]["Location"]]]), status=302,
                     content_type='application/json')
-            elif isinstance(full["func_result"], HttpResponse):
-                return full["func_result"]
+            elif isinstance(full["template_result"], HttpResponse):
+                return full["template_result"]
             else:
                 return HttpResponse(dumps(full["context"]["hypergen"]["commands"]), status=200,
                     content_type='application/json')

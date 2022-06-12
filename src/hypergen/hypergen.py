@@ -1,5 +1,8 @@
 d = dict
 
+from hypergen.context import context
+
+from contextlib import ExitStack, contextmanager
 from django.urls.base import reverse
 
 from html import escape
@@ -171,3 +174,25 @@ def autourls(module, namespace):
         patterns.append(path_func(path_, func, name=func.__name__))
 
     return patterns
+
+### Plugins ###
+
+@contextmanager
+def plugins_exit_stack(method_name):
+    with ExitStack() as stack:
+        [stack.enter_context(plugin.context()) for plugin in context.hypergen.plugins if hasattr(plugin, method_name)]
+        yield
+
+def plugins_method_call(method_name):
+    for plugin in context.hypergen.plugins:
+        method = getattr(plugin, method_name, None)
+        if method:
+            method()
+
+def plugins_pipeline(method_name, data):
+    for plugin in context.hypergen.plugins:
+        method = getattr(plugin, method_name, None)
+        if method:
+            data = method(data)
+
+    return data
