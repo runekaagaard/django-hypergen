@@ -175,12 +175,14 @@ def command(javascript_func_path, *args, **kwargs):
     else:
         c.hypergen.commands.append(item)
 
-def callback(url, *cb_args, debounce=0, confirm_=False, blocks=False, upload_files=False, clear=False, headers=None,
-    meta=None, when=None):
+def callback(url, *cb_args, debounce=0, confirm_=False, confirm=False, blocks=False, upload_files=False, clear=False,
+    headers=None, meta=None, when=None):
     if meta is None:
         meta = {}
     if headers is None:
         headers = {}
+    if confirm is not False:
+        confirm_ = confirm
 
     assert getattr(url, "is_hypergen_liveview",
         False) is not True, "You can't callback to a @liveview, only an @action."
