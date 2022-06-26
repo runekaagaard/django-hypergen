@@ -145,3 +145,5 @@ src/hypergen/ultragen.html
 
 node_modules
 *.swp
+*.save
+.vscode
