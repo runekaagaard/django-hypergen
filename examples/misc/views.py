@@ -1,4 +1,5 @@
 d = dict
+import json
 from hypergen.imports import *
 from hypergen.liveview import LiveviewPlugin, ActionPlugin
 from hypergen.template import TemplatePlugin
@@ -380,3 +381,60 @@ def commands_ordering(request):
 def action_ordering(request):
     p("HEJ", onclick=callback(action_ordering), id="ofof")
     command("yo")
+
+@liveview(perm=NO_PERM_REQUIRED)
+def test_liveform(request):
+    with div(id="content"):
+        test_liveform_template({})
+
+@action(perm=NO_PERM_REQUIRED, target_id="content")
+def test_liveform_oninput(request, state):
+    test_liveform_template(state)
+
+@action(perm=NO_PERM_REQUIRED, target_id="content")
+def test_liveform_onsubmit(request, button_name, state):
+    test_liveform_template(state, state)
+
+def test_liveform_template(state, submitted_data=None):
+    from hypergen.incubation import liveform
+    style("""
+        label, button {
+            font-weight: bold;
+            display: block;
+        }
+        .error {
+            color: red;
+        }
+    """)
+    h1("A liveform")
+
+    with liveform(test_liveform_oninput, test_liveform_onsubmit):
+        label("Foo")
+        textarea(state.get("x1", "Write it"), name="x1", id="x1")
+        if state and not state.get("x1", None):
+            p("Foo is required", class_="error")
+
+        label("Bar")
+        input_(name="x2", id="x2", value=state.get("x2", ""))
+        if state and not state.get("x2", None):
+            p("Bar is required", class_="error")
+
+        label("Baz")
+        select(option("-----",
+            value=0), [option(x, value=x, selected=(x == state.get("x3", False))) for x in range(1, 10)], name="x3",
+            id="x3", coerce_to=int)
+        if state and not state.get("x3", None):
+            p("Baz is required", class_="error")
+
+        button("Click me", name="my_but", id="but", value="clicked")
+
+    if submitted_data:
+        h1("Submitted data")
+        pre(code(json.dumps(submitted_data, indent=4)))
+    else:
+        h1("Oninput data")
+        pre(code(json.dumps(state, indent=4)))
+
+    h1("Not live")
+    label("Does nothing")
+    input_(name="x4", id="x4")
