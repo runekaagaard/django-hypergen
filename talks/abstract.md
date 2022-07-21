@@ -25,5 +25,5 @@ So are you looking for a break from Javascript, or if you’re just curious abou
     - Binding to DOM events
     - Actions
     - Partial DOM updates and other client commands
-    - Forms
+    - Notifications
     - Tips and tricks
