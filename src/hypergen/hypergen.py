@@ -183,11 +183,11 @@ def plugins_exit_stack(method_name):
         [stack.enter_context(plugin.context()) for plugin in context.hypergen.plugins if hasattr(plugin, method_name)]
         yield
 
-def plugins_method_call(method_name):
+def plugins_method_call(method_name, *args, **kwargs):
     for plugin in context.hypergen.plugins:
         method = getattr(plugin, method_name, None)
         if method:
-            method()
+            method(*args, **kwargs)
 
 def plugins_pipeline(method_name, data):
     for plugin in context.hypergen.plugins:

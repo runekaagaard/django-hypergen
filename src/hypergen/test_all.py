@@ -12,7 +12,7 @@ import re, sys
 from datetime import date, datetime
 from collections import deque
 
-sys.path.append("examples")
+sys.path.append("../../examples")
 
 import pytest
 from pyrsistent import pmap

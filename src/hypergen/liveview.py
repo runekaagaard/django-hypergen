@@ -130,7 +130,7 @@ class ActionPlugin(LiveviewPluginBase):
         with c(at="hypergen", event_handler_callbacks={}, commands=deque(), target_id=self.target_id):
             yield
 
-    def template_after(self):
+    def template_after(self, /, **kwargs):
         if self.base_view:
             referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
             # TODO: Check for HttpResponseredirect here?
@@ -230,7 +230,8 @@ def call_js(command_path, *cb_args):
 
 @wrap2
 def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
-    raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None):
+    raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None,
+    user_plugins=None):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
@@ -241,6 +242,9 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
     partial_base_template = base_template if partial else None
 
     original_func = func
+
+    if user_plugins is None:
+        user_plugins = []
 
     @wraps(func)
     def _(request, *args, **kwargs):
@@ -262,7 +266,8 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
                 html = hypergen(
                     func, request, *args, **kwargs,
                     settings=d(liveview=True, base_template=base_template, appstate=appstate,
-                    namespace=_.reverse.hypergen_namespace if getattr(_, "reverse", None) else None))
+                    namespace=_.reverse.hypergen_namespace if getattr(_, "reverse", None) else None,
+                    user_plugins=user_plugins))
                 return HttpResponse(html)
 
     if autourl:
@@ -276,7 +281,7 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
 
 @wrap2
 def action(func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
-    autourl=True, partial=True, base_view=None, appstate=None):
+    autourl=True, partial=True, base_view=None, appstate=None, user_plugins=[]):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
@@ -285,6 +290,8 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
         raise Exception("{}: Partial loading requires a target_id. Either as a kwarg or"
             " an attribute on the base_template function.".format(func))
     partial_base_template = base_template if partial else None
+    if user_plugins is None:
+        user_plugins = []
 
     @wraps(func)
     def _(request, *args, **kwargs):
@@ -297,11 +304,15 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
 
         with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
             full = hypergen(
-                func, request, *action_args, **kwargs, settings=d(action=True, returns=FULL, target_id=target_id,
-                appstate=appstate, namespace=_.reverse.hypergen_namespace, base_view=base_view))
+                func, request, *action_args, **kwargs,
+                settings=d(action=True, returns=FULL, target_id=target_id, appstate=appstate,
+                namespace=_.reverse.hypergen_namespace, base_view=base_view, user_plugins=user_plugins))
             if isinstance(full["template_result"], HttpResponseRedirect):
                 # Allow to return a redirect response directly from an action.
-                return HttpResponse(dumps([["hypergen.redirect", full["template_result"]["Location"]]]), status=302,
+                return HttpResponse(
+                    dumps(
+                    list(full["context"]["hypergen"]["commands"]) +
+                    [["hypergen.redirect", full["template_result"]["Location"]]]), status=302,
                     content_type='application/json')
             elif isinstance(full["template_result"], HttpResponse):
                 return full["template_result"]

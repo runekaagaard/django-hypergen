@@ -39,7 +39,7 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "HTML", "FULL",
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "hprint", "HTML", "FULL",
     "COMMANDS", "OMIT", "hypergen_to_response"]
 
 ### Constants ###
@@ -88,11 +88,12 @@ def hypergen(template, *args, **kwargs):
     indent = settings.get("indent", False)
     base_template = settings.get("base_template", None)
 
+    plugins.extend(settings.get("user_plugins", []))
     with c(at="hypergen", plugins=plugins, base_template=base_template):
         with plugins_exit_stack("context"):
             plugins_method_call("template_before")
             template_result = (base_template()(template) if base_template else template)(*args, **kwargs)
-            plugins_method_call("template_after")
+            plugins_method_call("template_after", template_result=template_result)
 
             html = join_html(c.hypergen.into) if "into" in c.hypergen else ""
             html = plugins_pipeline("process_html", html)
@@ -140,6 +141,35 @@ def rst(restructured_text, report_level=docutils.utils.Reporter.SEVERE_LEVEL + 1
     raw(
         docutils.core.publish_parts(restructured_text, writer_name="html",
         settings_overrides={'_disable_config': True, 'report_level': report_level})["html_body"])
+
+def hprint(*args, **kwargs):
+    # TODO: Make custom support for:
+    #           - Queryset
+    #           - values and values_list
+    #           - query (sql)
+    #           - grouper
+    from pprint import pformat
+    d = dict
+
+    @component
+    def typeinfo(x):
+        span(" (", x.__class__.__module__, ".", type(x).__name__, ")", style=d(color="darkgrey"))
+
+    def fmt(x):
+        pre(code(pformat(x, width=120)))
+
+    with div(style=d(padding="8px", margin="4px 0 0 0", background="#ffc", color="black", font_family="sans-serif")):
+        if len(args) == 1 and not kwargs:
+            div(typeinfo(args[0]))
+            fmt(args[0])
+        else:
+            for i, arg in enumerate(args, 1):
+                div(b("arg", i, sep=" "), typeinfo(arg))
+                fmt(arg)
+
+        for k, v in kwargs.items():
+            div(b(k), typeinfo(v))
+            fmt(v)
 
 ### Base dom element ###
 DELETED = ""
@@ -369,13 +399,21 @@ class input_(base_element_void):
         else:
             return super().attribute(k, v)
 
-### Special tags ###
+class a(base_element):
+    def __init__(self, *children, **attrs):
+        class_active = attrs.pop("class_active", None)
+        href = attrs.get("href", None)
+        if class_active and href:
+            if context.request.resolver_match.route.startswith(href.strip("/")):
+                attrs["class_"] = (attrs.pop("class_", "") + " " + class_active).strip()
+
+        super(a, self).__init__(*children, **attrs)
+
 def doctype(type_="html"):
     raw("<!DOCTYPE ", type_, ">")
 
 ### All the tags ###
 # yapf: disable
-class a(base_element): pass
 class abbr(base_element): pass
 class acronym(base_element): pass
 class address(base_element): pass
