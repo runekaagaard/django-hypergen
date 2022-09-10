@@ -79,6 +79,15 @@ def wrap2(f):
 def compare_funcs(a, b):
     return all(getattr(a, k) == getattr(b, k) for k in ("__doc__", "__name__", "__module__", "__qualname__"))
 
+def is_collection(x):
+    if type(x) in [str, metastr]:
+        return False
+    try:
+        iter(x)
+        return True
+    except TypeError:
+        return False
+
 # Permissions
 
 class __PERMS_OK:

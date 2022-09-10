@@ -46,6 +46,26 @@ __all__ = [
 
 OMIT = "__OMIT__"
 
+### Utility functions ###
+
+def add_class(a, b):
+    assert type(b) is str, "b must be string for now. PR?"
+    if a in ("", OMIT, None):
+        return b
+    elif type(a) is str:
+        return a.strip() + " " + b
+    elif is_collection(a):
+        if hasattr(a, "append"):
+            a.append(b)
+            return a
+        elif hasattr(a, "add"):
+            a.add(b)
+            return a
+        else:
+            raise Exception("This class collection has neither an append() or add() method. Help!")
+    else:
+        raise Exception("I don't know how to add these variables together in the context of classes.")
+
 ### template itself is a plugin to hypergen ###
 
 class TemplatePlugin:
@@ -156,7 +176,7 @@ def hprint(*args, **kwargs):
         span(" (", x.__class__.__module__, ".", type(x).__name__, ")", style=d(color="darkgrey"))
 
     def fmt(x):
-        pre(code(pformat(x, width=120)))
+        pre(code(pformat(x, width=120)), style=d())
 
     with div(style=d(padding="8px", margin="4px 0 0 0", background="#ffc", color="black", font_family="sans-serif")):
         if len(args) == 1 and not kwargs:
@@ -401,11 +421,11 @@ class input_(base_element_void):
 
 class a(base_element):
     def __init__(self, *children, **attrs):
-        class_active = attrs.pop("class_active", None)
-        href = attrs.get("href", None)
+        class_active, href = attrs.pop("class_active", None), attrs.get("href", None)
         if class_active and href:
-            if context.request.resolver_match.route.startswith(href.strip("/")):
-                attrs["class_"] = (attrs.pop("class_", "") + " " + class_active).strip()
+            from hypergen.liveview import url_is_active
+            if url_is_active(href):
+                attrs["class"] = add_class(attrs.get("class"), class_active)
 
         super(a, self).__init__(*children, **attrs)
 

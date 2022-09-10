@@ -46,6 +46,22 @@ JS_COERCE_FUNCS = dict(
 
 JS_COERCE_FUNCS["datetime-local"] = "hypergen.coerce.datetime"
 
+# Utility functions
+
+def liveview_resolver_match(for_action=False):
+    if for_action is False:
+        return c.request.resolver_match
+    else:
+        for header in ["HTTP_X_PATHNAME", "HTTP_REFERER"]:
+            value = c.request.META.get(header, None)
+            if value:
+                return resolve(value)
+
+        return None
+
+def url_is_active(url):
+    return context.hypergen.liveview_resolver_match.func is resolve(url).func
+
 ### liveview is a plugin to hypergen ###
 
 class LiveviewPluginBase:
@@ -132,7 +148,7 @@ class ActionPlugin(LiveviewPluginBase):
 
     def template_after(self, /, **kwargs):
         if self.base_view:
-            referer_resolver_match = resolve(c.request.META["HTTP_X_PATHNAME"])
+            referer_resolver_match = liveview_resolver_match(for_action=True)
             # TODO: Check for HttpResponseredirect here?
             self.base_view.original_func(c.request, *referer_resolver_match.args, **referer_resolver_match.kwargs)
 
@@ -255,14 +271,16 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
             return response_redirect
 
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
-            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
+                liveview_resolver_match=liveview_resolver_match()):
                 commands = hypergen(
                     func, request, *args, **kwargs, settings=d(action=True, returns=COMMANDS, target_id=target_id,
                     appstate=appstate, namespace=_.reverse.hypergen_namespace, prepend_commands=False))
 
                 return HttpResponse(dumps(commands), status=200, content_type='application/json')
         else:
-            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
+            with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
+                liveview_resolver_match=liveview_resolver_match()):
                 html = hypergen(
                     func, request, *args, **kwargs,
                     settings=d(liveview=True, base_template=base_template, appstate=appstate,
@@ -302,17 +320,15 @@ def action(func, /, *, path=None, re_path=None, base_template=None, target_id=No
 
         action_args = loads(request.POST["hypergen_data"])["args"]
 
-        with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template):
+        with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
+            liveview_resolver_match=liveview_resolver_match(for_action=True)):
             full = hypergen(
                 func, request, *action_args, **kwargs,
                 settings=d(action=True, returns=FULL, target_id=target_id, appstate=appstate,
                 namespace=_.reverse.hypergen_namespace, base_view=base_view, user_plugins=user_plugins))
             if isinstance(full["template_result"], HttpResponseRedirect):
                 # Allow to return a redirect response directly from an action.
-                return HttpResponse(
-                    dumps(
-                    list(full["context"]["hypergen"]["commands"]) +
-                    [["hypergen.redirect", full["template_result"]["Location"]]]), status=302,
+                return HttpResponse(dumps([["hypergen.redirect", full["template_result"]["Location"]]]), status=302,
                     content_type='application/json')
             elif isinstance(full["template_result"], HttpResponse):
                 return full["template_result"]
