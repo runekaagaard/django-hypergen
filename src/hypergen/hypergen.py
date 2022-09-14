@@ -18,7 +18,13 @@ except ImportError:
 try:
     from django.conf.urls import url as re_path_, path as path_
 except ImportError:
-    from django.urls import re_path as re_path_, path as path_
+    try:
+        from django.urls import re_path as re_path_, path as path_
+    except:
+        from django.conf.urls import url as re_path_
+
+        def path(*a, **k):
+            raise Exception("django.conf.urls.path() not supported in this version of Django. Sorry!")
 
 ### Helpers internal to hypergen, DONT use these! ###
 

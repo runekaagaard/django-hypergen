@@ -123,6 +123,9 @@ python manage.py startapp \\
 def documentation(request):
     h2("News")
     ul(
+        li(b("2022-09-14:"), "Good news everybody! Hypergen been accepted as a",
+        a("workshop", href="https://pretalx.evolutio.pt/djangocon-europe-2022/talk/CFCFFF/"),
+        "at djangocon in Porto 2022-09-22. Hope to talk to you there!", sep=" "),
         li(
         b("2022-06-08:"),
         "Pushed version 0.9.9 to pypi. Everything is looking good after a major refactoring. The next version will",
