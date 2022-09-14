@@ -123,6 +123,8 @@ python manage.py startapp \\
 def documentation(request):
     h2("News")
     ul(
+        li(b("2022-09-14:"), "Pushed version 0.9.10 to pypi. This is the first release candidate for 1.0.0 stable :)",
+        sep=" "),
         li(b("2022-09-14:"), "Good news everybody! Hypergen been accepted as a",
         a("workshop", href="https://pretalx.evolutio.pt/djangocon-europe-2022/talk/CFCFFF/"),
         "at djangocon in Porto 2022-09-22. Hope to talk to you there!", sep=" "),
@@ -130,7 +132,8 @@ def documentation(request):
         b("2022-06-08:"),
         "Pushed version 0.9.9 to pypi. Everything is looking good after a major refactoring. The next version will",
         "be a release candidate for 1.0.0 which will be the first officially stable version of Hypergen.", sep=" "),
-        li(b("2022-06-07:"), "The first version of the documentation is complete.", sep=" "))
+        li(b("2022-06-07:"), "The first version of the documentation is complete.", sep=" "),
+    )
 
     h2("App examples")
     p("These are examples of writing a Django app with Hypergen. ", "Be sure to read the sources.")
