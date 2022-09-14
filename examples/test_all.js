@@ -61,12 +61,16 @@ test('test', async t => {
   while(queue.length > 0) {
     const href = queue.pop()
     if (["/djangolander/lander/", "/misc/v13/", "/misc/v14/",
-         "/misc/v15/"].indexOf(href) !== -1) continue
+         "/misc/v15/", "/gameofcython/", "/djangotemplates/"].indexOf(href) !== -1) continue
     console.log(`testing url: ${href}`)
     
     logger.clear()
     await onclickEvents(t, href)
     await visitPage(t, href)
   }
+}).timeouts({
+    pageLoadTimeout:    2000,
+    pageRequestTimeout: 10000,
+    ajaxRequestTimeout: 10000,
 })
 

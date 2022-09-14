@@ -1,10 +1,10 @@
 # Local Variables:
-# flycheck-mode: nil
+# flymake-mode: nil
 # End:
 
 from threading import local
-
 S = local()
+
 
 def page(title, content):
     menu()
@@ -13,13 +13,16 @@ def page(title, content):
         content()
     footer()
 
+
 def update_item(item_id, form_data):
     item = db.update_title(item_id, form_data["title"])
     todo_item(item)
 
+
 def complete(item_id):
     item = db.update_title(item_id, form_data["title"])
     index()
+
 
 @li(signature=lambda f, item: [f, item.id, item.version])
 def todo_item(item, edit=False):
@@ -33,8 +36,10 @@ def todo_item(item, edit=False):
 
     span("complete", onclick=(complete, item.id))
 
+
 def index(reverse=False):
-    p("Show last first" if reverse else "Show first first", onclick=(index, not reverse))
+    p("Show last first" if reverse else "Show first first",
+      onclick=(index, not reverse))
 
     todo_lists = db.todo_lists(reverse=reverse)
     for todo_list in todo_lists:
@@ -42,5 +47,6 @@ def index(reverse=False):
         with ul_cm():
             for item in todo_list.items:
                 todo_item()
+
 
 print(hypergen(page, partial(index)))

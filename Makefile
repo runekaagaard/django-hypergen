@@ -41,9 +41,9 @@ docker-system-prune:
 pytest-run:
 	pytest --tb=native -x -vvvv src/hypergen/test_all.py
 testcafe-run:
-	cd examples && testcafe chrome test_all.js |& ansi2txt
+	cd examples && testcafe chrome test_all.js -q attemptLimit=5,successThreshold=1 |& ansi2txt
 testcafe-run-headless:
-	cd examples && testcafe ""chrome:headless"" test_all.js
+	cd examples && testcafe ""chrome:headless"" test_all.js -q attemptLimit=5,successThreshold=1
 test-all:
 	make pytest-run
 	make testcafe-run-headless

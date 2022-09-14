@@ -1,5 +1,9 @@
 d = dict
+import re, sys, os
 from contextlib import contextmanager
+from datetime import date, datetime
+from collections import deque
+
 from hypergen.imports import *
 from hypergen.template import join_html
 from hypergen.context import context_middleware, ContextMiddleware, contextlist
@@ -8,11 +12,7 @@ from hypergen.template import TemplatePlugin
 from hypergen.incubation import SessionVar, pickle_dumps
 from hypergen.hypergen import compare_funcs
 
-import re, sys
-from datetime import date, datetime
-from collections import deque
-
-sys.path.append("examples")
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../examples"))
 
 import pytest
 from pyrsistent import pmap

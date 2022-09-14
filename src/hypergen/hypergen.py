@@ -1,4 +1,7 @@
 d = dict
+import logging
+
+logger = logging.getLogger(__file__)
 
 from hypergen.context import context
 
@@ -18,7 +21,14 @@ except ImportError:
 try:
     from django.conf.urls import url as re_path_, path as path_
 except ImportError:
-    from django.urls import re_path as re_path_, path as path_
+    try:
+        from django.urls import re_path as re_path_, path as path_
+    except:
+        from django.conf.urls import url as re_path_
+
+        def path_(*a, **kw):
+            logger.error("This version of Django does not support the django.conf.urls.path() function. Sorry!")
+            return re_path_(*a, **kw)
 
 ### Helpers internal to hypergen, DONT use these! ###
 
@@ -78,6 +88,15 @@ def wrap2(f):
 
 def compare_funcs(a, b):
     return all(getattr(a, k) == getattr(b, k) for k in ("__doc__", "__name__", "__module__", "__qualname__"))
+
+def is_collection(x):
+    if type(x) in [str, metastr]:
+        return False
+    try:
+        iter(x)
+        return True
+    except TypeError:
+        return False
 
 # Permissions
 
@@ -183,11 +202,11 @@ def plugins_exit_stack(method_name):
         [stack.enter_context(plugin.context()) for plugin in context.hypergen.plugins if hasattr(plugin, method_name)]
         yield
 
-def plugins_method_call(method_name):
+def plugins_method_call(method_name, *args, **kwargs):
     for plugin in context.hypergen.plugins:
         method = getattr(plugin, method_name, None)
         if method:
-            method()
+            method(*args, **kwargs)
 
 def plugins_pipeline(method_name, data):
     for plugin in context.hypergen.plugins:
