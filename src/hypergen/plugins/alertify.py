@@ -44,7 +44,7 @@ class AlertifyPlugin:
         else:
             return hypergen(template) + html
 
-    def template_after(self, /, *, template_result, **kwargs):
+    def template_after(self, template_result, **kwargs):
         # Don't empty message list when we are redirecting to a new page.
         if isinstance(template_result, HttpResponseRedirect) or "hypergen.redirect" in (x[0]
             for x in context.hypergen.commands):

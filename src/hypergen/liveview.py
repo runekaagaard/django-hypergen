@@ -135,7 +135,7 @@ class LiveviewPlugin(LiveviewPluginBase):
             return hypergen(template) + html
 
 class ActionPlugin(LiveviewPluginBase):
-    def __init__(self, /, *, target_id=None, base_view=None, morph=True, prepend_commands=True):
+    def __init__(self, target_id=None, base_view=None, morph=True, prepend_commands=True):
         self.target_id = target_id
         self.base_view = base_view
         self.morph = morph
@@ -146,7 +146,7 @@ class ActionPlugin(LiveviewPluginBase):
         with c(at="hypergen", event_handler_callbacks={}, commands=deque(), target_id=self.target_id):
             yield
 
-    def template_after(self, /, **kwargs):
+    def template_after(self, **kwargs):
         if self.base_view:
             referer_resolver_match = liveview_resolver_match(for_action=True)
             # TODO: Check for HttpResponseredirect here?
@@ -166,7 +166,7 @@ class ActionPlugin(LiveviewPluginBase):
             c.hypergen.commands.extend(commands)
 
 class PartialPlugin(LiveviewPluginBase):
-    def __init__(self, /, *, target_id=None):
+    def __init__(self, target_id=None):
         self.target_id = target_id
 
     @contextmanager
@@ -245,7 +245,7 @@ def call_js(command_path, *cb_args):
 ### Decorators for better QOL ###
 
 @wrap2
-def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
+def liveview(func, path=None, re_path=None, base_template=None, perm=None, any_perm=False, login_url=None,
     raise_exception=False, redirect_field_name=None, autourl=True, partial=True, target_id=None, appstate=None,
     user_plugins=None):
     if perm != NO_PERM_REQUIRED:
@@ -298,8 +298,8 @@ def liveview(func, /, *, path=None, re_path=None, base_template=None, perm=None,
     return _
 
 @wrap2
-def action(func, /, *, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
-    autourl=True, partial=True, base_view=None, appstate=None, user_plugins=[]):
+def action(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False, autourl=True,
+    partial=True, base_view=None, appstate=None, user_plugins=[]):
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
