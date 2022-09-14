@@ -8,7 +8,7 @@ fixture("Test All")
   .page(url)
   .requestHooks(logger);
 
-var queue = ["/documentation/", "/misc/index/", "/booking/free/"]
+var queue = ["/documentation/", "/misc/index/"]
 var visited = []
 
 async function visitPage(t, href) {
