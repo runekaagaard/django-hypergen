@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
     'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen', 'todomvc', 'inputs',
     'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 't9n', 'notifications', 'commands',
-    'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink', 'misc']
+    'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink', 'misc', 'booking']
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware' if os.environ.get("PROD", False) else None,
