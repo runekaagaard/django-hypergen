@@ -111,7 +111,7 @@ jobs:
     - name: Start Runserver
       run: |
         cd examples
-        python manage.py runserver 127.0.0.1:8002 &
+        python manage.py runserver 0.0.0.0:8002 &
     - name: Install testcafe
       run: npm install -g testcafe
     - name: Run testcafe tests
