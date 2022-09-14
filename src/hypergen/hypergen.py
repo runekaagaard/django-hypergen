@@ -1,4 +1,7 @@
 d = dict
+import logging
+
+logger = logging.getLogger(__file__)
 
 from hypergen.context import context
 
@@ -23,8 +26,9 @@ except ImportError:
     except:
         from django.conf.urls import url as re_path_
 
-        def path_(*a, **k):
-            raise Exception("django.conf.urls.path() not supported in this version of Django. Sorry!")
+        def path_(*a, **kw):
+            logger.error("This version of Django does not support the django.conf.urls.path() function. Sorry!")
+            return re_path_(*a, **kw)
 
 ### Helpers internal to hypergen, DONT use these! ###
 
