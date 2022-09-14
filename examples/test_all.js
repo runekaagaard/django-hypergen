@@ -68,5 +68,9 @@ test('test', async t => {
     await onclickEvents(t, href)
     await visitPage(t, href)
   }
+}).timeouts({
+    pageLoadTimeout:    2000,
+    pageRequestTimeout: 10000,
+    ajaxRequestTimeout: 10000,
 })
 
