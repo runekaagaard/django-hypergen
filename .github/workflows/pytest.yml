@@ -115,6 +115,8 @@ jobs:
       run: |
         cd examples
         python manage.py runserver 127.0.0.1:8002 &
+        sleep 5
+        curl 127.0.0.1:8002/
     - name: Install testcafe
       run: npm install -g testcafe
     - name: Run testcafe tests
