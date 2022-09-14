@@ -2,6 +2,10 @@ import morphdom from 'morphdom'
 // https://github.com/ccampbell/mousetrap
 import mousetrap from 'mousetrap'
 import './hypergen'
+import * as hypergen from './hypergen'
+
+// Make all exported vars availabe in window.hypergen.
+window.hypergen = hypergen
 
 // Shims
 if (typeof Array.isArray === 'undefined') {
@@ -20,6 +24,10 @@ export const morph = function(id, html) {
       onBeforeElUpdated: function(fromEl, toEl) {
         let focused = document.activeElement
         if((fromEl.nodeName == "INPUT" || fromEl.nodeName == "TEXTAREA") && fromEl === focused) {
+          let types = ["checkbox", "radio"]
+          if (fromEl.nodeName === "INPUT" && types.indexOf(fromEl.type) !== -1) {
+            return true
+          }
           mergeAttrs(fromEl, toEl)
           return false
         } else if (fromEl.nodeName == "INPUT" && fromEl.type === "file" && fromEl.files.length > 0) {
@@ -54,23 +62,29 @@ export const morph = function(id, html) {
 
 export const remove = function(id) {
   let el = document.getElementById(id);
-  el.parentNode.removeChild(el);
+  el.parentNode.removeChild(el)
 }
 
 export const hide = function(id) {
-  let el = document.getElementById(id);
+  let el = document.getElementById(id)
   el.style.display = "none"
+}
+
+export const display = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.display = value || "block"
 }
 
 export const redirect = function(url) {
   window.location = url
 }
 
+// TODO: Dont clutter window.
 window.clientState = {}
 export const setClientState = function(at, value) {
   let clientState = window.clientState
   for (const path of at.split(".")) {
-    if (clientState.path === undefined) clientState[path] = {}
+    if (clientState[path] === undefined) clientState[path] = {}
     clientState = clientState[path]
   }
   Object.assign(clientState, value)
@@ -82,13 +96,20 @@ export const setClientState = function(at, value) {
 var i = 0
 var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
-                                             params={}, meta={}, clear=false, elementId=null, debug=false}={}) {
+                                             params={}, meta={}, clear=false, elementId=null, debug=false,
+                                             event=null, headers={}}={})
+{
+  if (!!event) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
   let postIt = function() {
     let json
     console.log("REQUEST", url, args, debounce)
     i++
 
     // The element function must have access to the FormData.
+    // TODO: Dont clutter window.
     window.hypergenGlobalFormdata = new FormData()
     window.hypergenUploadFiles = uploadFiles
     try {
@@ -132,7 +153,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
         }
         document.getElementsByTagName("html")[0].innerHTML = data
       }
-    }, params)
+    }, params, headers)
   }
   if (debounce === 0) {
     if (confirm_ === false) postIt()
@@ -211,6 +232,7 @@ const applyCommand = function(path, ...args) {
   document.dispatchEvent(event)
 }
 
+// TODO: Dont clutter window.
 window.e = function(event, callbackKey, eventMatches) {
   event.preventDefault()
   event.stopPropagation()
@@ -229,6 +251,7 @@ const applyCommands = function(commands) {
     applyCommand(path, ...args)
   }
 }
+// TODO: Dont clutter window.
 window.applyCommands = applyCommands
 
 const mergeAttrs = function(target, source){
@@ -339,6 +362,7 @@ const reviver = function(k, v) {
   }
   return v
 }
+// TODO: Dont clutter window.
 window.reviver = reviver
 
 const getCookie = function(name) {
@@ -365,7 +389,7 @@ function addParams(url, params) {
   else return url + "?" + ret.join('&')
 }
 
-export const post = function(url, formData, onSuccess, onError, params) {
+export const post = function(url, formData, onSuccess, onError, params, headers) {
   url = addParams(url, params)
   
   const xhr = new XMLHttpRequest()
@@ -425,17 +449,29 @@ export const post = function(url, formData, onSuccess, onError, params) {
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   xhr.setRequestHeader('X-Pathname', parent.window.location.pathname);
   xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+  if (!!headers) {
+    for (let k in headers) {
+      xhr.setRequestHeader(k, headers[k]);
+    }
+  }
   xhr.send(formData)
 }
 
+// history support.
+
 window.addEventListener("popstate", function(event) {
   if (event.state && event.state.callback_url !== undefined) {
-    callback(event.state.callback_url, [], {meta: {is_popstate: true}})
+    callback(event.state.callback_url, [], {meta: {is_popstate: true}, headers: {HYPERGEN_POPSTATE: 1}})
   } else {
     window.location = location.href
   }
 })
 
+const pushstate = new Event('hypergen.pushstate')
+
+export const onpushstate = function() {
+  document.dispatchEvent(pushstate)
+}
 
 // Translations
 const replaceInText = function(element, pattern, replacement) {
@@ -456,6 +492,7 @@ const replaceInText = function(element, pattern, replacement) {
 }
 
 const translations = function(url, T) {
+  // TODO: Dont clutter window.
   window.t = {T}
   
   window.t.post = function(a, b, b0) {
@@ -513,11 +550,12 @@ Use "RESET" to reset back to the original content.
     window.t.post(x[0], b, x[1])
   }
 }
+// TODO: Dont clutter window.
 window.translations = translations
 
 // On ready
 
-const ready = function(fn) {
+export const ready = function(fn, {partial=false}={}) {
   if (document.readyState != 'loading') {
     fn();
   } else if (document.addEventListener) {
@@ -528,5 +566,7 @@ const ready = function(fn) {
         fn();
     });
   }
+  if (partial) document.addEventListener("hypergen.pushstate", fn)
 }
+// TODO: Dont clutter window.
 window.ready = ready
