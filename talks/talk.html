@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Hypergen</title>
+
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/black.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides" da>
+        <section>
+            <h1>Who are we are and what we do</h1>
+        <aside class="notes">
+            <p>Rune Kaagaard</p>
+            <p>Jeppe Tuxen</p>
+            <p>Collectively about 20 years of experience working with Django</p>
+            <p>Danish Company Prescriba recently purchased by One Bright</p>
+            <p>Sagssystemet: The Case System</p>
+        </aside>
+        </section>
+        <section>Server Side rendering vs Client Side rendering when working with Django</section>
+        <section>Server Side Rendering</section>
+        <section>All the html rendering is performed by the server</section>
+        <section>
+            Client (browser) receives html and displays it to the user
+            Django uses serverside rendering by default.
+            We display our models to the user by defining django views which renderes the html by using templates.
+            Its simple, easy to understand.
+        </section>
+        <section>
+            The Problem: Rerendering the whole page on each user interaction.
+            Its not that dynamic. It does not feel app like.
+        </section>
+        <section>Client Side Rendering</section>
+        <section>Server is sending data usually in the form of JSON</section>
+        <section>The browser (client) is rendering the actual HTML from this server data (JSON) by using a Javascript framework like React, Angular, Moment you name it.</section>
+        <section></section>
+        <section>
+            Problems:
+            Developers need to be able to switch between Javascript and Python
+            A lot harder to maintain.
+            A lot more frontend Javascript code.
+            Serialization - we can't use djangos ORM in Javascript (We could try to use rest or graphql - lots of setup)
+            Webpack - npm install sucks
+            Frontend validation and Backend validation which is right?
+            No single source of truth
+            In general it feels like writing the same code twice - new model - setup serialization - map data for frontend.
+        </section>
+        <section>
+            The Solution: Meet Server Side rendered Live Views
+        </section>
+        <section>
+            With Live Views the server is again serving html.
+            We also define user actions.
+            Possible user actions are also defined on server
+            A thin Javascript client enables us to partially redraw changed html.
+            Everything is defined on the server.
+            No need to maintain an expensive frontend written in Javascript.
+        </section>
+        <section>
+            The most favorite
+        </section>
+        <section>
+            <h1>Towards Hypergen</h1>
+            <ul>
+                <li>From pure server side rendering</li>
+                <li>jQuery - extending </li>
+                <li>React</li>
+                <li>Hypergen - back to serverside</li>
+            </ul>
+
+        </section>
+        <section>Liveview basics - the what, why, who, where and when.</section>
+        <section>Hypergen</section>
+        <section>Architecture and design choices.
+            Pure Python HTML templates
+            Base templates and template composition
+            Liveviews
+            Binding to DOM events
+            Actions
+            Partial DOM updates and other client commands
+            Notifications and plugins
+            Limitations, caveats and future improvements
+        </section>
+        <section>Introduction and examples.</section>
+        <section>Lets build an example app using hypergen</section>
+        <section>
+            Serverside is Back Baby
+            <aside class="notes">
+                <p>Some notes</p>
+            </aside>
+            <p>Some slide text</p>
+            <aside class="notes">
+                <p>and some more notes</p>
+            </aside>
+        </section>
+        <section>
+
+            <pre>
+                <code data-trim data-noescape>
+                    def django_function():
+                        What
+                </code>
+            </pre>
+        </section>
+        <section>
+            <img data-src="image.png">
+        </section>
+    </div>
+</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
