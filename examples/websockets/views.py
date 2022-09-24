@@ -51,6 +51,7 @@ N = 0
 @websocket(group_name="chat", channel_name="message", target_id="num-messages")
 def chat_message(msg):
     global N
+
     N += 1
     p("You have", N, "messages in total.", sep=" ")
     command("hypergen.append", "messages", hypergen(lambda: li(msg)))
