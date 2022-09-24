@@ -33,11 +33,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # Application definition
 
 INSTALLED_APPS = [
-    'channels', 'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
-    'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen',
-    'todomvc', 'inputs', 'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 't9n', 'notifications',
-    'commands', 'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink', 'misc',
-    'booking', 'websockets']
+    'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
+    'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen', 'todomvc', 'inputs',
+    'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 't9n', 'notifications', 'commands',
+    'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink', 'misc', 'booking']
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware' if os.environ.get("PROD", False) else None,
@@ -124,11 +123,3 @@ if os.environ.get("PROD", False):
 
 HYPERGEN_ENABLE_INCUBATION = True
 HYPERGEN_ENABLE_OLD = True
-
-# Channels
-
-ASGI_APPLICATION = "asgi.application"
-CHANNEL_LAYERS = {
-    'default': {
-    'BACKEND': 'channels_redis.core.RedisChannelLayer',
-    'CONFIG': {"hosts": [('127.0.0.1', 6379)],},},}
