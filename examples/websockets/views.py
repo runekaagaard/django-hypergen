@@ -3,7 +3,15 @@ from hypergen.imports import *
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat(request):
+
+    textarea(id_="chat-log", cols="100", rows="20")
+    br()
+    input_(id_="chat-message-input", type_="text", size="100")
+    br()
+    input_(id_="chat-message-submit", type_="button", value="Send")
+
     script("""
+                
         const roomName = "hypergen_it"
 
         const chatSocket = new WebSocket(
@@ -15,30 +23,27 @@ def chat(request):
         );
 
         chatSocket.onmessage = function(e) {
-            hypergen.applyCommands(JSON.parse(e.data))
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.message + '\\n');
         };
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
 
-        hypergen.append = function(id, html) {
-          const el = document.getElementById(id)
-          el.innerHTML = el.innerHTML + html
-        }
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
 
-        myapp = {}
-        myapp.sendChatMessage = function(e, id) {
-            if (e.keyCode !== 13)  return
-    
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
             chatSocket.send(JSON.stringify({
-                'message': e.target.value
+                'message': message
             }));
-            e.target.value = '';
-        }
+            messageInputDom.value = '';
+        };
     """)
-
-    style(""" input, textarea {width: 100%} """)
-    input_(id_="message", type_="text", placeholder="Write your message here and press enter.", autofocus=True,
-        onkeyup="myapp.sendChatMessage(event, 'message')")
-    ul(id_="messages")
