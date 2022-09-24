@@ -27,6 +27,7 @@ import coredocs.urls
 import kitchensink.urls
 import misc.urls
 import booking.urls
+import websockets.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -51,4 +52,5 @@ urlpatterns = [
     url('^coredocs/', include(coredocs.urls, namespace="coredocs")),
     url('^kitchensink/', include(kitchensink.urls, namespace="kitchensink")),
     url('^misc/', include(misc.urls, namespace="misc")),
-    url('^booking/', include(booking.urls, namespace="booking")),]
+    url('^booking/', include(booking.urls, namespace="booking")),
+    url('^websockets/', include(websockets.urls, namespace="websockets")),]
