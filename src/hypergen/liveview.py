@@ -216,7 +216,8 @@ def callback(url, *cb_args, debounce=0, confirm_=False, confirm=False, blocks=Fa
             elementId=element.attrs["id_"], debug=settings.DEBUG, meta=meta, headers=headers), return_=True)
         cmd_id = "{}__{}".format(element.attrs["id_"], k)
 
-        c.hypergen.event_handler_callbacks[cmd_id] = cmd
+        print("FOOOOOOOOOO", c.hypergen)
+        c.hypergen["event_handler_callbacks"][cmd_id] = cmd
 
         when_str = ", " + dumps(when).replace('"', "'") if when else ""
         return [" ", t(k), '="', "hypergen.event(event, '{}'{})".format(cmd_id, when_str), '"']

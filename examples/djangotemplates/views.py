@@ -1,50 +1,45 @@
-# coding = utf-8
 # pylint: disable=no-value-for-parameter
+from hypergen.imports import *
+from hypergen.incubation import SessionVar
 import operator
 
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
-from hypergen.core import hypergen_context_decorator, command, hypergen_response, context as c, hypergen_to_string, loads
-from hypergen.incubation import SessionVar
-
-from website.templates import show_sources
+from website.templates2 import show_sources
 
 d = dict
 STACK = SessionVar("STACK", [])  # This variable lives in the session data.
 
-@hypergen_context_decorator
 def djangotemplates(request):
-    return render(request, "djangotemplates/base.html",
-        d(stack=STACK.get(), sources=hypergen_to_string(show_sources, __file__)))
+    return render(
+        request,
+        "djangotemplates/base.html",
+        d(stack=STACK.get(),
+        #sources=hypergen_to_string(show_sources, __file__)
+         ))
 
-@hypergen_context_decorator
 def push(request):
     number, = loads(request.POST["hypergen_data"])["args"]
     if number is not None:
         assert type(number) is float
         STACK.append(number)
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.get())))
-    return hypergen_response(c.hypergen.commands)
+    return hypergen_response(context.hypergen.commands)
 
-@hypergen_context_decorator
 def reset(request):
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.set([]))))
-    return hypergen_response(c.hypergen.commands)
+    return hypergen_response(context.hypergen.commands)
 
-@hypergen_context_decorator
 def add(request, *args):
     return apply_operation(operator.add)
 
-@hypergen_context_decorator
 def subtract(request, *args):
     return apply_operation(operator.sub)
 
-@hypergen_context_decorator
 def multiply(request, *args):
     return apply_operation(operator.mul)
 
-@hypergen_context_decorator
 def divide(request, *args):
     if len(STACK.get()) and STACK.get()[-1] == 0:
         return hypergen_response([["alert", "Can't divide by zero"]])
@@ -59,4 +54,4 @@ def apply_operation(op):
     STACK.append(op(a, b))
 
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.get())))
-    return hypergen_response(c.hypergen.commands)
+    return hypergen_response(context.hypergen.commands)
