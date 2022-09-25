@@ -24,7 +24,7 @@ def websocket(group_name=None, channel_name=None, target_id=None):
 N = 0
 
 @websocket(group_name="chat", channel_name="message", target_id="num-messages")
-def chat_message(msg):
+def chat_message(consumer, msg):
     global N
 
     N += 1
