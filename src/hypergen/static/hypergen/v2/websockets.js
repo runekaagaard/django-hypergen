@@ -11,6 +11,10 @@ const log = function(e, action, id, url, options) {
 
 export const open = function(id, url, options) {
   if (!options) options = {}
+  if (!!WEBSOCKETS[id]) {
+    log(null, "ALREADY_OPENED_BYE", id, url, options)
+    return
+  }
   
   WEBSOCKETS[id] = new Sockette(url, Object.assign({
     timeout: 5e3,
