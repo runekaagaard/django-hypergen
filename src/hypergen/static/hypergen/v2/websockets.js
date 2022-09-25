@@ -3,7 +3,7 @@ import * as websockets from './websockets'
 
 window.hypergen_websockets = websockets
 
-const WEBSOCKETS = {}
+export const WEBSOCKETS = {}
 
 const log = function(e, action, url, options) {
   console.log('Websocket ' + action + " to url", url, "with options", options, "and event", e)
@@ -35,11 +35,6 @@ export const open = function(url, options) {
 export const close = function(url) {
   WEBSOCKETS[url].close()
   delete WEBSOCKETS[url]
-}
-
-hypergen.append = function(id, html) {
- const el = document.getElementById(id)
- el.innerHTML = el.innerHTML + html
 }
 
 window.myapp = {}

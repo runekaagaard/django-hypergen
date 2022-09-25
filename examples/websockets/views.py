@@ -14,8 +14,7 @@ def chat(request):
         type_="text",
         placeholder="Write your message here and press enter.",
         autofocus=True,
-        onkeyup=f"myapp.sendChatMessage(event, '{WS_URL}')",
-        # onkeyup=callback(WS_URL, EVENT),
+        onkeyup=callback(WS_URL, THIS, when=["hypergen.when.keycode", "Enter"], clear=True),
     )
     ul(id_="messages")
 

@@ -82,6 +82,16 @@ export const redirect = function(url) {
   window.location = url
 }
 
+export const append = function(id, html) {
+ const el = document.getElementById(id)
+ el.innerHTML += html
+}
+
+export const prepend = function(id, html) {
+ const el = document.getElementById(id)
+ el.innerHTML = html + el.innerHTML
+}
+
 hypergen.clientState = {}
 
 export const setClientState = function(at, value) {
@@ -158,11 +168,34 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       }
     }, params, headers)
   }
-  if (debounce === 0) {
-    if (confirm_ === false) postIt()
-    else if (confirm(confirm_)) postIt()
+  const postItWebsocket = function() {
+    console.log("WEBSOCKET", url, args, debounce)
+    let json
+    try {
+      json = JSON.stringify({
+        args: args,
+        meta: meta,
+      })
+    } catch(error) {
+      if (error === MISSING_ELEMENT_EXCEPTION) {
+        console.warn("An element is missing. This can happen if a dom element has multiple event handlers.", url)
+        return
+      } else {
+        throw(error)
+      }
+    }
+    window.hypergen_websockets.WEBSOCKETS[url].send(json)
+    if (clear === true) document.getElementById(elementId).value = ""
+    
   }
-  else throttle(postIt, {delay: debounce, group: url, confirm_}) 
+
+  const func = url.startsWith("ws://") ? postItWebsocket : postIt
+  
+  if (debounce === 0) {
+    if (confirm_ === false) func()
+    else if (confirm(confirm_)) func()
+  }
+  else throttle(func, {delay: debounce, group: url, confirm_}) 
 }
 
 export const partialLoad = function(event, url, pushState) {
