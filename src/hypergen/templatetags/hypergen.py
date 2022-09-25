@@ -20,7 +20,10 @@ class div():
 
 @register.simple_tag
 def callback(id_, event_name, url_or_view, *cb_args, **kwargs):
-    context.hypergen = d(into=contextlist("target_id"), ids=set(), plugins=[], event_handler_callbacks={})
+    if "hypergen" not in context:
+        context.hypergen = d(into=contextlist("target_id"), ids=set(), plugins=[], event_handler_callbacks={})
+
+    print(9999999999999, kwargs)
     return mark_safe('id="{}" {}'.format(id_, callbackn(id_, event_name, url_or_view, *cb_args, **kwargs)))
 
 @register.simple_tag
