@@ -1,14 +1,22 @@
+from hypergen.imports import *
 from django.templatetags.static import static
 from website.templates2 import base_example_template
-from hypergen.imports import *
+
+WS_URL = "ws://127.0.0.1:8002/ws/chat/hypergen/"
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat(request):
     script(src=static("hypergen/v2/websockets.min.js"))
-    command("hypergen_websockets.open", "chat", "ws://127.0.0.1:8002/ws/chat/hypergen/")
+    command("hypergen_websockets.open", WS_URL)
     style(""" input, textarea {width: 100%} """)
-    input_(id_="message", type_="text", placeholder="Write your message here and press enter.", autofocus=True,
-        onkeyup="myapp.sendChatMessage(event, 'message')")
+    input_(
+        id_="message",
+        type_="text",
+        placeholder="Write your message here and press enter.",
+        autofocus=True,
+        onkeyup=f"myapp.sendChatMessage(event, '{WS_URL}')",
+        # onkeyup=callback(WS_URL, EVENT),
+    )
     ul(id_="messages")
 
 def websocket(group_name=None, channel_name=None, target_id=None):

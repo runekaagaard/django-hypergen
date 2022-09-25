@@ -18,11 +18,15 @@ from django.conf import settings
 from django.templatetags.static import static
 from hypergen.template import join_html
 
-__all__ = ["command", "call_js", "callback", "THIS", "dumps", "loads", "liveview", "action", "NO_PERM_REQUIRED"]
+__all__ = [
+    "command", "call_js", "callback", "THIS", "EVENT", "dumps", "loads", "liveview", "action", "NO_PERM_REQUIRED"]
 
 ### constants ###
 
 class THIS(object):
+    pass
+
+class EVENT(object):
     pass
 
 NO_PERM_REQUIRED = "__NO_PERM_REQUIRED__"
@@ -353,7 +357,8 @@ ENCODINGS = {
     deque: lambda o: {"_": ["deque", list(o)]},
     set: lambda o: {"_": ["set", list(o)]},
     frozenset: lambda o: {"_": ["frozenset", list(o)]},
-    range: lambda o: {"_": ["range", [o.start, o.stop, o.step]]},}
+    range: lambda o: {"_": ["range", [o.start, o.stop, o.step]]},
+    type(EVENT): lambda o: {"_": ["EVENT", None]},}
 
 def encoder(o):
     if issubclass(type(o), base_element):

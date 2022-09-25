@@ -5,36 +5,36 @@ window.hypergen_websockets = websockets
 
 const WEBSOCKETS = {}
 
-const log = function(e, action, id, url, options) {
-  console.log('Websocket ' + action + ' with id:', id, "to url", url, "with options", options, "and event", e)
+const log = function(e, action, url, options) {
+  console.log('Websocket ' + action + " to url", url, "with options", options, "and event", e)
 }
 
-export const open = function(id, url, options) {
+export const open = function(url, options) {
   if (!options) options = {}
-  if (!!WEBSOCKETS[id]) {
-    log(null, "ALREADY_OPENED_BYE", id, url, options)
+  if (!!WEBSOCKETS[url]) {
+    log(null, "ALREADY_OPENED_BYE", url, options)
     return
   }
   
-  WEBSOCKETS[id] = new Sockette(url, Object.assign({
-    timeout: 5e3,
+  WEBSOCKETS[url] = new Sockette(url, Object.assign({
+    timeout: 1e3,
     maxAttempts: Number.MAX_SAFE_INTEGER,
-    onopen: e => log(e, "OPENED", id, url, options),
+    onopen: e => log(e, "OPENED", url, options),
     onmessage: e => {
       hypergen.applyCommands(JSON.parse(e.data))
     },
-    onreconnect: e => log(e, "RECONNECTING", id, url, options),
-    onmaximum: e => log(e, "MAX_RECONNECTS_BYE", id, url, options),
+    onreconnect: e => log(e, "RECONNECTING", url, options),
+    onmaximum: e => log(e, "MAX_RECONNECTS_BYE", url, options),
     onclose: e => {
-      log(e, "CLOSED", id, url, options)
-      delete WEBSOCKETS[id]
+      log(e, "CLOSED", url, options)
     },
     onerror: e => console.log('Error:', e),
   }, options))
 }
 
-export const close = function(id, url) {
-  WEBSOCKETS[id].close()
+export const close = function(url) {
+  WEBSOCKETS[url].close()
+  delete WEBSOCKETS[url]
 }
 
 hypergen.append = function(id, html) {
@@ -43,14 +43,14 @@ hypergen.append = function(id, html) {
 }
 
 window.myapp = {}
-window.myapp.sendChatMessage = function(e, id) {
+window.myapp.sendChatMessage = function(e, url) {
   if (e.keyCode !== 13)  return
-  if (!WEBSOCKETS.chat) {
+  if (!WEBSOCKETS[url]) {
     console.log("Websocket is DEAD. SRY!")
     return
   }
 
-  WEBSOCKETS.chat.send(JSON.stringify({
+  WEBSOCKETS[url].send(JSON.stringify({
       'message': e.target.value
   }));
   e.target.value = '';
