@@ -22,8 +22,14 @@ class ChatConsumer(WebsocketConsumer):
         message = text_data_json['message']
 
         # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(self.room_group_name,
-            {'type': 'chat_message', 'commands': [["hypergen.append", "messages", "<li>" + message + "</li>"]]})
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+            'type':
+                'chat_message',
+            'commands': [["hypergen.append", "messages", "<li>" + message + "</li>"],
+            #["hypergen_websockets.close", "chat"],
+                        ]})
 
     # Receive message from room group
     def chat_message(self, event):
