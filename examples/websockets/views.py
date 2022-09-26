@@ -1,6 +1,7 @@
 from hypergen.imports import *
 from website.templates2 import base_example_template
 
+#                                                                     ↓ Remember to add the plugin
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template, user_plugins=[WebsocketPlugin()])
 def chat(request):
     # Channels urls are not reversible the same as vanilla urls. Little helper to add protocol and port.
