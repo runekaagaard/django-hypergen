@@ -17,7 +17,7 @@ class ChatConsumer(HypergenWebsocketConsumer):
 
         # One of these two is required.
         base_template = None  # Read target_id from base_template.target_id
-        target_id = "counter"
+        target_id = "counter"  # Default DOM element id to render HTML into.
 
         # Other.
         user_plugins = []  # Optional, default: []
