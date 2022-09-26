@@ -5,7 +5,7 @@ from website.templates2 import base_example_template
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template, user_plugins=[WebsocketPlugin()])
 def chat(request):
     # Channels urls are not reversible the same as vanilla urls. Little helper to add protocol and port.
-    url = ws_url("/ws/chat/42/hypergen/")
+    url = ws_url("/ws/chat/hypergen/")
 
     # Open a websocket on the client. Can be closed at any point with: command("hypergen_websockets.close", url)
     command("hypergen_websockets.open", url)
