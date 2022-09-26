@@ -2,13 +2,14 @@ from hypergen.imports import *
 from django.templatetags.static import static
 from website.templates2 import base_example_template
 
-WS_URL = "ws://127.0.0.1:8002/ws/chat/hypergen/"
+WS_URL = "ws://127.0.0.1:8002/ws/chat/42/hypergen/"
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat(request):
     script(src=static("hypergen/v2/websockets.min.js"))
     command("hypergen_websockets.open", WS_URL)
     style(""" input, textarea {width: 100%} """)
+    p("Length of last message: ", span(0, id="counter"))
     input_(
         id_="message",
         type_="text",
