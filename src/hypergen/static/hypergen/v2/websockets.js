@@ -36,17 +36,3 @@ export const close = function(url) {
   WEBSOCKETS[url].close()
   delete WEBSOCKETS[url]
 }
-
-window.myapp = {}
-window.myapp.sendChatMessage = function(e, url) {
-  if (e.keyCode !== 13)  return
-  if (!WEBSOCKETS[url]) {
-    console.log("Websocket is DEAD. SRY!")
-    return
-  }
-
-  WEBSOCKETS[url].send(JSON.stringify({
-      'message': e.target.value
-  }));
-  e.target.value = '';
-}

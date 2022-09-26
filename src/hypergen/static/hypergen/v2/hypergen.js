@@ -78,6 +78,16 @@ export const display = function(id, value) {
   el.style.display = value || "block"
 }
 
+export const visible = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.visibility = "visible"
+}
+
+export const hidden = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.visibility = "hidden"
+}
+
 export const redirect = function(url) {
   window.location = url
 }
@@ -189,7 +199,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     
   }
 
-  const func = url.startsWith("ws://") ? postItWebsocket : postIt
+  const func = (url.startsWith("ws://") || url.startsWith("wss://")) ? postItWebsocket : postIt
   
   if (debounce === 0) {
     if (confirm_ === false) func()
