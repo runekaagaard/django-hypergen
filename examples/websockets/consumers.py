@@ -11,14 +11,16 @@ class ChatConsumer(HypergenWebsocketConsumer):
 
     # Similar settings that you would have to the @action decorator is defined here.
     class Hypergen:
-        user_plugins = []  # Optional, default: []
+        # Permissions.
+        perm = NO_PERM_REQUIRED  # Required
         any_perm = False  # Optional, default: False
 
         # One of these two is required.
         base_template = None  # Read target_id from base_template.target_id
         target_id = "counter"
 
-        perm = NO_PERM_REQUIRED  # Required
+        # Other.
+        user_plugins = []  # Optional, default: []
 
     # Render the HTML and send custom commands.
     def receive_hypergen(self, message):
