@@ -24,5 +24,6 @@ class ChatConsumer(HypergenWebsocketConsumer):
     def receive_hypergen(self, message):
         # Writes into the "counter" id.
         span("Length of last message is: ", len(message))
-        # Appends the message to the list of messages.
+
+        # Appends the message to the list of messages. Uses hypergen() directly to render into a string of HTML.
         command("hypergen.append", "messages", hypergen(lambda: li(message)))
