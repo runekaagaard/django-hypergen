@@ -33,6 +33,11 @@ export const open = function(url, options) {
 }
 
 export const close = function(url) {
+  if (!WEBSOCKETS[url]) {
+    log(null, "ALREADY_CLOSED_BYE", url, null)
+    return
+  }
   WEBSOCKETS[url].close()
   delete WEBSOCKETS[url]
+  log(null, "CLOSED_AND_DELETED", url, null)
 }
