@@ -166,7 +166,7 @@ def features_template():
     with div(id="features"):
         h2("Features")
         feature(f1)
-    with div(style="clear: both; margin-top: 16px;"):
+    with div():
         # a("⟪", href="1", class_="selected")
         # a("⟫", href="2", class_="selected")
         a("🢨", href="1", class_="selected nul")
