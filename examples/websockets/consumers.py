@@ -8,7 +8,6 @@ class ChatConsumer(HypergenWebsocketConsumer):
     # Custom permission checks can be done here.
     # def check_perms(self, content):
     #     pass
-
     # Similar settings that you would have to the @action decorator is defined here.
     class Hypergen:
         # Permissions.

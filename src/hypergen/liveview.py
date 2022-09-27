@@ -206,7 +206,7 @@ def callback(url, *cb_args, debounce=0, confirm_=False, confirm=False, blocks=Fa
 
     assert getattr(url, "is_hypergen_liveview",
         False) is not True, "You can't callback to a @liveview, only an @action."
-    if getattr(url, "is_hypergen_action", False) is True:
+    if getattr(url, "supports_hypergen_callback", False) is True:
         url = url.reverse()
 
     def to_html(element, k, v):
@@ -344,7 +344,7 @@ def action(func, path=None, re_path=None, base_template=None, target_id=None, pe
         assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"
         autourl_register(_, base_template=base_template, path=path, re_path=re_path)
 
-    _.is_hypergen_action = True
+    _.supports_hypergen_callback = True
 
     return _
 

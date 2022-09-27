@@ -93,13 +93,15 @@ export const redirect = function(url) {
 }
 
 export const append = function(id, html) {
- const el = document.getElementById(id)
- el.innerHTML += html
+  const el = document.getElementById(id)
+  if (!el) console.error("Cannot append to missing element", id)
+  el.innerHTML += html
 }
 
 export const prepend = function(id, html) {
- const el = document.getElementById(id)
- el.innerHTML = html + el.innerHTML
+  const el = document.getElementById(id)
+  if (!el) console.error("Cannot prepend to missing element", id)
+  el.innerHTML = html + el.innerHTML
 }
 
 hypergen.clientState = {}
