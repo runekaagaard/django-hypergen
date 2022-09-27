@@ -214,7 +214,6 @@ def autoconsumers(module, prefix):
     assert "^" not in prefix, "The prefix should ONLY be foo/bar/baz/. Works for both path and re_path."
     consumers = []
     for path_func, func, path in _CHANNELS_ROUTES.get(module.__name__, []):
-
         if path.startswith("^"):
             full_path = "^" + prefix + path[1:]
         else:
