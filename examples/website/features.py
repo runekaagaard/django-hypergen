@@ -13,10 +13,19 @@ STYLE = """
     background-color: #272822;
     padding: 8px 16px;
     height: 100%;
+    border-right: 1px solid grey;
+}
+#features .cell .inner {
+    height: calc(100% - 35px);
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid grey;
+}
+#features .cell .inner-full {
+    height: calc(100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 #features .nc {
     background-color: transparent;
@@ -39,8 +48,9 @@ STYLE = """
     color: #fd971f;
     color: #F8F8F2;
     text-align: center;
+    height: 35px;
     /* border-bottom: 1px solid grey; */
-    border-right: 1px solid grey;
+    /* border-right: 1px solid grey; */
 }
 #features .tc {
     color: #F8F8F2;
@@ -115,16 +125,13 @@ f1.html = """
 
 def feature(func):
     with div(class_="grid3"):
-        div(h4("Hypergen"), class_="header")
-        div(h4(""), class_="header")
-        div(h4("HTML"), class_="header")
-
-    with div(class_="grid3"):
         with div(class_="cell"):
-            fcode(func)
+            div(h4("Hypergen"), class_="header")
+            with div(class_="inner"):
+                fcode(func)
 
         with div(class_="cell tc"):
-            with div():
+            with div(class_="inner-full"), div():
                 h2("Write HTML in pure python")
                 p("Build templates in a turing complete language:")
                 with ul():
@@ -138,8 +145,10 @@ def feature(func):
                 # div("", style=dict(height="60px"))
 
         with div(class_="cell"):
-            with pre(), code():
-                write(func.html)
+            div(h4("HTML"), class_="header")
+            with div(class_="inner"):
+                with pre(), code():
+                    write(func.html)
 
         # with div(class_="cell nc"):
         #     func()
