@@ -209,7 +209,7 @@ def autourls(module, namespace):
 
 def autoconsumers(module, prefix):
     import json
-    from hypergen.channels import HypergenWebsocketConsumer, WebsocketRequest
+    from hypergen.channels import HypergenWebsocketAutoConsumer, WebsocketRequest
     from asgiref.sync import async_to_sync
     from hypergen.liveview import dumps
 
@@ -218,28 +218,16 @@ def autoconsumers(module, prefix):
     consumers = []
     for path_func, func, path in _CHANNELS_ROUTES.get(module.__name__, []):
 
-        class HypergenWebsocketAutoConsumer(HypergenWebsocketConsumer):
-            hypergen_func = func
-
-            def group_name(self):
-                return ".".join([self.hypergen_func.__module__, self.hypergen_func.__name__] +
-                    list(self.scope['url_route']['args']) +
-                    [f"{k}__{v}" for k, v in self.scope['url_route']['kwargs'].items()])
-
-            def receive_json(self, content):
-                with context(request=self.get_request()):
-                    commands = self.hypergen_func(WebsocketRequest(self), *content['args'])
-
-                async_to_sync(self.channel_layer.group_send)(self.group_name(),
-                    {'type': 'send_hypergen', 'commands': json.loads(dumps(commands))})
-
         if path.startswith("^"):
             full_path = "^" + prefix + path[1:]
         else:
             full_path = prefix + path
 
+        class HypergenWebsocketAutoConsumerCurried(HypergenWebsocketAutoConsumer):
+            hypergen_func = func
+
         func.reverse.hypergen_channels_full_path = full_path
-        consumers.append(path_func(full_path, HypergenWebsocketAutoConsumer(func).as_asgi()))
+        consumers.append(path_func(full_path, HypergenWebsocketAutoConsumerCurried(func).as_asgi()))
 
     return consumers
 

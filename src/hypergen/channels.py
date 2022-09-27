@@ -103,6 +103,19 @@ class HypergenWebsocketConsumer(JsonWebsocketConsumer):
     def encode_json(cls, content):
         return dumps(content)
 
+class HypergenWebsocketAutoConsumer(HypergenWebsocketConsumer):
+    def group_name(self):
+        return ".".join([self.hypergen_func.__module__, self.hypergen_func.__name__] +
+            list(self.scope['url_route']['args']) +
+            [f"{k}__{v}" for k, v in self.scope['url_route']['kwargs'].items()])
+
+    def receive_json(self, content):
+        with context(request=self.get_request()):
+            commands = self.hypergen_func(WebsocketRequest(self), *content['args'])
+
+        async_to_sync(self.channel_layer.group_send)(self.group_name(),
+            {'type': 'send_hypergen', 'commands': json.loads(dumps(commands))})
+
 def ws_url(url):
     return context.request.build_absolute_uri(url).replace("https://", "wss://").replace("http://", "ws://")
 
