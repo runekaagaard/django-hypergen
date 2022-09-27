@@ -224,6 +224,11 @@ def autoconsumers(module, prefix):
             def __init__(self, *args, **kwargs):
                 super(HypergenWebsocketAutoConsumer, self).__init__(*args, **kwargs)
 
+            def group_name(self):
+                return ".".join([self.hypergen_func.__module__, self.hypergen_func.__name__] +
+                    list(self.scope['url_route']['args']) +
+                    [f"{k}__{v}" for k, v in self.scope['url_route']['kwargs'].items()])
+
             def receive_json(self, content):
                 # before sending it to msgpack. Is there a better way?
                 with context(request=self.get_request()):
