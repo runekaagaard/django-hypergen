@@ -32,6 +32,7 @@ STYLE = """
 #features h4 {
     margin: 0;
     padding: 0;
+    margin-top: 4px;
 }
 #features .header {
     background-color: #272822;
@@ -39,6 +40,7 @@ STYLE = """
     color: #F8F8F2;
     text-align: center;
     /* border-bottom: 1px solid grey; */
+    border-right: 1px solid grey;
 }
 #features .tc {
     color: #F8F8F2;
@@ -89,10 +91,10 @@ f1.html = """
 # pre(code(hypergen(func, settings=dict(indent=True))))
 
 def feature(func):
-    # with div(class_="grid3"):
-    #     div(h4("Python"), class_="header")
-    #     div(h4(""), class_="header")
-    #     div(h4("Output"), class_="header")
+    with div(class_="grid3"):
+        div(h4("Hypergen"), class_="header")
+        div(h4(""), class_="header")
+        div(h4("HTML"), class_="header")
 
     with div(class_="grid3"):
         with div(class_="cell"):
@@ -101,13 +103,16 @@ def feature(func):
         with div(class_="cell tc"):
             with div():
                 h2("Write HTML in pure python")
-                p("Your beloved Python is right at your fingertips, including but not limited to:")
+                p("Built your templates in a real language with:")
                 with ul():
-                    li("Functions")
-                    li("Conditionals")
-                    li("Loops")
-                    li("With statements")
-                    li("ORM")
+                    li("functions")
+                    li("modules & packages")
+                    li("conditionals")
+                    li("loops")
+                    li("with statements")
+                    li("djangos ORM")
+                    li("...")
+                div("", style=dict(height="60px"))
 
         with div(class_="cell"):
             with pre(), code():
