@@ -230,7 +230,6 @@ def autoconsumers(module, prefix):
                     [f"{k}__{v}" for k, v in self.scope['url_route']['kwargs'].items()])
 
             def receive_json(self, content):
-                # before sending it to msgpack. Is there a better way?
                 with context(request=self.get_request()):
                     commands = self.hypergen_func(WebsocketRequest(self), *content['args'])
 
