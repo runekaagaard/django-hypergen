@@ -28,6 +28,8 @@ from apptemplate.views import my_view
 from coredocs.views import template, liveviews
 from website.minidemoes.shoot_em_up import shoot_em_up
 
+from website.features import features_template
+
 @liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
     with div(class_="hero"):
@@ -35,6 +37,8 @@ def home(request):
         p(i("Stay focused on the actual complexity of your app, while having 291% more fun!", sep=" "),
             class_="center")
         hr()
+
+    features_template()
 
     h2("Why hypergen?")
     p("For a more technical explanation about the ", i("what"), " and the ", i("how"), ", check out our ",

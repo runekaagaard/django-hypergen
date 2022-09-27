@@ -150,6 +150,11 @@ table td pre, table td pre code {
   grid-template-columns: 50% 50%;
 }
 
+.grid3 {
+  display: grid;
+  grid-template-columns: 34% 33% 33%;
+}
+
 #shoot-em-up {
   cursor: crosshair;
   width: 300px;
