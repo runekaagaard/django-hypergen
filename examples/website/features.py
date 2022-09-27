@@ -50,14 +50,14 @@ STYLE = """
     text-align: left;
     display: inline-block;
 }
-#features .nul {
+.nul {
     text-decoration: none !important;
-    color: #272822;
+    
     font-weight: bold;
     margin-right: 8px;
     display: inline-block;
 }
-#features .nul:hover {
+.nul:hover {
     text-decoration: underline !important;
 }
 #features code {
@@ -66,6 +66,14 @@ STYLE = """
 }
 #features code::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
+}
+#features .tc *:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+#features .tc *:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 """
 
@@ -78,7 +86,7 @@ def fcode(func):
 def f1():
     with table(class_="striped"):
         tr(th("n"), th("squared"))
-        for n in range(1, 6):
+        for n in range(1, 4):
             with tr():
                 td(n)
                 td(n * n)
@@ -101,7 +109,6 @@ f1.html = """
         <td>3</td>
         <td>9</td>
     </tr>
-    ...
 </table>""".strip()
 
 # pre(code(hypergen(func, settings=dict(indent=True))))
@@ -128,7 +135,7 @@ def feature(func):
                     li("with statements")
                     li("djangos ORM")
                     li("...")
-                div("", style=dict(height="60px"))
+                # div("", style=dict(height="60px"))
 
         with div(class_="cell"):
             with pre(), code():
