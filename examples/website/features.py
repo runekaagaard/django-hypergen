@@ -15,6 +15,7 @@ STYLE = """
     padding: 8px 16px;
     height: 100%;
     border-right: 1px solid grey;
+    height: calc(500px - 16px * 2)
 }
 #features .cell .inner {
     height: calc(100% - 35px);
