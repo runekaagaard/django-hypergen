@@ -50,9 +50,22 @@ STYLE = """
     text-align: left;
     display: inline-block;
 }
-.nul {
+#features .nul {
     text-decoration: none !important;
-    # color: #272822 !important;
+    color: #272822;
+    font-weight: bold;
+    margin-right: 8px;
+    display: inline-block;
+}
+#features .nul:hover {
+    text-decoration: underline !important;
+}
+#features code {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+#features code::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
 }
 """
 
@@ -129,12 +142,12 @@ def features_template():
     style(STYLE)
     with div(id="features"):
         h2("Features")
-        with div(class_="terminals"):
-            # a("⟪", href="1", class_="selected")
-            # a("⟫", href="2", class_="selected")
-            a("<", href="1", class_="selected nul")
-            a(">", href="2", class_="selected nul")
-            small("1 of 27", style=dict(float="right"))
         feature(f1)
+    with div(style="clear: both; margin-top: 16px;"):
+        # a("⟪", href="1", class_="selected")
+        # a("⟫", href="2", class_="selected")
+        a("🢨", href="1", class_="selected nul")
+        a("🢩", href="2", class_="selected nul")
+        small("1 of 27", style=dict(float="right"))
 
     # with div(id="features"):
