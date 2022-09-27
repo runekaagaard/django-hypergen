@@ -106,7 +106,7 @@ def feature(func):
         with div(class_="cell tc"):
             with div():
                 h2("Write HTML in pure python")
-                p("Build your templates in a turing complete language:")
+                p("Build templates in a turing complete language:")
                 with ul():
                     li("functions")
                     li("modules & packages")
