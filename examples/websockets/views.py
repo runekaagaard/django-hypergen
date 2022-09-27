@@ -80,6 +80,10 @@ def receive_message(consumer, request, message):
     # Automatically receives the channels consumer class instance and the request first.
     # Then it takes the arguments from the callback.
 
+    # Ignore empty messages.
+    if not message:
+        return
+
     # Writes into the "counter" id.
     span("Length of last message is: ", len(message))
 
