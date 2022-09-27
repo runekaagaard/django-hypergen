@@ -208,10 +208,7 @@ def autourls(module, namespace):
     return patterns
 
 def autoconsumers(module, prefix):
-    import json
-    from hypergen.channels import HypergenWebsocketAutoConsumer, WebsocketRequest
-    from asgiref.sync import async_to_sync
-    from hypergen.liveview import dumps
+    from hypergen.channels import HypergenWebsocketAutoConsumer
 
     prefix = prefix.rstrip("/") + "/"
     assert "^" not in prefix, "The prefix should ONLY be foo/bar/baz/. Works for both path and re_path."

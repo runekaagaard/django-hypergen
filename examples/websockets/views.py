@@ -45,6 +45,7 @@ def chat(request):
 #                                                                     ↓ Remember to add the plugin
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template, user_plugins=[WebsocketPlugin()])
 def chat2(request):
+    from channels.http import AsgiRequest
     # @consumer decorated functions are reversible with the ".reverse()" helper.
     websocket_url = receive_message.reverse()
 

@@ -13,6 +13,7 @@ from django.templatetags.static import static
 from django.http.response import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 
 from asgiref.sync import async_to_sync
+from channels.http import AsgiRequest
 from channels.generic.websocket import JsonWebsocketConsumer
 
 __all__ = ["HypergenWebsocketConsumer", "ws_url", "WebsocketPlugin", "consumer"]
@@ -33,10 +34,6 @@ class WebsocketPlugin(LiveviewPluginBase):
         else:
             return hypergen(template) + html
 
-class WebsocketRequest():
-    def __init__(self, consumer):
-        self.user = consumer.scope["user"]
-
 def get(o, k, d="__DEFAULT__"):
     value = getattr(o.Hypergen, k, "__NA__")
     if d != "__DEFAULT__":
@@ -47,7 +44,8 @@ def get(o, k, d="__DEFAULT__"):
 
 class HypergenWebsocketConsumer(JsonWebsocketConsumer):
     def get_request(self):
-        return WebsocketRequest(self)
+        self.scope["method"] = "WS"
+        return AsgiRequest(self.scope, None)
 
     def check_perms(self, content):
         return check_perms(self.get_request(), get(self, "perm"), any_perm=get(self, "any_perm", d=False),
@@ -110,8 +108,9 @@ class HypergenWebsocketAutoConsumer(HypergenWebsocketConsumer):
             [f"{k}__{v}" for k, v in self.scope['url_route']['kwargs'].items()])
 
     def receive_json(self, content):
-        with context(request=self.get_request()):
-            commands = self.hypergen_func(WebsocketRequest(self), *content['args'])
+        request = self.get_request()
+        with context(request=request):
+            commands = self.hypergen_func(request, *content['args'])
 
         async_to_sync(self.channel_layer.group_send)(self.group_name(),
             {'type': 'send_hypergen', 'commands': json.loads(dumps(commands))})
