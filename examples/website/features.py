@@ -52,7 +52,7 @@ STYLE = """
 }
 .nul {
     text-decoration: none !important;
-    color: #272822 !important;
+    # color: #272822 !important;
 }
 """
 
@@ -130,10 +130,10 @@ def features_template():
     with div(id="features"):
         h2("Features")
         with div(class_="terminals"):
-            # a("❮", href="1", class_="selected nul")
-            # a("❯", href="2", class_="selected nul")
-            a("◄", href="1", class_="selected nul")
-            a("►", href="2", class_="selected nul")
+            # a("⟪", href="1", class_="selected")
+            # a("⟫", href="2", class_="selected")
+            a("<", href="1", class_="selected nul")
+            a(">", href="2", class_="selected nul")
             small("1 of 27", style=dict(float="right"))
         feature(f1)
 
