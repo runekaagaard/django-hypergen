@@ -52,6 +52,7 @@ STYLE = """
 }
 .nul {
     text-decoration: none !important;
+    color: #272822 !important;
 }
 """
 
@@ -105,7 +106,7 @@ def feature(func):
         with div(class_="cell tc"):
             with div():
                 h2("Write HTML in pure python")
-                p("Built your templates in a real language with:")
+                p("Build your templates in a turing complete language:")
                 with ul():
                     li("functions")
                     li("modules & packages")
@@ -133,7 +134,7 @@ def features_template():
             # a("❯", href="2", class_="selected nul")
             a("◄", href="1", class_="selected nul")
             a("►", href="2", class_="selected nul")
-            span("1 of 27", style=dict(float="right"))
+            small("1 of 27", style=dict(float="right"))
         feature(f1)
 
     # with div(id="features"):
