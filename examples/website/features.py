@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import inspect
 
 from hypergen.imports import *
@@ -123,12 +124,17 @@ f1.html = """
 
 # pre(code(hypergen(func, settings=dict(indent=True))))
 
+@contextmanager
+def cell(title):
+    with div(class_="cell"):
+        div(h4(title), class_="header")
+        with div(class_="inner"):
+            yield
+
 def feature(func):
     with div(class_="grid3"):
-        with div(class_="cell"):
-            div(h4("Hypergen"), class_="header")
-            with div(class_="inner"):
-                fcode(func)
+        with cell("Hypergen"):
+            fcode(func)
 
         with div(class_="cell tc"):
             with div(class_="inner-full"), div():
