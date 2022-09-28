@@ -13,16 +13,16 @@ def main():
 
     h2("Features")
     with div(id="features"):
-        feature(0)
+        feature(len(FEATURES) - 1)
 
 def feature(n):
     from features import views
-    FEATURES[n]()
-
     with div():
         a("🢨", href="1", class_="selected nul", id="features-prev", onclick=callback(views.feature, n - 1))
         a("🢩", href="2", class_="selected nul", id="features-next", onclick=callback(views.feature, n + 1))
         small(n + 1, "of", len(FEATURES), sep=" ", class_="fr")
+
+    FEATURES[n]()
 
 def fcode(func):
     s = inspect.getsource(func)
@@ -100,7 +100,7 @@ def f2_code():
                 value=field.value(),
             )
 
-    def my_template(form):
+    def template(form):
         for fields in form:
             form_field(form_field)
 
@@ -112,7 +112,7 @@ def f2_code2():
             with div(class_="footer"):
                 yield
 
-    def my_template(person):
+    def template(person):
         with card(person.name):
             button("Show details")
 
@@ -134,4 +134,59 @@ def f2():
 
         cell_code(fcode(f2_code2), "Context manager")
 
-FEATURES = [f1, f2]
+# feature3
+
+# yapf: disable
+def f3_code():
+    def template(text):
+        input(id="text",
+              oninput=callback(
+                reverser,
+                THIS)
+        )
+
+        p(text)
+
+    @liveview(...)
+    def reverse_text(request):
+        template("")
+
+    @action(...)
+    def reverser(request, text):
+        template(text[::-1])
+
+# yapf: enable
+
+def f3_code2():
+    "Cool"
+
+def f3():
+    with div(class_="grid3"):
+        cell_code(fcode(f3_code), "views.py")
+
+        cell_text("""
+                Liveviews
+                =========
+
+                Write dynamic websites effortlessly
+
+                - Everything lives on the backend
+                - No frontend
+                - Single source of truth
+            """)
+
+        with cell(""):
+            with div(class_="running", id="f3"):
+                f3_template("")
+
+def f3_template(text):
+    from features import views
+    input_(id="f3-i", placeholder="Write here...", oninput=callback(views.reverser, THIS))
+
+    with p():
+        if text:
+            write(text[::-1])
+        else:
+            raw("&nbsp;")
+
+FEATURES = [f1, f2, f3]

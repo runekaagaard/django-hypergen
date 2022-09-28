@@ -154,6 +154,12 @@ table td pre, table td pre code {
   display: grid;
   grid-template-columns: 34% 33% 33%;
 }
+@media only screen and (max-width: 1000px) {
+  .grid3 {
+    grid-template-columns: 100%;
+    row-gap: 1px;
+  }
+}
 
 #shoot-em-up {
   cursor: crosshair;

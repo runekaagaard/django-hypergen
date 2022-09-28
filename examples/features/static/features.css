@@ -84,3 +84,11 @@
 #features .fr {
   float: right;
 }
+
+#features .running {
+  color: #F8F8F2;
+}
+
+#features .running input {
+  width: 100%;
+}
