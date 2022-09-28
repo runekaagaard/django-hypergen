@@ -98,3 +98,11 @@
 #features .running input {
   width: 100%;
 }
+#features .cell-full {
+  height: 500px;
+  padding: 0;
+}
+#features .cell-full table {
+  height: 484px;
+  width: 100%;
+}

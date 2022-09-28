@@ -44,6 +44,11 @@ def cell_text(s):
     with div(class_="cell tc"), div(class_="inner-full"), div():
         rst(ri(s))
 
+@contextmanager
+def cell_full():
+    with div(class_="cell-full"), div(class_=""), div():
+        yield
+
 @component
 def cell_code(s, title=None):
     with cell(title):
@@ -189,4 +194,46 @@ def f3_template(text):
         else:
             raw("&nbsp;")
 
-FEATURES = [f1, f2, f3]
+# f4 - snake
+def f4_code():
+    "Use keys to navigate"
+
+def f4():
+    with div(class_="grid3"):
+        cell_text("""
+                Websockets
+                =========
+
+                Need faster two way communication?
+
+                - @consumer
+                - Same features as @action
+                - Fun
+            """)
+
+        cell_code(fcode(f4_code), "")
+
+        with cell_full():
+            state = [[0] * 20 for _ in range(0, 20)]
+            state[10][9] = 1
+            state[10][10] = 1
+            snake(state)
+
+def snake(state):
+    style("""
+        .g {
+            background-color: green;
+            border: none;
+        }
+        .b {
+            background-color: #272822;
+            border: none;
+        }
+    """)
+    with table():
+        for a in state:
+            with tr():
+                for b in a:
+                    td("", class_="g" if b else "b")
+
+FEATURES = [f1, f2, f3, f4]
