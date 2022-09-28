@@ -78,7 +78,7 @@ def f1():
                 Write HTML in pure python
                 =========================
 
-                Build templates in a turing complete language:
+                Build templates in a turing complete language
 
                 - conditionals
                 - loops
@@ -124,7 +124,7 @@ def f2():
                 Composable
                 ==========
 
-                Compose your templates with ... tadaaaah ... python:
+                Compose your templates with ... tadaaaah ... python
 
                 - functions
                 - modules & packages
