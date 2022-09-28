@@ -11,6 +11,12 @@
     border-right: 1px solid grey;
     height: calc(500px - 16px * 2)
 }
+@media only screen and (max-width: 1000px) {
+  #features .cell {
+    height: auto;
+    padding-bottom: 16px;
+  }
+}
 #features .cell .inner {
     height: calc(100% - 35px);
     display: flex;
