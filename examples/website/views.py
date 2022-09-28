@@ -28,7 +28,7 @@ from apptemplate.views import my_view
 from coredocs.views import template, liveviews
 from website.minidemoes.shoot_em_up import shoot_em_up
 
-from website.features import features_template
+from features import templates as features_templates
 
 @liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
 def home(request):
@@ -38,7 +38,7 @@ def home(request):
             class_="center")
         hr()
 
-    features_template()
+    features_templates.main()
 
     h2("Why hypergen?")
     p("For a more technical explanation about the ", i("what"), " and the ", i("how"), ", check out our ",

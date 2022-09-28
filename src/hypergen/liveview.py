@@ -164,6 +164,8 @@ class ActionPlugin(LiveviewPluginBase):
                 if into:
                     commands.append(["hypergen.morph", target_id, join_html(into)])
 
+        commands.append(["hypergen.onpushstate"])
+
         if self.prepend_commands:
             c.hypergen.commands.extendleft(reversed(commands))
         else:
