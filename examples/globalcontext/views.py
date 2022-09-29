@@ -27,9 +27,7 @@ from hypergen.context import context
         
 print(context.request) # The middleware adds the request.
         """.strip()))
-        p("It's available to users too, although the names 'request', 'hypergen', 'users', 'appstate' ",
-            "and 'base_template' are reserved for ",
-            "internal use. Some of these will be removed in a future release.")
+        p("It's available to users too, although the names 'request' and 'hypergen' are reserved for internal use.")
         p("Heres whats in", code("context.hypergen.into"), "right now for an example:", sep=" ")
         pre(code(pformat(context.hypergen.into), style={"max-height": "250px", "overflow-y": "scroll"}))
 

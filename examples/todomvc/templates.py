@@ -36,7 +36,7 @@ base.target_id = "content"
 @component
 def todo_item(item):
     from todomvc.views import toggle_is_completed, delete, start_edit, submit_edit
-    is_editing = item.pk == context.appstate["edit_item_pk"]
+    is_editing = item.pk == context.hypergen.appstate["edit_item_pk"]
     classes = []
     if item.is_completed:
         classes.append("completed")
@@ -60,7 +60,7 @@ def content(items, filtering, all_completed):
         with header(class_="header"):
             h1("todos")
             input_(id_="new-todo", class_="new-todo", placeholder="What needs to be done?",
-                autofocus=not context.appstate["edit_item_pk"],
+                autofocus=not context.hypergen.appstate["edit_item_pk"],
                 onkeyup=callback(add, THIS, clear=True, when=["hypergen.when.keycode", "Enter"]))
 
         if filtering == ALL and not items:
