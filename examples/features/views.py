@@ -14,3 +14,11 @@ def feature(request, n):
 @action(perm=NO_PERM_REQUIRED, target_id="f3")
 def reverser(request, text):
     templates.f3_template(text)
+
+@consumer(perm=NO_PERM_REQUIRED, target_id="snake-game")
+def snake(consumer, request):
+    from random import randint
+    state = [[randint(0, 1) for _ in range(0, 20)] for _ in range(0, 20)]
+    # state[10][9] = 1
+    # state[10][10] = 1
+    templates.snake(state)

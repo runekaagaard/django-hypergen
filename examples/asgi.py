@@ -11,10 +11,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 django.setup()
 
 import websockets.routing
+import features.routing
 
 application = ProtocolTypeRouter(
     {
     "http":
     AsgiHandler(),
     "websocket":
-    AllowedHostsOriginValidator(AuthMiddlewareStack(URLRouter(websockets.routing.websocket_urlpatterns))),},)
+    AllowedHostsOriginValidator(
+    AuthMiddlewareStack(URLRouter(websockets.routing.websocket_urlpatterns + features.routing.websocket_urlpatterns))
+    ),},)

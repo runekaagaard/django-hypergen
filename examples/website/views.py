@@ -30,7 +30,7 @@ from website.minidemoes.shoot_em_up import shoot_em_up
 
 from features import templates as features_templates
 
-@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
+@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template, user_plugins=[WebsocketPlugin()])
 def home(request):
     with div(class_="hero"):
         h2("Build reactive web apps, without leaving Django", class_="center hero")

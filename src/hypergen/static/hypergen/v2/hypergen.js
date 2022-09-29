@@ -104,6 +104,23 @@ export const prepend = function(id, html) {
   el.innerHTML = html + el.innerHTML
 }
 
+var INTERVALS = {}
+
+export const intervalSet = function(commands, interval, name) {
+  const i = setInterval(() => applyCommands(commands), interval)
+  if (!!name) INTERVALS[name] = i
+}
+
+export const intervalClear = function(name) {
+  if (INTERVALS[name]) clearInterval(name)
+}
+
+export const addEventListener = function(querySelectorString, type, commands, options) {
+  document.querySelector(querySelectorString).addEventListener(type, (event) => applyCommands(commands), options || {})
+}
+
+
+
 hypergen.clientState = {}
 
 export const setClientState = function(at, value) {
