@@ -298,8 +298,10 @@ def liveview(func, path=None, re_path=None, base_template=None, perm=None, any_p
     return _
 
 @wrap2
-def action(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False, autourl=True,
-    partial=True, base_view=None, appstate=None, user_plugins=[]):
+def action(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
+    login_url=None, raise_exception=False, redirect_field_name=None, autourl=True, partial=True, base_view=None,
+    appstate=None, user_plugins=[]):
+    # TODO: Make support for login_url, raise_exception and redirect_field_name in actions as well!
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
