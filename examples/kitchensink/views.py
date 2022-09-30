@@ -3,14 +3,11 @@ import codecs
 from django.http.response import HttpResponse
 from django.urls.base import reverse
 
-from hypergen.core import *
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
+from hypergen.imports import *
 
 from django.templatetags.static import static
-from hypergen.core import dumps
-from hypergen.core import hypergen_context
 
-@hypergen_view(perm=NO_PERM_REQUIRED)
+@liveview(perm=NO_PERM_REQUIRED)
 def sink(request):
     section(
         [1, 2, 3],

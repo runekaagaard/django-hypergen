@@ -46,11 +46,11 @@ def toggle_all(request, is_completed):
 
 @action(base_view=todomvc, **HYPERGEN_SETTINGS)
 def start_edit(request, pk):
-    context.appstate["edit_item_pk"] = pk
+    context.hypergen.appstate["edit_item_pk"] = pk
 
 @action(base_view=todomvc, **HYPERGEN_SETTINGS)
 def submit_edit(request, pk, description):
     item = Item.objects.get(pk=pk)
     item.description = description
     item.save()
-    context.appstate["edit_item_pk"] = None
+    context.hypergen.appstate["edit_item_pk"] = None

@@ -96,7 +96,8 @@ class LiveviewPluginBase:
         if isinstance(element, a):
             # Partial loading.
             href = attrs.get("href", None)
-            if type(href) is metastr:
+            partial = attrs.pop("partial", True)
+            if partial and type(href) is metastr:
                 base_template1 = href.meta.get("base_template", None)
                 if base_template1 is not None:
                     base_template2 = c.hypergen.get("partial_base_template", None)
@@ -279,20 +280,29 @@ def liveview(func, path=None, re_path=None, base_template=None, perm=None, any_p
         if partial and request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1":
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
                 liveview_resolver_match=liveview_resolver_match()):
-                commands = hypergen(
-                    func, request, *args, **kwargs, settings=d(action=True, returns=COMMANDS, target_id=target_id,
+                full = hypergen(
+                    func, request, *args, **kwargs, settings=d(action=True, returns=FULL, target_id=target_id,
                     appstate=appstate, namespace=_.reverse.hypergen_namespace, prepend_commands=False))
 
-                return HttpResponse(dumps(commands), status=200, content_type='application/json')
+                if isinstance(full["template_result"], HttpResponseRedirect):
+                    # Allow to return a redirect response directly from partial view.
+                    return HttpResponse(dumps([["hypergen.redirect", full["template_result"]["Location"]]]),
+                        status=302, content_type='application/json')
+                else:
+                    return HttpResponse(dumps(full["context"].hypergen.commands), status=200,
+                        content_type='application/json')
         else:
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
                 liveview_resolver_match=liveview_resolver_match()):
-                html = hypergen(
+                full = hypergen(
                     func, request, *args, **kwargs,
-                    settings=d(liveview=True, base_template=base_template, appstate=appstate,
+                    settings=d(liveview=True, returns=FULL, base_template=base_template, appstate=appstate,
                     namespace=_.reverse.hypergen_namespace if getattr(_, "reverse", None) else None,
                     user_plugins=user_plugins))
-                return HttpResponse(html)
+                if isinstance(full["template_result"], HttpResponse):
+                    return full["template_result"]
+                else:
+                    return HttpResponse(full["html"])
 
     if autourl:
         assert not all((path, re_path)), "Only one of path and re_path must be set when autourl=True"
@@ -304,8 +314,10 @@ def liveview(func, path=None, re_path=None, base_template=None, perm=None, any_p
     return _
 
 @wrap2
-def action(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False, autourl=True,
-    partial=True, base_view=None, appstate=None, user_plugins=[]):
+def action(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
+    login_url=None, raise_exception=False, redirect_field_name=None, autourl=True, partial=True, base_view=None,
+    appstate=None, user_plugins=[]):
+    # TODO: Make support for login_url, raise_exception and redirect_field_name in actions as well!
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:

@@ -4,7 +4,6 @@ import json
 from time import time
 
 from hypergen.ultragen cimport *
-from hypergen.core import context as c, t
 
 cdef extern from "stdlib.h":
     double drand48() nogil

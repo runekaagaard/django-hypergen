@@ -3,8 +3,6 @@ from collections import defaultdict
 
 from yaml import load
 
-from djangolander.views import lander
-
 try:
     from yaml import CLoader as Loader
 except ImportError:
@@ -19,7 +17,6 @@ from inputs.views import inputs
 from gameofcython.views import gameofcython
 from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
-from t9n.views import page
 from website.templates2 import base_template, show_sources
 from commands.views import commands
 from globalcontext.views import globalcontext
@@ -161,7 +158,7 @@ def documentation(request):
 
     h2("Alternative template implementations")
     p("While the pure python template 'language' is the main template engine, two alternative ",
-        " implementations exists. These use an older version of Hypergen.")
+        " implementations exists.")
     with ul():
         li(a("Django html Templates", href=reverse("djangotemplates:djangotemplates")),
             " - Django html templates instead of python templates. ",

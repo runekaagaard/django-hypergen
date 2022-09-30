@@ -15,6 +15,7 @@ class AppstatePlugin:
             appstate = pickle.loads(appstate.encode('latin1'))
         else:
             appstate = self.appstate()
-        with context(appstate=appstate):
+        with context(at="hypergen", appstate=appstate):
             yield
-            context.request.session[k] = pickle.dumps(context.appstate, pickle.HIGHEST_PROTOCOL).decode('latin1')
+            context.request.session[k] = pickle.dumps(context.hypergen.appstate,
+                pickle.HIGHEST_PROTOCOL).decode('latin1')

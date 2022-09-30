@@ -37,7 +37,7 @@ async function visitPage(t, href) {
 }
 
 async function onclickEvents(t, href) {
-  if (["/gameofcython/", "/t9n/", "/djangotemplates/", "/misc/v19/", "/misc/v16/"].indexOf(href) !== -1) return
+  if (["/gameofcython/", "/djangotemplates/", "/misc/v19/", "/misc/v16/"].indexOf(href) !== -1) return
   await t
       .navigateTo(href)
       .expect(logger.contains(r => r.response.statusCode === 200)).ok()
@@ -60,7 +60,7 @@ async function onclickEvents(t, href) {
 test('test', async t => {
   while(queue.length > 0) {
     const href = queue.pop()
-    if (["/djangolander/lander/", "/misc/v13/", "/misc/v14/",
+    if (["/misc/v13/", "/misc/v14/",
          "/misc/v15/", "/gameofcython/", "/djangotemplates/"].indexOf(href) !== -1) continue
     console.log(`testing url: ${href}`)
     

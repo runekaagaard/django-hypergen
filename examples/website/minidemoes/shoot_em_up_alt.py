@@ -26,24 +26,25 @@ def shoot_em_up_alt(request):
                 new Audio(url).play()
             }
         """)
-        context.appstate = init_appstate()
+        context.hypergen.appstate = init_appstate()
 
-    context.appstate["target_num"] = choice(list(set(range(0, 5)) - {context.appstate["target_num"]}))
+    context.hypergen.appstate["target_num"] = choice(
+        list(set(range(0, 5)) - {context.hypergen.appstate["target_num"]}))
 
     for i in range(0, 5):
-        if i == context.appstate["target_num"]:
+        if i == context.hypergen.appstate["target_num"]:
             img(id="fire_alt", src=static("website/target.svg"), onmousedown=callback(fire_alt))
         else:
             img(src=static("website/duck.svg"))
 
-    if context.appstate["hits"]:
-        rate = round(context.appstate["hits"] / (time() - context.appstate["start_time"]), 2)
-        div(b("hits: "), context.appstate["hits"])
+    if context.hypergen.appstate["hits"]:
+        rate = round(context.hypergen.appstate["hits"] / (time() - context.hypergen.appstate["start_time"]), 2)
+        div(b("hits: "), context.hypergen.appstate["hits"])
         div(b("rate: "), rate, "/s")
     else:
         div(b("warning:"), "🔊", sep=" ")
 
 @action(base_view=shoot_em_up_alt, **settings)
 def fire_alt(request):
-    context.appstate["hits"] += 1
+    context.hypergen.appstate["hits"] += 1
     command("play", static("website/gun.mp3"))

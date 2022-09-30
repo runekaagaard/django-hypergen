@@ -165,7 +165,7 @@ The full signature is:
     Raise an exception instead if the user does not have the required permissions.
 *appstate (None)*
     Executes a callback function the return of which initializes a persistent datastructure living in Djangos
-    session storage. It's available at ``context.appstate``. Manipulate that variable and it's automatically stored
+    session storage. It's available at ``context.hypergen.appstate``. Manipulate that variable and it's automatically stored
     at the end of each request.
 *target_id (None)*
     Used internally for partial loading, not very useful in userland.
