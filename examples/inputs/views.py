@@ -4,11 +4,11 @@ d = dict
 
 from hypergen.imports import *
 from hypergen.context import context as c
+from hypergen.liveview import COERCE, JS_COERCE_FUNCS, JS_VALUE_FUNCS
 
 import datetime
 from collections import namedtuple
 from django.urls.base import reverse
-from hypergen.core import COERCE, JS_COERCE_FUNCS, JS_VALUE_FUNCS
 
 from yapf.yapflib.yapf_api import FormatCode
 

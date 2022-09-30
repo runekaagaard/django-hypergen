@@ -5,18 +5,22 @@ import operator
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
-from hypergen.core import hypergen_context_decorator, command, hypergen_response, context as c, hypergen_to_string, loads
-from hypergen.incubation import SessionVar
+from hypergen.imports import *
+from hypergen.context import context as c
 
-from website.templates import show_sources
+def hypergen_context_decorator(f):
+    return f
+
+from hypergen.incubation import SessionVar
+from website.templates2 import show_sources
 
 d = dict
 STACK = SessionVar("STACK", [])  # This variable lives in the session data.
 
-@hypergen_context_decorator
+@liveview(perm=NO_PERM_REQUIRED, autourl=False)
 def djangotemplates(request):
-    return render(request, "djangotemplates/base.html",
-        d(stack=STACK.get(), sources=hypergen_to_string(show_sources, __file__)))
+    return render(request, "djangotemplates/base.html", d(stack=STACK.get(), sources=hypergen(show_sources,
+        __file__)))
 
 @hypergen_context_decorator
 def push(request):

@@ -1,5 +1,5 @@
-from hypergen.contrib import hypergen_urls
+from hypergen.hypergen import autourls
 from gameofcython import views
 
 app_name = 'gameofcython'
-urlpatterns = hypergen_urls(views)
+urlpatterns = autourls(views, app_name)

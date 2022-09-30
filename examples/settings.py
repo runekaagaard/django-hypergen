@@ -34,9 +34,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
-    'django.contrib.messages', 'django.contrib.staticfiles', 'website', 'hypergen', 'todomvc', 'inputs',
-    'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 't9n', 'notifications', 'commands',
-    'partialload', 'hellomagic', 'globalcontext', 'djangolander', 'coredocs', 'kitchensink', 'misc', 'booking']
+    'django.contrib.messages', 'django.contrib.staticfiles', 'hypergen', 'website', 'todomvc', 'inputs',
+    'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'notifications', 'commands', 'partialload',
+    'hellomagic', 'globalcontext', 'coredocs', 'kitchensink', 'misc', 'booking']
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware' if os.environ.get("PROD", False) else None,
@@ -47,7 +47,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'hypergen.core.context_middleware',
     'hypergen.context.context_middleware',
     'django.middleware.cache.FetchFromCacheMiddleware' if os.environ.get("PROD", False) else None,]
 
@@ -121,5 +120,5 @@ if os.environ.get("PROD", False):
         'console': {'level': 'INFO', 'class': 'logging.StreamHandler', 'stream': sys.stdout,
         'formatter': 'verbose'}}, 'loggers': {'': {'handlers': ['console'], 'level': 'INFO', 'propagate': True}}}
 
-HYPERGEN_ENABLE_INCUBATION = True
-HYPERGEN_ENABLE_OLD = True
+# HYPERGEN_ENABLE_INCUBATION = True
+# HYPERGEN_ENABLE_OLD = True

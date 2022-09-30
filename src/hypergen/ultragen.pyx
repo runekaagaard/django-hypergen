@@ -6,7 +6,7 @@ cimport cython
 from libcpp.string cimport string
 from libc.stdio cimport printf, sprintf
 
-from hypergen.core import context as c
+from hypergen.context import context as c
 
 cdef:
     string T = <char*>"__TERM__" # Terminate list of strings

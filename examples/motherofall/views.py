@@ -1,16 +1,13 @@
 from contextlib import contextmanager
-import math
 from django.templatetags.static import static
-from hypergen.core import *
-from hypergen.contrib import hypergen_view, NO_PERM_REQUIRED, hypergen_callback
 
+from hypergen.imports import *
 
 class dotdict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
-
 
 @contextmanager
 def base_template():
@@ -29,8 +26,6 @@ def base_template():
             button("reset", id_="reset", onclick=callback(reset), focus=False)
             with div(id_="content"):
                 yield
-
-
 
 mouse_html = """
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -56,14 +51,13 @@ def set_own_state(request, new_state):
     global state
     state[key] = {**get_own_state(request), **new_state}
 
-
 def mouse(item):
-    with div(style={'position': 'fixed', 'width': '40px',
-                    'left': f'{item.get("x", 0)}px', 'top': f'{item.get("y", 0)}px'}):
+    with div(style={
+            'position': 'fixed', 'width': '40px', 'left': f'{item.get("x", 0)}px', 'top': f'{item.get("y", 0)}px'}):
         raw(mouse_html)
         div(item.get("name", "No name"))
 
-@hypergen_view(perm=NO_PERM_REQUIRED, base_template=base_template)
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
 def motherofall(request):
     global state
     localkey = request.session.session_key
@@ -71,8 +65,8 @@ def motherofall(request):
     h2("There are currently ", len(state.keys()), " on this site")
     if 'name' not in get_own_state(request):
         with label("Whats your screen name?"):
-              el = input_(id_="name")
-              button("Submit & Start", id_="submit", onclick=callback(submit_name, el))
+            el = input_(id_="name")
+            button("Submit & Start", id_="submit", onclick=callback(submit_name, el))
     else:
         script("""
         document.activeElement.blur();
@@ -82,25 +76,19 @@ def motherofall(request):
             if key != localkey:
                 mouse(item)
 
-
-
-@hypergen_callback(perm=NO_PERM_REQUIRED, view=motherofall, target_id="content")
+@action(perm=NO_PERM_REQUIRED, base_view=motherofall, target_id="content")
 def update(request):
     pass
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, view=motherofall, target_id="content")
+@action(perm=NO_PERM_REQUIRED, base_view=motherofall, target_id="content")
 def submit_name(request, name):
     set_own_state(request, {'name': name, 'x': 0, 'y': 0})
 
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
+@action(perm=NO_PERM_REQUIRED, target_id=OMIT)
 def reset(request):
     global state
     state = {}
 
-
-@hypergen_callback(perm=NO_PERM_REQUIRED, target_id=OMIT)
+@action(perm=NO_PERM_REQUIRED, target_id=OMIT)
 def mouse_move(request, x, y):
     set_own_state(request, {'x': x, 'y': y})
-
-
-
