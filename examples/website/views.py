@@ -152,15 +152,15 @@ def documentation(request):
         li(a("Hypergens global immutable context", href=globalcontext.reverse()))
         li(a("Notifications from Django messages", href=notifications.reverse()))
 
-    # h2("Alternative template implementations")
-    # p("While the pure python template 'language' is the main template engine, two alternative ",
-    #     " implementations exists. These use an older version of Hypergen.")
-    # with ul():
-    #     li(a("Django html Templates", href=reverse("djangotemplates:djangotemplates")),
-    #         " - Django html templates instead of python templates. ",
-    #         "We could use some input on this, and are ready to polish it together with you.")
-    #     li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
-    #         " - example of the alpha Cython implementation.")
+    h2("Alternative template implementations")
+    p("While the pure python template 'language' is the main template engine, two alternative ",
+        " implementations exists.")
+    with ul():
+        li(a("Django html Templates", href=reverse("djangotemplates:djangotemplates")),
+            " - Django html templates instead of python templates. ",
+            "We could use some input on this, and are ready to polish it together with you.")
+        li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
+            " - example of the alpha Cython implementation.")
 
     h2("Compatibility")
     p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),

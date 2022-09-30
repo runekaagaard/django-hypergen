@@ -1,4 +1,5 @@
 from hypergen.imports import *
+from hypergen.liveview import callback as cb
 
 d = dict
 
@@ -18,7 +19,7 @@ def callbackn(id_, event_name, url_or_view, *cb_args, **kwargs):
     if isinstance(url_or_view, str) and ":" in url_or_view:
         url_or_view = reverse(url_or_view)
     el = div(id_=id_)
-    return mark_safe("".join(callback(url_or_view, *cb_args, **kwargs)(el, event_name, None)))
+    return mark_safe("".join(cb(url_or_view, *cb_args, **kwargs)(el, event_name, None)))
 
 @register.filter
 def element(id_, js_coerce_func=None):
@@ -40,5 +41,5 @@ def hypergen_footer():
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', context.hypergen.event_handler_callbacks)
     return mark_safe("""
         <script src="{}"></script>
-        <script>ready(() => window.applyCommands(JSON.parse('{}', reviver)))</script>
-    """.format(static("hypergen/hypergen.min.js"), dumps(context.hypergen.commands)))
+        <script>hypergen.ready(() => hypergen.applyCommands(JSON.parse('{}', hypergen.reviver)))</script>
+    """.format(static("hypergen/v2/hypergen.min.js"), dumps(context.hypergen.commands)))

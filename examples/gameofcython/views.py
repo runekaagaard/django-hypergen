@@ -17,6 +17,12 @@ HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=base_template)
 RUNNING, STOPPED = "RUNNING", "STOPPED"
 STATE = STOPPED
 
+def is_ajax(request=None):
+    if request is None:
+        request = context.request
+
+    return request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest'
+
 @liveview(re_path="^$", **HYPERGEN_SETTINGS)
 def gameofcython(request):
     if not module_found:
