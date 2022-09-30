@@ -23,8 +23,8 @@ def feature(n):
         small(n + 1, "of", len(FEATURES), sep=" ", class_="fr")
 
     if n == 3:
-        # command("hypergen_websockets.open", views.snake.reverse())
-        # command("hypergen.intervalSet", [["hypergen.callback", views.snake.reverse(), []]], 1000 / 10, "snake")
+        command("hypergen_websockets.open", views.snake.reverse())
+        command("hypergen.intervalSet", [["hypergen.callback", views.snake.reverse(), []]], 1000 / 10, "snake")
         command("hypergen.addEventListener", "html", "keypress", [["console.log", "I pressed the KEY!", []]])
     else:
         command("hypergen_websockets.close", views.snake.reverse())
