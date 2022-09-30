@@ -22,13 +22,7 @@ def feature(n):
         a("🢩", href="2", class_="selected nul", id="features-next", onclick=callback(views.feature, n + 1))
         small(n + 1, "of", len(FEATURES), sep=" ", class_="fr")
 
-    if n == 3:
-        command("hypergen_websockets.open", views.snake.reverse())
-        command("hypergen.intervalSet", [["hypergen.callback", views.snake.reverse(), []]], 1000 / 10, "snake")
-        command("hypergen.addEventListener", "html", "keypress", [["console.log", "I pressed the KEY!", []]])
-    else:
-        command("hypergen_websockets.close", views.snake.reverse())
-        command("hypergen.intervalClear", "snake")
+    snake_init(n)
 
     FEATURES[n]()
 
@@ -224,6 +218,16 @@ def f4():
         with cell_full(), div(id="snake-game"):
             pass
 
+def snake_init(n):
+    from features import views
+    if n == 3:
+        command("hypergen_websockets.open", views.snake.reverse())
+        command("hypergen.intervalSet", [["hypergen.callback", views.snake.reverse(), [None]]], 1000 / 10, "snake")
+        command("hypergen.keypressToCallback", views.snake.reverse())
+    else:
+        command("hypergen_websockets.close", views.snake.reverse())
+        command("hypergen.intervalClear", "snake")
+
 def snake(state):
     style("""
         .g {
@@ -236,9 +240,9 @@ def snake(state):
         }
     """)
     with table():
-        for a in state:
+        for y in range(0, 20):
             with tr():
-                for b in a:
-                    td("", class_="g" if b else "b")
+                for x in range(0, 20):
+                    td("", class_="g" if (x, y) in state else "b")
 
 FEATURES = [f1, f2, f3, f4]

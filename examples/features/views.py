@@ -16,9 +16,41 @@ def reverser(request, text):
     templates.f3_template(text)
 
 @consumer(perm=NO_PERM_REQUIRED, target_id="snake-game")
-def snake(consumer, request):
-    from random import randint
-    state = [[randint(0, 1) for _ in range(0, 20)] for _ in range(0, 20)]
-    # state[10][9] = 1
-    # state[10][10] = 1
-    templates.snake(state)
+def snake(consumer, request, key):
+    def limit(n):
+        if n > 19:
+            return 0
+        elif n < 0:
+            return 19
+        else:
+            return n
+
+    if not hasattr(consumer, "state"):
+        consumer.state = {(10, 10)}
+        consumer.direction = (0, 1)
+    else:
+        # print("GOT STATE!")
+        ...
+
+    if key is not None:
+        print(repr(key))
+
+    if key is None:
+        state2 = set()
+        for x, y in consumer.state:
+            state2.add((limit(x + consumer.direction[0]), limit(y + consumer.direction[1])))
+        consumer.state = state2
+    elif key == "a":
+        print("LEFT")
+        consumer.direction = (-1, 0)
+    elif key == "d":
+        consumer.direction = (1, 0)
+        print("RIGHT")
+    elif key == "w":
+        consumer.direction = (0, -1)
+        print("UP")
+    elif key == "s":
+        consumer.direction = (0, 1)
+        print("DOWN")
+
+    templates.snake(consumer.state)
