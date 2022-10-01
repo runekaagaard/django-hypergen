@@ -116,7 +116,7 @@ class HypergenWebsocketAutoConsumer(HypergenWebsocketConsumer):
             {'type': 'send_hypergen', 'commands': json.loads(dumps(commands))})
 
 def ws_url(url):
-    return context.request.build_absolute_uri(url).replace("https://", "wss://").replace("http://", "ws://")
+    return context.request.build_absolute_uri(url).replace("https://", "wss://").replace("http://", "wss://")
 
 @wrap2
 def consumer(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
