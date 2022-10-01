@@ -227,6 +227,7 @@ def snake_init(n):
     else:
         command("hypergen_websockets.close", views.snake.reverse())
         command("hypergen.intervalClear", "snake")
+        command("hypergen.keypressToCallbackRemove", views.snake.reverse())
 
 def snake(consumer=None):
     with table():
@@ -240,7 +241,6 @@ def snake(consumer=None):
                             cls = "r"
                         else:
                             cls = "g" if (x, y) in consumer.state else "b"
-
                         td(class_=cls)
 
 FEATURES = [f1, f2, f3, f4]

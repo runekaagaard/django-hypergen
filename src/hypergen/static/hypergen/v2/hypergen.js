@@ -126,18 +126,27 @@ export const intervalSet = function(commands, interval, name) {
 }
 
 export const intervalClear = function(name) {
-  if (INTERVALS[name]) clearInterval(name)
+  console.error("Clearing", INTERVALS[name])
+  if (INTERVALS[name]) clearInterval(INTERVALS[name])
 }
 
 export const addEventListener = function(querySelectorString, type, commands, options) {
   document.querySelector(querySelectorString).addEventListener(
     type, (event) => applyCommands(commands), options || {})
 }
+
+let _TTT = {}
+
+const keypressToCallbackFunc = function(e) {
+  const [url, args, options] = _TTT
+  callback(url, [e.key, ...(args || [])], options || {})
+}
 export const keypressToCallback = function(url, args, options) {
-  window.addEventListener("keydown", function(e) {
-    console.log()
-    callback(url, [e.key, ...(args || [])], options || options)
-  })
+  _TTT = [url, args, options]
+  window.addEventListener("keydown", keypressToCallbackFunc)
+}
+export const keypressToCallbackRemove = function(url, args, options) {
+  window.removeEventListener("keydown", keypressToCallbackFunc)
 }
 /* END WARNING STABLE AGAIN */
 
@@ -220,7 +229,11 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
         throw(error)
       }
     }
-    window.hypergen_websockets.WEBSOCKETS[url].send(json)
+    if (!hypergen_websockets.WEBSOCKETS[url]) {
+      console.error("Cannot send WS to non existing connection:", url)
+      return
+    }
+    hypergen_websockets.WEBSOCKETS[url].send(json)
     if (clear === true) document.getElementById(elementId).value = ""
     
   }
