@@ -1,5 +1,7 @@
 from collections import deque
 from random import randint
+from django.contrib import messages
+from hypergen.plugins.alertify import AlertifyPlugin
 
 from hypergen.imports import *
 
@@ -74,3 +76,8 @@ def snake(consumer, request, key):
         consumer.state.append(limit(head2))
 
     templates.snake(consumer)
+
+# plugins
+@action(perm=NO_PERM_REQUIRED, user_plugins=[AlertifyPlugin()])
+def alert(request):
+    messages.warning(request, "Uh-oh!")

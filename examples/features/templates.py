@@ -205,14 +205,7 @@ def f3_template(text):
 
 # f4 - snake
 def f4_code():
-    "          WASD to navigate          "
-
-    from hypergen.imports import (
-        js,
-        liveview,
-        consumer,
-    )
-    from . import templates
+    "WASD to navigate"
 
     @liveview(...)
     def snake(request):
@@ -221,7 +214,8 @@ def f4_code():
             templates.snake()
 
     @consumer(..., target_id="snake-game")
-    def snake_consumer(consumer, request):
+    def snake_consumer(consumer, request, key):
+        snake_game(consumer, key)
         templates.snake(consumer)
 
 def f4():
@@ -267,4 +261,35 @@ def snake(consumer=None):
                             cls = "g" if (x, y) in consumer.state else "b"
                         td(class_=cls)
 
-FEATURES = [f1, f2, f3, f4]
+# f5 - plugins
+
+def f5_code():
+    from hypergen.plugins import AlertifyPlugin
+
+    @action(..., user_plugins=[AlertifyPlugin()])
+    def my_action(request):
+        messages.warning(request, "Uh-oh!")
+
+def f5_template(text):
+    from features import views
+    input_(id="f5-i", type="button", value="Click me!", onclick=callback(views.alert))
+
+def f5():
+    with div(class_="grid3"):
+        cell_code(fcode(f5_code), "views.py")
+
+        cell_text("""
+                Plugins
+                =========
+
+                Extend hypergens functionality with powerful plugins
+
+                - Hypergen dogfoods plugins by writing liveview as a plugin
+                - Plugins can have their open immutable state using context()
+            """)
+
+        with cell(""):
+            with div(class_="running", id="f3"):
+                f5_template("")
+
+FEATURES = [f1, f2, f3, f4, f5]
