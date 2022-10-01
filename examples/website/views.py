@@ -128,14 +128,10 @@ python manage.py startapp \\
 def documentation(request):
     h2("News")
     ul(
-        li(
-        b("2022-10-01"), "One of the most requested features at Djangocon was websockets.",
+        li(b("2022-10-01"), "One of the most requested features at Djangocon was websockets.",
         "I'm happy to announce that websockets are now in master, and a release will happen soon.",
         "You can see it in action as the snake game under", a("Features", href="/"), "and as the obligatory",
-        a("chat application.", href=chat2.reverse()),
-        mark(
-        "I'm having problems with making AWS copilot accept the ws protocol, so the examples are broken until I figure that out. ZZZ. Works locally ;)"
-        ), sep=" "),
+        a("chat application.", href=chat2.reverse()), sep=" "),
         li(b("2022-09-27:"), "Thank you to the Djangocon organisers and all the wonderful",
         "Django developers we met and listened too!",
         "Hope to see you all in Dublin, next year <3.", "We have made available our",
