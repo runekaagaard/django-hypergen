@@ -13,7 +13,7 @@ def main():
 
     h2("Features")
     with div(id="features"):
-        feature(len(FEATURES) - 1)
+        feature(0)
 
 def feature(n):
     from features import views

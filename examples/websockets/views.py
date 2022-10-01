@@ -1,10 +1,10 @@
 from hypergen.imports import *
-from website.templates2 import base_example_template
+from website.templates2 import base_example_template, show_sources
 """
 This file has two examples of using websockets in Hypergen:
 
 chat: Using a consumer in normal channels fashion.
-chat2: Using the @consumer decorator to avoid all the boiler plate.
+chat2: Using the @consumer decorator to avoid all the boilerplate.
 """
 
 ### chat ###
@@ -73,6 +73,8 @@ def chat2(request):
 
     # Chat messages are shown here.
     ul(id_="messages")
+
+    show_sources(__file__)
 
 # Automatically creates a consumer and creates a url route for it. Works with autoconsumers() in the routing.py
 # file. No other setup needed. It takes the same arguments as @action.
