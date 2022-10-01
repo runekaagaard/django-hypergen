@@ -239,13 +239,16 @@ def f4():
 def snake_init(n):
     from features import views
     if n == 3:
-        command("hypergen_websockets.open", views.snake.reverse())
-        command("hypergen.intervalSet", [["hypergen.callback", views.snake.reverse(), [None]]], 1000 / 10, "snake")
-        command("hypergen.keypressToCallback", views.snake.reverse())
+        command("hypergen_websockets.open", views.snake.reverse(sessionid=context.request.session.session_key))
+        command("hypergen.intervalSet",
+            [["hypergen.callback",
+            views.snake.reverse(sessionid=context.request.session.session_key), [None]]], 1000 / 10, "snake")
+        command("hypergen.keypressToCallback", views.snake.reverse(sessionid=context.request.session.session_key))
     else:
-        command("hypergen_websockets.close", views.snake.reverse())
+        command("hypergen_websockets.close", views.snake.reverse(sessionid=context.request.session.session_key))
         command("hypergen.intervalClear", "snake")
-        command("hypergen.keypressToCallbackRemove", views.snake.reverse())
+        command("hypergen.keypressToCallbackRemove",
+            views.snake.reverse(sessionid=context.request.session.session_key))
 
 def snake(consumer=None):
     with table():

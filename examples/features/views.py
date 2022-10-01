@@ -27,7 +27,7 @@ def reverser(request, text):
 DIRECTIONS = d(a=(-1, 0), d=(1, 0), w=(0, -1), s=(0, 1))
 INIT_STATE = [(10, 10), (10, 11)]
 
-@consumer(perm=NO_PERM_REQUIRED, target_id="snake-game")
+@consumer(perm=NO_PERM_REQUIRED, target_id="snake-game", path="<slug:sessionid>")
 def snake(consumer, request, key):
     def limit(pair):
         def _(n):
