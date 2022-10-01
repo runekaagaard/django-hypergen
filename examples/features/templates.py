@@ -98,6 +98,8 @@ def f1():
 # features
 
 def f2_code():
+    from hypergen.template import component
+
     @component
     def form_field(field):
         with div(class_="form-group"):
@@ -112,6 +114,8 @@ def f2_code():
             form_field(form_field)
 
 def f2_code2():
+    from contextlib import contextmanager
+
     @contextmanager
     def card(title):
         with div(class_="card"):
@@ -134,7 +138,8 @@ def f2():
                 Compose your templates with ... tadaaaah ... python
 
                 - functions
-                - modules & packages
+                - modules
+                - packages
                 - @component
                 - @contextmanager
             """)
@@ -175,10 +180,12 @@ def f3():
                 Liveviews
                 =========
 
-                Write dynamic websites effortlessly
+                Write dynamic websites in pure python
 
-                - Everything lives on the backend
-                - No frontend
+                - No javascript code 
+                - No serialization
+                - No magic liveview strings
+                - Use all the nice features of Django
                 - Single source of truth
             """)
 
@@ -198,7 +205,24 @@ def f3_template(text):
 
 # f4 - snake
 def f4_code():
-    "WASD to navigate"
+    "          WASD to navigate          "
+
+    from hypergen.imports import (
+        js,
+        liveview,
+        consumer,
+    )
+    from . import templates
+
+    @liveview(...)
+    def snake(request):
+        js.websocket_open(snake_consumer)
+        with div(id="snake-game"):
+            templates.snake()
+
+    @consumer(..., target_id="snake-game")
+    def snake_consumer(consumer, request):
+        templates.snake(consumer)
 
 def f4():
     with div(class_="grid3"):
@@ -206,14 +230,14 @@ def f4():
                 Websockets
                 =========
 
-                Need faster two way communication?
+                Realtime two-way communication
 
-                - @consumer
-                - Same features as @action
-                - Fun
+                - The @consumer decorator has autorouting
+                - Inbuilt opening/closing of websockets
+                - Minimal fuzz
             """)
 
-        cell_code(fcode(f4_code), "")
+        cell_code(fcode(f4_code), "views.py")
 
         with cell_full(), div(id="snake-game"):
             snake()
