@@ -67,10 +67,10 @@ def snake(consumer, request, key):
     else:
         consumer.state.popleft()
 
-    if head1 in list(consumer.state)[:-1]:
+    head2 = mv(head1, consumer.direction)
+    if head2 in consumer.state:
         init_state()
     else:
-        consumer.state.append(mv(head1, consumer.direction))
-        consumer.state = deque([limit(x) for x in consumer.state])
+        consumer.state.append(limit(head2))
 
     templates.snake(consumer)
