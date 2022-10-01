@@ -1,0 +1,131 @@
+#features pre, #features code {
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+}
+
+#features .cell {
+    background-color: #272822;
+    padding: 8px 16px;
+    height: 100%;
+    border-right: 1px solid grey;
+    height: calc(500px - 16px * 2)
+}
+@media only screen and (max-width: 1000px) {
+  #features .cell {
+    height: auto;
+    padding-bottom: 16px;
+  }
+}
+#features .cell .inner {
+    height: calc(100% - 35px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#features .cell .inner-full {
+    height: calc(100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#features .nc {
+    background-color: transparent;
+}
+#features table {
+   width: 100%;
+   table-layout: fixed;
+   overflow-wrap: break-word;
+   display: table;
+   padding: 0;
+   margin: 0;
+}
+#features h4 {
+    margin: 0;
+    padding: 0;
+    margin-top: 4px;
+}
+#features .header {
+    background-color: #272822;
+    color: #fd971f;
+    color: #F8F8F2;
+    text-align: center;
+    height: 35px;
+    /* border-bottom: 1px solid grey; */
+    /* border-right: 1px solid grey; */
+}
+#features .tc {
+    color: #F8F8F2;
+    text-align: center;
+}
+#features ul {
+    text-align: left;
+    display: inline-block;
+}
+.nul {
+    text-decoration: none !important;
+    
+    font-weight: bold;
+    margin-right: 8px;
+    display: inline-block;
+}
+.nul:hover {
+    text-decoration: underline !important;
+}
+#features code {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+#features code::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+#features .tc *:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+#features .tc *:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+#features .fr {
+  float: right;
+}
+
+#features .running {
+  color: #F8F8F2;
+}
+
+#features .running input {
+  width: 100%;
+}
+#features .cell-full {
+  height: 500px;
+  padding: 0;
+}
+#snake-game {
+  blackground-color: black;
+}
+#features .cell-full table {
+  height: 484px;
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+  border-style: hidden;
+  background-color: black;
+  table-layout:fixed;
+}
+#features .cell-full table td, #features .cell-full table tr {
+  border: none;
+}
+#features .cell-full table td {
+  overflow: hidden;
+}
+td.g {
+  background-color: green !important;
+}
+td.b {
+  background-color: black !important;
+}
+td.r {
+  background-color: red !important;
+}

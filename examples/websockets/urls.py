@@ -1,5 +1,5 @@
 from hypergen.hypergen import autourls
-from gameofcython import views
+from websockets import views
 
-app_name = 'gameofcython'
+app_name = 'websockets'
 urlpatterns = autourls(views, app_name)

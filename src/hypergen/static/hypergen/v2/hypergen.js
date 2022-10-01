@@ -78,8 +78,30 @@ export const display = function(id, value) {
   el.style.display = value || "block"
 }
 
+export const visible = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.visibility = "visible"
+}
+
+export const hidden = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.visibility = "hidden"
+}
+
 export const redirect = function(url) {
   window.location = url
+}
+
+export const append = function(id, html) {
+  const el = document.getElementById(id)
+  if (!el) console.error("Cannot append to missing element", id)
+  el.innerHTML += html
+}
+
+export const prepend = function(id, html) {
+  const el = document.getElementById(id)
+  if (!el) console.error("Cannot prepend to missing element", id)
+  el.innerHTML = html + el.innerHTML
 }
 
 hypergen.clientState = {}
@@ -94,6 +116,39 @@ export const setClientState = function(at, value) {
   console.log("Setting new state for hypergen.clientState", at, "with value", value, "giving",
               hypergen.clientState)
 }
+
+/* WARNING NOT STABLE */
+var INTERVALS = {}
+
+export const intervalSet = function(commands, interval, name) {
+  const i = setInterval(() => applyCommands(commands), interval)
+  if (!!name) INTERVALS[name] = i
+}
+
+export const intervalClear = function(name) {
+  console.error("Clearing", INTERVALS[name])
+  if (INTERVALS[name]) clearInterval(INTERVALS[name])
+}
+
+export const addEventListener = function(querySelectorString, type, commands, options) {
+  document.querySelector(querySelectorString).addEventListener(
+    type, (event) => applyCommands(commands), options || {})
+}
+
+let _TTT = {}
+
+const keypressToCallbackFunc = function(e) {
+  const [url, args, options] = _TTT
+  callback(url, [e.key, ...(args || [])], options || {})
+}
+export const keypressToCallback = function(url, args, options) {
+  _TTT = [url, args, options]
+  window.addEventListener("keydown", keypressToCallbackFunc)
+}
+export const keypressToCallbackRemove = function(url, args, options) {
+  window.removeEventListener("keydown", keypressToCallbackFunc)
+}
+/* END WARNING STABLE AGAIN */
 
 // Callback
 var i = 0
@@ -158,11 +213,38 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       }
     }, params, headers)
   }
-  if (debounce === 0) {
-    if (confirm_ === false) postIt()
-    else if (confirm(confirm_)) postIt()
+  const postItWebsocket = function() {
+    console.log("WEBSOCKET", url, args, debounce)
+    let json
+    try {
+      json = JSON.stringify({
+        args: args,
+        meta: meta,
+      })
+    } catch(error) {
+      if (error === MISSING_ELEMENT_EXCEPTION) {
+        console.warn("An element is missing. This can happen if a dom element has multiple event handlers.", url)
+        return
+      } else {
+        throw(error)
+      }
+    }
+    if (!hypergen_websockets.WEBSOCKETS[url]) {
+      console.error("Cannot send WS to non existing connection:", url)
+      return
+    }
+    hypergen_websockets.WEBSOCKETS[url].send(json)
+    if (clear === true) document.getElementById(elementId).value = ""
+    
   }
-  else throttle(postIt, {delay: debounce, group: url, confirm_}) 
+
+  const func = (url.startsWith("ws://") || url.startsWith("wss://")) ? postItWebsocket : postIt
+  
+  if (debounce === 0) {
+    if (confirm_ === false) func()
+    else if (confirm(confirm_)) func()
+  }
+  else throttle(func, {delay: debounce, group: url, confirm_}) 
 }
 
 export const partialLoad = function(event, url, pushState) {

@@ -160,18 +160,31 @@ class metastr(str):
         return s
 
 _URLS = {}
+_CHANNELS_ROUTES = {}
 
-def autourl_register(func, base_template=None, path=None, re_path=None):
+def autourl_register(func, base_template=None, path=None, re_path=None, channels=False):
     def _reverse(*view_args, **view_kwargs):
-        ns = _reverse.hypergen_namespace
-        return metastr.make(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
-            d(base_template=base_template))
+        if channels is not True:
+            ns = _reverse.hypergen_namespace
+            return metastr.make(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
+                d(base_template=base_template))
+        else:
+            from hypergen.channels import ws_url
+            path_func, _, _ = tmp
+
+            class UrlConf:
+                urlpatterns = [path_func(_reverse.hypergen_channels_full_path, func, name=func.__name__)]
+
+            return metastr.make(ws_url(reverse(func, args=view_args, kwargs=view_kwargs, urlconf=UrlConf)),
+                d(base_template=base_template))
 
     func.reverse = _reverse
 
+    X = _CHANNELS_ROUTES if channels is True else _URLS
+
     module = func.__module__
-    if module not in _URLS:
-        _URLS[module] = set()
+    if module not in X:
+        X[module] = set()
 
     if (path, re_path) == (None, None):
         tmp = (re_path_, func, r"^{}/$".format(func.__name__))
@@ -182,7 +195,7 @@ def autourl_register(func, base_template=None, path=None, re_path=None):
             raise Exception('Use "^$" for an empty re_path in {}.{}'.format(module, func.__name__))
         tmp = (re_path_, func, re_path)
 
-    _URLS[module].add(tmp)
+    X[module].add(tmp)
 
     return func
 
@@ -193,6 +206,26 @@ def autourls(module, namespace):
         patterns.append(path_func(path_, func, name=func.__name__))
 
     return patterns
+
+def autoconsumers(module, prefix):
+    from hypergen.channels import HypergenWebsocketAutoConsumer
+
+    prefix = prefix.rstrip("/") + "/"
+    assert "^" not in prefix, "The prefix should ONLY be foo/bar/baz/. Works for both path and re_path."
+    consumers = []
+    for path_func, func, path in _CHANNELS_ROUTES.get(module.__name__, []):
+        if path.startswith("^"):
+            full_path = "^" + prefix + path[1:]
+        else:
+            full_path = prefix + path
+
+        class HypergenWebsocketAutoConsumerCurried(HypergenWebsocketAutoConsumer):
+            hypergen_func = func
+
+        func.reverse.hypergen_channels_full_path = full_path
+        consumers.append(path_func(full_path, HypergenWebsocketAutoConsumerCurried(func).as_asgi()))
+
+    return consumers
 
 ### Plugins ###
 

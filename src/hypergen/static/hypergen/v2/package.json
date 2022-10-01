@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "morphdom": "^2.6.1",
+    "mousetrap": "^1.6.5",
+    "sockette": "^2.0.6"
+  }
+}

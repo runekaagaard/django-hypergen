@@ -6,7 +6,7 @@ cimport cython
 from libcpp.string cimport string
 from libc.stdio cimport printf, sprintf
 
-from hypergen.core import context as c
+from hypergen.context import context as c
 
 cdef:
     string T = <char*>"__TERM__" # Terminate list of strings
@@ -37,7 +37,7 @@ cdef string cb(Hpg &hpg, string id_, string attr_name, string url, string* args=
     client_state_key.append("__")
     client_state_key.append(attr_name)
     
-    html.append("e(event,'")
+    html.append("hypergen.event(event,'")
     html.append(client_state_key)
     html.append("')")
 

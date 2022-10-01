@@ -2,12 +2,9 @@
 # pylint: disable=no-value-for-parameter
 d = dict
 
-from hypergen.contrib import hypergen_view, hypergen_callback, NO_PERM_REQUIRED
-from hypergen.core import *
-from hypergen.core import callback as cb
-from hypergen.core import context as c
+from hypergen.imports import *
 
-from website.templates import base_template, show_sources
+from website.templates2 import base_template, show_sources
 
 try:
     from gameofcython.gameofcython import render, reset, step as cstep
@@ -15,13 +12,18 @@ try:
 except ImportError:  # ModuleNotFoundError not in python3.5
     module_found = False
 
-HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, namespace="gameofcython", app_name="gameofcython",
-    base_template=base_template)
+HYPERGEN_SETTINGS = dict(perm=NO_PERM_REQUIRED, base_template=base_template)
 
 RUNNING, STOPPED = "RUNNING", "STOPPED"
 STATE = STOPPED
 
-@hypergen_view(url="^$", **HYPERGEN_SETTINGS)
+def is_ajax(request=None):
+    if request is None:
+        request = context.request
+
+    return request.META.get('HTTP_X_REQUESTED_WITH', None) == 'XMLHttpRequest'
+
+@liveview(re_path="^$", **HYPERGEN_SETTINGS)
 def gameofcython(request):
     if not module_found:
         p("Cython files are not compiled. Run 'make cython-compile' from the root of the repository.")
@@ -59,7 +61,7 @@ def gameofcython(request):
     if not is_ajax():
         show_sources(__file__)
 
-@hypergen_callback(view=gameofcython, **HYPERGEN_SETTINGS)
+@action(base_view=gameofcython, **HYPERGEN_SETTINGS)
 def step(request, *args):
-    c.hypergen = c.hypergen.set("target_id", "gameoflife")
+    context.hypergen = context.hypergen.set("target_id", "gameoflife")
     cstep()

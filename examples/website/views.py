@@ -1,9 +1,9 @@
 from hypergen.imports import *
+from hypergen.plugins.alertify import AlertifyPlugin
+
 from collections import defaultdict
 
 from yaml import load
-
-from djangolander.views import lander
 
 try:
     from yaml import CLoader as Loader
@@ -19,7 +19,6 @@ from inputs.views import inputs
 from gameofcython.views import gameofcython
 from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
-from t9n.views import page
 from website.templates2 import base_template, show_sources
 from commands.views import commands
 from globalcontext.views import globalcontext
@@ -28,13 +27,18 @@ from apptemplate.views import my_view
 from coredocs.views import template, liveviews
 from website.minidemoes.shoot_em_up import shoot_em_up
 
-@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template)
+from features import templates as features_templates
+
+@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template,
+    user_plugins=[WebsocketPlugin(), AlertifyPlugin()])
 def home(request):
     with div(class_="hero"):
         h2("Build reactive web apps, without leaving Django", class_="center hero")
         p(i("Stay focused on the actual complexity of your app, while having 291% more fun!", sep=" "),
             class_="center")
         hr()
+
+    features_templates.main()
 
     h2("Why hypergen?")
     p("For a more technical explanation about the ", i("what"), " and the ", i("how"), ", check out our ",
@@ -157,7 +161,7 @@ def documentation(request):
 
     h2("Alternative template implementations")
     p("While the pure python template 'language' is the main template engine, two alternative ",
-        " implementations exists. These use an older version of Hypergen.")
+        " implementations exists.")
     with ul():
         li(a("Django html Templates", href=reverse("djangotemplates:djangotemplates")),
             " - Django html templates instead of python templates. ",
