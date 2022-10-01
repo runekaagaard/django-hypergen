@@ -1,0 +1,34 @@
+# The manifest for the "redis" service.
+# Read the full specification for the "Backend Service" type at:
+#  https://aws.github.io/copilot-cli/docs/manifest/backend-service/
+
+# Your service name will be used in naming your resources like log groups, ECS services, etc.
+name: redis
+type: Backend Service
+
+# Your service is reachable at "http://redis.${COPILOT_SERVICE_DISCOVERY_ENDPOINT}:6379" but is not public.
+
+# Configuration for your containers and service.
+image:
+  # Docker build arguments. For additional overrides: https://aws.github.io/copilot-cli/docs/manifest/backend-service/#image-build
+  build: copilot/redis/Dockerfile
+  # Port exposed through your container to route traffic to it.
+  port: 6379
+
+cpu: 1024       # Number of CPU units for the task.
+memory: 2048    # Amount of memory in MiB used by the task.
+count: 1       # Number of tasks that should be running in your service.
+exec: true     # Enable running commands in your container.
+
+# Optional fields for more advanced use-cases.
+#
+#variables:                    # Pass environment variables as key value pairs.
+#  LOG_LEVEL: info
+
+#secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
+#  GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
+
+# You can override any of the values defined above by environment.
+#environments:
+#  test:
+#    count: 2               # Number of tasks to run for the "test" environment.

@@ -26,6 +26,22 @@ Show logs::
 Pruning after messing with the overlay2 folder::
 
     docker system prune --volumes -a
+
+Redis
+=====
+
+Installation::
+
+    cd copilot
+    copilot svc init --name redis --svc-type "Backend Service" --dockerfile ./redis/Dockerfile --port 6379
+
+Deploy::
+
+    copilot svc deploy --name redis --env prod
+
+Url::
+
+    redis.prod.hypergen.local:6379
     
 Urls
 ====

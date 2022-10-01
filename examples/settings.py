@@ -109,9 +109,11 @@ if os.environ.get("PROD", False):
     USE_X_FORWARDED_HOST = True
     CSRF_TRUSTED_ORIGINS = ['https://hypergen.it']
     ALLOWED_HOSTS = ["*"]  # We don't know the host name for the copilot healthcheck.
+    REDIS_URL = 'redis.prod.hypergen.local'
 else:
     ALLOWED_HOSTS = ["*"]
     STATIC_URL = '/static/'
+    REDIS_URL = '127.0.0.1'
 
 # Log to stdout
 if os.environ.get("PROD", False):
@@ -127,4 +129,4 @@ ASGI_APPLICATION = "asgi.application"
 CHANNEL_LAYERS = {
     'default': {
     'BACKEND': 'channels_redis.core.RedisChannelLayer',
-    'CONFIG': {"hosts": [('127.0.0.1', 6379)],},},}
+    'CONFIG': {"hosts": [(REDIS_URL, 6379)],},},}
