@@ -9,3 +9,5 @@ contextlib2==0.6.0.post1
 pyyaml
 yattag
 docutils
+channels
+channels-redis

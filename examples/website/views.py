@@ -26,6 +26,7 @@ from gettingstarted.views import begin
 from apptemplate.views import my_view
 from coredocs.views import template, liveviews
 from website.minidemoes.shoot_em_up import shoot_em_up
+from websockets.views import chat2
 
 from features import templates as features_templates
 
@@ -127,6 +128,15 @@ python manage.py startapp \\
 def documentation(request):
     h2("News")
     ul(
+        li(b("2022-10-01"), "One of the most requested features at Djangocon was websockets.",
+        "I'm happy to announce that websockets are now in master, and a release will happen soon.",
+        "You can see it in action as the snake game under", a("Features", href="/"), "and as the obligatory",
+        a("chat application", href=chat2.reverse()), sep=" ", end="."),
+        li(b("2022-09-27:"), "Thank you to the Djangocon organisers and all the wonderful",
+        "Django developers we met and listened too!",
+        "Hope to see you all in Dublin, next year <3.", "We have made available our",
+        a("slides", href="https://runekaagaard.github.io/hypergen-djangocon-2022/"), "and the",
+        a("example code.", href="https://github.com/runekaagaard/hypergen-djangocon-2022"), sep=" "),
         li(b("2022-09-14:"), "Good news everybody! Hypergen been accepted as a",
         a("workshop", href="https://pretalx.evolutio.pt/djangocon-europe-2022/talk/CFCFFF/"),
         "at djangocon in Porto 2022-09-22. Hope to talk to you there!", sep=" "),
