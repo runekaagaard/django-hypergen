@@ -159,8 +159,8 @@ class ActionPlugin(LiveviewPluginBase):
 
         commands = [["hypergen.setClientState", 'hypergen.eventHandlerCallbacks', c.hypergen.event_handler_callbacks]]
         if self.morph and "into" in c.hypergen:
-            assert not c.hypergen.into.contexts.get(
-                "__default_context__"), "In callbacks you need to set a target_id."
+            # assert not c.hypergen.into.contexts.get(
+            #     "__default_context__"), "In callbacks you need to set a target_id."
             for target_id, into in c.hypergen.into.contexts.items():
                 if into:
                     commands.append(["hypergen.morph", target_id, join_html(into)])

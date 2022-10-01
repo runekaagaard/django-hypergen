@@ -198,7 +198,7 @@ def f3_template(text):
 
 # f4 - snake
 def f4_code():
-    "Use keys to navigate"
+    "WASD to navigate"
 
 def f4():
     with div(class_="grid3"):
@@ -216,7 +216,7 @@ def f4():
         cell_code(fcode(f4_code), "")
 
         with cell_full(), div(id="snake-game"):
-            pass
+            snake()
 
 def snake_init(n):
     from features import views
@@ -228,21 +228,19 @@ def snake_init(n):
         command("hypergen_websockets.close", views.snake.reverse())
         command("hypergen.intervalClear", "snake")
 
-def snake(state):
-    style("""
-        .g {
-            background-color: green;
-            border: none;
-        }
-        .b {
-            background-color: #272822;
-            border: none;
-        }
-    """)
+def snake(consumer=None):
     with table():
         for y in range(0, 20):
             with tr():
                 for x in range(0, 20):
-                    td("", class_="g" if (x, y) in state else "b")
+                    if not consumer:
+                        td(class_="b")
+                    else:
+                        if (x, y) in consumer.fruit:
+                            cls = "r"
+                        else:
+                            cls = "g" if (x, y) in consumer.state else "b"
+
+                        td(class_=cls)
 
 FEATURES = [f1, f2, f3, f4]

@@ -102,7 +102,30 @@
   height: 500px;
   padding: 0;
 }
+#snake-game {
+  blackground-color: black;
+}
 #features .cell-full table {
   height: 484px;
   width: 100%;
+  border: none;
+  border-collapse: collapse;
+  border-style: hidden;
+  background-color: black;
+  table-layout:fixed;
+}
+#features .cell-full table td, #features .cell-full table tr {
+  border: none;
+}
+#features .cell-full table td {
+  overflow: hidden;
+}
+td.g {
+  background-color: green !important;
+}
+td.b {
+  background-color: black !important;
+}
+td.r {
+  background-color: red !important;
 }

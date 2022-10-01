@@ -1,4 +1,10 @@
+from collections import deque
+from random import randint
+
 from hypergen.imports import *
+
+d = dict
+
 from features import templates
 
 @action(perm=NO_PERM_REQUIRED, target_id="features")
@@ -15,42 +21,56 @@ def feature(request, n):
 def reverser(request, text):
     templates.f3_template(text)
 
+# Snake
+DIRECTIONS = d(a=(-1, 0), d=(1, 0), w=(0, -1), s=(0, 1))
+INIT_STATE = [(10, 10), (10, 11)]
+
 @consumer(perm=NO_PERM_REQUIRED, target_id="snake-game")
 def snake(consumer, request, key):
-    def limit(n):
-        if n > 19:
-            return 0
-        elif n < 0:
-            return 19
-        else:
-            return n
+    def limit(pair):
+        def _(n):
+            if n > 19:
+                return 0
+            elif n < 0:
+                return 19
+            else:
+                return n
+
+        return _(pair[0]), _(pair[1])
+
+    def init_state():
+        consumer.direction = DIRECTIONS["s"]
+        consumer.state = deque(INIT_STATE)
+        consumer.fruit = set()
+        place_fruit()
+
+    def place_fruit():
+        x, y = randint(0, 19), randint(0, 19)
+        while (x, y) in consumer.state:
+            x, y = randint(0, 19), randint(0, 19)
+        consumer.fruit.add((x, y))
+
+    def mv(pair, d):
+        return (pair[0] + d[0], pair[1] + d[1])
 
     if not hasattr(consumer, "state"):
-        consumer.state = {(10, 10)}
-        consumer.direction = (0, 1)
+        init_state()
+
+    if key:
+        consumer.direction = DIRECTIONS.get(key, consumer.direction)
+        return
+
+    head1 = consumer.state[-1]
+    if head1 in consumer.fruit:
+        consumer.fruit.remove(head1)
+        place_fruit()
     else:
-        # print("GOT STATE!")
-        ...
+        consumer.state.popleft()
 
-    if key is not None:
-        print(repr(key))
+    if head1 in list(consumer.state)[:-1]:
+        init_state()
+    else:
+        consumer.state.append(mv(head1, consumer.direction))
+        consumer.state = deque([limit(x) for x in consumer.state])
 
-    if key is None:
-        state2 = set()
-        for x, y in consumer.state:
-            state2.add((limit(x + consumer.direction[0]), limit(y + consumer.direction[1])))
-        consumer.state = state2
-    elif key == "a":
-        print("LEFT")
-        consumer.direction = (-1, 0)
-    elif key == "d":
-        consumer.direction = (1, 0)
-        print("RIGHT")
-    elif key == "w":
-        consumer.direction = (0, -1)
-        print("UP")
-    elif key == "s":
-        consumer.direction = (0, 1)
-        print("DOWN")
-
-    templates.snake(consumer.state)
+    templates.snake(consumer)
