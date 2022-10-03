@@ -29,6 +29,7 @@ copilot-deploy:
 	git commit -am "website: Building hypergen.js" || true
 	git push || true
 	cd examples && PROD=1 python manage.py collectstatic --noinput
+	copilot deploy -n hypergen-service -e prod
 copilot-deploy-redis:
 	cd copilot && copilot svc deploy --name redis --env prod
 copilot-deploy-no-static:
