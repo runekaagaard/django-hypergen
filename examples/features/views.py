@@ -63,17 +63,19 @@ def snake(consumer, request, key):
         return
 
     head1 = consumer.state[-1]
-    if head1 in consumer.fruit:
-        consumer.fruit.remove(head1)
-        place_fruit()
-    else:
-        consumer.state.popleft()
-
     head2 = mv(head1, consumer.direction)
     if head2 in consumer.state:
         init_state()
     else:
         consumer.state.append(limit(head2))
+
+        # fruit
+        if head1 in consumer.fruit:
+            consumer.fruit.remove(head1)
+            place_fruit()
+        else:
+            # dont grow
+            consumer.state.popleft()
 
     templates.snake(consumer)
 
