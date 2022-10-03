@@ -17,10 +17,14 @@ def main():
 
 def feature(n):
     from features import views
-    with div():
-        a("🢨", href="1", class_="selected nul", id="features-prev", onclick=callback(views.feature, n - 1))
-        a("🢩", href="2", class_="selected nul", id="features-next", onclick=callback(views.feature, n + 1))
-        small(n + 1, "of", len(FEATURES), sep=" ", class_="fr")
+    with div(id="features-navigation", class_="grid2"):
+        with div(class_="buttons"):
+            a(i(class_="bi-arrow-left-circle"), href="#", class_="", id="features-prev",
+                onclick=callback(views.feature, n - 1))
+            a(i(class_="bi-arrow-right-circle"), href="#", class_="", id="features-next",
+                onclick=callback(views.feature, n + 1))
+        with div(class_="fr"):
+            small(n + 1, "of", len(FEATURES), sep=" ")
 
     snake_init(n)
 

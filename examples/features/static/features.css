@@ -87,10 +87,6 @@
     margin-bottom: 0;
     padding-bottom: 0;
 }
-#features .fr {
-  float: right;
-}
-
 #features .running {
   color: #F8F8F2;
 }
@@ -128,4 +124,13 @@ td.b {
 }
 td.r {
   background-color: red !important;
+}
+#features-navigation a {
+  font-size: 140%;
+  margin-right: 8px;
+}
+.fr {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
