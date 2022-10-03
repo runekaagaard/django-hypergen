@@ -10,13 +10,12 @@ from hypergen.context import context as c
 from django.templatetags.static import static
 from contextlib import contextmanager
 
-def base_head():
+def base_head(monokai=False):
     meta(charset="utf-8")
     meta(http_equiv="X-UA-Compatible", content="IE=edge")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title("Django Hypergen")
     link("https://unpkg.com/simpledotcss@2.0.7/simple.min.css")
-    link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js")
     link("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css")
     link(static("website/website.css"))
@@ -27,13 +26,17 @@ def base_head():
     link(rel="mask-icon", href=static("safari-pinned-tab.svg"), color="#5bbad5")
     meta(name="msapplication-TileColor", content="#da532c")
     meta(name="theme-color", content="#ffffff")
+    if monokai:
+        link(href="https://highlightjs.org/static/demo/styles/base16/monokai.css")
+    else:
+        link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css")
 
 @contextmanager
-def base_template():
+def base_template(monokai=False):
     doctype()
     with html():
         with head():
-            base_head()
+            base_head(monokai=monokai)
 
         with body():
             with header():
@@ -49,7 +52,7 @@ def base_template():
                     h1(img(src=static("website/hypergen-logo.png"), class_="logo"), "ypergen")
                     span(" - take a break from javascript")
 
-            with main(id_="main"):
+            with main(id_="main" if not monokai else "main-monokai"):
                 yield
 
             with footer():
@@ -57,6 +60,13 @@ def base_template():
                     " and ", span("❤", style={"color": "red"}))
 
 base_template.target_id = "main"
+
+@contextmanager
+def base_template_monokai():
+    with base_template(monokai=True):
+        yield
+
+base_template_monokai.target_id = "main-monokai"
 
 @contextmanager
 def base_example_template(file_=None):

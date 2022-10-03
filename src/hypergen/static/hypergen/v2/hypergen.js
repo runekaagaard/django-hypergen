@@ -126,8 +126,10 @@ export const intervalSet = function(commands, interval, name) {
 }
 
 export const intervalClear = function(name) {
-  console.error("Clearing", INTERVALS[name])
-  if (INTERVALS[name]) clearInterval(INTERVALS[name])
+  if (INTERVALS[name]) {
+    console.log("Clearing", INTERVALS[name])
+    clearInterval(INTERVALS[name])
+  }
 }
 
 export const addEventListener = function(querySelectorString, type, commands, options) {

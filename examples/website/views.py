@@ -19,7 +19,7 @@ from inputs.views import inputs
 from gameofcython.views import gameofcython
 from djangotemplates.views import djangotemplates
 from hellohypergen.views import counter
-from website.templates2 import base_template, show_sources
+from website.templates2 import base_template, show_sources, base_template_monokai
 from commands.views import commands
 from globalcontext.views import globalcontext
 from gettingstarted.views import begin
@@ -30,7 +30,7 @@ from websockets.views import chat2
 
 from features import templates as features_templates
 
-@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template,
+@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template_monokai,
     user_plugins=[WebsocketPlugin(), AlertifyPlugin()])
 def home(request):
     if hasattr(request, 'session') and not request.session.session_key:

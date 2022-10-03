@@ -8,7 +8,6 @@ from django.templatetags.static import static
 from features.consts import *
 
 def main():
-    link("https://highlightjs.org/static/demo/styles/base16/monokai.css")
     link(static("features.css"))
 
     h2("Features")
