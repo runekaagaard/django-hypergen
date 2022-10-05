@@ -34,7 +34,7 @@ content.html::
 The ``callback`` template takes an optional number of arguments. Strings prefixed with a ``#`` is interpreted as ids
 and the value of those HTML elements will be passed as arguments to the @action or @consumer function. The ``event`` and ``url`` are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
 
-Use ``hypergen_extend`` instead of ``extend`` to make partially updating the page work.
+Use ``{% hypergen_extend %}`` instead of ``{% extend %}`` to make partially updating the page work.
 
 
 
