@@ -6,12 +6,7 @@ from django.template.loader import render_to_string
 
 from hypergen.imports import *
 from hypergen.context import context as c
-
-def context_decorator(f):
-    def _(*args, **kwargs):
-        return hypergen(f, *args, **kwargs, settings=dict(returns=FULL, liveview=True))["template_result"]
-
-    return _
+from hypergen.incubation import hypergenable
 
 from hypergen.incubation import SessionVar
 from website.templates2 import show_sources
@@ -19,12 +14,12 @@ from website.templates2 import show_sources
 d = dict
 STACK = SessionVar("STACK", [])  # This variable lives in the session data.
 
-@context_decorator
+@hypergenable
 def djangotemplates(request):
     return render(request, "djangotemplates/base.html", d(stack=STACK.get(), sources=hypergen(show_sources,
         __file__)))
 
-@context_decorator
+@hypergenable
 def push(request):
     number, = loads(request.POST["hypergen_data"])["args"]
     if number is not None:
@@ -33,24 +28,24 @@ def push(request):
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.get())))
     return HttpResponse(dumps(c.hypergen.commands), status=200, content_type='application/json')
 
-@context_decorator
+@hypergenable
 def reset(request):
     command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.set([]))))
     return HttpResponse(dumps(c.hypergen.commands), status=200, content_type='application/json')
 
-@context_decorator
+@hypergenable
 def add(request, *args):
     return apply_operation(operator.add)
 
-@context_decorator
+@hypergenable
 def subtract(request, *args):
     return apply_operation(operator.sub)
 
-@context_decorator
+@hypergenable
 def multiply(request, *args):
     return apply_operation(operator.mul)
 
-@context_decorator
+@hypergenable
 def divide(request, *args):
     if len(STACK.get()) and STACK.get()[-1] == 0:
         return HttpResponse(dumps([["alert", "Can't divide by zero"]]), status=200, content_type='application/json')

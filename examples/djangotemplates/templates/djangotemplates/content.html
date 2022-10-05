@@ -1,15 +1,70 @@
 {% load hypergen %}{% csrf_token %}
-<h2>Push number on stack</h2>
-
 <input id="number" type="number" autofocus>
-<button {% callback "push" "onclick" "djangotemplates:push" "number"|element|coerce_float %}>Push</button>
+
+<h3>Callback tag and element filter</h3>
+{% comment %}
+<button {% callback "push" "onclick" "djangotemplates:push" "number"|xelement|coerce_float %}>Push</button>
+{% endcomment %}
+
+<h3>Callback tag and magic string</h3>
+{% comment %}
+<button {% onclick "push2" "djangotemplates:push" "#number.float" %}>Push</button>
+{% endcomment %}
+
+<h3>Button tag</h3>
+{% comment %}
+{% button "Push" id="push3" onclick="djangotemplates:push,#number.float" %}
+{% endcomment %}
+
+{% comment %}
+{% tag button %}
+  id="mybutton"
+  onclick={% callback djangotemplates:push #number.float 42 "I can do it!" %}
+{% endtag %}
+{% endcomment %}
+
+<pre><code>
+{% element "button" %}
+  id="mybutton"
+  class="myclass"
+  
+
+  llll
+
+  
+  
+  onclick="{% callback "djangotemplates:push" "#number" 42 "I can do it!" %}"
+
+
+  yyyyy
+
+  "Push"
+{% endelement %}
+</code></pre>
+
+
+{% tag %}
+<button
+  id="foo"
+  class="superman"
+  onclick="{
+    'foo': "#number1.float",
+    'bar': "#input2",
+    'baz': "#input3",
+  }"
+>
+    Push
+</button>
+{% endtag %}
 
 <h2>Perform operation</h2>
-<button {% callback "add" "onclick" "djangotemplates:add" %}>+</button>
+{% comment %}
+<button {% callback "add" "onclick" "djangotemplates:add" debounce=2500 %}>+</button>
 <button {% callback "subtract" "onclick" "djangotemplates:subtract" %}>-</button>
 <button {% callback "multiply" "onclick" "djangotemplates:multiply" %}>*</button>
 <button {% callback "divide" "onclick" "djangotemplates:divide" %}>/</button>
 <button {% callback "reset" "onclick" "djangotemplates:reset" %}>C</button>
+{% endcomment %}
 
 <h2>Stack</h2>
 <ol>
