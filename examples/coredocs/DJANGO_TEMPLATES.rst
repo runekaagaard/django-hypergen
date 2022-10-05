@@ -28,13 +28,13 @@ content.html::
     {% hypergen_extend "base_template.html" %}
     {% block content %}
         <input id="number" type="number" value="{{n}}" disabled />
-        <button {% callback "#number" event="onclick" url="counter:increment" %}>
+        <button {% callback "#number" id="increment" event="onclick" url="counter:increment" %}>
             Increment
         </button>
     {% endblock %}
 
 The ``{% callback %}`` template tag takes an optional number of arguments. Strings prefixed with a ``#`` is interpreted as ids
-and the value of those HTML elements will be passed as arguments to the @action or @consumer function. The ``event`` and ``url`` are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
+and the value of those HTML elements will be passed as arguments to the @action or @consumer function. The ``id``, ``event`` and ``url`` keyword arguments are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
 
 
 views.py::
