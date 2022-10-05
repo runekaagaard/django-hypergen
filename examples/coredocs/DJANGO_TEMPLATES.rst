@@ -68,7 +68,6 @@ views.py::
 
         return render(request, "content.html", {"n": 1, "increment_callback": increment_callback})
         
-    
     @vanilla_template
     def counter(request):
         render_counter(1)
@@ -90,7 +89,7 @@ base_template.html::
 
 content.html::
 
-    {% extend "base_template.html" %}
+    {% hypergen_extend "base_template.html" %}
     {% block content %}
         <input id="number" type="number" disabled />
         <button {{increment_callback}}>Increment</button>
