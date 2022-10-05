@@ -64,7 +64,7 @@ views.py::
     from hypergen.imports import *
 
     def render_counter(n):
-        increment_callback = callback_to_string(increment, "#number", id="submit", event="onclick")
+        increment_callback = callback_to_string(increment, element_value("number"), id="submit", event="onclick")
 
         return render(request, "content.html", {"n": 1, "increment_callback": increment_callback})
         
