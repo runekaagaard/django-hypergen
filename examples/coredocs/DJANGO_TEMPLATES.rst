@@ -6,6 +6,8 @@ also to extend existing vanilla Django html templates with liveview functionalit
 
 To enable hypergen context collector views must be decorated with the ``@vanilla_template`` decorator. 
 
+Use the ``{% hypergen_extend %}`` template tag instead of ``{% extend %}`` to make partially updating the page work.
+
 Extending Django templates with liveview functionality
 ------------------------------------------------------
 
@@ -31,11 +33,8 @@ content.html::
         </button>
     {% endblock %}
 
-The ``callback`` template takes an optional number of arguments. Strings prefixed with a ``#`` is interpreted as ids
+The ``{% callback %}`` template tag takes an optional number of arguments. Strings prefixed with a ``#`` is interpreted as ids
 and the value of those HTML elements will be passed as arguments to the @action or @consumer function. The ``event`` and ``url`` are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
-
-Use ``{% hypergen_extend %}`` instead of ``{% extend %}`` to make partially updating the page work.
-
 
 
 views.py::
@@ -58,6 +57,9 @@ Passing callbacks from views to templates
 
 The ``callback_to_string`` function works similarly to ``callback`` but returns a string that can be passed to django
 templates and provide liveview capabilities.
+
+You can reference the value of the same element with ``THIS`` and other elemenents with the ``element_value(id)``
+function.
 
 views.py::
 
