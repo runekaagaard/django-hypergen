@@ -43,7 +43,7 @@ views.py::
 
     N = 0
 
-    @vanilla_template
+    @vanilla_template(target_block="content")
     def counter(request):
         return render(request, "content.html", {"n": N})
         
@@ -70,7 +70,7 @@ views.py::
 
         return render(request, "content.html", {"n": 1, "increment_callback": increment_callback})
         
-    @vanilla_template
+    @vanilla_template(target_block="content")
     def counter(request):
         render_counter(1)
         
