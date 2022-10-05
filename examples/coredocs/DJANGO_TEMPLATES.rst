@@ -4,7 +4,7 @@ Django Template Support
 Even though we enthusiastically endorse using the pure Python template engine, an important aspect of Hypergen is
 also to extend existing vanilla Django html templates with liveview functionality. This can be done either by passing liveview data from the views to the templates or inside the templates themselves.
 
-To enable hypergen context collector views must be decorated with the ``@vanilla_template`` decorator. 
+To enable hypergen liveview abilities, vanilla Django views must be decorated with the ``@django_template`` decorator. 
 
 Use the ``{% hypergen_extend %}`` template tag instead of ``{% extend %}`` to make partially updating the page work.
 
@@ -43,7 +43,7 @@ views.py::
 
     N = 0
 
-    @vanilla_template(target_block="content")
+    @django_template(target_block="content")
     def counter(request):
         return render(request, "content.html", {"n": N})
         
@@ -70,7 +70,7 @@ views.py::
 
         return render(request, "content.html", {"n": 1, "increment_callback": increment_callback})
         
-    @vanilla_template(target_block="content")
+    @django_template(target_block="content")
     def counter(request):
         render_counter(1)
         
