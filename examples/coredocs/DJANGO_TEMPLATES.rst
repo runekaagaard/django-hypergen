@@ -36,6 +36,7 @@ content.html::
 The ``{% callback %}`` template tag takes an optional number of arguments. Strings prefixed with a ``#`` is interpreted as ids
 and the value of those HTML elements will be passed as arguments to the @action or @consumer function. The ``id``, ``event`` and ``url`` keyword arguments are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
 
+It takes the all same keyword arguments as the regular ``callback`` function, like ``debounce``, ``confirm`` and ``blocks``.
 
 views.py::
 
