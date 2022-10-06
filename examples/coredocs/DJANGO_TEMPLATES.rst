@@ -2,100 +2,75 @@ Django Template Support
 =======================
 
 Even though we enthusiastically endorse using the pure Python template engine, an important aspect of Hypergen is
-also to extend existing vanilla Django html templates with liveview functionality. This can be done either by passing liveview data from the views to the templates or inside the templates themselves.
+to extend existing vanilla Django html templates with liveview functionality.
 
-To enable hypergen liveview abilities, vanilla Django views must be decorated with the ``@django_template`` decorator. 
+Check out the `demo </djangotemplates/>`_ to see an example of that.
 
-Use the ``{% hypergen_extend %}`` template tag instead of ``{% extend %}`` to make partially updating the page work.
+Setup HTML templates
+--------------------
 
-Extending Django templates with liveview functionality
-------------------------------------------------------
+In your Django base template html file you need to ``{% load hypergen %}`` and then place ``{% hypergen_media_header %}`` inside ``<head>...</head>`` and ``{% hypergen_media_footer %}`` just before ``</body>``. If you wish to
+partially update the inner content of the page you also need to add a div with an id that matches the ``target_id`` keyword argument to ``@action``.
 
-base_template.html::
+The hypergen parts of the base template will look like::
 
+    {% load hypergen %}<!DOCTYPE html>
     <html>
+        <head>
+            {% hypergen_media_header %}
+        </head>
         <body>
             <div id="content">
                 {% block content %}
                 {% endblock %}
             </div>
         </body>
+        {% hypergen_media_footer %}
     </html>
 
-content.html::
+Enable liveview for existing vanilla Django views
+-------------------------------------------------
 
-    {% load "hypergen" %}
-    {% hypergen_extend "base_template.html" %}
+To enable liveview capabilities for existing vanilla Django views they should be decorated with the ``@liveview``
+decorator. Prevent Hypergen for automatically adding a route by setting the ``autourl`` keyword argument to False::
+
+    from django.shortcuts import render
+    
+    @liveview(perm=NO_PERM_REQUIRED, autourl=False)
+    def my_vanilla_django_view(request):
+        return render(request, "my_app/my_template.html")
+
+Bind DOM events to callbacks in HTML templates
+----------------------------------------------
+
+The ``{% callback %}`` template tag takes an optional number of arguments. The ``id``, ``event`` and ``url`` keyword arguments are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
+
+Strings prefixed with a ``#`` are interpreted as ids and the value of those HTML elements will be passed as arguments
+to the @action or @consumer function. Type coercion can be defined by adding an optional ``.[type]`` to the magic string, e.g. ``"#my_id.date"``. The following coercions are allowed: str, float, int, date, datetime, month and week.
+
+It takes the all same keyword arguments as the regular ``callback`` function, like ``debounce``, ``confirm`` and ``blocks``.
+
+A click event on a button can be bound to a callback like this::
+
+    {% load hypergen %}
+
     {% block content %}
-        <input id="number" type="number" value="{{n}}" disabled />
-        <button {% callback "#number" id="increment" event="onclick" url="counter:increment" %}>
+        <button {% callback "#number.float" id="increment" event="onclick" url="my_app:my_action" %}>
             Increment
         </button>
     {% endblock %}
 
-The ``{% callback %}`` template tag takes an optional number of arguments. Strings prefixed with a ``#`` is interpreted as ids
-and the value of those HTML elements will be passed as arguments to the @action or @consumer function. The ``id``, ``event`` and ``url`` keyword arguments are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
+Partially render specific blocks in a Django html template
+----------------------------------------------------------
 
-It takes the all same keyword arguments as the regular ``callback`` function, like ``debounce``, ``confirm`` and ``blocks``.
+Actions work exactly like in Hypergen. Hypergen provides the ``render_to_hypergen`` function that works exactly as Djangos render_to_string except for two things:
 
-views.py::
+1. It writes the HTML directly to the page.
+2. It supports a "block" keyword argument so that only the content of that block is rendered.
 
-    from hypergen.imports import *
+To have an action partially render the ``content`` block inside the ``content`` id one would write::
 
-    N = 0
-
-    @django_template(target_block="content")
-    def counter(request):
-        return render(request, "content.html", {"n": N})
-        
-    @callback(perm=NO_PERM_REQUIRED, base_view=counter, target_id="content")
-    def increment(request, n):
-        global N
-        N += 1
-
-Passing callbacks from views to templates
------------------------------------------
-
-The ``callback_to_string`` function works similarly to ``callback`` but returns a string that can be passed to django
-templates and provide liveview capabilities.
-
-You can reference the value of the same element with ``THIS`` and other elemenents with the ``element_value(id)``
-function.
-
-views.py::
-
-    from hypergen.imports import *
-
-    def render_counter(n):
-        increment_callback = callback_to_string(increment, element_value("number"), id="submit", event="onclick")
-
-        return render(request, "content.html", {"n": 1, "increment_callback": increment_callback})
-        
-    @django_template(target_block="content")
-    def counter(request):
-        render_counter(1)
-        
-    @callback(perm=NO_PERM_REQUIRED, target_id="content")
-    def increment(request, n):
-        render_counter(n+1)
-
-base_template.html::
-
-    <html>
-        <body>
-            <div id="content">
-                {% block content %}
-                {% endblock %}
-            </div>
-        </body>
-    </html>
-
-content.html::
-
-    {% hypergen_extend "base_template.html" %}
-    {% block content %}
-        <input id="number" type="number" disabled />
-        <button {{increment_callback}}>Increment</button>
-    {% endblock %}
-
-    
+    @action(perm=NO_PERM_REQUIRED, taget_id="content")
+    def my_action(request):
+        # do what you want here...
+        render_to_hypergen("my_app/my_template.html", block="content")
