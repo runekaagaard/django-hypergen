@@ -32,7 +32,7 @@ Enable liveview for existing vanilla Django views
 -------------------------------------------------
 
 To enable liveview capabilities for existing vanilla Django views they should be decorated with the ``@liveview``
-decorator. Prevent Hypergen for automatically adding a route by setting the ``autourl`` keyword argument to False::
+decorator. Prevent Hypergen from automatically adding a route by setting the ``autourl`` keyword argument to False::
 
     from django.shortcuts import render
     
