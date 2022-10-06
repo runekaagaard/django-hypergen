@@ -40,9 +40,3 @@ class SessionVar:
 
     def __len__(self):
         return len(self.get())
-
-def hypergenable(f):
-    def _(*args, **kwargs):
-        return hypergen(f, *args, **kwargs, settings=dict(returns=FULL, liveview=True))["template_result"]
-
-    return _

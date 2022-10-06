@@ -14,8 +14,10 @@
   <p>This page is written with "normal" django templates, not the pure python hypergen templates.</p>
   
   <div id="content">
-    {% include "djangotemplates/content.html" %}
+    {% block content %}
+    {% endblock %}
   </div>
+  
   {% hypergen_footer %}
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css"></link>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
