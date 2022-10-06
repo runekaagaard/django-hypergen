@@ -1,69 +1,73 @@
 import operator
-from django.http.response import HttpResponse
-
-from django.shortcuts import render
-from django.template.loader import render_to_string
 
 from hypergen.imports import *
 from hypergen.context import context as c
+from hypergen.templatetags.hypergen import render_to_hypergen
 
-def context_decorator(f):
-    def _(*args, **kwargs):
-        return hypergen(f, *args, **kwargs, settings=dict(returns=FULL, liveview=True))["template_result"]
-
-    return _
+from django.shortcuts import render
 
 from hypergen.incubation import SessionVar
 from website.templates2 import show_sources
 
-d = dict
 STACK = SessionVar("STACK", [])  # This variable lives in the session data.
 
-@context_decorator
+# djangotemplates is a vanilla Django view, with it's route defined in urls.py.
+# It's decorated with @liveview to enable liveview capabilities.
+@liveview(perm=NO_PERM_REQUIRED, autourl=False)
 def djangotemplates(request):
-    return render(request, "djangotemplates/base.html", d(stack=STACK.get(), sources=hypergen(show_sources,
-        __file__)))
+    return render(request, "djangotemplates/content.html", context=dict(stack=STACK.get(),
+        sources=hypergen(show_sources, __file__)))
 
-@context_decorator
-def push(request):
-    number, = loads(request.POST["hypergen_data"])["args"]
+def render_content():
+    # render_to_hypergen() works exactly as Djangos render_to_string except for two things:
+    #     1. It writes the HTML directly to the page.
+    #     2. It supports a "block" keyword argument so that only the content of that block is rendered.
+    render_to_hypergen("djangotemplates/content.html", context=dict(stack=STACK.get(),
+        sources=hypergen(show_sources, __file__)), block="content")
+
+###  ACTIONS ###
+# @actions works exactly like vanilla hypergen actions, so the hypergen template language is enabled.
+# Here we choose to use render_context to partially render a Django html template.
+
+@action(perm=NO_PERM_REQUIRED, target_id="content")
+def push(request, number):
     if number is not None:
         assert type(number) is float
         STACK.append(number)
-    command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.get())))
-    return HttpResponse(dumps(c.hypergen.commands), status=200, content_type='application/json')
 
-@context_decorator
+    render_content()
+
+@action(perm=NO_PERM_REQUIRED, target_id="content")
 def reset(request):
-    command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.set([]))))
-    return HttpResponse(dumps(c.hypergen.commands), status=200, content_type='application/json')
+    STACK.set([])
+    render_content()
 
-@context_decorator
+@action(perm=NO_PERM_REQUIRED, target_id="content")
 def add(request, *args):
-    return apply_operation(operator.add)
+    apply_operation(operator.add)
 
-@context_decorator
+@action(perm=NO_PERM_REQUIRED, target_id="content")
 def subtract(request, *args):
-    return apply_operation(operator.sub)
+    apply_operation(operator.sub)
 
-@context_decorator
+@action(perm=NO_PERM_REQUIRED, target_id="content")
 def multiply(request, *args):
-    return apply_operation(operator.mul)
+    apply_operation(operator.mul)
 
-@context_decorator
+@action(perm=NO_PERM_REQUIRED, target_id="content")
 def divide(request, *args):
     if len(STACK.get()) and STACK.get()[-1] == 0:
-        return HttpResponse(dumps([["alert", "Can't divide by zero"]]), status=200, content_type='application/json')
+        command("alert", "Can't divide by zero")
+        return
 
-    return apply_operation(operator.truediv)
+    apply_operation(operator.truediv)
 
 def apply_operation(op):
     if len(STACK) < 2:
-        return HttpResponse(dumps([["alert", "Stack has too few elements"]]), status=200,
-            content_type='application/json')
+        command("alert", "Stack has too few elements")
+        return
 
     b, a = STACK.pop(), STACK.pop()
     STACK.append(op(a, b))
 
-    command("hypergen.morph", "content", render_to_string("djangotemplates/content.html", d(stack=STACK.get())))
-    return HttpResponse(dumps(c.hypergen.commands), status=200, content_type='application/json')
+    render_content()
