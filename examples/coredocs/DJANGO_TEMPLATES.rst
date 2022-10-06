@@ -70,7 +70,9 @@ Actions work exactly like in Hypergen. Hypergen provides the ``render_to_hyperge
 
 To have an action partially render the ``content`` block inside the ``content`` id one would write::
 
-    @action(perm=NO_PERM_REQUIRED, taget_id="content")
+    from hypergen.templatetags.hypergen import render_to_hypergen
+
+    @action(perm=NO_PERM_REQUIRED, target_id="content")
     def my_action(request):
         # do what you want here...
         render_to_hypergen("my_app/my_template.html", block="content")
