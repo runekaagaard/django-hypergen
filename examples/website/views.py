@@ -137,7 +137,7 @@ def documentation(request):
         a("demo", href="/djangotemplates/"), "with sources and the",
         a("documentation.", href="/coredocs/django_templates/"), sep=" "),
         li(b("2022-10-01"), "One of the most requested features at Djangocon was websockets.",
-        "I'm happy to announce that websockets are now in master, and a release will happen soon.",
+        "I'm happy to announce that websockets are now in main, and a release will happen soon.",
         "You can see it in action as the snake game under", a("Features", href="/"), "and as the obligatory",
         a("chat application.", href=chat2.reverse()), sep=" "),
         li(b("2022-09-27:"), "Thank you to the Djangocon organisers and all the wonderful",
