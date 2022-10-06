@@ -4,6 +4,8 @@
 {% block content %}
   <h2>Add number to stack</h2>
   <input id="number" type="number" autofocus>
+  {# The {% callback %} template tag works exactly like it's python cousin, except it requires an id and event. #}
+  {# Also notice that you can reference other elements with "#id[.type]" magic strings. #}
   <button {% callback "djangotemplates:push" "#number.float" id="push" event="onclick" %}>Push</button>
 
   <h2>Perform operation</h2>

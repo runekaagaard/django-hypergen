@@ -64,13 +64,16 @@ def element_value(id_, js_coerce_func=None):
     return ["_", "element_value", ["hypergen.read.value", js_coerce_func, id_]]
 
 @register.simple_tag
-def hypergen_footer():
+def hypergen_media_header():
+    return mark_safe('<script src="{}"></script>'.format(static("hypergen/v2/hypergen.min.js")))
+
+@register.simple_tag
+def hypergen_media_footer():
     if context.hypergen.event_handler_callbacks:
         command("hypergen.setClientState", 'hypergen.eventHandlerCallbacks', context.hypergen.event_handler_callbacks)
-    return mark_safe("""
-        <script src="{}"></script>
-        <script>hypergen.ready(() => hypergen.applyCommands(JSON.parse('{}', hypergen.reviver)))</script>
-    """.format(static("hypergen/v2/hypergen.min.js"), dumps(context.hypergen.commands)))
+    return mark_safe(
+        "<script>hypergen.ready(() => hypergen.applyCommands(JSON.parse('{}', hypergen.reviver)))</script>".format(
+        dumps(context.hypergen.commands)))
 
 def render_to_hypergen(template_name, context=None, request=None, using=None, block=None):
     if block is None:

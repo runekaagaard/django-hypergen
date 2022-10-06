@@ -1,26 +1,33 @@
 import operator
-from django.http.response import HttpResponse
-
-from django.shortcuts import render
 
 from hypergen.imports import *
 from hypergen.context import context as c
 from hypergen.templatetags.hypergen import render_to_hypergen
 
+from django.shortcuts import render
+
 from hypergen.incubation import SessionVar
 from website.templates2 import show_sources
 
-d = dict
 STACK = SessionVar("STACK", [])  # This variable lives in the session data.
 
+# djangotemplates is a vanilla Django view, with it's route defined in urls.py.
+# It's decorated with @liveview to enable liveview capabilities.
 @liveview(perm=NO_PERM_REQUIRED, autourl=False)
 def djangotemplates(request):
-    return render(request, "djangotemplates/content.html", context=d(stack=STACK.get(),
+    return render(request, "djangotemplates/content.html", context=dict(stack=STACK.get(),
         sources=hypergen(show_sources, __file__)))
 
 def render_content():
-    render_to_hypergen("djangotemplates/content.html", context=d(stack=STACK.get(),
+    # render_to_hypergen() works exactly as Djangos render_to_string except for two things:
+    #     1. It writes the HTML directly to the page.
+    #     2. It supports a "block" keyword argument so that only the content of that block is rendered.
+    render_to_hypergen("djangotemplates/content.html", context=dict(stack=STACK.get(),
         sources=hypergen(show_sources, __file__)), block="content")
+
+###  ACTIONS ###
+# @actions works exactly like vanilla hypergen actions, so the hypergen template language is enabled.
+# Here we choose to use render_context to partially render a Django html template.
 
 @action(perm=NO_PERM_REQUIRED, target_id="content")
 def push(request, number):
