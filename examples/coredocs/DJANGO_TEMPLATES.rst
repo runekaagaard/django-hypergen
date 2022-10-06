@@ -38,7 +38,7 @@ decorator. Prevent Hypergen from automatically adding a route by setting the ``a
     
     @liveview(perm=NO_PERM_REQUIRED, autourl=False)
     def my_vanilla_django_view(request):
-        return render(request, "my_app/my_template.html")
+        return render(request, "my_app/my_template.html", {"number": 1})
 
 Bind DOM events to callbacks in HTML templates
 ----------------------------------------------
@@ -55,6 +55,7 @@ A click event on a button can be bound to a callback like this::
     {% load hypergen %}
 
     {% block content %}
+        <input id="number" type="number" value="{{number}}" />
         <button {% callback "my_app:my_action" "#number.float" id="increment" event="onclick" %}>
             Increment
         </button>
@@ -73,6 +74,9 @@ To have an action partially render the ``content`` block inside the ``content`` 
     from hypergen.templatetags.hypergen import render_to_hypergen
 
     @action(perm=NO_PERM_REQUIRED, target_id="content")
-    def my_action(request):
-        # do what you want here...
-        render_to_hypergen("my_app/my_template.html", block="content")
+    def my_action(request, number):
+        render_to_hypergen("my_app/my_template.html", context={"number": number+1}, block="content")
+
+``render_to_hypergen`` requires installation of ``django-render-block``::
+
+    pip install django-render-block
