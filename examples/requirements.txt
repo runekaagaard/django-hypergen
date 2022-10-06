@@ -11,3 +11,4 @@ yattag
 docutils
 channels
 channels-redis
+django-render-block

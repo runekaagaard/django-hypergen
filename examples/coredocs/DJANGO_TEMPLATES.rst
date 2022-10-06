@@ -43,7 +43,7 @@ decorator. Prevent Hypergen from automatically adding a route by setting the ``a
 Bind DOM events to callbacks in HTML templates
 ----------------------------------------------
 
-The ``{% callback %}`` template tag takes an optional number of arguments. The ``id``, ``event`` and ``url`` keyword arguments are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
+The ``{% callback %}`` template tag takes first an reversible url and then an optional number of arguments that will be passed to the action or consumer. The ``id``, ``event`` keyword arguments are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
 
 Strings prefixed with a ``#`` are interpreted as ids and the value of those HTML elements will be passed as arguments
 to the @action or @consumer function. Type coercion can be defined by adding an optional ``.[type]`` to the magic string, e.g. ``"#my_id.date"``. The following coercions are allowed: str, float, int, date, datetime, month and week.
@@ -55,7 +55,7 @@ A click event on a button can be bound to a callback like this::
     {% load hypergen %}
 
     {% block content %}
-        <button {% callback "#number.float" id="increment" event="onclick" url="my_app:my_action" %}>
+        <button {% callback "my_app:my_action" "#number.float" id="increment" event="onclick" %}>
             Increment
         </button>
     {% endblock %}
