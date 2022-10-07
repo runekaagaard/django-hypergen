@@ -39,7 +39,8 @@ __all__ = [
     "optgroup", "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp",
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
-    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "hprint", "HTML", "FULL",
+    "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "hprint", "HTML", "FULL", "path",
+    "circle",
     "COMMANDS", "OMIT", "hypergen_to_response"]
 
 ### Constants ###
@@ -570,6 +571,8 @@ class u(base_element): pass
 class ul(base_element): pass
 class var(base_element): pass
 class video(base_element): pass
+class path(base_element): pass
+class circle(base_element): pass
 class wbr(base_element_void):
     pass
 # yapf: enable

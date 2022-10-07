@@ -1,0 +1,47 @@
+@keyframes fadeToBlack {
+  0% {
+    background-color: initial;
+  }
+  100% {
+    background-color: black;
+  }
+}
+@keyframes fadeToBlue {
+  0% {
+    background-color: initial;
+  }
+  100% {
+    background-color: #00002d;
+  }
+}
+@keyframes disappear {
+  0% {
+    opacity: 1;
+    fill-opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    fill-opacity: 0;
+  }
+}
+html {
+  animation: fadeToBlue 8s;
+  animation-delay: 2s;
+  animation-fill-mode: forwards;
+}
+
+h1, p, footer, header, .smoke {
+  animation: disappear 2s;
+  animation-delay: 1s;
+  animation-fill-mode: forwards;
+}
+
+.black-stroke {
+  stroke: black;
+}
+
+.fill-grey {
+  fill: grey;
+}
+
+/*# sourceMappingURL=animations.css.map */
