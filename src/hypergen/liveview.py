@@ -350,6 +350,8 @@ def action(func, path=None, re_path=None, base_template=None, target_id=None, pe
                     content_type='application/json')
             elif isinstance(full["template_result"], HttpResponse):
                 return full["template_result"]
+            elif type(full["template_result"]) is list:
+                return HttpResponse(dumps(full["template_result"]), status=200, content_type='application/json')
             else:
                 return HttpResponse(dumps(full["context"]["hypergen"]["commands"]), status=200,
                     content_type='application/json')

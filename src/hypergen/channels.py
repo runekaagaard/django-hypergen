@@ -162,6 +162,8 @@ def consumer(func, path=None, re_path=None, base_template=None, target_id=None, 
                 return [["hypergen.redirect", full["template_result"]["Location"]]]
             elif isinstance(full["template_result"], HttpResponse):
                 raise Exception("Consumers cannot return HttpResponse objects.")
+            elif type(full["template_result"]) is list:
+                return full["template_result"]
             else:
                 return full["context"]["hypergen"]["commands"]
 
