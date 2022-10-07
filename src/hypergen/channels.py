@@ -25,6 +25,9 @@ except ImportError:
     def assert_channels():
         raise Exception("To use channels you must do 'pip install channels channels-redis'")
 
+    class JsonWebsocketConsumer(object):
+        pass
+
 __all__ = ["HypergenWebsocketConsumer", "ws_url", "WebsocketPlugin", "consumer"]
 
 class WebsocketPlugin(LiveviewPluginBase):
