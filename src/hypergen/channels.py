@@ -13,15 +13,27 @@ from django.templatetags.static import static
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 
-from asgiref.sync import async_to_sync
-from channels.http import AsgiRequest
-from channels.generic.websocket import JsonWebsocketConsumer
+try:
+    from asgiref.sync import async_to_sync
+    from channels.http import AsgiRequest
+    from channels.generic.websocket import JsonWebsocketConsumer
+
+    def assert_channels():
+        pass
+except ImportError:
+
+    def assert_channels():
+        raise Exception("To use channels you must do 'pip install channels channels-redis'")
+
+    class JsonWebsocketConsumer(object):
+        pass
 
 __all__ = ["HypergenWebsocketConsumer", "ws_url", "WebsocketPlugin", "consumer"]
 
 class WebsocketPlugin(LiveviewPluginBase):
     def process_html(self, html):
         def template():
+            assert_channels()
             raw("<!--hypergen_websocket_media-->")
             script(src=static("hypergen/v2/websockets.min.js"))
 
@@ -57,6 +69,7 @@ class HypergenWebsocketConsumer(JsonWebsocketConsumer):
             [f"{k}__{v}" for k, v in self.scope['url_route']['kwargs'].items()])
 
     def connect(self):
+        assert_channels()
         async_to_sync(self.channel_layer.group_add)(self.group_name(), self.channel_name)
         self.accept()
 
@@ -126,6 +139,7 @@ def ws_url(url):
 @wrap2
 def consumer(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
     autourl=True, partial=True, base_view=None, appstate=None, user_plugins=[]):
+    assert_channels()
     if perm != NO_PERM_REQUIRED:
         assert perm, "perm is a required keyword argument"
     if target_id is None:
@@ -162,6 +176,8 @@ def consumer(func, path=None, re_path=None, base_template=None, target_id=None, 
                 return [["hypergen.redirect", full["template_result"]["Location"]]]
             elif isinstance(full["template_result"], HttpResponse):
                 raise Exception("Consumers cannot return HttpResponse objects.")
+            elif type(full["template_result"]) is list:
+                return full["template_result"]
             else:
                 return full["context"]["hypergen"]["commands"]
 

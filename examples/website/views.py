@@ -132,13 +132,17 @@ python manage.py startapp \\
 def documentation(request):
     h2("News")
     ul(
+        li(b("2022-10-06"), "Another hotly requested feature has hit main.",
+        "Existing Django templates can now be extended with liveview capabilities!", "Check out the",
+        a("demo", href="/djangotemplates/"), "with sources and the",
+        a("documentation.", href="/coredocs/django_templates/"), sep=" "),
         li(b("2022-10-01"), "One of the most requested features at Djangocon was websockets.",
-        "I'm happy to announce that websockets are now in master, and a release will happen soon.",
+        "I'm happy to announce that websockets are now in main, and a release will happen soon.",
         "You can see it in action as the snake game under", a("Features", href="/"), "and as the obligatory",
         a("chat application.", href=chat2.reverse()), sep=" "),
         li(b("2022-09-27:"), "Thank you to the Djangocon organisers and all the wonderful",
         "Django developers we met and listened too!",
-        "Hope to see you all in Dublin, next year <3.", "We have made available our",
+        "Hope to see you all in Edinburgh, next year <3.", "We have made available our",
         a("slides", href="https://runekaagaard.github.io/hypergen-djangocon-2022/"), "and the",
         a("example code.", href="https://github.com/runekaagaard/hypergen-djangocon-2022"), sep=" "),
         li(b("2022-09-14:"), "Good news everybody! Hypergen been accepted as a",
@@ -165,21 +169,17 @@ def documentation(request):
     h2("Documentation")
     p("Documentation explaining and showing how Hypergen works.")
     with ul():
-        li(a("Templates", href=template.reverse()))
+        li(a("Python Templates", href=template.reverse()))
         li(a("Liveviews", href=liveviews.reverse()))
+        li(a("Django HTML Templates", href="/coredocs/django_templates/"))
         li(a("Form inputs", href=inputs.reverse()))
         li(a("Client commands", href=commands.reverse()))
         li(a("Partial loading and history support", href=page1.reverse()))
         li(a("Hypergens global immutable context", href=globalcontext.reverse()))
         li(a("Notifications from Django messages", href=notifications.reverse()))
 
-    h2("Alternative template implementations")
-    p("While the pure python template 'language' is the main template engine, two alternative ",
-        " implementations exists.")
+    h2("Other template implementations")
     with ul():
-        li(a("Django html Templates", href=reverse("djangotemplates:djangotemplates")),
-            " - Django html templates instead of python templates. ",
-            "We could use some input on this, and are ready to polish it together with you.")
         li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
             " - example of the alpha Cython implementation.")
 

@@ -1,6 +1,7 @@
 # DONT USE THESE, might go away at anytime!
 import pickle
 from hypergen.context import context as c
+from hypergen.template import hypergen, FULL
 
 def pickle_dumps(data):
     return pickle.dumps(data, pickle.HIGHEST_PROTOCOL).decode('latin1')

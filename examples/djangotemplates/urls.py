@@ -1,4 +1,5 @@
 from djangotemplates import views
+from hypergen.hypergen import autourls
 try:
     from django.conf.urls import url
 except ImportError:
@@ -7,10 +8,4 @@ except ImportError:
 app_name = 'djangotemplates'
 
 urlpatterns = [
-    url('^$', views.djangotemplates, name="djangotemplates"),
-    url('^add/$', views.add, name="add"),
-    url('^reset/$', views.reset, name="reset"),
-    url('^subtract/$', views.subtract, name="subtract"),
-    url('^divide/$', views.divide, name="divide"),
-    url('^multiply/$', views.multiply, name="multiply"),
-    url('^push/$', views.push, name="push"),]
+    url('^$', views.djangotemplates, name="djangotemplates"),] + autourls(views, app_name)

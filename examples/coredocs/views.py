@@ -11,3 +11,13 @@ def template(request):
 def liveviews(request):
     with open("coredocs/LIVEVIEW.rst") as f:
         rst(f.read(), report_level=0)
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
+def django_templates(request):
+    with open("coredocs/DJANGO_TEMPLATES.rst") as f:
+        rst(f.read(), report_level=0)
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
+def websockets(request):
+    with open("coredocs/WEBSOCKETS.rst") as f:
+        rst(f.read(), report_level=100)

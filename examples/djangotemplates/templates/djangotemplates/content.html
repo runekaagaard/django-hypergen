@@ -1,19 +1,24 @@
+{% extends "djangotemplates/base.html"%}
 {% load hypergen %}{% csrf_token %}
-<h2>Push number on stack</h2>
 
-<input id="number" type="number" autofocus>
-<button {% callback "push" "onclick" "djangotemplates:push" "number"|element|coerce_float %}>Push</button>
+{% block content %}
+  <h2>Add number to stack</h2>
+  <input id="number" type="number" autofocus>
+  {# The {% callback %} template tag works exactly like it's python cousin, except it requires an id and event. #}
+  {# Also notice that you can reference other elements with "#id[.type]" magic strings. #}
+  <button {% callback "djangotemplates:push" "#number.float" id="push" event="onclick" %}>Push</button>
 
-<h2>Perform operation</h2>
-<button {% callback "add" "onclick" "djangotemplates:add" %}>+</button>
-<button {% callback "subtract" "onclick" "djangotemplates:subtract" %}>-</button>
-<button {% callback "multiply" "onclick" "djangotemplates:multiply" %}>*</button>
-<button {% callback "divide" "onclick" "djangotemplates:divide" %}>/</button>
-<button {% callback "reset" "onclick" "djangotemplates:reset" %}>C</button>
+  <h2>Perform operation</h2>
+  <button {% callback "djangotemplates:add" id="add" event="onclick" %}>+</button>
+  <button {% callback "djangotemplates:subtract" id="subtract" event="onclick" %}>-</button>
+  <button {% callback "djangotemplates:multiply" id="multiply" event="onclick" %}>*</button>
+  <button {% callback "djangotemplates:divide" id="divide" event="onclick" %}>/</button>
+  <button {% callback "djangotemplates:reset" id="reset" event="onclick" %}>C</button>
 
-<h2>Stack</h2>
-<ol>
-{% for item in stack reversed %}
-  <li>{{item}}</li>
-{% endfor %}
-</ol>
+  <h2>Stack</h2>
+  <ol>
+  {% for item in stack reversed %}
+    <li>{{item}}</li>
+  {% endfor %}
+  </ol>
+{% endblock %}
