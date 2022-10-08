@@ -1,0 +1,58 @@
+* Communication patterns
+- Fuld load
+- Partial load
+- Action/Consumer callback
+- Server websocket push
+
+* Misc
+- Timer
+- Connect setup/teardown
+- Offline handling
+- Error handling
+- History support
+- Retry
+- Concurrency control
+
+* Lifecycle events
+- hypergen.full_render
+- hypergen.partial_render
+- hypergen.callback
+- hypergen.server_push
+- hypergen.morph
+- hypergen.html_change
+
+- hypergen.offline
+- hypergen.online
+- hypergen.callback_error
+
+* Service
+service_add(name, path, start=True)
+service_start(name)
+service_stop(name)
+
+services = {}
+
+class WebsocketService {
+    // Public
+    constructor(name) {
+        document.addEventListener("hypergen.html_change", this.check_for_stop)
+        this.name = name
+        this.dependees = []
+    }
+    add()
+    start()
+    stop()
+    add_dependee(dependee) {
+        this.dependees(add)
+    }
+
+    // Custom
+    check_for_stop() {
+        this.dependees = this.dependees.filter(x => exists(x))
+        if (!!this.dependees) this.stop()
+    }
+}
+
+js.service_add("websocket::long_ass_group_name", ["hypergen.WebsocketService])
+button(onclick=callback(act, 42, service_dependencies=["websocket::long_ass_group_name", "someother"]))
+<button onclick="hypergen.event('/url/path/', [42], ['websocket::long_ass_group_name', 'someother'])"
