@@ -61,6 +61,11 @@ button(onclick=callback(act, 42, service_dependencies=["websocket::long_ass_grou
 
 * Scheduler configuration
 - https://cloud.google.com/appengine/docs/legacy/standard/go111/config/queueref
+- https://en.wikipedia.org/wiki/Scheduling_(computing)#task_queue
+- https://en.wikipedia.org/wiki/Multilevel_queue
+- https://en.wikipedia.org/wiki/Job_scheduler
+- https://docs.mojolicious.org/Minion/Guide
+- https://www.npmjs.com/package/bee-queue#retrying
 
 # lifecycle event types
 EVENT-IN --> CALLBACK-START --> CALLBACK-END --> APPLY-COMMANDS-START --> APPLY-COMMANDS-END                            
@@ -94,4 +99,13 @@ Serial
 Block form input while submitting
 *** Cross dependent fields
 Async
-
+Block other field until done
+Draw ordered
+** Misc
+que1:
+    callback_start_order = false
+    callback_end_order = true
+    apply_commands_start_order = true
+    apply_commands_end_order = false
+queu2:
+    ...
