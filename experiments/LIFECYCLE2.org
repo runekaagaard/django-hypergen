@@ -12,6 +12,8 @@
 - History support
 - Retry
 - Concurrency control
+- Delay
+- Timeout
 
 * Lifecycle events
 - hypergen.full_render
@@ -56,3 +58,40 @@ class WebsocketService {
 js.service_add("websocket::long_ass_group_name", ["hypergen.WebsocketService])
 button(onclick=callback(act, 42, service_dependencies=["websocket::long_ass_group_name", "someother"]))
 <button onclick="hypergen.event('/url/path/', [42], ['websocket::long_ass_group_name', 'someother'])"
+
+* Scheduler configuration
+- https://cloud.google.com/appengine/docs/legacy/standard/go111/config/queueref
+
+# lifecycle event types
+EVENT-IN --> CALLBACK-START --> CALLBACK-END --> APPLY-COMMANDS-START --> APPLY-COMMANDS-END                            
+                            --> CALLBACK-ERROR                        --> APPLY-COMMANDS-ERROR
+                            --> OFFLINE-ERROR                         --> OFFLINE-ERROR
+
+function step(queue, lifecycle_event_type, event, commands, meta) {
+
+}
+** Examples
+R = Read value of input field
+C = Communicate with server
+D = Draw html
+*** Autocomplete
+T1   T2   T3
+RX   
+     RY
+          RZ
+          CZ
+CX
+     CY
+     DY
+          DZ
+DX         
+
+Debounced          
+Send async
+Draw ordered
+*** Submit form
+Serial
+Block form input while submitting
+*** Cross dependent fields
+Async
+
