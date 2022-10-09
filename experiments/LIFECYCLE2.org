@@ -60,12 +60,14 @@ button(onclick=callback(act, 42, service_dependencies=["websocket::long_ass_grou
 <button onclick="hypergen.event('/url/path/', [42], ['websocket::long_ass_group_name', 'someother'])"
 
 * Scheduler configuration
+- https://en.wikipedia.org/wiki/Schedule_(computer_science)
 - https://cloud.google.com/appengine/docs/legacy/standard/go111/config/queueref
 - https://en.wikipedia.org/wiki/Scheduling_(computing)#task_queue
 - https://en.wikipedia.org/wiki/Multilevel_queue
 - https://en.wikipedia.org/wiki/Job_scheduler
 - https://docs.mojolicious.org/Minion/Guide
 - https://www.npmjs.com/package/bee-queue#retrying
+- https://rangle.io/blog/thinking-in-nested-streams-with-rxjs/
 
 # lifecycle event types
 EVENT-IN --> CALLBACK-START --> CALLBACK-END --> APPLY-COMMANDS-START --> APPLY-COMMANDS-END                            
