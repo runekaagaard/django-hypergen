@@ -66,6 +66,9 @@ def liveview_resolver_match(for_action=False):
 def url_is_active(url):
     return context.hypergen.liveview_resolver_match.func is resolve(url).func
 
+def _request_is_partial():  # Not stable!
+    return c.request.META.get("HTTP_X_HYPERGEN_PARTIAL", None) == "1"
+
 ### liveview is a plugin to hypergen ###
 
 class LiveviewPluginBase:

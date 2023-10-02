@@ -165,6 +165,8 @@ _CHANNELS_ROUTES = {}
 def autourl_register(func, base_template=None, path=None, re_path=None, channels=False):
     def _reverse(*view_args, **view_kwargs):
         if channels is not True:
+            assert hasattr(_reverse, "hypergen_namespace"), ("Could not find the hypergen_name space. "
+                "Maybe use full import for the views in the call to autourls!?")
             ns = _reverse.hypergen_namespace
             return metastr.make(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
                 d(base_template=base_template))
