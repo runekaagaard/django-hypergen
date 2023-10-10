@@ -135,7 +135,7 @@ Compile the javascript files:
     npm install # use node 18 lts
     # watch hypergen.js to dist/hypergen.js
     npm start
-    # watch hypergen.js to dist/hypergen.js
+    # build hypergen.js to dist/hypergen.js
     npm run build
     
 Profiling
