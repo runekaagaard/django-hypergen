@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     if: ${{ contains(github.event.commits[0].message, '[ci]') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04 # 3.6 not available on 22.04.
     strategy:
       max-parallel: 20
       matrix:
