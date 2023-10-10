@@ -28,12 +28,7 @@ except ImportError:
     class JsonWebsocketConsumer(object):
         pass
 
-__all__ = ["HypergenWebsocketConsumer", "ws_url", "WebsocketPlugin", "consumer"]
-
-# TODO: Remove this class
-class WebsocketPlugin(LiveviewPluginBase):
-    def process_html(self, html):
-        return html
+__all__ = ["HypergenWebsocketConsumer", "ws_url", "consumer"]
 
 def get(o, k, d="__DEFAULT__"):
     value = getattr(o.Hypergen, k, "__NA__")

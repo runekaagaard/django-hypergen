@@ -9,8 +9,8 @@ chat2: Using the @consumer decorator to avoid all the boilerplate.
 
 ### chat ###
 
-#                                                                     ↓ Remember to add the plugin
-@liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template, user_plugins=[WebsocketPlugin()])
+#
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat(request):
     # Channels urls are not reversible the same as vanilla urls. Little helper to add protocol and port.
     url = ws_url("/ws/chat/hypergen/")
@@ -42,8 +42,8 @@ def chat(request):
 
 ### chat2 ###
 
-#                                                                     ↓ Remember to add the plugin
-@liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template, user_plugins=[WebsocketPlugin()])
+#
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat2(request):
     # @consumer decorated functions are reversible with the ".reverse()" helper.
     websocket_url = receive_message.reverse()

@@ -30,8 +30,7 @@ from websockets.views import chat2
 
 from features import templates as features_templates
 
-@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template_monokai,
-    user_plugins=[WebsocketPlugin(), AlertifyPlugin()])
+@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template_monokai, user_plugins=[AlertifyPlugin()])
 def home(request):
     if hasattr(request, 'session') and not request.session.session_key:
         request.session.save()
