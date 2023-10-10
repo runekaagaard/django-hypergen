@@ -15,8 +15,8 @@ def chat(request):
     # Channels urls are not reversible the same as vanilla urls. Little helper to add protocol and port.
     url = ws_url("/ws/chat/hypergen/")
 
-    # Open a websocket on the client. Can be closed at any point with: command("hypergen_websockets.close", url)
-    command("hypergen_websockets.open", url)
+    # Open a websocket on the client. Can be closed at any point with: command("hypergen.websocket.close", url)
+    command("hypergen.websocket.open", url)
 
     # Some custom styling.
     style(""" input, textarea {width: 100%} """)
@@ -48,8 +48,8 @@ def chat2(request):
     # @consumer decorated functions are reversible with the ".reverse()" helper.
     websocket_url = receive_message.reverse()
 
-    # Open a websocket on the client. Can be closed at any point with: command("hypergen_websockets.close", url)
-    command("hypergen_websockets.open", websocket_url)
+    # Open a websocket on the client. Can be closed at any point with: command("hypergen.websocket.close", url)
+    command("hypergen.websocket.open", websocket_url)
 
     # Some custom styling.
     style(""" input, textarea {width: 100%} """)

@@ -1,9 +1,11 @@
 import morphdom from 'morphdom'
 import './hypergen'
 import * as hypergen from './hypergen'
+import * as websocket from './websocket';
 
-// Make all exported vars availabe in window.hypergen.
+// Make all exported vars availabe inside window.hypergen.
 window.hypergen = hypergen
+window.hypergen.websocket = websocket
 
 // Shims
 if (typeof Array.isArray === 'undefined') {
@@ -231,11 +233,11 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
         throw(error)
       }
     }
-    if (!hypergen_websockets.WEBSOCKETS[url]) {
+    if (!hypergen.websocket.WEBSOCKETS[url]) {
       console.error("Cannot send WS to non existing connection:", url)
       return
     }
-    hypergen_websockets.WEBSOCKETS[url].send(json)
+    hypergen.websocket.WEBSOCKETS[url].send(json)
     if (clear === true) document.getElementById(elementId).value = ""
     
   }

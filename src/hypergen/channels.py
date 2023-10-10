@@ -30,22 +30,10 @@ except ImportError:
 
 __all__ = ["HypergenWebsocketConsumer", "ws_url", "WebsocketPlugin", "consumer"]
 
+# TODO: Remove this class
 class WebsocketPlugin(LiveviewPluginBase):
     def process_html(self, html):
-        def template():
-            assert_channels()
-            raw("<!--hypergen_websocket_media-->")
-            script(src=static("hypergen/dist/websockets.min.js"))
-
-        # Inject media.
-        if "<head>" in html:
-            assert html.count("<head>") == 1, "Ooops, multiple <head> tags found. There can be only one!"
-            return html.replace("<head>", "<head>" + hypergen(template))
-        elif "<html>" in html:
-            assert html.count("<html>") == 1, "Ooops, multiple <html> tags found. There can be only one!"
-            return html.replace("<html>", "<html><head>" + hypergen(template) + "</head>")
-        else:
-            return hypergen(template) + html
+        return html
 
 def get(o, k, d="__DEFAULT__"):
     value = getattr(o.Hypergen, k, "__NA__")
