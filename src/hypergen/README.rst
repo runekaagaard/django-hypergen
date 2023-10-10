@@ -1,4 +1,4 @@
-The most interesting files are:
+The most interesting files and directories are:
 
 template.py
     The hypergen template engine
@@ -10,11 +10,7 @@ imports.py
     Gotta catch them all? Import from here.
 hypergen.py
     Internal helpers
-
-
-These belong to an older version of hypergen and will go away:
-
-core.py
-    The hypergen template engine and lieview features all mixed up
-contrib.py
-    QOL view decorators
+plugins
+    Plugins like alertify and appstate that extends hypergen with extra capabilities
+templatetags
+    Django templatetags that enables hypergen in vanilla Django html templates
