@@ -15,7 +15,7 @@ from django.conf import settings
 
 try:
     from asgiref.sync import async_to_sync
-    from channels.http import AsgiRequest
+    from django.core.handlers.asgi import ASGIRequest
     from channels.generic.websocket import JsonWebsocketConsumer
 
     def assert_channels():
@@ -58,7 +58,10 @@ def get(o, k, d="__DEFAULT__"):
 class HypergenWebsocketConsumer(JsonWebsocketConsumer):
     def get_request(self):
         self.scope["method"] = "WS"
-        return AsgiRequest(self.scope, None)
+        request = ASGIRequest(self.scope, None)
+        request.user = self.scope["user"]
+
+        return request
 
     def check_perms(self, content):
         return check_perms(self.get_request(), get(self, "perm"), any_perm=get(self, "any_perm", d=False),
@@ -122,12 +125,18 @@ class HypergenWebsocketAutoConsumer(HypergenWebsocketConsumer):
             [f"{k}__{v}" for k, v in self.scope['url_route']['kwargs'].items()])
 
     def receive_json(self, content):
-        request = self.get_request()
-        with context(request=request):
-            commands = self.hypergen_func(request, *content['args'])
+        try:
+            request = self.get_request()
+            with context(request=request):
+                commands = self.hypergen_func(request, *content['args'])
 
-        async_to_sync(self.channel_layer.group_send)(self.group_name(),
-            {'type': 'send_hypergen', 'commands': json.loads(dumps(commands))})
+            async_to_sync(self.channel_layer.group_send)(self.group_name(),
+                {'type': 'send_hypergen', 'commands': json.loads(dumps(commands))})
+        except Exception as e:
+            # TODO: Why are errors here hidden in daphnes output?
+            import traceback
+            traceback.print_exc()
+            raise
 
 def ws_url(url):
     absolute_url = context.request.build_absolute_uri(url)
@@ -152,7 +161,7 @@ def consumer(func, path=None, re_path=None, base_template=None, target_id=None, 
         user_plugins = []
 
     @wraps(func)
-    def _(request, *args, **kwargs):
+    def _(consumer, request, *args, **kwargs):
         # Ensure correct permissions
         try:
             ok, __, matched_perms = check_perms(request, perm, any_perm=any_perm, raise_exception=True)
@@ -169,7 +178,7 @@ def consumer(func, path=None, re_path=None, base_template=None, target_id=None, 
                 #liveview_resolver_match=liveview_resolver_match(for_action=True)
         ):
             full = hypergen(
-                func, request, *args, **kwargs, settings=d(action=True, returns=FULL, target_id=target_id,
+                func, consumer, request, *args, **kwargs, settings=d(action=True, returns=FULL, target_id=target_id,
                 appstate=appstate, base_view=base_view, user_plugins=user_plugins))
             if isinstance(full["template_result"], HttpResponseRedirect):
                 # Allow to return a redirect response directly from an action.

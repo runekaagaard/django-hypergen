@@ -251,12 +251,14 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
 
 export const partialLoad = function(event, url, pushState) {
   console.log("partialLoad to", url, pushState)
+  window.dispatchEvent(new CustomEvent('hypergen.partialLoad.before', {detail: {event, url, pushState}}))
   callback(url, [], {'event': event, 'headers': {'X-Hypergen-Partial': '1'}, onSucces: function() {
     if (!!pushState) {
       console.log("pushing state!")
       history.pushState({callback_url: url}, "", url)
       onpushstate()
       history.forward()
+      window.dispatchEvent(new CustomEvent('hypergen.partialLoad.after', {detail: {event, url, pushState}}))
     }
   }})
 }
