@@ -35,7 +35,7 @@ class WebsocketPlugin(LiveviewPluginBase):
         def template():
             assert_channels()
             raw("<!--hypergen_websocket_media-->")
-            script(src=static("hypergen/v2/websockets.min.js"))
+            script(src=static("hypergen/dist/websockets.min.js"))
 
         # Inject media.
         if "<head>" in html:

@@ -119,7 +119,7 @@ class LiveviewPlugin(LiveviewPluginBase):
     def process_html(self, html):
         def template():
             raw("<!--hypergen_liveview_media-->")
-            script(src=static("hypergen/v2/hypergen.min.js"))
+            script(src=static("hypergen/dist/hypergen.js"))
             script(dumps(c.hypergen.commands), type_='application/json', id_='hypergen-apply-commands-data')
             script("""
                 hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(

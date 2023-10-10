@@ -427,7 +427,7 @@ HTML = """
 <html>
     <head>
         <!--hypergen_liveview_media-->
-        <script src="hypergen/v2/hypergen.min.js"></script>
+        <script src="hypergen/dist/hypergen.js"></script>
         <script type="application/json" id="hypergen-apply-commands-data">{"_":["deque",[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]]}</script>
         <script>
                 hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
@@ -492,7 +492,7 @@ X = """
 <html>
     <head>
         <!--hypergen_liveview_media-->
-        <script src="hypergen/v2/hypergen.min.js"></script>
+        <script src="hypergen/dist/hypergen.js"></script>
         <script type="application/json" id="hypergen-apply-commands-data">{"_":["deque",[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]]}</script>
         <script>
                 hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
@@ -506,7 +506,7 @@ X = """
 """.strip()
 
 Y = """<!--hypergen_liveview_media-->
-<script src="hypergen/v2/hypergen.min.js"></script>
+<script src="hypergen/dist/hypergen.js"></script>
 <script type="application/json" id="hypergen-apply-commands-data">{"_":["deque",[["hypergen.setClientState","hypergen.eventHandlerCallbacks",{}],["history.replaceState",{"callback_url":"mock"},"","mock"]]]}</script>
 <script>
                 hypergen.ready(() => hypergen.applyCommands(JSON.parse(document.getElementById(
