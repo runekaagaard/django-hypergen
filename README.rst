@@ -77,6 +77,7 @@ Features
 - **Control over client side events** - inbuilt confirmation dialogs, blocking and debouncing
 - **Easy uploading of files** - with progress bar
 - **Still loves javascript** - trivially call client functions from the server
+. **Realtime** - Create manual or automatic websocket consumers trivially.
 - **History buff?** - don't worry, Hypergen supports from Django 1.11, Python 3.5 and up
 - **Hyperfy** - the command line app that converts html to hypergen python code
 
@@ -114,7 +115,6 @@ Why not Hypergen?
 
 - Every frontend event calls the server. Not good for e.g. games.
 - Python templating might not be for everyone. We found it works great in practice.
-- No realtime capabilities yet, so the server can only push data back when it receives a request
 
 Developing
 ==========
@@ -131,11 +131,12 @@ Compile the javascript files:
 
 .. code-block:: bash
 
-    yarn global add parcel-bundler
-    # or
-    npm install -g parcel-bundler
     cd hypergen/static/hypergen
-    parcel watch -o hypergen.min.js -d . hypergen.js
+    npm install # use node 18 lts
+    # watch hypergen.js to dist/hypergen.js
+    npm start
+    # watch hypergen.js to dist/hypergen.js
+    npm run build
     
 Profiling
 ---------
