@@ -90,7 +90,7 @@ Running the examples
     cd django-hypergen/
     virtualenv -p python3.9 venv
     source venv/bin/activate
-    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
     pip install -r examples/requirements.txt
     cd examples
     python manage.py migrate
