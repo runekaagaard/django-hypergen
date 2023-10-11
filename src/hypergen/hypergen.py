@@ -23,7 +23,7 @@ try:
 except ImportError:
     try:
         from django.urls import re_path as re_path_, path as path_
-    except:
+    except ImportError:
         from django.conf.urls import url as re_path_
 
         def path_(*a, **kw):

@@ -31,6 +31,7 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+# Disable channels if not supported
 ENABLE_CHANNELS = sys.version_info >= (3, 7) and django.VERSION >= (3, 2)
 HYPERGEN_INTERNAL_ONLY_ENFORCE_ASSERT_CHANNELS = ENABLE_CHANNELS  # Might go away at any time, don't use!
 
