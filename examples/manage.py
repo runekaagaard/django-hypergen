@@ -5,6 +5,7 @@ import sys
 
 # Backport and monkeypatch urls.path function for Django 1.11.29
 # Great job, chatgpt! <3
+import django
 if django.VERSION < (2, 0):
     try:
         from django.conf.urls import url as re_path_, path as path_
@@ -14,7 +15,6 @@ if django.VERSION < (2, 0):
         except ImportError:
             from django.conf.urls import url as re_path_
 
-    import django
     import django.urls
 
     def simple_path(route, *args, **kwargs):
