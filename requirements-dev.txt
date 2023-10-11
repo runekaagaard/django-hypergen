@@ -1,4 +1,4 @@
-twine==4.0.2
+twine==3.8.0
 pyrsistent==0.16.1
 PyYAML==6.0.1
 yapf==0.40.2
