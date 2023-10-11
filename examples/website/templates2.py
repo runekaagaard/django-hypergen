@@ -27,7 +27,7 @@ def base_head(monokai=False):
     meta(name="msapplication-TileColor", content="#da532c")
     meta(name="theme-color", content="#ffffff")
     if monokai:
-        link(href="https://highlightjs.org/static/demo/styles/base16/monokai.css")
+        link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai-sublime.min.css")
     else:
         link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css")
 
