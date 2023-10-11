@@ -3,7 +3,7 @@
 import os
 import sys
 
-# Backport and monkeypatch urls.path function for Django 1.11.29.
+# Backport and monkeypatch urls.path function for Django 1.11.29
 # Great job, chatgpt! <3
 if django.VERSION < (2, 0):
     try:
