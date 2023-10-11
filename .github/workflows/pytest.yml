@@ -28,24 +28,24 @@ jobs:
           #  django-version: Django==1.11.29
           # - python-version: 3.6
           #   django-version: Django==1.11.29
-          # - python-version: 3.6
-          #   django-version: Django==2.0.13
-          # - python-version: 3.6
-          #   django-version: Django==2.1.15
-          # - python-version: 3.6
-          #   django-version: Django==2.2.28
-          # - python-version: 3.6
-          #   django-version: Django==3.0.14
-          # - python-version: 3.6
-          #   django-version: Django==3.1.14
-          # - python-version: 3.7
-          #   django-version: Django==1.11.29
-          # - python-version: 3.7
-          #   django-version: Django==2.0.13
-          # - python-version: 3.7
-          #   django-version: Django==2.1.15
-          # - python-version: 3.7
-          #   django-version: Django==2.2.28
+          - python-version: 3.6
+            django-version: Django==2.0.13
+          - python-version: 3.6
+            django-version: Django==2.1.15
+          - python-version: 3.6
+            django-version: Django==2.2.28
+          - python-version: 3.6
+            django-version: Django==3.0.14
+          - python-version: 3.6
+            django-version: Django==3.1.14
+          - python-version: 3.7
+            django-version: Django==1.11.29
+          - python-version: 3.7
+            django-version: Django==2.0.13
+          - python-version: 3.7
+            django-version: Django==2.1.15
+          - python-version: 3.7
+            django-version: Django==2.2.28
           - python-version: 3.7
             django-version: Django==3.0.14
           - python-version: 3.7
@@ -54,10 +54,10 @@ jobs:
             django-version: Django==3.2.13
           # - python-version: 3.8
           #   django-version: Django==1.11.29
-          # - python-version: 3.8
-          #   django-version: Django==2.0.13
-          # - python-version: 3.8
-          #   django-version: Django==2.1.15
+          - python-version: 3.8
+            django-version: Django==2.0.13
+          - python-version: 3.8
+            django-version: Django==2.1.15
           - python-version: 3.8
             django-version: Django==2.2.28
           - python-version: 3.8
@@ -73,11 +73,11 @@ jobs:
           # - python-version: 3.9
           #   django-version: Django==1.11.29
           # - python-version: 3.9
-          #   django-version: Django==2.0.13
-          # - python-version: 3.9
-          #   django-version: Django==2.1.15
-          # - python-version: 3.9
-          #   django-version: Django==2.2.28
+            django-version: Django==2.0.13
+          - python-version: 3.9
+            django-version: Django==2.1.15
+          - python-version: 3.9
+            django-version: Django==2.2.28
           - python-version: 3.9
             django-version: Django==3.0.14
           - python-version: 3.9
