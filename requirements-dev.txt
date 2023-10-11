@@ -6,7 +6,7 @@ pytest==7.0.1
 yattag==1.15.1
 beautifulsoup4==4.9.3
 pyperclip==1.8.1
-Django==4.1.1
+Django==3.2.22
 channels==4.0.0
 daphne==4.0.0
 channels-redis==4.1.0
