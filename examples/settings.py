@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os, sys
 from pathlib import Path
+import django
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
@@ -30,9 +31,12 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+ENABLE_CHANNELS = sys.version_info >= (3, 7) and django.VERSION >= (3, 2)
+HYPERGEN_INTERNAL_ONLY_ENFORCE_ASSERT_CHANNELS = ENABLE_CHANNELS
+
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS = (["daphne"] if ENABLE_CHANNELS else []) + [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
     'django.contrib.messages', 'django.contrib.staticfiles', 'hypergen', 'website', 'todomvc', 'inputs',
     'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'notifications', 'commands', 'partialload',

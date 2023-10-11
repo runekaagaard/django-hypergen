@@ -23,10 +23,17 @@ try:
 except ImportError:
 
     def assert_channels():
-        raise Exception("To use channels you must do 'pip install channels channels-redis'")
+        if getattr(settings, "HYPERGEN_INTERNAL_ONLY_ENFORCE_ASSERT_CHANNELS", True):
+            raise Exception(
+                "To use channels you must do 'pip install daphne >= 4.0.0, channels daphne >= 4.0.0 and channels-redis >= 4.1.0'. Notice channels requires Django >= 3.2."
+            )
 
     class JsonWebsocketConsumer(object):
-        pass
+        def __init__(*args, **kwargs):
+            pass
+
+        def as_asgi(*args, **kwargs):
+            return JsonWebsocketConsumer
 
 __all__ = ["HypergenWebsocketConsumer", "ws_url", "consumer"]
 
