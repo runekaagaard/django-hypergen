@@ -161,7 +161,7 @@ We have a `Github Action <https://github.com/runekaagaard/django-hypergen/blob/m
 
 .. code-block:: bash
 
-    pip install requirements.txt
+    pip install -r requirements-dev.txt
     make pytest-run
 
 And the testcafe end-to-end tests:
