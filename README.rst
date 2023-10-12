@@ -34,9 +34,6 @@ Craft templates using pure Python. Instead of declaring ``<p>hi</p>`` in an HTML
 Effortlessly bridge frontend and backend. Connect browser events like `onclick` straight to backend actions. With these actions, Django views can instantly refresh the frontend with new HTML, send notifications, and more, all while natively working with Python data types.
 
 **Websockets**:
-Realtime capabilities are first class citizens in Hypergen via Django Channels. Automatically create consumers and react to realtime events.
-
-**Websockets**:
 Hypergen brings realtime to the forefront with Django Channels. Set up is a breeze - quickly establish consumers and instantly react to live events. It's realtime made simple and friendly, just the way we like it.
 
 **Production Ready**:
