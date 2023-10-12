@@ -91,9 +91,7 @@ Running the examples
     virtualenv -p python3.9 venv
     source venv/bin/activate
     pip install -r requirements-dev.txt
-    pip install -r examples/requirements.txt
     cd examples
-    python manage.py migrate
     python manage.py runserver
 
 Then browse to http://127.0.0.1:8000.
