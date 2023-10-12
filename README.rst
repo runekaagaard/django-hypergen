@@ -154,10 +154,11 @@ How fast are we?:
 
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py runserver 127.0.0.1:8002
     echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
+    
     # or
     pyprof2calltree -i /tmp/hypergen.profile -k
 
-    #
+    # or
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py inputs_profile && \
         echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
 
@@ -171,7 +172,7 @@ We have a `Github Action <https://github.com/runekaagaard/django-hypergen/blob/m
     pip install -r requirements-dev.txt
     make pytest-run
 
-And the testcafe end-to-end tests:
+And the testcafe end-to-end_ tests:
 
 .. code-block:: bash
     
@@ -188,5 +189,6 @@ Thanks
 - `Django <https://www.djangoproject.com/>`_ - for making work fun
 - `Morphdom <https://github.com/patrick-steele-idem/morphdom>`_ - for fast updating of the DOM tree
 - `Pyrsistent <https://pyrsistent.readthedocs.io/en/latest/intro.html>`_ - for providing an immutable dict
+- `sockette <https://github.com/lukeed/sockette>`_ - The cutest little WebSocket wrapper! 🧦
 - `Simple.css <https://simplecss.org/>`_ - for the no-class styling on the homepage
 - `DALL-E mini <https://huggingface.co/spaces/dalle-mini/dalle-mini>`_ - for the logo generated with the query "a vibrant logo of the letter H"
