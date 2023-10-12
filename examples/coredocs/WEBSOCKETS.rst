@@ -23,6 +23,7 @@ As we would use the ``@action`` decorator for normal request/response communicat
     
     @liveview(perm=NO_PERM_REQUIRED, base_example=base_example)
     def counter(request, count):
+        command("hypergen.websocket.open", increment.reverse())
         template(1)
 
     @consumer(perm=NO_PERM_REQUIRED, base_example=base_example)
@@ -43,3 +44,42 @@ Among other things, that mean you can keep your app state by setting properties 
         my_template(consumer.my_app_state)
 
 Hypergen automatically reconnects websockets connections sensibly, for instance after being offline.
+
+Opening and closing a websocket
+===============================
+
+You can open auto-reconnecting websockets courtesy of the Sockety project by doing::
+
+    command("hypergen.websocket.open", my_consumer.reverse())
+
+and to undo the damage::
+
+    command("hypergen.websocket.close", my_consumer.reverse())
+    
+Groups
+------
+
+Hypergen automatically creates `groups <https://channels.readthedocs.io/en/stable/topics/channel_layers.html#groups>`_ based on the url to the consumer, i.e. websockets connecting to the same url, can speak to each other.
+
+So to have multiple chatrooms where all connected the same chatroom receives the same messages you would do::
+
+    from hypergen.imports import *
+    from hypergen import js
+    
+    @consumer(perm="chat.can_chat", path="chat/<slug:room_name>")
+    def send_message(consumer, message):
+        js.append("messages", hypergen(lambda: li(message)))
+
+And to send messages to the chat room, just use ``callback`` normally::
+
+    @liveview(perm="chat.can_chat")
+    def chat(request):
+        message = input(id="message")
+        button("Send", onclick=callback(send_message.reverse(room_name="nice_people_only_room"), message))
+        
+Custom group names can be defined by using the ``group_name`` keyword argument to the ``@consumer`` decorator. It
+expects a callback that takes the consumer as it's only argument and returns the group name as a string::
+
+    @consumer(perm=NO_PERM_REQUIRED, group_name=lambda consumer: "vip_group")
+    def send_message(consumer, request, message):
+        ...
