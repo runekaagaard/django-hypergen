@@ -1,9 +1,20 @@
 Websockets
 ==========
 
-Hypergen supports realtime 2-way communication with the server via the websocket protocol.
+Websockets in Hypergen provide a mechanism for real-time, bidirectional communication between the server and the browser. Unlike the traditional HTTP protocol, where the client always initiates the request, Websockets allow both the client and the server to transmit data independently. 
 
-You might want to read up on `liveviews </coredocs/liveviews/>`_ and `channels <https://channels.readthedocs.io/en/stable/>`_ before continuing.
+All websocket functionality are built on top of `Django Channels <https://channels.readthedocs.io/en/stable/>`_ and live in the ``hypergen.channels`` module. Import everything like this::
+
+    from hypergen.channels import *
+
+or truly everything::
+
+    from hypergen.imports import *
+
+You might want to read up on `liveviews </coredocs/liveviews/>`_ and `channels <https://channels.readthedocs.io/en/stable/>`_ before moving along.
+
+Basics
+======
 
 As we would use the ``@action`` decorator for normal request/response communication we can use the very similar ``@consumer`` decorator for websockets::
 

@@ -6,7 +6,9 @@ HTML for the updated parts is also rendered on the server. The benefits of this 
 
 The concept was popularized by `Phoenix Liveview <https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html>`_.  Other known liveviews are `StimulusReflex <https://docs.stimulusreflex.com/>`_ for Ruby on Rails and `Liveview <https://laravel-livewire.com/>`__ for PHP's Laravel.
 
-In contrast to Phoenix Liveview and Stimulusreflex, Hypergen does not communicate via websockets but uses Djangos vanilla Response/Request cycle. This avoids the land-of-async but adds a bit more latency. Hypergen is great for webpages but not for games says ours experiences.
+In contrast to Phoenix Liveview and Stimulusreflex, Hypergen is not websockets first. We advocate vanilla HTTP requests as the best choice in most cases. The reason for that is that async programming in Python `is hard <https://superfastpython.com/why-hate-asyncio-python/>`_ and not a very enjoyable experience.
+
+Should you need lower latencies and/or bi-directional communication websockets *are* first class citizens in Hypergen with `documentation available </coredocs/websockets/>`_.
 
 All liveview functionality lives in the ``hypergen.liveview`` module. Import everything like this::
 
