@@ -61,6 +61,10 @@ Groups
 
 Hypergen automatically creates `groups <https://channels.readthedocs.io/en/stable/topics/channel_layers.html#groups>`_ based on the url to the consumer, i.e. websockets connecting to the same url, can speak to each other.
 
+To get the group name of a consumer, symmetrically to reverse you would do::
+
+    my_consumer.group_name("42", bar="hello")
+
 So to have multiple chatrooms where all connected the same chatroom receives the same messages you would do::
 
     from hypergen.imports import *
@@ -83,3 +87,12 @@ expects a callback that takes the consumer as it's only argument and returns the
     @consumer(perm=NO_PERM_REQUIRED, group_name=lambda consumer: "vip_group")
     def send_message(consumer, request, message):
         ...
+
+Programatically sending messages
+--------------------------------
+
+To communicate to a consumer, from the backend you use the consumer_command function::
+
+    from hypergen.imports import consumer_command
+
+    consumer_command(my_consumer.group_name("my_arg", my_kwargs=42), [["alert", 42]])
