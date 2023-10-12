@@ -9,7 +9,6 @@ from hypergen.template import join_html
 from hypergen.context import context_middleware, ContextMiddleware, contextlist
 from hypergen.liveview import callback as cb, LiveviewPlugin, ActionPlugin
 from hypergen.template import TemplatePlugin
-from hypergen.incubation import SessionVar, pickle_dumps
 from hypergen.hypergen import compare_funcs
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../examples"))
@@ -368,14 +367,6 @@ def test_serialization():
         "datetime": datetime(2022, 1, 1, 10, 11, 23),}
 
     assert loads(dumps(x)) == x
-
-def test_incubation_session_var():
-    context.replace(request=Request(), user=User())
-    x = SessionVar("foo", 92)
-    assert x.get() == 92
-    x.set(99)
-    assert x.get() == 99
-    assert context.request.session == {"hypergen_request_var__foo": pickle_dumps(99)}
 
 def setup():
     import os
