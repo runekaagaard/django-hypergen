@@ -154,10 +154,11 @@ How fast are we?:
 
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py runserver 127.0.0.1:8002
     echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
+    
     # or
     pyprof2calltree -i /tmp/hypergen.profile -k
 
-    #
+    # or
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py inputs_profile && \
         echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
 
