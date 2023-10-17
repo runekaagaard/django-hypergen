@@ -73,6 +73,8 @@ def chat2(request):
     # Chat messages are shown here.
     ul(id_="messages")
 
+    p("Visit", a("this page", href=send_message_from_backend.reverse(), target="_blank"),
+        "to try sending a chat message from the backend.", sep=" ", end=".")
     show_sources(__file__)
 
 # Automatically creates a consumer and creates a url route for it. Works with autoconsumers() in the routing.py
@@ -91,3 +93,7 @@ def receive_message(consumer, request, message):
 
     # Appends the message to the list of messages. Uses hypergen() directly to render into a string of HTML.
     command("hypergen.append", "messages", hypergen(lambda: li(message)))
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
+def send_message_from_backend(request):
+    group_send(receive_message.group_name(), "I am server ...")

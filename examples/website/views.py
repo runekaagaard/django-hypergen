@@ -161,6 +161,7 @@ def documentation(request):
         li(a("TodoMVC", href=todomvc.reverse(ALL)))
         li(a("Hypergen App template", href=my_view.reverse()))
         li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
+        li(a("Chat app using websockets", href=chat2.reverse()), sep=" ")
 
     h2("Tutorials")
     ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))

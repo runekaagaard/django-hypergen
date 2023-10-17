@@ -1,4 +1,4 @@
-Websockets
+Websocket
 ==========
 
 Websockets in Hypergen provide a mechanism for real-time, bidirectional communication between the server and the browser. Unlike the traditional HTTP protocol, where the client always initiates the request, Websockets allow both the client and the server to transmit data independently. 
@@ -13,10 +13,95 @@ or truly everything::
 
 You might want to read up on `liveviews </coredocs/liveviews/>`_ and `channels <https://channels.readthedocs.io/en/stable/>`_ before moving along.
 
+Prerequisites
+=============
+
+You need at least the following:
+
+- pip install ``channels >= 4`` and ``daphne >= 4``.
+- add "daphne" to the beginning of your INSTALLED_APPS.
+- Create a asgi.py file. It should setup both web and websockets, and include the routings to your consumers. It should look something like this::
+
+    import os
+    
+    import django
+    from django.core.asgi import get_asgi_application
+    from channels.auth import AuthMiddlewareStack
+    from channels.routing import ProtocolTypeRouter, URLRouter
+    from channels.security.websocket import AllowedHostsOriginValidator
+
+    # Initialize Django.
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings') # adjust to your setup.
+    django.setup()
+
+    # Import project-wide routing file.
+    import routing # adjust to your setup.
+
+    # Run both web and websocket protocols.
+    application = ProtocolTypeRouter({
+        "http": get_asgi_application(),
+        # Make ALLOWED_HOSTS and permissions work like in Django. Add all websocket urls.
+        "websocket": AllowedHostsOriginValidator(AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns)))})
+- Create a project wide `routing.py` mirroring the project `urls.py` file collecting websocket urlpatterns from all your apps::
+
+    import app1.routing
+    import app2.routing
+
+    websocket_urlpatterns = app1.routing.websocket_urlpatterns + app2.routing.websocket_urlpatterns
+- Create `routing.py` files in each app mirroring the app `urls.py` files defining websocket urlpatterns for you app, which looks something like this::
+
+    from hypergen.hypergen import autoconsumers
+    from django.urls import path
+    from myapp import views
+
+    # Automatically create routes for functions decorated with @consumer. RECOMMENDED for most use cases.
+    websocket_urlpatterns += autoconsumers(views, prefix="ws/websockets/")
+
 Basics
 ======
 
-As we would use the ``@action`` decorator for normal request/response communication we can use the very similar ``@consumer`` decorator for websockets::
+The cornerstone of hypergen websockets is the ``@consumer`` decorator. When used in conjunction with ``@autoconsumers`` in the ``routing.py`` file, hypergen automatically generates url paths and `group names <https://channels.readthedocs.io/en/stable/topics/channel_layers.html#groups>`_ for each consumer.
+
+A consumer has all the capabilities of an ``@action``, it can update HTML on the page and issue client side commands.
+
+A very simple consumer could look like this::
+
+    @consumer(perm="chat.group_message", path="<chatgroup_name:slug>", target_id="counter")
+    def message_chatgroup(request, consumer, chatgroup_name, message):
+        span("Number of messages: ", increment_counter())
+        command("hypergen.append", "mychat", message)
+
+When the consumer receives as message, it directs all frontend pages listening to the websocket channel to append the message to DOM element with the ``"mychat"`` id.
+
+Get consumer can be accessed from the frontend via its url::
+
+    url = message_chatgroup.reverse(chatgroup_name="VIP")
+
+and from the backend via its group name::
+
+    group_name = message_chatgroup.group_name(chatgroup_name="VIP")
+
+A consumer should be opened on the view where it is needed::
+
+    @liveview(perm="chat.group_message")
+    def show_chats(consumer, request)
+        command("hypergen.websocket.open", message_chatgroup.reverse(chatgroup_name="VIP"))
+
+From the frontend side issuing a command to a @consumer, is similar to using an @action::
+
+    button(onclick=callback(message_chatgroup.reverse(chatgroup_name="VIP"), "WUSSUP!"))
+
+
+From the backend side you can use the `group_send` function provided by hypergen::
+
+    from hypergen.channels import group_send
+
+    group_send(message_chatgroup.group_name(chatgroup_name="VIP"), "YO!")
+    
+Full example
+============
+        
+::
 
     @contextmanager
     def base_template():
@@ -83,7 +168,7 @@ So to have multiple chatrooms where all connected the same chatroom receives the
     
     @consumer(perm="chat.can_chat", path="chat/<slug:room_name>")
     def send_message(consumer, message):
-        js.append("messages", hypergen(lambda: li(message)))
+        command("hypergen.append", "messages", hypergen(lambda: li(message)))
 
 And to send messages to the chat room, just use ``callback`` normally::
 

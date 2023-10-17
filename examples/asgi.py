@@ -10,14 +10,8 @@ from channels.security.websocket import AllowedHostsOriginValidator
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 django.setup()
 
-import websockets.routing
-import features.routing
+import routing
 
-application = ProtocolTypeRouter(
-    {
-    "http":
-    get_asgi_application(),
-    "websocket":
-    AllowedHostsOriginValidator(
-    AuthMiddlewareStack(URLRouter(websockets.routing.websocket_urlpatterns + features.routing.websocket_urlpatterns))
-    ),},)
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AllowedHostsOriginValidator(AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns)))})
