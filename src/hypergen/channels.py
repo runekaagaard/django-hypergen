@@ -17,6 +17,7 @@ try:
     from asgiref.sync import async_to_sync
     from django.core.handlers.asgi import ASGIRequest
     from channels.generic.websocket import JsonWebsocketConsumer
+    from channels.layers import get_channel_layer
 
     def assert_channels():
         pass
@@ -35,7 +36,7 @@ except ImportError:
         def as_asgi(*args, **kwargs):
             return JsonWebsocketConsumer
 
-__all__ = ["HypergenWebsocketConsumer", "ws_url", "consumer"]
+__all__ = ["HypergenWebsocketConsumer", "ws_url", "consumer", "group_name", "group_send"]
 
 def get(o, k, d="__DEFAULT__"):
     value = getattr(o.Hypergen, k, "__NA__")
@@ -135,6 +136,16 @@ def ws_url(url):
     else:
         return context.request.build_absolute_uri(url).replace("http://", "wss://").replace("https://", "wss://")
 
+def group_name(consumer_func, *view_args, **view_kwargs):
+    return ".".join([consumer_func.__module__, consumer_func.__name__] + list(view_args) +
+        [f"{k}__{v}" for k, v in view_kwargs.items()])
+
+def group_send(group_name, command):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(group_name, {
+        "type": "send_hypergen",
+        "commands": [command],})
+
 @wrap2
 def consumer(func, path=None, re_path=None, base_template=None, target_id=None, perm=None, any_perm=False,
     autourl=True, partial=True, base_view=None, appstate=None, user_plugins=[]):
@@ -179,6 +190,11 @@ def consumer(func, path=None, re_path=None, base_template=None, target_id=None, 
                 return full["template_result"]
             else:
                 return full["context"]["hypergen"]["commands"]
+
+    def group_name_(*view_args, **view_kwargs):
+        return group_name(func, *view_kwargs, **view_kwargs)
+
+    _.group_name = group_name_
 
     if autourl:
         assert not all((path, re_path)), "Only one of path= or re_path= must be set when autourl=True"

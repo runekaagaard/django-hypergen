@@ -96,4 +96,4 @@ def receive_message(consumer, request, message):
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def send_message_from_backend(request):
-    group_send(receive_message.group_name(), "I am server ...")
+    group_send(receive_message.group_name(), ["alert", "YO"])

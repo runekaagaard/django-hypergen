@@ -232,9 +232,12 @@ def autoconsumers(module, prefix):
         class HypergenWebsocketAutoConsumerCurried(HypergenWebsocketAutoConsumer):
             hypergen_func = func
 
+        consumer = HypergenWebsocketAutoConsumerCurried(func).as_asgi()
+
+        func.consumer = consumer
         func.reverse.hypergen_channels_full_path = full_path
 
-        consumers.append(path_func(full_path, HypergenWebsocketAutoConsumerCurried(func).as_asgi()))
+        consumers.append(path_func(full_path, consumer))
 
     return consumers
 
