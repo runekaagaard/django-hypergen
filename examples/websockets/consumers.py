@@ -1,28 +1,23 @@
 from hypergen.imports import *
+from hypergen.websocket import HypergenWebsocketConsumer
 
 class ChatConsumer(HypergenWebsocketConsumer):
-    # Custom group name can be set here. Defaults to the module, classname and url.
-    # def group_name(self):
-    #     pass
+    group_name = "websockets__consumers__ChatConsumer"
+    groups = [group_name]
 
-    # Custom permission checks can be done here.
-    # def check_perms(self, content):
-    #     pass
-    # Similar settings that you would have to the @action decorator is defined here.
-    class Hypergen:
-        # Permissions.
-        perm = NO_PERM_REQUIRED  # Required
-        any_perm = False  # Optional, default: False
+    def receive_hypergen(self, event_type, *args):
+        if event_type == "chat__message":
+            message, = args
+            assert type(message) is str
+            message = message.strip()[:1000]
+            if message:
+                commands = hypergen(self.update_page, message, settings=dict(action=True, returns=COMMANDS,
+                    target_id="counter"))
 
-        # One of these two is required.
-        base_template = None  # Read target_id from base_template.target_id
-        target_id = "counter"  # Default DOM element id to render HTML into.
-
-        # Other.
-        user_plugins = []  # Optional, default: []
+                self.group_send_hypergen_commands(self.group_name, commands)
 
     # Render the HTML and send custom commands.
-    def receive_hypergen(self, message):
+    def update_page(self, message):
         # Writes into the "counter" id.
         span("Length of last message is: ", len(message))
 

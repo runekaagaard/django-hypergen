@@ -9,7 +9,6 @@ chat2: Using the @consumer decorator to avoid all the boilerplate.
 
 ### chat ###
 
-#
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat(request):
     # Channels urls are not reversible the same as vanilla urls. Little helper to add protocol and port.
@@ -34,7 +33,7 @@ def chat(request):
         # This callbacks goes to the ChatConsumer in websockets.consumers, because the url starts with "ws://"
         # or "wss://".
         # Will only trigger when the user presses Enter.
-        onkeyup=callback(url, THIS, when=["hypergen.when.keycode", "Enter"], clear=True),
+        onkeyup=callback(url, "chat__message", THIS, when=["hypergen.when.keycode", "Enter"], clear=True),
     )
 
     # Chat messages are shown here.

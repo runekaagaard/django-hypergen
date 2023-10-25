@@ -23,6 +23,7 @@ Groups?
 
 ## Idea 0 ##
 
+# We can use a custom consumer if we want.
 class ChatAppConsumer(HypergenConsumer):
     pass
 
@@ -42,12 +43,12 @@ def message(chatroom_slug, user_id, message):
 def notification(user_id, notification):
     return {"event_type": "notification", "user_id": user_id, "notification": notification}
 
-@group(events=[user_joined_chatroom, user_left_chatroom, message])
+@group(consumer=ChatAppConsumer, events=[user_joined_chatroom, user_left_chatroom, message])
 def chatroom(chatroom_slug):
     """This group is for transmitting events about a single chatroom"""
     return {"group_title": "chatroom", "chatroom_slug": chatroom_slug}
 
-@group(events=[notification])
+@group(consumer=ChatAppConsumer, events=[notification])
 def notifications(user_id):
     """This group is for transmitting notifications specific to the user"""
     return {"group_title": "notifications", "user_id": user_id}
@@ -63,10 +64,8 @@ def index(request, chatroom_slug):
     message_txt = textarea(id_="message_txt", placeholder="Write message here")
     button("Send", onclick=send_event(chatroom(chatroom_slug), message(message_txt)))
 
-f
-
-@action(listen_to_groups=[chatroom], receive_events=[message])
-def receive_message(request, event):
+@action(groups=[chatroom], events=[message])
+def on_message(request, event):
     user = User.objects.get(pk=event["user_id"])
     command("hypergen.append", "messages_id", f"{user.username}: {event['message']}")
 
