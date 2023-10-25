@@ -72,12 +72,15 @@ class HypergenWebsocketConsumer(JsonWebsocketConsumer):
     def send_permission_denied(self):
         self.send_json([["console.error", "Permission denied"]])
 
+    def group_send(self, group_name, event):
+        async_to_sync(self.channel_layer.group_send)(group_name, event)
+
     def group_send_hypergen_commands(self, group_name, commands):
-        async_to_sync(self.channel_layer.group_send)(group_name,
-            {'type': 'hypergen__send_hypergen_commands', 'commands': json.loads(dumps(commands))})
+        self.group_send(group_name,
+            {'type': 'hypergen__send_hypergen_commands', 'commands': json.loads(self.encode_json(commands))})
 
     def hypergen__send_hypergen_commands(self, event):
-        self.send(dumps(event['commands']))
+        self.send_json(event['commands'])
 
     @classmethod
     def decode_json(cls, text_data):
