@@ -57,10 +57,10 @@ class HypergenWebsocketConsumer(JsonWebsocketConsumer):
             return
 
         with context(request=self.get_request()), context(at="hypergen", matched_perms=matched_perms):
-            self.receive_hypergen(*content["args"])
+            self.receive_callback(*content["args"])
 
-    def receive_hypergen(*args, **kwargs):
-        raise NotImplementedError("Please implement your own receive_hypergen() method.")
+    def receive_callback(*args, **kwargs):
+        raise NotImplementedError("Please implement your own receive_callback() method.")
 
     def get_request(self):
         self.scope["method"] = "WS"
