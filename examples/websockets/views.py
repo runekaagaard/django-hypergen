@@ -26,7 +26,8 @@ def chat(request):
         # This callbacks goes to the ChatConsumer in websockets.consumers, because the url starts with "ws://"
         # or "wss://".
         # Will only trigger when the user presses Enter.
-        onkeyup=callback(chat_ws_url(), "chat__message", THIS, when=["hypergen.when.keycode", "Enter"], clear=True),
+        onkeyup=callback(chat_ws_url(), "chat__message_from_frontend", THIS, when=["hypergen.when.keycode", "Enter"],
+        clear=True),
     )
 
     # Chat messages are shown here.

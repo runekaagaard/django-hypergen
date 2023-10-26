@@ -11,7 +11,7 @@ class ChatConsumer(HypergenWebsocketConsumer):
 
     # Receives the data sent from the onkeyup callback in views.py.
     def receive_callback(self, event_type, *args):
-        if event_type == "chat__message":
+        if event_type == "chat__message_from_frontend":
             message, = args
             assert type(message) is str
             message = message.strip()[:1000]
