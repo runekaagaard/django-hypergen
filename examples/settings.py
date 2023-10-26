@@ -41,7 +41,7 @@ INSTALLED_APPS = (["daphne"] if ENABLE_CHANNELS else []) + [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
     'django.contrib.messages', 'django.contrib.staticfiles', 'hypergen', 'website', 'todomvc', 'inputs',
     'gameofcython', 'djangotemplates', 'hellohypergen', 'hellocoreonly', 'notifications', 'commands', 'partialload',
-    'hellomagic', 'globalcontext', 'coredocs', 'kitchensink', 'misc', 'booking', 'websockets', 'features', 'anteams']
+    'hellomagic', 'globalcontext', 'coredocs', 'kitchensink', 'misc', 'booking', 'websockets', 'features']
 
 MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware' if os.environ.get("PROD", False) else None,

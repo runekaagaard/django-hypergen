@@ -7,14 +7,14 @@ class ChatConsumer(HypergenWebsocketConsumer):
     # django-channels will automatically subscribe the consumer to these groups.
     groups = [group_name]
 
-    # Receives the data send from the onkeyup callback in views.py.
+    # Receives the data sent from the onkeyup callback in views.py.
     def receive_callback(self, event_type, *args):
         if event_type == "chat__message":
             message, = args
             assert type(message) is str
             message = message.strip()[:1000]
             if message:
-                # Run the update_page similar to an @action and collect commands to send to the frontend.
+                # Run the update_page method similar to an @action and collect commands to send to the frontend.
                 commands = hypergen(self.update_page, message, settings=dict(action=True, returns=COMMANDS,
                     target_id="counter"))
 

@@ -26,7 +26,7 @@ from gettingstarted.views import begin
 from apptemplate.views import my_view
 from coredocs.views import template, liveviews
 from website.minidemoes.shoot_em_up import shoot_em_up
-from websockets.views import chat2
+from websockets.views import chat
 
 from features import templates as features_templates
 
@@ -138,7 +138,7 @@ def documentation(request):
         li(b("2022-10-01"), "One of the most requested features at Djangocon was websockets.",
         "I'm happy to announce that websockets are now in main, and a release will happen soon.",
         "You can see it in action as the snake game under", a("Features", href="/"), "and as the obligatory",
-        a("chat application.", href=chat2.reverse()), sep=" "),
+        a("chat application.", href=chat.reverse()), sep=" "),
         li(b("2022-09-27:"), "Thank you to the Djangocon organisers and all the wonderful",
         "Django developers we met and listened too!",
         "Hope to see you all in Edinburgh, next year <3.", "We have made available our",
@@ -161,7 +161,7 @@ def documentation(request):
         li(a("TodoMVC", href=todomvc.reverse(ALL)))
         li(a("Hypergen App template", href=my_view.reverse()))
         li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
-        li(a("Chat app using websockets", href=chat2.reverse()), sep=" ")
+        li(a("Chat app using websockets", href=chat.reverse()), sep=" ")
 
     h2("Tutorials")
     ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))

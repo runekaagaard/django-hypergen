@@ -1,5 +1,5 @@
-from hypergen.hypergen import autoconsumers
+from hypergen.imports import NO_PERM_REQUIRED
+from django.urls import path
+from features import consumers
 
-from . import views
-
-websocket_urlpatterns = autoconsumers(views, prefix="ws/features/")
+websocket_urlpatterns = [path(r'ws/features/snake-consumer/', consumers.SnakeConsumer.as_asgi(perm=NO_PERM_REQUIRED))]

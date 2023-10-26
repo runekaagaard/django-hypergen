@@ -25,7 +25,6 @@ import misc.urls
 import booking.urls
 import websockets.urls
 import features.urls
-import anteams.urls
 
 urlpatterns = [
     url('^admin/', admin.site.urls),
@@ -48,5 +47,4 @@ urlpatterns = [
     url('^misc/', include(misc.urls, namespace="misc")),
     url('^booking/', include(booking.urls, namespace="booking")),
     url('^websockets/', include(websockets.urls, namespace="websockets")),
-    url('^features/', include(features.urls, namespace="features")),
-    url('^anteams/', include(anteams.urls, namespace="anteams")),]
+    url('^features/', include(features.urls, namespace="features")),]

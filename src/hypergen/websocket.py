@@ -35,9 +35,10 @@ except ImportError:
         def as_asgi(*args, **kwargs):
             return JsonWebsocketConsumer
 
-__all__ = ["HypergenWebsocketConsumer"]
+__all__ = ["HypergenWebsocketConsumer", "ws_url"]
 
 class HypergenWebsocketConsumer(JsonWebsocketConsumer):
+
     groups = None
 
     def __init__(self, perm=None, any_perm=False):
@@ -89,3 +90,10 @@ class HypergenWebsocketConsumer(JsonWebsocketConsumer):
     @classmethod
     def encode_json(cls, content):
         return dumps(content)
+
+def ws_url(url):
+    absolute_url = context.request.build_absolute_uri(url)
+    if settings.DEBUG:
+        return absolute_url.replace("http://", "ws://").replace("https://", "wss://")
+    else:
+        return context.request.build_absolute_uri(url).replace("http://", "wss://").replace("https://", "wss://")

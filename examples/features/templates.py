@@ -209,7 +209,6 @@ def f3_template(text):
 # f4 - snake
 def f4_code():
     "WASD to navigate"
-
     @liveview(...)
     def snake(request):
         js.websocket_open(snake_consumer)
@@ -241,17 +240,16 @@ def f4():
 
 def snake_init(n):
     from features import views
+    snake_url = ws_url("/ws/features/snake-consumer/")
+
     if n == 3:
-        command("hypergen.websocket.open", views.snake.reverse(sessionid=context.request.session.session_key))
-        command("hypergen.intervalSet",
-            [["hypergen.callback",
-            views.snake.reverse(sessionid=context.request.session.session_key), [None]]], 1000 / 10, "snake")
-        command("hypergen.keypressToCallback", views.snake.reverse(sessionid=context.request.session.session_key))
+        command("hypergen.websocket.open", snake_url)
+        command("hypergen.intervalSet", [["hypergen.callback", snake_url, [None]]], 1000 / 10, "snake")
+        command("hypergen.keypressToCallback", snake_url)
     else:
-        command("hypergen.websocket.close", views.snake.reverse(sessionid=context.request.session.session_key))
+        command("hypergen.websocket.close", snake_url)
         command("hypergen.intervalClear", "snake")
-        command("hypergen.keypressToCallbackRemove",
-            views.snake.reverse(sessionid=context.request.session.session_key))
+        command("hypergen.keypressToCallbackRemove", snake_url)
 
 def snake(consumer=None):
     with table():
