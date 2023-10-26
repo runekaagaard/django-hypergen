@@ -41,5 +41,5 @@ def chat(request):
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def send_message_from_backend(request):
     from websockets.consumers import ChatConsumer
-    group_send(ChatConsumer.group_name, {"type": "chat__message_from_server", "message": "Server message!"})
+    group_send(ChatConsumer.group_name, {"type": "chat__message_from_backend", "message": "Server message!"})
     command("alert", "Message will appear in the chatroom!")
