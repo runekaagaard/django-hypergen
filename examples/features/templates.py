@@ -208,17 +208,19 @@ def f3_template(text):
 
 # f4 - snake
 def f4_code():
-    "WASD to navigate"
+    "Use WASD to navigate"
     @liveview(...)
     def snake(request):
-        js.websocket_open(snake_consumer)
+        snake_url = ws_url("/ws/snake-consumer/")
+        command("hypergen.websocket.open", snake_url)
         with div(id="snake-game"):
             templates.snake()
 
-    @consumer(..., target_id="snake-game")
-    def snake_consumer(consumer, request, key):
-        snake_game(consumer, key)
-        templates.snake(consumer)
+    class SnakeConsumer(HypergenWebsocketConsumer):
+        ...
+
+        def receive_callback(self, key):
+            self.snake_game(key)
 
 def f4():
     with div(class_="grid3"):
@@ -228,9 +230,8 @@ def f4():
 
                 Realtime two-way communication
 
-                - The @consumer decorator has autorouting
                 - Inbuilt opening/closing of websockets
-                - Minimal fuzz
+                - Send client commands within consumers
             """)
 
         cell_code(fcode(f4_code), "views.py")

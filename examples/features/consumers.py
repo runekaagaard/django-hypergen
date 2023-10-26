@@ -7,19 +7,14 @@ from random import randint
 from features import templates
 
 class SnakeConsumer(HypergenWebsocketConsumer):
-    group_name = "features__consumers__SnakeConsumer"
-
-    # django-channels will automatically subscribe the consumer to these groups.
-    groups = [group_name]
-
-    # Receives the data sent from the onkeyup callback in views.py.
+    # Receives pressed key if any.
     def receive_callback(self, key):
         # Run the snake game logic
         commands = hypergen(snake_game, self, key, settings=dict(action=True, returns=COMMANDS,
             target_id="snake-game"))
 
         # Send commands to frontend.
-        self.send_json(commands)
+        self.channel_send_hypergen_commands(commands)
 
 # Snake game logic
 
