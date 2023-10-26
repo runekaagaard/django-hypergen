@@ -20,7 +20,7 @@ class ChatConsumer(HypergenWebsocketConsumer):
 
         # ... More event types goes here.
 
-    def chat__message_from_server(self, event):
+    def chat__message_from_backend(self, event):
         self.update_page(event["message"])
 
     def update_page(self, message):
