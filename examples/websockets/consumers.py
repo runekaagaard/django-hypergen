@@ -1,4 +1,6 @@
+from asgiref.sync import async_to_sync
 from hypergen.imports import *
+from hypergen.hypergen import check_perms
 from hypergen.websocket import HypergenWebsocketConsumer
 
 class ChatConsumer(HypergenWebsocketConsumer):
@@ -14,16 +16,21 @@ class ChatConsumer(HypergenWebsocketConsumer):
             assert type(message) is str
             message = message.strip()[:1000]
             if message:
-                # Run the update_page method similar to an @action and collect commands to send to the frontend.
-                commands = hypergen(self.update_page, message, settings=dict(action=True, returns=COMMANDS,
-                    target_id="counter"))
+                self.update_page(message)
 
-                # Send commands to frontend.
-                self.group_send_hypergen_commands(self.group_name, commands)
         # ... More event types goes here.
 
-    # Render the HTML and send custom commands.
+    def chat__message_from_server(self, event):
+        self.update_page(event["message"])
+
     def update_page(self, message):
+        commands = hypergen(self.template, message, settings=dict(action=True, returns=COMMANDS, target_id="counter"))
+
+        # Send commands to frontend.
+        self.group_send_hypergen_commands(self.group_name, commands)
+
+    # Render the HTML and issue custom commands.
+    def template(self, message):
         # Writes into the "counter" id.
         span("Length of last message is: ", len(message))
 

@@ -2,13 +2,13 @@ from hypergen.imports import *
 from website.templates2 import base_example_template, show_sources
 ### chat ###
 
+# Channels urls are not (yet) reversible the same as vanilla urls. Little helper to add protocol and port.
+chat_ws_url = lambda: ws_url("/ws/chat/hypergen/")
+
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat(request):
-    # Channels urls are not reversible the same as vanilla urls. Little helper to add protocol and port.
-    url = ws_url("/ws/chat/hypergen/")
-
     # Open a websocket on the client. Can be closed at any point with: command("hypergen.websocket.close", url)
-    command("hypergen.websocket.open", url)
+    command("hypergen.websocket.open", chat_ws_url())
 
     # Some custom styling.
     style(""" input, textarea {width: 100%} """)
@@ -26,7 +26,7 @@ def chat(request):
         # This callbacks goes to the ChatConsumer in websockets.consumers, because the url starts with "ws://"
         # or "wss://".
         # Will only trigger when the user presses Enter.
-        onkeyup=callback(url, "chat__message", THIS, when=["hypergen.when.keycode", "Enter"], clear=True),
+        onkeyup=callback(chat_ws_url(), "chat__message", THIS, when=["hypergen.when.keycode", "Enter"], clear=True),
     )
 
     # Chat messages are shown here.
@@ -40,4 +40,6 @@ def chat(request):
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def send_message_from_backend(request):
-    group_send(receive_message.group_name(), ["alert", "YO"])
+    from websockets.consumers import ChatConsumer
+    group_send(ChatConsumer.group_name, {"type": "chat__message_from_server", "message": "Server message!"})
+    command("alert", "Message will appear in the chatroom!")

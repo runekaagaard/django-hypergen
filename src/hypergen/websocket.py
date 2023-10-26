@@ -1,15 +1,13 @@
 import json
 from functools import wraps
 
+from channels.consumer import database_sync_to_async, get_handler_name
+
 d = dict
 
 from hypergen.imports import *
 from hypergen.hypergen import check_perms
-from hypergen.hypergen import wrap2, check_perms, autourl_register
 
-from django.core.exceptions import PermissionDenied
-from django.templatetags.static import static
-from django.http.response import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 
 try:
@@ -35,7 +33,7 @@ except ImportError:
         def as_asgi(*args, **kwargs):
             return JsonWebsocketConsumer
 
-__all__ = ["HypergenWebsocketConsumer", "ws_url"]
+__all__ = ["HypergenWebsocketConsumer", "ws_url", "group_send"]
 
 class HypergenWebsocketConsumer(JsonWebsocketConsumer):
 
@@ -90,6 +88,19 @@ class HypergenWebsocketConsumer(JsonWebsocketConsumer):
     def hypergen__send_hypergen_commands(self, event):
         self.send_json(event['commands'])
 
+    @database_sync_to_async
+    def dispatch(self, message):
+        """
+        Dispatches incoming messages to type-based handlers asynchronously.
+        """
+        # Get and execute the handler
+        handler = getattr(self, get_handler_name(message), None)
+        if handler:
+            with context(request=self.get_request()), context(at="hypergen", matched_perms=[]):
+                handler(message)
+        else:
+            raise ValueError("No handler for message type %s" % message["type"])
+
     @classmethod
     def decode_json(cls, text_data):
         return loads(text_data)
@@ -104,3 +115,7 @@ def ws_url(url):
         return absolute_url.replace("http://", "ws://").replace("https://", "wss://")
     else:
         return context.request.build_absolute_uri(url).replace("http://", "wss://").replace("https://", "wss://")
+
+def group_send(group_name, event):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(group_name, event)
