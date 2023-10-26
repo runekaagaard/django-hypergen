@@ -16,18 +16,19 @@ class ChatConsumer(HypergenWebsocketConsumer):
             assert type(message) is str
             message = message.strip()[:1000]
             if message:
-                self.update_page(message)
+                commands = self.update_page(message)
+                # Send commands to entire group.
+                self.group_send_hypergen_commands(self.group_name, commands)
 
         # ... More event types goes here.
 
     def chat__message_from_backend(self, event):
-        self.update_page(event["message"])
+        commands = self.update_page(event["message"])
+        # Send commands to individual channel.
+        self.channel_send_hypergen_commands(commands)
 
     def update_page(self, message):
-        commands = hypergen(self.template, message, settings=dict(action=True, returns=COMMANDS, target_id="counter"))
-
-        # Send commands to frontend.
-        self.group_send_hypergen_commands(self.group_name, commands)
+        return hypergen(self.template, message, settings=dict(action=True, returns=COMMANDS, target_id="counter"))
 
     # Render the HTML and issue custom commands.
     def template(self, message):
