@@ -55,11 +55,13 @@ class HypergenWebsocketConsumer(JsonWebsocketConsumer):
             self.send_permission_denied()
             return
 
-        with context(request=self.get_request()), context(at="hypergen", matched_perms=matched_perms):
-            self.receive_callback(*content["args"])
+        # TODO: Check for a custom header too.
+        if type(content) is dict and "args" in content and "meta" in content:
+            with context(request=self.get_request()), context(at="hypergen", matched_perms=matched_perms):
+                self.receive_hypergen_callback(*content["args"])
 
-    def receive_callback(*args, **kwargs):
-        raise NotImplementedError("Please implement your own receive_callback() method.")
+    def receive_hypergen_callback(self, *args, **kwargs):
+        raise NotImplementedError("Please implement your own receive_hypergen_callback() method.")
 
     def get_request(self):
         self.scope["method"] = "WS"

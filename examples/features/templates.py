@@ -209,6 +209,7 @@ def f3_template(text):
 # f4 - snake
 def f4_code():
     "Use WASD to navigate"
+
     @liveview(...)
     def snake(request):
         snake_url = ws_url("/ws/snake-consumer/")
@@ -219,7 +220,7 @@ def f4_code():
     class SnakeConsumer(HypergenWebsocketConsumer):
         ...
 
-        def receive_callback(self, key):
+        def receive_hypergen_callback(self, key):
             self.snake_game(key)
 
 def f4():

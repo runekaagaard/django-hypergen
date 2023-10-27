@@ -3,9 +3,9 @@ Websocket
 
 Websockets in Hypergen provide a mechanism for real-time, bidirectional communication between the server and the browser. Unlike the traditional HTTP protocol, where the client always initiates the request, Websockets allow both the client and the server to transmit data independently. 
 
-All websocket functionality are built on top of `Django Channels <https://channels.readthedocs.io/en/stable/>`_ and live in the ``hypergen.channels`` module. Import everything like this::
+All websocket functionality are built on top of `Django Channels <https://channels.readthedocs.io/en/stable/>`_ and live in the ``hypergen.websocket`` module. Import everything like this::
 
-    from hypergen.channels import *
+    from hypergen.websocket import *
 
 or truly everything::
 
@@ -18,8 +18,22 @@ Prerequisites
 
 You need at least the following:
 
-- pip install ``channels >= 4`` and ``daphne >= 4``.
-- add "daphne" to the beginning of your INSTALLED_APPS.
+- Pip install ``channels >= 4`` and ``daphne >= 4``.
+- Add ``"daphne"`` to the beginning of your INSTALLED_APPS. Daphe takes over the runserver command with its own async version.
+- Create ``routing.py`` files in each app mirroring the app ``urls.py`` files defining websocket urlpatterns for you app, which looks something like this::
+
+    from hypergen.imports import NO_PERM_REQUIRED
+    from django.urls import path
+    from websockets import consumers
+
+    websocket_urlpatterns = [path(r'ws/chat/<slug:room_name>/', consumers.ChatConsumer.as_asgi(
+        perm=NO_PERM_REQUIRED))]
+- Create a project wide ``routing.py`` mirroring the project ``urls.py`` file collecting websocket urlpatterns from all your apps::
+
+    import app1.routing
+    import app2.routing
+
+    websocket_urlpatterns = app1.routing.websocket_urlpatterns + app2.routing.websocket_urlpatterns
 - Create a asgi.py file. It should setup both web and websockets, and include the routings to your consumers. It should look something like this::
 
     import os
@@ -40,22 +54,8 @@ You need at least the following:
     # Run both web and websocket protocols.
     application = ProtocolTypeRouter({
         "http": get_asgi_application(),
-        # Make ALLOWED_HOSTS and permissions work like in Django. Add all websocket urls.
+        # Add the projects websocket consumers.
         "websocket": AllowedHostsOriginValidator(AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns)))})
-- Create a project wide `routing.py` mirroring the project `urls.py` file collecting websocket urlpatterns from all your apps::
-
-    import app1.routing
-    import app2.routing
-
-    websocket_urlpatterns = app1.routing.websocket_urlpatterns + app2.routing.websocket_urlpatterns
-- Create `routing.py` files in each app mirroring the app `urls.py` files defining websocket urlpatterns for you app, which looks something like this::
-
-    from hypergen.hypergen import autoconsumers
-    from django.urls import path
-    from myapp import views
-
-    # Automatically create routes for functions decorated with @consumer. RECOMMENDED for most use cases.
-    websocket_urlpatterns += autoconsumers(views, prefix="ws/websockets/")
 
 Basics
 ======

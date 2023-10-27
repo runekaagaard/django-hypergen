@@ -8,7 +8,7 @@ from features import templates
 
 class SnakeConsumer(HypergenWebsocketConsumer):
     # Receives pressed key if any.
-    def receive_callback(self, key):
+    def receive_hypergen_callback(self, key):
         # Run the snake game logic
         commands = hypergen(snake_game, self, key, settings=dict(action=True, returns=COMMANDS,
             target_id="snake-game"))

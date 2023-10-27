@@ -171,6 +171,7 @@ def documentation(request):
     with ul():
         li(a("Python Templates", href=template.reverse()))
         li(a("Liveviews", href=liveviews.reverse()))
+        li(a("Websockets", href="/coredocs/websockets/"))
         li(a("Django HTML Templates", href="/coredocs/django_templates/"))
         li(a("Form inputs", href=inputs.reverse()))
         li(a("Client commands", href=commands.reverse()))
