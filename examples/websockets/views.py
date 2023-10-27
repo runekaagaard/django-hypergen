@@ -7,6 +7,8 @@ chat_ws_url = lambda: ws_url("/ws/chat/hypergen/")
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
 def chat(request):
+    h3("Websockets chat")
+    p("Open multiple tabs to see messages pushed out to all listening consumers.")
     # Open a websocket on the client. Can be closed at any point with: command("hypergen.websocket.close", url)
     command("hypergen.websocket.open", chat_ws_url())
 
