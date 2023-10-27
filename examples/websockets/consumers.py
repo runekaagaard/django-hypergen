@@ -1,7 +1,4 @@
-from asgiref.sync import async_to_sync
 from hypergen.imports import *
-from hypergen.hypergen import check_perms
-from hypergen.websocket import HypergenWebsocketConsumer
 
 class ChatConsumer(HypergenWebsocketConsumer):
     group_name = "websockets__consumers__ChatConsumer"

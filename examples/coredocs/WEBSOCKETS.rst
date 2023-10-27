@@ -1,4 +1,4 @@
-Websocket
+Websockets
 ==========
 
 Websockets in Hypergen provide a mechanism for real-time, bidirectional communication between the server and the browser. Unlike the traditional HTTP protocol, where the client always initiates the request, Websockets allow both the client and the server to transmit data independently. 
@@ -20,7 +20,7 @@ You need at least the following:
 
 - Pip install ``channels >= 4`` and ``daphne >= 4``.
 - Add ``"daphne"`` to the beginning of your INSTALLED_APPS. Daphe takes over the runserver command with its own async version.
-- Create ``routing.py`` files in each app mirroring the app ``urls.py`` files defining websocket urlpatterns for you app, which looks something like this::
+- Create ``routing.py`` files in each app mirroring the app ``urls.py`` files defining websocket urlpatterns for you app, which looks something like below. The ``as_asgi`` method takes a required ``perm`` parameter and an optional ``any_perm`` like ``@liveview``s do::
 
     from hypergen.imports import NO_PERM_REQUIRED
     from django.urls import path
@@ -60,11 +60,11 @@ You need at least the following:
 Basics
 ======
 
-The cornerstone of hypergen websockets is the ``HypergenWebsocketConsumer`` class. A HypergenWebsocketConsumer has all the capabilities of standard Django Channels consumers but adds hypergen integration. It checks permissions and like an ``@action``, it can update HTML on the page and issue other client side commands.
+The cornerstone of hypergen websockets is the ``HypergenWebsocketConsumer`` class. A HypergenWebsocketConsumer has all the capabilities of a standard Django Channels consumer but adds hypergen integration. It checks permissions and like an ``@action``, it can update HTML on the page and issue other client side commands.
 
 A very simple consumer could look like this::
 
-    class IncrementConsumer(JsonWebsocketConsumer):
+    class IncrementConsumer(HypergenWebsocketConsumer):
         def receive_hypergen_callback(self, n):
             # Render the self.template method into the DOM element with an id of "counter".
             # First we get the client side commands ...
@@ -78,73 +78,145 @@ A very simple consumer could look like this::
 
 When the consumer receives as message, it directs the frontend page listening to the websocket channel to increment the number.
 
-Get consumer can be accessed from the frontend via its url::
+A consumers url, can't (yet) be reversed like a Django view, but you can use the ``ws_url`` helper that makes the url work both when developing and in production based on the value of ``settings.DEBUG``::
 
-    url = message_chatgroup.reverse(chatgroup_name="VIP")
+    consumer_url = ws_url("ws/chat/jokes")
 
-and from the backend via its group name::
+A consumer should be opened on the liveview where it is needed::
 
-    group_name = message_chatgroup.group_name(chatgroup_name="VIP")
+    @liveview(perm="chat.can_chat", path="<slug:chatroom_name>")
+    def chatroom(request, chatroom_name)
+        consumer_url = ws_url(f"ws/chat/{chatroom_name}")
+        command("hypergen.websocket.open", consumer_url)
 
-A consumer should be opened on the view where it is needed::
+From the frontend side issuing a command to a consumer, is similar to using an @action::
 
-    @liveview(perm="chat.group_message")
-    def show_chats(consumer, request)
-        command("hypergen.websocket.open", message_chatgroup.reverse(chatgroup_name="VIP"))
+    message = textarea(id_="message")
+    button(id_="send", onclick=callback(consumer_url, {"type": "chat__client_chatroom_message", "message": message}))
 
-From the frontend side issuing a command to a @consumer, is similar to using an @action::
+Use the ``receive_callback()`` method on your consumer class to receive events from the client::
 
-    button(onclick=callback(message_chatgroup.reverse(chatgroup_name="VIP"), "WUSSUP!"))
+    class ChatConsumer(HypergenWebsocketConsumer):
+        def receive_hypergen_callback(self, event):
+            # Remember! Trust nothing from the client.
+            if event["type"] == "chat__client_chatroom_message":
+                # Handle event.
 
+From the backend side you can use the ``group_send`` function provided by hypergen::
 
-From the backend side you can use the `group_send` function provided by hypergen::
+    from hypergen.imports import group_send
+    group_send("my_consumer_group_name", {"type": "chat__server_chatroom_message", "message": "Hi!"})
 
-    from hypergen.channels import group_send
+Which would then magically (by the ``dispatch()`` method) be available in a ``chat__server_chatroom_message(self, event)`` method.
 
-    group_send(message_chatgroup.group_name(chatgroup_name="VIP"), "YO!")
+Get commands to update HTML on the page and other client side commands, by first using the ``action=True`` and ``returns=COMMANDS`` settings to the ``hypergen`` function::
+
+    commands = hypergen(template, message, settings=dict(action=True, returns=COMMANDS, target_id="counter"))
+
+Then create standard templates like you would in an action::
+
+    def template(message)::
+        # Writes into the "counter" id.
+        span("Length of last message is: ", len(message))
+
+        # Appends the message to the list of messages. Uses hypergen() directly to render into a string of HTML.
+        command("hypergen.append", "messages", hypergen(lambda: li(message)))
+        
+Finally send the commands to either the consumer channel itself or an entire group::
+
+    # Only the websocket itself:
+    self.channel_send_hypergen_commands(commands)
+    # The entire group:
+    self.group_send_hypergen_commands(self.group_name, commands)
     
 Full example
 ============
         
-::
+Consumer class::
 
-    @contextmanager
-    def base_template():
-        docblock()
-        with html():
-            with body():
-                with div(id="content"):
-                    yield
+    from hypergen.imports import *
 
-    base_template.target_id = "content"
-    
-    def template(n):
-        count = input(id="count", value=N, disabled=True)
-        button("Increment", onclick=callback(increment, count))
-    
-    @liveview(perm=NO_PERM_REQUIRED, base_example=base_example)
-    def counter(request, count):
-        command("hypergen.websocket.open", increment.reverse())
-        template(1)
+    class ChatConsumer(HypergenWebsocketConsumer):
+        group_name = "websockets__consumers__ChatConsumer"
 
-    @consumer(perm=NO_PERM_REQUIRED, base_example=base_example)
-    def increment(consumer, request, count):
-        template(count+1)
+        # django-channels will automatically subscribe the consumer to these groups.
+        groups = [group_name]
 
-``@consumer`` takes all the same keyword arguments as ``@action`` as well as a couple of websocket specific ones.
+        # Receives the data sent from the onkeyup callback in views.py.
+        def receive_hypergen_callback(self, event_type, *args):
+            if event_type == "chat__message_from_frontend":
+                message, = args
+                assert type(message) is str
+                message = message.strip()[:1000]
+                if message:
+                    commands = self.update_page(message)
+                    # Send commands to entire group.
+                    self.group_send_hypergen_commands(self.group_name, commands)
 
-Instead of taking the request like an action function does, a consumer function takes the `consumer <https://channels.readthedocs.io/en/stable/topics/consumers.html>`_ instance as it's first argument, then a django `ASGIRequest <https://github.com/django/django/blob/8adc7c86ab85ed91e512bc49056e301cbe1715d0/django/core/handlers/asgi.py#L38>`_ instance that works mostly like a regular Django request.
+            # ... More event types goes here.
 
-Among other things, that mean you can keep your app state by setting properties on the consumer instance::
+        def chat__message_from_backend(self, event):
+            commands = self.update_page(event["message"])
+            # Send commands to individual channel.
+            self.channel_send_hypergen_commands(commands)
 
-    @consumer(perm=NO_PERM_REQUIRED, target_id="content")
-    def my_consumer(consumer, request):
-        if not hasattr(consumer, "my_app_state"):
-            consumer.my_app_state = [1, 2, 3]
+        def update_page(self, message):
+            return hypergen(self.template, message, settings=dict(action=True, returns=COMMANDS, target_id="counter"))
 
-        my_template(consumer.my_app_state)
+        # Render the HTML and issue custom commands.
+        def template(self, message):
+            # Writes into the "counter" id.
+            span("Length of last message is: ", len(message))
 
-Hypergen automatically reconnects websockets connections sensibly, for instance after being offline.
+            # Appends the message to the list of messages. Uses hypergen() directly to render into a string of HTML.
+            command("hypergen.append", "messages", hypergen(lambda: li(message)))
+
+@liveview::
+
+    # Channels urls are not (yet) reversible the same as vanilla urls. Little helper to add protocol and port.
+    chat_ws_url = lambda: ws_url("/ws/chat/hypergen/")
+
+    @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
+    def chat(request):
+        h3("Websockets chat")
+        p("Open multiple tabs to see messages pushed out to all listening consumers.")
+        # Open a websocket on the client. Can be closed at any point with: command("hypergen.websocket.close", url)
+        command("hypergen.websocket.open", chat_ws_url())
+
+        # Some custom styling.
+        style(""" input, textarea {width: 100%} """)
+
+        # The consumer will write here.
+        with p(id="counter"):
+            raw("&nbsp;")
+
+        # The input field where the user types the chat message.
+        input_(
+            id_="message",
+            type_="text",
+            placeholder="Write your message here and press enter.",
+            autofocus=True,
+            # This callbacks goes to the ChatConsumer in websockets.consumers, because the url starts with "ws://"
+            # or "wss://".
+            # Will only trigger when the user presses Enter.
+            onkeyup=callback(chat_ws_url(), "chat__message_from_frontend", THIS, when=["hypergen.when.keycode", "Enter"],
+            clear=True),
+        )
+
+        # Chat messages are shown here.
+        ul(id_="messages")
+
+        # Backend send.
+        p("Visit", a("this page", href=send_message_from_backend.reverse(), target="_blank"),
+            "to try sending a chat message from the backend.", sep=" ", end=".")
+
+Server side event::
+
+    @liveview(perm=NO_PERM_REQUIRED, base_template=base_example_template)
+    def send_message_from_backend(request):
+        from websockets.consumers import ChatConsumer
+        group_send(ChatConsumer.group_name, {"type": "chat__message_from_backend", "message": "Server message!"})
+        command("alert", "Message will appear in the chatroom!")
 
 Opening and closing a websocket
 ===============================
@@ -156,44 +228,19 @@ You can open auto-reconnecting websockets courtesy of the Sockety project by doi
 and to undo the damage::
 
     command("hypergen.websocket.close", my_consumer.reverse())
-    
-Groups
-------
 
-Hypergen automatically creates `groups <https://channels.readthedocs.io/en/stable/topics/channel_layers.html#groups>`_ based on the url to the consumer, i.e. websockets connecting to the same url, can speak to each other.
+Hypergen automatically reconnects websockets connections sensibly, for instance after being offline.
 
-To get the group name of a consumer, symmetrically to reverse you would do::
+Details
+=======
 
-    my_consumer.group_name("42", bar="hello")
+The full signature for the ``HypergenWebsocketConsumer`` class is:
 
-So to have multiple chatrooms where all connected the same chatroom receives the same messages you would do::
-
-    from hypergen.imports import *
-    from hypergen import js
-    
-    @consumer(perm="chat.can_chat", path="chat/<slug:room_name>")
-    def send_message(consumer, message):
-        command("hypergen.append", "messages", hypergen(lambda: li(message)))
-
-And to send messages to the chat room, just use ``callback`` normally::
-
-    @liveview(perm="chat.can_chat")
-    def chat(request):
-        message = input(id="message")
-        button("Send", onclick=callback(send_message.reverse(room_name="nice_people_only_room"), message))
+*class HypergenWebsocketConsumer()*
+    *as_asgi(perm=None, any_perm=False)*
+        Static method that returns the ASGI application. ``perm`` is required.
         
-Custom group names can be defined by using the ``group_name`` keyword argument to the ``@consumer`` decorator. It
-expects a callback that takes the consumer as it's only argument and returns the group name as a string::
-
-    @consumer(perm=NO_PERM_REQUIRED, group_name=lambda consumer: "vip_group")
-    def send_message(consumer, request, message):
-        ...
-
-Programatically sending messages
---------------------------------
-
-To communicate to a consumer, from the backend you use the consumer_command function::
-
-    from hypergen.imports import consumer_command
-
-    consumer_command(my_consumer.group_name("my_arg", my_kwargs=42), [["alert", 42]])
+        *perm (None)*
+            Accepts one or a list of permissions, all of which the user must have. See Djangos `has_perm() <https://docs.djangoproject.com/en/dev/ref/contrib/auth/#django.contrib.auth.models.User.has_perm>`_
+        *any_perm (False)*
+            The user is only required to have one of the given perms. Check which he has in ``context.hypergen.matched_perms``.
