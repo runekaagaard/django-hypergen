@@ -60,18 +60,23 @@ You need at least the following:
 Basics
 ======
 
-The cornerstone of hypergen websockets is the ``@consumer`` decorator. When used in conjunction with ``@autoconsumers`` in the ``routing.py`` file, hypergen automatically generates url paths and `group names <https://channels.readthedocs.io/en/stable/topics/channel_layers.html#groups>`_ for each consumer.
-
-A consumer has all the capabilities of an ``@action``, it can update HTML on the page and issue client side commands.
+The cornerstone of hypergen websockets is the ``HypergenWebsocketConsumer`` class. A HypergenWebsocketConsumer has all the capabilities of standard Django Channels consumers but adds hypergen integration. It checks permissions and like an ``@action``, it can update HTML on the page and issue other client side commands.
 
 A very simple consumer could look like this::
 
-    @consumer(perm="chat.group_message", path="<chatgroup_name:slug>", target_id="counter")
-    def message_chatgroup(request, consumer, chatgroup_name, message):
-        span("Number of messages: ", increment_counter())
-        command("hypergen.append", "mychat", message)
+    class IncrementConsumer(JsonWebsocketConsumer):
+        def receive_hypergen_callback(self, n):
+            # Render the self.template method into the DOM element with an id of "counter".
+            # First we get the client side commands ...
+            commands = hypergen(self.template, message, settings=dict(action=True, returns=COMMANDS,
+                target_id="counter"))
+            # And then we ship them to the frontend.
+            self.channel_send_hypergen_commands(commands)
 
-When the consumer receives as message, it directs all frontend pages listening to the websocket channel to append the message to DOM element with the ``"mychat"`` id.
+        def template(n):
+            span("The number is", n + 1)
+
+When the consumer receives as message, it directs the frontend page listening to the websocket channel to increment the number.
 
 Get consumer can be accessed from the frontend via its url::
 
