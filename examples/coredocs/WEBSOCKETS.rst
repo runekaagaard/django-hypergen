@@ -11,7 +11,7 @@ or truly everything::
 
     from hypergen.imports import *
 
-You might want to read up on `liveviews </coredocs/liveviews/>`_ and `channels <https://channels.readthedocs.io/en/stable/>`_ before moving along.
+You might want to read up on `liveviews </coredocs/liveviews/>`_ and `channels <https://channels.readthedocs.io/en/stable/>`_ before moving along. Do check the `chat example </websockets/chat/>`_ as well.
 
 Prerequisites
 =============
@@ -20,7 +20,7 @@ You need at least the following:
 
 - Pip install ``channels >= 4`` and ``daphne >= 4``.
 - Add ``"daphne"`` to the beginning of your INSTALLED_APPS. Daphe takes over the runserver command with its own async version.
-- Create ``routing.py`` files in each app mirroring the app ``urls.py`` files defining websocket urlpatterns for you app, which looks something like below. The ``as_asgi`` method takes a required ``perm`` parameter and an optional ``any_perm`` like ``@liveview``s do::
+- Create ``routing.py`` files in each app mirroring the app ``urls.py`` files defining websocket urlpatterns for you app, which looks something like below. The ``as_asgi`` method takes a required ``perm`` parameter and an optional ``any_perm`` like ``@liveview`` do::
 
     from hypergen.imports import NO_PERM_REQUIRED
     from django.urls import path
@@ -221,26 +221,34 @@ Server side event::
 Opening and closing a websocket
 ===============================
 
-You can open auto-reconnecting websockets courtesy of the Sockety project by doing::
+You can open a websocket by doing::
 
-    command("hypergen.websocket.open", my_consumer.reverse())
+    command("hypergen.websocket.open", my_consumer_url)
 
 and to undo the damage::
 
-    command("hypergen.websocket.close", my_consumer.reverse())
+    command("hypergen.websocket.close", my_consumer_url)
 
 Hypergen automatically reconnects websockets connections sensibly, for instance after being offline.
 
 Details
 =======
 
-The full signature for the ``HypergenWebsocketConsumer`` class is:
+The public signature for the ``HypergenWebsocketConsumer`` class is:
 
-*class HypergenWebsocketConsumer()*
-    *as_asgi(perm=None, any_perm=False)*
-        Static method that returns the ASGI application. ``perm`` is required.
-        
-        *perm (None)*
-            Accepts one or a list of permissions, all of which the user must have. See Djangos `has_perm() <https://docs.djangoproject.com/en/dev/ref/contrib/auth/#django.contrib.auth.models.User.has_perm>`_
-        *any_perm (False)*
-            The user is only required to have one of the given perms. Check which he has in ``context.hypergen.matched_perms``.
+class HypergenWebsocketConsumer()
+    Extends Django-Channels JsonWebsocketConsumer with Hypergen specifics.
+*as_asgi(perm=None, any_perm=False)*
+    Static method that returns the ASGI application. ``perm`` is required.
+*receive_hypergen_callback(self, *args, **kwargs)*
+    Handle client side callbacks.
+*send_permission_denied(self)*
+    Client side commands on missing permissions.
+*channel_send(self, event)*
+    Send arbitrary events to the channel.
+*group_send(self, group_name, event)*
+    Send arbitrary events to the group.
+*channel_send_hypergen_commands*
+    Send frontend hypergen commands to the channel.
+*group_send_hypergen_commands*
+    Send frontend hypergen commands to the group.
