@@ -248,7 +248,7 @@ class HypergenWebsocketConsumer()
     Send arbitrary events to the channel.
 *group_send(self, group_name, event)*
     Send arbitrary events to the group.
-*channel_send_hypergen_commands*
+*channel_send_hypergen_commands(self, commands)*
     Send frontend hypergen commands to the channel.
-*group_send_hypergen_commands*
+*group_send_hypergen_commands(self, group_name, commands)*
     Send frontend hypergen commands to the group.
