@@ -45,4 +45,7 @@ def chat(request):
 def send_message_from_backend(request):
     from websockets.consumers import ChatConsumer
     group_send(ChatConsumer.group_name, {"type": "chat__message_from_backend", "message": "Server message!"})
-    command("alert", "Message will appear in the chatroom!")
+    h2("Websocket server command")
+    p("The message will appear on the tab room tabs.")
+
+    show_sources(__file__)
