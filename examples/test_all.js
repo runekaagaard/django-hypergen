@@ -60,7 +60,7 @@ async function onclickEvents(t, href) {
 test('test', async t => {
   while(queue.length > 0) {
     const href = queue.pop()
-    if (["/misc/v13/", "/misc/v14/", "/websockets/send_message_from_backend/",
+    if (["/misc/v13/", "/misc/v14/",
          "/misc/v15/", "/gameofcython/", "/djangotemplates/"].indexOf(href) !== -1) continue
     console.log(`testing url: ${href}`)
     

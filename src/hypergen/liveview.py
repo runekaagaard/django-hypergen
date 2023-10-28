@@ -96,7 +96,7 @@ class LiveviewPluginBase:
             else:
                 element.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
 
-        if isinstance(element, a):
+        if isinstance(element, a) and attrs.get("target", None) in (None, "_self"):
             # Partial loading.
             href = attrs.get("href", None)
             partial = attrs.pop("partial", True)
