@@ -131,6 +131,28 @@ python manage.py startapp \\
 def documentation(request):
     h2("News")
     ul(
+        li(
+        b("2023-11-28"),
+        "A lot of recent releases only made master and not pypi but today we are proud to",
+        "announce that we are releasing the first stable release of Hypergen. We've been using it in production",
+        "for several years, built big systems with it and it's rock-solid enough to warrant the version number ",
+        i("1.5.1."),
+        "About this release: ",
+        ul(
+        li(
+        "Stable means ",
+        a("stable!", href="https://www.youtube.com/watch?v=oyLBGkS5ICk"),
+        " Barring security issues, we will not break your code. Everything that can be found in ",
+        "the docs will not change in a way that breaks existing userland code.",
+        ),
+        li(a("Websockets", href="/coredocs/websockets/"),
+        "are stable and in a very usable state. We've started using them in production and are currently",
+        "pondering several quality-of-life improvements to them.", sep=" "),
+        li("Extend support so we now support from python 3.6 / django 1.11.29 up to python 3.12 / django 4.2.6."),
+        li("Lots of cleanups and refactorings."),
+        ),
+        sep=" ",
+        ),
         li(b("2022-10-06"), "Another hotly requested feature has hit main.",
         "Existing Django templates can now be extended with liveview capabilities!", "Check out the",
         a("demo", href="/djangotemplates/"), "with sources and the",
