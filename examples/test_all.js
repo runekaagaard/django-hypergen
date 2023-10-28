@@ -74,3 +74,4 @@ test('test', async t => {
     ajaxRequestTimeout: 10000,
 })
 
+
