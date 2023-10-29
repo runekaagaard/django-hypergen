@@ -51,7 +51,12 @@ testcafe-run-headless:
 test-all:
 	make pytest-run
 	make testcafe-run-headless
-pypi-release:
+pypi-build:
 	rm -rf dist/*
 	python3 -m build
+pypi-check:
+	python3 -m twine check dist/*
+pypi-release-test:
+	python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+pypi-release:
 	python3 -m twine upload dist/*
