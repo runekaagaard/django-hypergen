@@ -1,3 +1,10 @@
-include src/hypergen/static/hypergen/*
-include src/hypergen/static/hypergen/dist/*
+prune src/hypergen
+include src/hypergen/*.py
+include src/hypergen/*.pxd
+include src/hypergen/*.pyx
+include src/hypergen/plugins/*.py
+include src/hypergen/templatetags/*.py
+exclude src/hypergen/test_settings.py
+exclude src/hypergen/test_all.py
+include src/hypergen/static/hypergen/dist/hypergen.js
 include README_PYPI.rst
