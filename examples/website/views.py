@@ -136,7 +136,7 @@ def documentation(request):
         "A lot of recent releases only made master and not pypi but today we are proud to",
         "announce that we are releasing the first stable release of Hypergen. We've been using it in production",
         "for several years, built big systems with it and it's rock-solid enough to warrant the version number ",
-        i("1.5.1."),
+        i("1.5.2."),
         "About this release: ",
         ul(
         li(
