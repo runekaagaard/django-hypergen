@@ -1,28 +1,34 @@
 from hypergen.imports import *
 
 class ChatConsumer(HypergenWebsocketConsumer):
-    # Custom group name can be set here. Defaults to the module, classname and url.
-    # def group_name(self):
-    #     pass
+    group_name = "websockets__consumers__ChatConsumer"
 
-    # Custom permission checks can be done here.
-    # def check_perms(self, content):
-    #     pass
-    # Similar settings that you would have to the @action decorator is defined here.
-    class Hypergen:
-        # Permissions.
-        perm = NO_PERM_REQUIRED  # Required
-        any_perm = False  # Optional, default: False
+    # django-channels will automatically subscribe the consumer to these groups.
+    groups = [group_name]
 
-        # One of these two is required.
-        base_template = None  # Read target_id from base_template.target_id
-        target_id = "counter"  # Default DOM element id to render HTML into.
+    # Receives the data sent from the onkeyup callback in views.py.
+    def receive_hypergen_callback(self, event_type, *args):
+        if event_type == "chat__message_from_frontend":
+            message, = args
+            assert type(message) is str
+            message = message.strip()[:1000]
+            if message:
+                commands = self.update_page(message)
+                # Send commands to entire group.
+                self.group_send_hypergen_commands(self.group_name, commands)
 
-        # Other.
-        user_plugins = []  # Optional, default: []
+        # ... More event types goes here.
 
-    # Render the HTML and send custom commands.
-    def receive_hypergen(self, message):
+    def chat__message_from_backend(self, event):
+        commands = self.update_page(event["message"])
+        # Send commands to individual channel.
+        self.channel_send_hypergen_commands(commands)
+
+    def update_page(self, message):
+        return hypergen(self.template, message, settings=dict(action=True, returns=COMMANDS, target_id="counter"))
+
+    # Render the HTML and issue custom commands.
+    def template(self, message):
         # Writes into the "counter" id.
         span("Length of last message is: ", len(message))
 

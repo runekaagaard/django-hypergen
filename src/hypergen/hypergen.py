@@ -23,7 +23,7 @@ try:
 except ImportError:
     try:
         from django.urls import re_path as re_path_, path as path_
-    except:
+    except ImportError:
         from django.conf.urls import url as re_path_
 
         def path_(*a, **kw):
@@ -152,7 +152,6 @@ def check_perms(request, perm, login_url=None, raise_exception=False, any_perm=F
 ### Auto urls ###
 
 AUTOURL_WSGI_ERR_MSG = "Hypergen: I'm sorry, I can't auto reverse the url for this liveview/action. The attribute `hypergen_namespace` should exist on the wrapped function. Restart runserver and if the problem persist, please check the following: 1. You have `urlpatterns = autourls(views, namespace='app_name')` in urls.py for your app. 2. You include the urls correctly in urls.py for your project. 3. You use the same import path in urls.py as in your template for the views module. Avoid `from . import views`. func: {}, module: {}"
-AUTOURL_ASGI_ERR_MSG = "Hypergen: I'm sorry, I can't auto reverse the websocket url for this consumer. The attribute `hypergen_channels_full_path` should exist on the wrapped function. Restart runserver and if the problem persist, please check the following: 1. You have `websocket_urlpatterns = autoconsumers(views, prefix='ws/callcenter/')` in routing.py for your app. 2. You added the websocket patterns correctly in asgi.py for your project. 3. You use the same import path for views.py in routing.py, urls.py and your templates. Avoid `from . import views`. func: {}, module: {}"
 
 class metastr(str):
     @staticmethod
@@ -163,38 +162,21 @@ class metastr(str):
         return s
 
 _URLS = {}
-_CHANNELS_ROUTES = {}
 
-def autourl_register(func, base_template=None, path=None, re_path=None, channels=False):
+def autourl_register(func, base_template=None, path=None, re_path=None):
     def _reverse(*view_args, **view_kwargs):
-        if channels is not True:
-            if not hasattr(_reverse, "hypergen_namespace"):
-                raise Exception(AUTOURL_WSGI_ERR_MSG.format(func, func.__module__))
+        if not hasattr(_reverse, "hypergen_namespace"):
+            raise Exception(AUTOURL_WSGI_ERR_MSG.format(func, func.__module__))
 
-            ns = _reverse.hypergen_namespace
-            return metastr.make(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
-                d(base_template=base_template))
-        else:
-
-            from hypergen.channels import ws_url
-            path_func, _, _ = tmp
-
-            if not hasattr(_reverse, "hypergen_channels_full_path"):
-                raise Exception(AUTOURL_ASGI_ERR_MSG.format(func, func.__module__))
-
-            class UrlConf:
-                urlpatterns = [path_func(_reverse.hypergen_channels_full_path, func, name=func.__name__)]
-
-            return metastr.make(ws_url(reverse(func, args=view_args, kwargs=view_kwargs, urlconf=UrlConf)),
-                d(base_template=base_template))
+        ns = _reverse.hypergen_namespace
+        return metastr.make(reverse("{}:{}".format(ns, func.__name__), args=view_args, kwargs=view_kwargs),
+            d(base_template=base_template))
 
     func.reverse = _reverse
 
-    X = _CHANNELS_ROUTES if channels is True else _URLS
-
     module = func.__module__
-    if module not in X:
-        X[module] = set()
+    if module not in _URLS:
+        _URLS[module] = set()
 
     if (path, re_path) == (None, None):
         tmp = (re_path_, func, r"^{}/$".format(func.__name__))
@@ -205,7 +187,7 @@ def autourl_register(func, base_template=None, path=None, re_path=None, channels
             raise Exception('Use "^$" for an empty re_path in {}.{}'.format(module, func.__name__))
         tmp = (re_path_, func, re_path)
 
-    X[module].add(tmp)
+    _URLS[module].add(tmp)
 
     return func
 
@@ -216,27 +198,6 @@ def autourls(module, namespace):
         patterns.append(path_func(path_, func, name=func.__name__))
 
     return patterns
-
-def autoconsumers(module, prefix):
-    from hypergen.channels import HypergenWebsocketAutoConsumer
-
-    prefix = prefix.rstrip("/") + "/"
-    assert "^" not in prefix, "The prefix should ONLY be foo/bar/baz/. Works for both path and re_path."
-    consumers = []
-    for path_func, func, path in _CHANNELS_ROUTES.get(module.__name__, []):
-        if path.startswith("^"):
-            full_path = "^" + prefix + path[1:]
-        else:
-            full_path = prefix + path
-
-        class HypergenWebsocketAutoConsumerCurried(HypergenWebsocketAutoConsumer):
-            hypergen_func = func
-
-        func.reverse.hypergen_channels_full_path = full_path
-
-        consumers.append(path_func(full_path, HypergenWebsocketAutoConsumerCurried(func).as_asgi()))
-
-    return consumers
 
 ### Plugins ###
 

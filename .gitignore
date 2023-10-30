@@ -44,6 +44,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+.parcel-cache
 nosetests.xml
 coverage.xml
 *.cover
@@ -147,3 +148,4 @@ node_modules
 *.swp
 *.save
 .vscode
+

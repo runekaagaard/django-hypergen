@@ -65,7 +65,7 @@ def element_value(id_, js_coerce_func=None):
 
 @register.simple_tag
 def hypergen_media_header():
-    return mark_safe('<script src="{}"></script>'.format(static("hypergen/v2/hypergen.min.js")))
+    return mark_safe('<script src="{}"></script>'.format(static("hypergen/dist/hypergen.js")))
 
 @register.simple_tag
 def hypergen_media_footer():

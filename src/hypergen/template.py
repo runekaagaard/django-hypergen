@@ -98,8 +98,8 @@ def hypergen(template, *args, **kwargs):
             prepend_commands=settings.get("prepend_commands", True),
             ))
     if settings.get("appstate", False):
-        namespace = settings.get("namespace", None)
-        assert namespace, "When appstate is set, namespace must be too."
+        namespace = getattr(settings["appstate"], "namespace", settings.get("namespace", None))
+        assert namespace, "When appstate is set, namespace must be too. Either by using autourls or by setting a 'namespace' attribute on the appstate callable."
         plugins.append(AppstatePlugin(namespace, settings["appstate"]))
 
     returns = settings.get("returns", HTML)

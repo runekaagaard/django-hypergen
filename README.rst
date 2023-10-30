@@ -27,12 +27,21 @@
       <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
     </p>
 
-**Hypergen is short for Hypertext Generator**: Templates are pure python. Instead of writing ``<p>hi</p>`` in a html file, call ``p("hi")`` inside a view. It's simple to keep templates DRY by composing python functions. Hypergen feels a lot like writing jsx.
+**Hypergen: A Hypertext Generator**:
+Craft templates using pure Python. Instead of declaring ``<p>hi</p>`` in an HTML file, simply invoke ``p("hi")`` within your view. Composing Python functions keeps templates DRY and streamlined. If you've ever written JSX, Hypergen's syntax will feel familiar.
 
-**Liveview included**: Still in pure python, connect browser events like ``onclick`` to backend views called actions. Mix frontend input html elements and python datatypes as arguments to callbacks and everything works round-trip. Actions are Django views that sends updated html to the frontend as well as other commands.
+**Reactive Liveviews**:
+Effortlessly bridge frontend and backend. Connect browser events like `onclick` straight to backend actions. With these actions, Django views can instantly refresh the frontend with new HTML, send notifications, and more, all while natively working with Python data types.
 
-**1 minute to set up**: Do ``pip install django-hypergen``, add ``'hypergen'`` to ``INSTALLED_APPS``, ``'hypergen.context.context_middleware'`` to ``MIDDLEWARE`` and you're good to go.
+**Websockets**:
+Hypergen brings realtime to the forefront with Django Channels. Set up is a breeze - quickly establish consumers and instantly react to live events. It's realtime made simple and friendly, just the way we like it.
 
+**Production Ready**:
+We've deployed Hypergen in projects spanning tens of thousands of lines, serving over 100,000 unique users more than 10 million requests.
+
+**Quickstart**:
+Kickstart your Hypergen journey in minutes. Execute ``pip install django-hypergen``, append ``'hypergen'`` to ``INSTALLED_APPS``, include ``'hypergen.context.context_middleware'`` in ``MIDDLEWARE``, and you're all set to dive in.
+    
 How does it look?
 =================
 
@@ -67,18 +76,19 @@ It's python all the way down. 🔥🔥🔥
 Features
 ========
 
-- **Composable** - structure your app with ... TADAAA ... python functions
-- **Less infrastructure** - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, angular, vue and friends
-- **Build truly singlepage apps** - avoid abstraction gaps to a template language and javascript
-- **Async not needed** - uses the vanilla Django Request-Response cycle
-- **Automatic (de)serialization** - use python builtin types and move on
-- **No magic strings** - reactivity is defined by referencing python functions
-- **Free partial loading** - no special setup required, includes back/forward history support
-- **Control over client side events** - inbuilt confirmation dialogs, blocking and debouncing
-- **Easy uploading of files** - with progress bar
-- **Still loves javascript** - trivially call client functions from the server
-- **History buff?** - don't worry, Hypergen supports from Django 1.11, Python 3.5 and up
-- **Hyperfy** - the command line app that converts html to hypergen python code
+- 🧩 **Composable** - structure your app with ... TADAAA ... python functions
+- 🌐 **Less infrastructure** - take a break from npm, npx, yarn, webpack, parcel, react, redux, gulp, angular, vue and friends
+- 🚀 **Build truly singlepage apps** - avoid abstraction gaps to a template language and javascript
+- ⏳ **Async not needed** - uses the vanilla Django Request-Response cycle by default
+- 🔀 **Automatic (de)serialization** - use python builtin types and move on
+- 🎯 **No magic strings** - reactivity is defined by referencing python functions
+- 📦 **Free partial loading** - no special setup required, includes back/forward history support
+- 🔒 **Control over client side events** - inbuilt confirmation dialogs, blocking and debouncing
+- 📤 **Easy uploading of files** - with progress bar
+- 💛 **Still loves javascript** - trivially call client functions from the server
+- ⚡ **Realtime** - Create manual or automatic websocket consumers trivially
+- 📜 **History buff?** - don't worry, Hypergen supports from Django 1.11, Python 3.6 and up to as of this writing Django 4.2.6 and python 3.12.
+- 🛠️ **Hyperfy** - the command line app that converts html to hypergen python code
 
 Running the examples
 ====================
@@ -89,10 +99,8 @@ Running the examples
     cd django-hypergen/
     virtualenv -p python3.9 venv
     source venv/bin/activate
-    pip install -r requirements.txt
-    pip install -r examples/requirements.txt
+    pip install -r requirements-dev.txt
     cd examples
-    python manage.py migrate
     python manage.py runserver
 
 Then browse to http://127.0.0.1:8000.
@@ -114,7 +122,6 @@ Why not Hypergen?
 
 - Every frontend event calls the server. Not good for e.g. games.
 - Python templating might not be for everyone. We found it works great in practice.
-- No realtime capabilities yet, so the server can only push data back when it receives a request
 
 Developing
 ==========
@@ -131,11 +138,12 @@ Compile the javascript files:
 
 .. code-block:: bash
 
-    yarn global add parcel-bundler
-    # or
-    npm install -g parcel-bundler
     cd hypergen/static/hypergen
-    parcel watch -o hypergen.min.js -d . hypergen.js
+    npm install # use node 18 lts
+    # watch hypergen.js to dist/hypergen.js
+    npm start
+    # build hypergen.js to dist/hypergen.js
+    npm run build
     
 Profiling
 ---------
@@ -146,10 +154,11 @@ How fast are we?:
 
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py runserver 127.0.0.1:8002
     echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
+    
     # or
     pyprof2calltree -i /tmp/hypergen.profile -k
 
-    #
+    # or
     rm -f /tmp/hypergen.profile && python -m cProfile -o /tmp/hypergen.profile manage.py inputs_profile && \
         echo -e 'sort tottime\nstats' | python3 -m pstats /tmp/hypergen.profile | less
 
@@ -160,10 +169,10 @@ We have a `Github Action <https://github.com/runekaagaard/django-hypergen/blob/m
 
 .. code-block:: bash
 
-    pip install requirements.txt
+    pip install -r requirements-dev.txt
     make pytest-run
 
-And the testcafe end-to-end tests:
+And the testcafe end-to-end_ tests:
 
 .. code-block:: bash
     
@@ -180,5 +189,6 @@ Thanks
 - `Django <https://www.djangoproject.com/>`_ - for making work fun
 - `Morphdom <https://github.com/patrick-steele-idem/morphdom>`_ - for fast updating of the DOM tree
 - `Pyrsistent <https://pyrsistent.readthedocs.io/en/latest/intro.html>`_ - for providing an immutable dict
+- `sockette <https://github.com/lukeed/sockette>`_ - The cutest little WebSocket wrapper! 🧦
 - `Simple.css <https://simplecss.org/>`_ - for the no-class styling on the homepage
 - `DALL-E mini <https://huggingface.co/spaces/dalle-mini/dalle-mini>`_ - for the logo generated with the query "a vibrant logo of the letter H"

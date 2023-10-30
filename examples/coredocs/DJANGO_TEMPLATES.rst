@@ -46,7 +46,7 @@ Bind DOM events to callbacks in HTML templates
 The ``{% callback %}`` template tag takes first an reversible url and then an optional number of arguments that will be passed to the action or consumer. The ``id``, ``event`` keyword arguments are required. It automatically adds an id attribute unless ``add_id=False`` is passed.
 
 Strings prefixed with a ``#`` are interpreted as ids and the value of those HTML elements will be passed as arguments
-to the @action or @consumer function. Type coercion can be defined by adding an optional ``.[type]`` to the magic string, e.g. ``"#my_id.date"``. The following coercions are allowed: str, float, int, date, datetime, month and week.
+to the @action function. Type coercion can be defined by adding an optional ``.[type]`` to the magic string, e.g. ``"#my_id.date"``. The following coercions are allowed: str, float, int, date, datetime, month and week.
 
 It takes the all same keyword arguments as the regular ``callback`` function, like ``debounce``, ``confirm`` and ``blocks``.
 

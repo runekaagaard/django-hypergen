@@ -1,7 +1,4 @@
 import Sockette from 'sockette'
-import * as websockets from './websockets'
-
-window.hypergen_websockets = websockets
 
 export const WEBSOCKETS = {}
 

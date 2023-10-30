@@ -1,11 +1,11 @@
 import morphdom from 'morphdom'
-// https://github.com/ccampbell/mousetrap
-import mousetrap from 'mousetrap'
 import './hypergen'
 import * as hypergen from './hypergen'
+import * as websocket from './websocket';
 
-// Make all exported vars availabe in window.hypergen.
+// Make all exported vars availabe inside window.hypergen.
 window.hypergen = hypergen
+window.hypergen.websocket = websocket
 
 // Shims
 if (typeof Array.isArray === 'undefined') {
@@ -16,8 +16,13 @@ if (typeof Array.isArray === 'undefined') {
 
 // Commands that can be called from the backend.
 export const morph = function(id, html) {
+  const element = document.getElementById(id)
+  if (!element) {
+    console.error("Trying to morph into an element with id='" + id + "' that does not exist. Please check your target_id.")
+    return
+  }
   morphdom(
-    document.getElementById(id),
+    element,
     "<div>" + html + "</div>",
     {
       childrenOnly: true,
@@ -75,29 +80,86 @@ export const display = function(id, value) {
   el.style.display = value || "block"
 }
 
+export const visible = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.visibility = "visible"
+}
+
+export const hidden = function(id, value) {
+  let el = document.getElementById(id)
+  el.style.visibility = "hidden"
+}
+
 export const redirect = function(url) {
   window.location = url
 }
 
-// TODO: Dont clutter window.
-window.clientState = {}
+export const append = function(id, html) {
+  const el = document.getElementById(id)
+  if (!el) console.error("Cannot append to missing element", id)
+  el.innerHTML += html
+}
+
+export const prepend = function(id, html) {
+  const el = document.getElementById(id)
+  if (!el) console.error("Cannot prepend to missing element", id)
+  el.innerHTML = html + el.innerHTML
+}
+
+hypergen.clientState = {}
+
 export const setClientState = function(at, value) {
-  let clientState = window.clientState
+  let clientState = hypergen.clientState
   for (const path of at.split(".")) {
     if (clientState[path] === undefined) clientState[path] = {}
     clientState = clientState[path]
   }
   Object.assign(clientState, value)
-  console.log("Setting new state for window.clientState", at, "with value", value, "giving",
-              window.clientState)
+  console.log("Setting new state for hypergen.clientState", at, "with value", value, "giving",
+              hypergen.clientState)
 }
+
+/* WARNING NOT STABLE */
+var INTERVALS = {}
+
+export const intervalSet = function(commands, interval, name) {
+  const i = setInterval(() => applyCommands(commands), interval)
+  if (!!name) INTERVALS[name] = i
+}
+
+export const intervalClear = function(name) {
+  if (INTERVALS[name]) {
+    console.log("Clearing", INTERVALS[name])
+    clearInterval(INTERVALS[name])
+  }
+}
+
+export const addEventListener = function(querySelectorString, type, commands, options) {
+  document.querySelector(querySelectorString).addEventListener(
+    type, (event) => applyCommands(commands), options || {})
+}
+
+let _TTT = {}
+
+const keypressToCallbackFunc = function(e) {
+  const [url, args, options] = _TTT
+  callback(url, [e.key, ...(args || [])], options || {})
+}
+export const keypressToCallback = function(url, args, options) {
+  _TTT = [url, args, options]
+  window.addEventListener("keydown", keypressToCallbackFunc)
+}
+export const keypressToCallbackRemove = function(url, args, options) {
+  window.removeEventListener("keydown", keypressToCallbackFunc)
+}
+/* END WARNING STABLE AGAIN */
 
 // Callback
 var i = 0
 var isBlocked = false
 export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
                                              params={}, meta={}, clear=false, elementId=null, debug=false,
-                                             event=null, headers={}}={})
+                                             event=null, headers={}, onSucces=null}={})
 {
   if (!!event) {
     event.preventDefault()
@@ -109,9 +171,8 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     i++
 
     // The element function must have access to the FormData.
-    // TODO: Dont clutter window.
-    window.hypergenGlobalFormdata = new FormData()
-    window.hypergenUploadFiles = uploadFiles
+    hypergen.hypergenGlobalFormdata = new FormData()
+    hypergen.hypergenUploadFiles = uploadFiles
     try {
       json = JSON.stringify({
         args: args,
@@ -126,9 +187,9 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       }
     }
     
-    let formData = window.hypergenGlobalFormdata
-    window.hypergenGlobalFormdata = null
-    window.hypergenUploadFiles = null
+    let formData = hypergen.hypergenGlobalFormdata
+    hypergen.hypergenGlobalFormdata = null
+    hypergen.hypergenUploadFiles = null
     formData.append("hypergen_data", json)
 
     if (blocks === true) {
@@ -140,11 +201,12 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       }
     }
     post(url, formData, (data) => {
-      console.log("RESPONSE", data)
       if (data !== null) applyCommands(data)
       isBlocked = false
       if (clear === true) document.getElementById(elementId).value = ""
+      if (!!onSucces) onSucces()
     }, (data, jsonOk, xhr) => {
+      console.log(xhr)
       isBlocked = false
       console.error("Hypergen post error occured", data)
       if (debug !== true) {
@@ -155,11 +217,52 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
       }
     }, params, headers)
   }
-  if (debounce === 0) {
-    if (confirm_ === false) postIt()
-    else if (confirm(confirm_)) postIt()
+  const postItWebsocket = function() {
+    console.log("WEBSOCKET", url, args, debounce)
+    let json
+    try {
+      json = JSON.stringify({
+        args: args,
+        meta: meta,
+      })
+    } catch(error) {
+      if (error === MISSING_ELEMENT_EXCEPTION) {
+        console.warn("An element is missing. This can happen if a dom element has multiple event handlers.", url)
+        return
+      } else {
+        throw(error)
+      }
+    }
+    if (!hypergen.websocket.WEBSOCKETS[url]) {
+      console.error("Cannot send WS to non existing connection:", url)
+      return
+    }
+    hypergen.websocket.WEBSOCKETS[url].send(json)
+    if (clear === true) document.getElementById(elementId).value = ""
+    
   }
-  else throttle(postIt, {delay: debounce, group: url, confirm_}) 
+
+  const func = (url.startsWith("ws://") || url.startsWith("wss://")) ? postItWebsocket : postIt
+  
+  if (debounce === 0) {
+    if (confirm_ === false) func()
+    else if (confirm(confirm_)) func()
+  }
+  else throttle(func, {delay: debounce, group: url, confirm_}) 
+}
+
+export const partialLoad = function(event, url, pushState) {
+  console.log("partialLoad to", url, pushState)
+  window.dispatchEvent(new CustomEvent('hypergen.partialLoad.before', {detail: {event, url, pushState}}))
+  callback(url, [], {'event': event, 'headers': {'X-Hypergen-Partial': '1'}, onSucces: function() {
+    if (!!pushState) {
+      console.log("pushing state!")
+      history.pushState({callback_url: url}, "", url)
+      onpushstate()
+      history.forward()
+      window.dispatchEvent(new CustomEvent('hypergen.partialLoad.after', {detail: {event, url, pushState}}))
+    }
+  }})
 }
 
 // Timing
@@ -227,32 +330,27 @@ const resolvePath = function(path) {
 const applyCommand = function(path, ...args) {
   console.log("apply command", path, args)
   let rpath = resolvePath(path)
-  rpath(...args)
+  const result = rpath(...args)
   const event = new CustomEvent('hypergen.applyCommand.after', {detail: {path, args}})
   document.dispatchEvent(event)
+  return result
 }
 
-// TODO: Dont clutter window.
-window.e = function(event, callbackKey, eventMatches) {
+export const event = function(event, callbackKey, when) {
   event.preventDefault()
   event.stopPropagation()
-  if (!!eventMatches) {
-    for (const k in eventMatches) {
-      if (eventMatches[k] !== event[k]) {
-        return
-      }
-    }
-  }
-  applyCommand(...window.clientState.hypergen.eventHandlerCallbacks[callbackKey])
+  if (!!when && !applyCommand(...when, event)) return
+  applyCommand(...hypergen.clientState.hypergen.eventHandlerCallbacks[callbackKey])
 }
 
-const applyCommands = function(commands) {
+export const applyCommands = function(commands) {
+  if (!!commands._ && commands._.length === 2 && commands._[0] === "deque") {
+    commands = commands._[1]
+  }
   for (let [path, ...args] of commands) {
     applyCommand(path, ...args)
   }
 }
-// TODO: Dont clutter window.
-window.applyCommands = applyCommands
 
 const mergeAttrs = function(target, source){
   source.getAttributeNames().forEach(name => {
@@ -339,20 +437,33 @@ read.file = function(id, formData) { // file upload
     throw MISSING_ELEMENT_EXCEPTION
   }
   if (el.files.length !== 1) return null
-  if (window.hypergenUploadFiles === true) formData.append(id, el.files[0])
+  if (hypergen.hypergenUploadFiles === true) formData.append(id, el.files[0])
   return el.files[0].name
+}
+read.contenteditable = function(id, formData) { // file upload
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  return el.innerHTML
+}
+
+// When functions
+export const when = {}
+when.keycode = function(keycode, event) {
+  return event.code == keycode
 }
 
 export const element = function(valueFunc, coerceFunc, id) {
   this.toJSON = function() {
-    const value = resolvePath(valueFunc)(id, window.hypergenGlobalFormdata)
+    const value = resolvePath(valueFunc)(id, hypergen.hypergenGlobalFormdata)
     if (!!coerceFunc) return resolvePath(coerceFunc)(value)
     else return coerce.no(value)
   }
   return this
 }
 
-const reviver = function(k, v) {
+export const reviver = function(k, v) {
   if (Array.isArray(v)) {
     if (v.length === 3 && v[0] === "_") {
       if(v[1] === "element_value") {
@@ -362,8 +473,6 @@ const reviver = function(k, v) {
   }
   return v
 }
-// TODO: Dont clutter window.
-window.reviver = reviver
 
 const getCookie = function(name) {
     let cookieValue = null;
@@ -389,7 +498,7 @@ function addParams(url, params) {
   else return url + "?" + ret.join('&')
 }
 
-export const post = function(url, formData, onSuccess, onError, params, headers) {
+const post = function(url, formData, onSuccess, onError, params, headers) {
   url = addParams(url, params)
   
   const xhr = new XMLHttpRequest()
@@ -429,14 +538,13 @@ export const post = function(url, formData, onSuccess, onError, params, headers)
       data = xhr.responseText
       jsonOk = false
     }
-    if (xhr.readyState == 4 && xhr.status == 200) {
+    if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 302)) {
       onSuccess(data, xhr)
     } else {
       onError(data, jsonOk, xhr);
     }
   }
 
-  // TODO
   xhr.onerror = () => {
     onError()
   }
@@ -451,6 +559,7 @@ export const post = function(url, formData, onSuccess, onError, params, headers)
   xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
   if (!!headers) {
     for (let k in headers) {
+      console.log("Setting custom header", k, "to", headers[k])
       xhr.setRequestHeader(k, headers[k]);
     }
   }
@@ -461,7 +570,8 @@ export const post = function(url, formData, onSuccess, onError, params, headers)
 
 window.addEventListener("popstate", function(event) {
   if (event.state && event.state.callback_url !== undefined) {
-    callback(event.state.callback_url, [], {meta: {is_popstate: true}, headers: {HYPERGEN_POPSTATE: 1}})
+    console.log("popstate to partial load")
+    partialLoad(event, event.state.callback_url)
   } else {
     window.location = location.href
   }
@@ -472,86 +582,6 @@ const pushstate = new Event('hypergen.pushstate')
 export const onpushstate = function() {
   document.dispatchEvent(pushstate)
 }
-
-// Translations
-const replaceInText = function(element, pattern, replacement) {
-  if (element === null) element = document.querySelector("body")
-  
-  for (let node of element.childNodes) {
-    switch (node.nodeType) {
-      case Node.ELEMENT_NODE:
-        replaceInText(node, pattern, replacement);
-        break;
-      case Node.TEXT_NODE:
-        node.textContent = node.textContent.replace(pattern, replacement);
-        break;
-      case Node.DOCUMENT_NODE:
-        replaceInText(node, pattern, replacement);
-    }
-  }
-}
-
-const translations = function(url, T) {
-  // TODO: Dont clutter window.
-  window.t = {T}
-  
-  window.t.post = function(a, b, b0) {
-    let form = new FormData()
-    form.append("hypergen_data", JSON.stringify({args: [a, b], meta: {}}))
-    console.log("Translating", JSON.stringify(a), "to", JSON.stringify(b))
-    post(
-      url,
-      form,
-      () => { replaceInText(null, b0, (b === "RESET" ? a : b)); console.log("Server said, THANKYOUSE!") },
-      () => { alert("Something went wrong when posting translation string to server.")},
-      {},
-    )
-  }
-  
-  window.t.help = function() {
-    console.log(`Hi user, you have the following commands:
-
-    t.list() // Shows all translatable strings on this page and their reference number
-    t.translate() // Runs t.list and then prompts for reference number and then translation.
-
-Use "RESET" to reset back to the original content.
-      `)
-  }
-
-  var stringsOnPage = function() {
-    var html = document.body.innerHTML
-    return T.filter(x => html.includes(x[1]))
-  }
-  
-  window.t.list = function() {
-    var xs = stringsOnPage()
-    console.log("I found the following translatable strings on this page:\n\n" + xs.map(
-      (x, i) => `${i}: ${x[0]}`).join("\n"))
-  }
-  window.t.translate = function() {
-    var xs = stringsOnPage()
-    window.t.list()
-    i = Number(prompt("Which number string do you want to translate?"))
-    if (i != 0 && !i) {
-      console.error("Dont know that number", i, "try again!")
-      return
-    }
-    var x = xs[i]
-    if (!x) {
-      console.error("Dont know that number", i, "try again!")
-      return
-    }
-  
-    var b = prompt("Input translation for: \n\n    '" + x[1] + "'", x[1])
-    if (!b || b.trim() === "") {
-      console.error("You did not write anything. Try again!")
-      return
-    }
-    window.t.post(x[0], b, x[1])
-  }
-}
-// TODO: Dont clutter window.
-window.translations = translations
 
 // On ready
 
@@ -568,5 +598,3 @@ export const ready = function(fn, {partial=false}={}) {
   }
   if (partial) document.addEventListener("hypergen.pushstate", fn)
 }
-// TODO: Dont clutter window.
-window.ready = ready

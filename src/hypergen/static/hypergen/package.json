@@ -1,6 +1,14 @@
 {
+  "scripts": {
+    "start": "parcel hypergen.js",
+    "build": "parcel build hypergen.js"
+  },
   "dependencies": {
     "morphdom": "^2.6.1",
-    "mousetrap": "^1.6.5"
+    "mousetrap": "^1.6.5",
+    "sockette": "^2.0.6"
+  },
+  "devDependencies": {
+    "parcel": "^2.9.3"
   }
 }

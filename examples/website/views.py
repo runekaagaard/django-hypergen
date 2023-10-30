@@ -26,12 +26,11 @@ from gettingstarted.views import begin
 from apptemplate.views import my_view
 from coredocs.views import template, liveviews
 from website.minidemoes.shoot_em_up import shoot_em_up
-from websockets.views import chat2
+from websockets.views import chat
 
 from features import templates as features_templates
 
-@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template_monokai,
-    user_plugins=[WebsocketPlugin(), AlertifyPlugin()])
+@liveview(re_path="^$", perm=NO_PERM_REQUIRED, base_template=base_template_monokai, user_plugins=[AlertifyPlugin()])
 def home(request):
     if hasattr(request, 'session') and not request.session.session_key:
         request.session.save()
@@ -132,6 +131,28 @@ python manage.py startapp \\
 def documentation(request):
     h2("News")
     ul(
+        li(
+        b("2023-11-28"),
+        "A lot of recent releases only made master and not pypi but today we are proud to",
+        "announce that we are releasing the first stable release of Hypergen. We've been using it in production",
+        "for several years, built big systems with it and it's rock-solid enough to warrant the version number ",
+        i("1.5.2."),
+        "About this release: ",
+        ul(
+        li(
+        "Stable means ",
+        a("stable!", href="https://www.youtube.com/watch?v=oyLBGkS5ICk"),
+        " Barring security issues, we will not break your code. Everything that can be found in ",
+        "the docs will not change in a way that breaks existing userland code.",
+        ),
+        li(a("Websockets", href="/coredocs/websockets/"),
+        "are stable and in a very usable state. We've started using them in production and are currently",
+        "pondering several quality-of-life improvements to them.", sep=" "),
+        li("Extend support so we now support from python 3.6 / django 1.11.29 up to python 3.12 / django 4.2.6."),
+        li("Lots of cleanups and refactorings."),
+        ),
+        sep=" ",
+        ),
         li(b("2022-10-06"), "Another hotly requested feature has hit main.",
         "Existing Django templates can now be extended with liveview capabilities!", "Check out the",
         a("demo", href="/djangotemplates/"), "with sources and the",
@@ -139,7 +160,7 @@ def documentation(request):
         li(b("2022-10-01"), "One of the most requested features at Djangocon was websockets.",
         "I'm happy to announce that websockets are now in main, and a release will happen soon.",
         "You can see it in action as the snake game under", a("Features", href="/"), "and as the obligatory",
-        a("chat application.", href=chat2.reverse()), sep=" "),
+        a("chat application.", href=chat.reverse()), sep=" "),
         li(b("2022-09-27:"), "Thank you to the Djangocon organisers and all the wonderful",
         "Django developers we met and listened too!",
         "Hope to see you all in Edinburgh, next year <3.", "We have made available our",
@@ -162,6 +183,7 @@ def documentation(request):
         li(a("TodoMVC", href=todomvc.reverse(ALL)))
         li(a("Hypergen App template", href=my_view.reverse()))
         li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
+        li(a("Chat app using websockets", href=chat.reverse()), sep=" ")
 
     h2("Tutorials")
     ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
@@ -171,6 +193,7 @@ def documentation(request):
     with ul():
         li(a("Python Templates", href=template.reverse()))
         li(a("Liveviews", href=liveviews.reverse()))
+        li(a("Websockets", href="/coredocs/websockets/"))
         li(a("Django HTML Templates", href="/coredocs/django_templates/"))
         li(a("Form inputs", href=inputs.reverse()))
         li(a("Client commands", href=commands.reverse()))
