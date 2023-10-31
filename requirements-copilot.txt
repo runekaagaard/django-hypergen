@@ -1,0 +1,3 @@
+django-storages==1.12.3
+boto3==1.22.6
+botocore==1.25.6
