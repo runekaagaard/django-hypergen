@@ -93,6 +93,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {
     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},]
 
+STATIC_URL = '/static/'
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -103,20 +105,13 @@ USE_L10N = True
 USE_TZ = True
 
 if os.environ.get("PROD", False):
-    # Static files to S3 with cache busting.
-    STATIC_URL = 'https://hypergen-staticfiles.s3.amazonaws.com/'
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3ManifestStaticStorage'
-    AWS_STORAGE_BUCKET_NAME = "hypergen-staticfiles"
-    AWS_DEFAULT_ACL = "public-read"
-    AWS_QUERYSTRING_AUTH = False
-    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=2592000'}
     USE_X_FORWARDED_HOST = True
     CSRF_TRUSTED_ORIGINS = ['https://hypergen.it']
-    ALLOWED_HOSTS = ["*"]  # We don't know the host name for the copilot healthcheck.
-    REDIS_URL = 'redis.prod.hypergen.local'
+    ALLOWED_HOSTS = ["*"]
+    REDIS_URL = 'redis'
+    STATIC_ROOT = "/static/"
 else:
     ALLOWED_HOSTS = ["*"]
-    STATIC_URL = '/static/'
     REDIS_URL = '127.0.0.1'
 
 # Log to stdout

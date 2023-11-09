@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    command: daphne --bind 0.0.0.0 -p 8000 --access-log - --verbosity 1 asgi:application
+    build:
+      context: ../../
+      dockerfile: docker-compose/hypergen_examples/Dockerfile
+    ports:
+      - "8000:8000"
+    working_dir: /code/examples
+    depends_on:
+      - redis
+    environment:
+      PROD: true
+
+  redis:
+    image: "redis:alpine"
+    expose:
+      - "6379"
