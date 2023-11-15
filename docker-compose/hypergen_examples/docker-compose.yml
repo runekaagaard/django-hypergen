@@ -19,6 +19,7 @@ services:
       PROD: true
     networks:
       - nginx-uptime-proxy_default
+      - hypergen_default
 
   redis:
     image: "redis:alpine"
@@ -36,11 +37,14 @@ services:
       - web
     networks:
       - nginx-uptime-proxy_default
-      
+      - hypergen_default
 
 networks:
   # Nginx proxy manager network.
   nginx-uptime-proxy_default:
+    external: true
+  # Network for hypergen stack.
+  hypergen_default:
     external: true
       
 volumes:
