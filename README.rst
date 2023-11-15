@@ -86,7 +86,7 @@ Features
 - 🔒 **Control over client side events** - inbuilt confirmation dialogs, blocking and debouncing
 - 📤 **Easy uploading of files** - with progress bar
 - 💛 **Still loves javascript** - trivially call client functions from the server
-- ⚡ **Realtime** - Create manual or automatic websocket consumers trivially
+- ⚡ **Realtime** - Create websocket consumers trivially
 - 📜 **History buff?** - don't worry, Hypergen supports from Django 1.11, Python 3.6 and up to as of this writing Django 4.2.6 and python 3.12.
 - 🛠️ **Hyperfy** - the command line app that converts html to hypergen python code
 
