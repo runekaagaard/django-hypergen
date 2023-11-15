@@ -1,6 +1,7 @@
-# portainer settings:
-#     https://github.com/runekaagaard/django-hypergen
-#     
+# portainer stack settings:
+#     name: hypergen
+#     repo:https://github.com/runekaagaard/django-hypergen
+#     path: docker-compose/hypergen_examples/docker-compose.yml
 
 version: '3.8'
 
@@ -21,16 +22,12 @@ services:
       - nginx-uptime-proxy_default
       - hypergen_default
 
-  redis:
-    image: "redis:alpine"
 
   # serve static files.
   nginx:
     build:
       context: ../../
       dockerfile: docker-compose/hypergen_examples/DockerfileNginx
-    ports:
-      - "8888:80"
     volumes:
       - static_volume:/usr/share/nginx/html/static
     depends_on:
@@ -39,6 +36,9 @@ services:
       - nginx-uptime-proxy_default
       - hypergen_default
 
+  redis:
+    image: "redis:alpine"
+    
 networks:
   # Nginx proxy manager network.
   nginx-uptime-proxy_default:
