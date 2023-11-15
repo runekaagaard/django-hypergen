@@ -17,11 +17,13 @@ services:
       - redis
     environment:
       PROD: true
+    networks:
+      - nginx-uptime-proxy_default
 
   redis:
     image: "redis:alpine"
 
-  # local testing. No websocket support.
+  # serve static files.
   nginx:
     build:
       context: ../../
@@ -32,6 +34,14 @@ services:
       - static_volume:/usr/share/nginx/html/static
     depends_on:
       - web
+    networks:
+      - nginx-uptime-proxy_default
+      
 
+networks:
+  # Nginx proxy manager network.
+  nginx-uptime-proxy_default:
+    external: true
+      
 volumes:
   static_volume:
