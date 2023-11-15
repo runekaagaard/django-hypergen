@@ -18,11 +18,12 @@ services:
     image: "redis:alpine"
 
   nginx:
-    image: nginx:latest
+    build:
+      context: ../../
+      dockerfile: docker-compose/hypergen_examples/DockerfileNginx
     ports:
       - "8888:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/usr/share/nginx/html/static
     depends_on:
       - web
