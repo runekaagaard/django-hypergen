@@ -1,8 +1,6 @@
 import json
 from functools import wraps
 
-from channels.consumer import database_sync_to_async, get_handler_name
-
 d = dict
 
 from hypergen.imports import *
@@ -15,6 +13,7 @@ try:
     from django.core.handlers.asgi import ASGIRequest
     from channels.generic.websocket import JsonWebsocketConsumer
     from channels.layers import get_channel_layer
+    from channels.consumer import database_sync_to_async, get_handler_name
 
     def assert_channels():
         pass
