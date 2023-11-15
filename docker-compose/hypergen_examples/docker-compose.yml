@@ -1,3 +1,7 @@
+# portainer settings:
+#     https://github.com/runekaagaard/django-hypergen
+#     
+
 version: '3.8'
 
 services:
@@ -17,6 +21,7 @@ services:
   redis:
     image: "redis:alpine"
 
+  # local testing. No websocket support.
   nginx:
     build:
       context: ../../
