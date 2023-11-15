@@ -105,12 +105,13 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+STATIC_ROOT = "/static/"
+
 if os.environ.get("PROD", False):
     USE_X_FORWARDED_HOST = True
     CSRF_TRUSTED_ORIGINS = ['https://hypergen.it']
     ALLOWED_HOSTS = ["*"]
     REDIS_URL = 'redis'
-    STATIC_ROOT = "/static/"
 else:
     ALLOWED_HOSTS = ["*"]
     REDIS_URL = '127.0.0.1'

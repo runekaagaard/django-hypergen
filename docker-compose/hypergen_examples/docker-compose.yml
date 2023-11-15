@@ -2,11 +2,13 @@ version: '3.8'
 
 services:
   web:
-    command: daphne --bind 0.0.0.0 -p 8000 --access-log - --verbosity 1 asgi:application
+    entrypoint: /entrypoint.sh
     build:
       context: ../../
       dockerfile: docker-compose/hypergen_examples/Dockerfile
     working_dir: /code/examples
+    volumes:
+      - static_volume:/static
     depends_on:
       - redis
     environment:
@@ -15,3 +17,15 @@ services:
   redis:
     image: "redis:alpine"
 
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8888:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/usr/share/nginx/html/static
+    depends_on:
+      - web
+
+volumes:
+  static_volume:
