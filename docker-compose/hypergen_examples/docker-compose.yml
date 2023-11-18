@@ -26,6 +26,7 @@ services:
 
   # serve static files.
   nginx:
+    pull_policy: build # required to get portainer rebuilding the image on succesive deploys. ZZZ.
     build:
       context: ../../
       dockerfile: docker-compose/hypergen_examples/DockerfileNginx
