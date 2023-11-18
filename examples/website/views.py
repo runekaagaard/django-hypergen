@@ -129,6 +129,9 @@ python manage.py startapp \\
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
 def documentation(request):
+    h2("Tutorials")
+    ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
+
     h2("Documentation")
     p("Documentation explaining and showing how Hypergen works.")
     with ul():
@@ -151,9 +154,6 @@ def documentation(request):
         li(a("Hypergen App template", href=my_view.reverse()))
         li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
         li(a("Chat app using websockets", href=chat.reverse()), sep=" ")
-
-    h2("Tutorials")
-    ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
 
     h2("Other template implementations")
     with ul():
