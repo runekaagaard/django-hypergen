@@ -187,12 +187,10 @@ def documentation(request):
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
 def news(request):
-    show_sources(__file__)
-
     h2("News")
     ul(
         li(b("2023-11-18"), "Releases", i("1.5.3"),
-        "which is a small bugfix release that supports not having channels installed.", sep=" "),
+        "which is a small bugfix release. Hypergen now again works without having channels installed.", sep=" "),
         li(
         b("2023-10-28"),
         "A lot of recent releases only made master and not pypi but today we are proud to",
@@ -236,3 +234,5 @@ def news(request):
         "Pushed version 0.9.9 to pypi. Everything is looking good after a major refactoring. The next version will",
         "be a release candidate for 1.0.0 which will be the first officially stable version of Hypergen.", sep=" "),
         li(b("2022-06-07:"), "The first version of the documentation is complete.", sep=" "))
+
+    show_sources(__file__)

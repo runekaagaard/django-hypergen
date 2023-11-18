@@ -42,7 +42,7 @@ def base_template(monokai=False):
             with header():
                 with nav():
                     a("Home", href="/", class_="current" if c.request.path == "/" else OMIT)
-                    a("Docs", href="/documentation/",
+                    a("Documentation", href="/documentation/",
                         class_="current" if c.request.path == "/documentation/" else OMIT)
                     a("News", href="/news/", class_="current" if c.request.path == "/news/" else OMIT)
                     with a(href="https://github.com/runekaagaard/django-hypergen/"):
