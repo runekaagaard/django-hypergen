@@ -32,6 +32,9 @@ except ImportError:
         def as_asgi(*args, **kwargs):
             return JsonWebsocketConsumer
 
+    def database_sync_to_async(*args, **kwargs):
+        pass
+
 __all__ = ["HypergenWebsocketConsumer", "ws_url", "group_send"]
 
 class HypergenWebsocketConsumer(JsonWebsocketConsumer):
