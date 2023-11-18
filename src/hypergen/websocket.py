@@ -121,5 +121,5 @@ def ws_url(url):
         return context.request.build_absolute_uri(url).replace("http://", "wss://").replace("https://", "wss://")
 
 def group_send(group_name, event):
-    channel_layer = get_channel_layer()
+    channel_layer = get_channel_layer()  #
     async_to_sync(channel_layer.group_send)(group_name, event)
