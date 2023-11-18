@@ -3,10 +3,15 @@ body {
 }
 
 .icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
+  vertical-align: sub;
+  padding-right: 0.25rem;
   display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  margin-bottom: 2px;
 }
 
 nav a.current {
@@ -43,7 +48,7 @@ button {
   margin-right: 8px;
 }
 
-header img {
+header img.logo {
   vertical-align: bottom;
   padding-bottom: 10px;
   width: 40px;

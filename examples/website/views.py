@@ -129,10 +129,72 @@ python manage.py startapp \\
 
 @liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
 def documentation(request):
+    h2("Documentation")
+    p("Documentation explaining and showing how Hypergen works.")
+    with ul():
+        li(a("Python Templates", href=template.reverse()))
+        li(a("Liveviews", href=liveviews.reverse()))
+        li(a("Websockets", href="/coredocs/websockets/"))
+        li(a("Django HTML Templates", href="/coredocs/django_templates/"))
+        li(a("Form inputs", href=inputs.reverse()))
+        li(a("Client commands", href=commands.reverse()))
+        li(a("Partial loading and history support", href=page1.reverse()))
+        li(a("Hypergens global immutable context", href=globalcontext.reverse()))
+        li(a("Notifications from Django messages", href=notifications.reverse()))
+
+    h2("App examples")
+    p("These are examples of writing a Django app with Hypergen. ", "Be sure to read the sources.")
+    with ul():
+        li(a("Hello hypergen", href=counter.reverse()))
+        li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from liveview.py used")
+        li(a("TodoMVC", href=todomvc.reverse(ALL)))
+        li(a("Hypergen App template", href=my_view.reverse()))
+        li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
+        li(a("Chat app using websockets", href=chat.reverse()), sep=" ")
+
+    h2("Tutorials")
+    ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
+
+    h2("Other template implementations")
+    with ul():
+        li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
+            " - example of the alpha Cython implementation.")
+
+    h2("Compatibility")
+    p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),
+        " on the following combinations of Django and Python:", sep=" ")
+    with open("../.github/workflows/pytest.yml") as f:
+        pytest = load(f.read(), Loader=Loader)
+        adjm, xs, ys = defaultdict(list), set(), set()
+        for combination in pytest["jobs"]["build"]["strategy"]["matrix"]["include"]:
+            py, dj = combination["python-version"], combination["django-version"].replace("Django==", "")
+            adjm[py].append(dj)
+            xs.add(py)
+            ys.add(dj)
+
+        xs = sorted(xs, key=lambda x: int(str(x).split(".")[-1]))
+        ys = sorted(ys)
+        with table():
+            tr(th(), [th("python ", x) for x in xs])
+            for y in ys:
+                tr(th("django ", y),
+                    [td("✔" if y in adjm[x] else "", style={"color": "green", "text-align": "center"}) for x in xs])
+
+    p("Both pytest integration and testcafe end-to-end tests are run over the entire matrix.")
+    p("Hypergen supports all browser versions from IE10 and forward.")
+
+    show_sources(__file__)
+
+@liveview(perm=NO_PERM_REQUIRED, base_template=base_template)
+def news(request):
+    show_sources(__file__)
+
     h2("News")
     ul(
+        li(b("2023-11-18"), "Releases", i("1.5.3"),
+        "which is a small bugfix release that supports not having channels installed.", sep=" "),
         li(
-        b("2023-11-28"),
+        b("2023-10-28"),
         "A lot of recent releases only made master and not pypi but today we are proud to",
         "announce that we are releasing the first stable release of Hypergen. We've been using it in production",
         "for several years, built big systems with it and it's rock-solid enough to warrant the version number ",
@@ -174,59 +236,3 @@ def documentation(request):
         "Pushed version 0.9.9 to pypi. Everything is looking good after a major refactoring. The next version will",
         "be a release candidate for 1.0.0 which will be the first officially stable version of Hypergen.", sep=" "),
         li(b("2022-06-07:"), "The first version of the documentation is complete.", sep=" "))
-
-    h2("App examples")
-    p("These are examples of writing a Django app with Hypergen. ", "Be sure to read the sources.")
-    with ul():
-        li(a("Hello hypergen", href=counter.reverse()))
-        li(a("Hello core only hypergen", href=reverse("hellocoreonly:counter")), " - no magic from liveview.py used")
-        li(a("TodoMVC", href=todomvc.reverse(ALL)))
-        li(a("Hypergen App template", href=my_view.reverse()))
-        li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
-        li(a("Chat app using websockets", href=chat.reverse()), sep=" ")
-
-    h2("Tutorials")
-    ul(li(a("Getting Started", href=begin.reverse()), " - a walk-through from scratch that gets you up and running"))
-
-    h2("Documentation")
-    p("Documentation explaining and showing how Hypergen works.")
-    with ul():
-        li(a("Python Templates", href=template.reverse()))
-        li(a("Liveviews", href=liveviews.reverse()))
-        li(a("Websockets", href="/coredocs/websockets/"))
-        li(a("Django HTML Templates", href="/coredocs/django_templates/"))
-        li(a("Form inputs", href=inputs.reverse()))
-        li(a("Client commands", href=commands.reverse()))
-        li(a("Partial loading and history support", href=page1.reverse()))
-        li(a("Hypergens global immutable context", href=globalcontext.reverse()))
-        li(a("Notifications from Django messages", href=notifications.reverse()))
-
-    h2("Other template implementations")
-    with ul():
-        li(a("Game of life in pure c++ with Cython", href=gameofcython.reverse()),
-            " - example of the alpha Cython implementation.")
-
-    h2("Compatibility")
-    p("Hypergen is ", a("tested", href="https://github.com/runekaagaard/django-hypergen/actions"),
-        " on the following combinations of Django and Python:", sep=" ")
-    with open("../.github/workflows/pytest.yml") as f:
-        pytest = load(f.read(), Loader=Loader)
-        adjm, xs, ys = defaultdict(list), set(), set()
-        for combination in pytest["jobs"]["build"]["strategy"]["matrix"]["include"]:
-            py, dj = combination["python-version"], combination["django-version"].replace("Django==", "")
-            adjm[py].append(dj)
-            xs.add(py)
-            ys.add(dj)
-
-        xs = sorted(xs, key=lambda x: int(str(x).split(".")[-1]))
-        ys = sorted(ys)
-        with table():
-            tr(th(), [th("python ", x) for x in xs])
-            for y in ys:
-                tr(th("django ", y),
-                    [td("✔" if y in adjm[x] else "", style={"color": "green", "text-align": "center"}) for x in xs])
-
-    p("Both pytest integration and testcafe end-to-end tests are run over the entire matrix.")
-    p("Hypergen supports all browser versions from IE10 and forward.")
-
-    show_sources(__file__)

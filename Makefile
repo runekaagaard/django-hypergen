@@ -60,6 +60,6 @@ pypi-show:
 		tree /tmp/hypergen_test_build/lib/python3.9/site-packages/django_hypergen-1.5.1.dist-info/ && \
 		tree /tmp/hypergen_test_build/lib/python3.9/site-packages/hypergen/
 pypi-release-test:
-	python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	python3 -m twine upload --repository testpypi dist/*
 pypi-release:
 	python3 -m twine upload dist/*
