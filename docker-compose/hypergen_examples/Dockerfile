@@ -1,6 +1,5 @@
 FROM python:3.9.4
 ENV PYTHONUNBUFFERED 1
-RUN echo bump
 COPY docker-compose/hypergen_examples/entrypoint.sh /entrypoint.sh
 
 COPY ../../requirements-prod.txt /code/requirements-prod.txt
