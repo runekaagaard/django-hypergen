@@ -189,7 +189,7 @@ def documentation(request):
 def news(request):
     h2("News")
     ul(
-        li(b("2023-11-18"), "Releases", i("1.5.3"),
+        li(b("2023-11-18"), "Releases", i("1.5.4"),
         "which is a small bugfix release. Hypergen now again works without having channels installed.", sep=" "),
         li(
         b("2023-10-28"),
