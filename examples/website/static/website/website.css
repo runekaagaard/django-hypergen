@@ -178,3 +178,13 @@ table td pre, table td pre code {
   margin-right: 10px;
 }
 
+
+@media only screen and (max-width: 720px) {
+  body {
+    font-size: 1rem;
+  }
+  .hljs {
+    font-size: 0.85rem;
+    
+  }
+}
