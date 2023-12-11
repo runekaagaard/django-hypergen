@@ -11,6 +11,7 @@ from functools import wraps
 from copy import deepcopy
 from contextlib import ContextDecorator, contextmanager, ExitStack
 from datetime import datetime
+from urllib.parse import urlparse
 
 from pyrsistent import m
 from django.http.response import HttpResponse
@@ -40,7 +41,7 @@ __all__ = [
     "script", "section", "select", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
     "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead", "time", "title", "tr", "track",
     "tt", "u", "ul", "var", "video", "wbr", "component", "hypergen", "raw", "write", "rst", "hprint", "HTML", "FULL",
-    "COMMANDS", "OMIT", "hypergen_to_response"]
+    "COMMANDS", "OMIT", "hypergen_to_response", "on_url"]
 
 ### Constants ###
 
@@ -65,6 +66,12 @@ def add_class(a, b):
             raise Exception("This class collection has neither an append() or add() method. Help!")
     else:
         raise Exception("I don't know how to add these variables together in the context of classes.")
+
+def on_url(url, value_on_url=True, value_not_on_url=False):
+    # Great for "active" classes on menu items.
+    a, b = urlparse(url), urlparse(context.request.build_absolute_uri())
+
+    return value_on_url if a.path == b.path else value_not_on_url
 
 ### template itself is a plugin to hypergen ###
 
