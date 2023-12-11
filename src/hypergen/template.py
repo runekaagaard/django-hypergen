@@ -212,9 +212,11 @@ class base_element(ContextDecorator):
 
     def __init__(self, *children, **attrs):
         with ExitStack() as stack:
+            children = list(children)  # Allow plugins to alter child nodes.
             [
                 stack.enter_context(plugin.wrap_element_init(self, children, attrs)) for plugin in c.hypergen.plugins
                 if hasattr(plugin, "wrap_element_init")]
+            children = tuple(children)  # Immutable again.
 
             assert "hypergen" in c, "Element called outside hypergen context."
 
