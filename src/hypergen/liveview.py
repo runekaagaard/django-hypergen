@@ -411,7 +411,6 @@ def decoder(o):
     if fn:
         return fn(value)
     else:
-
         raise Exception("Unknown datatype, {}".format(datatype))
 
 def dumps(data, default=encoder, indent=None):
@@ -419,5 +418,11 @@ def dumps(data, default=encoder, indent=None):
 
     return result
 
-def loads(data):
-    return json.loads(data, object_hook=decoder)
+def loads(data, integer_keys=False):
+    def integer_keys_object_pairs_hook(pairs):
+        return decoder({int(k) if k.isdigit() else k: v for k, v in pairs})
+
+    if integer_keys is True:
+        return json.loads(data, object_pairs_hook=integer_keys_object_pairs_hook)
+    else:
+        return json.loads(data, object_hook=decoder)
