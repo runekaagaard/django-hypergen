@@ -27,6 +27,10 @@
       <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
     </p>
 
+**2025-05-17 Status:** The website is currently down, we are working on getting it back up.
+    
+**2025-05-17 Status:** Hypergen Core (this project) has reached maturity with a stable codebase. It currently serves as the production foundation for our company's healthcare platform, supporting 50,000+ unique healthcare clients annually. While the core continues to power all new feature development, it has reached a maintenance phase where updates primarily consist of targeted bug fixes and optimizations.
+    
 **Hypergen: A Hypertext Generator**:
 Craft templates using pure Python. Instead of declaring ``<p>hi</p>`` in an HTML file, simply invoke ``p("hi")`` within your view. Composing Python functions keeps templates DRY and streamlined. If you've ever written JSX, Hypergen's syntax will feel familiar.
 
