@@ -138,7 +138,7 @@ Compile the javascript files:
 
 .. code-block:: bash
 
-    cd hypergen/static/hypergen
+    cd src/hypergen/static/hypergen
     npm install # use node 18 lts
     # watch hypergen.js to dist/hypergen.js
     npm start

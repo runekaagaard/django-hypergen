@@ -91,7 +91,17 @@ export const hidden = function(id, value) {
 }
 
 export const redirect = function(url) {
-  window.location = url
+  /*
+  One would expect to simply do a window.location = url but that does not work in an ajax request on safari, because
+  (i think) the ajax request is async and the redirect is thus triggered directly during a user event.
+  This is a workaround, but might stop working some day.
+  */
+  const link = document.createElement('a')
+  link.href = url
+  link.style.display = 'none'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 export const append = function(id, html) {
@@ -157,14 +167,18 @@ export const keypressToCallbackRemove = function(url, args, options) {
 // Callback
 var i = 0
 var isBlocked = false
-export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, uploadFiles=false,
+var urlBlocks = {}
+export const callback = function(url, args, {debounce=0, confirm_=false, blocks=false, blocksEachUrl=true, uploadFiles=false,
                                              params={}, meta={}, clear=false, elementId=null, debug=false,
-                                             event=null, headers={}, onSucces=null}={})
-{
+                                             event=null, headers={}, onSucces=null, timeout=20000}={}, ) {
+
+  const isWebsocket = (url.startsWith("ws://") || url.startsWith("wss://"))
+  
   if (!!event) {
     event.preventDefault()
     event.stopPropagation()
   }
+  
   let postIt = function() {
     let json
     console.log("REQUEST", url, args, debounce)
@@ -186,6 +200,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
         throw(error)
       }
     }
+
     
     let formData = hypergen.hypergenGlobalFormdata
     hypergen.hypergenGlobalFormdata = null
@@ -200,14 +215,30 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
         isBlocked = true
       }
     }
+    
+    if (blocksEachUrl === true && !isWebsocket) {
+      if (!!urlBlocks[url]) {
+        console.error("Callback to " + url + " was blocked")
+        return
+      }
+
+      urlBlocks[url] = true
+    }
+    
     post(url, formData, (data) => {
       if (data !== null) applyCommands(data)
       isBlocked = false
+      if (blocksEachUrl === true && !isWebsocket) {
+        delete urlBlocks[url]
+      }
       if (clear === true) document.getElementById(elementId).value = ""
       if (!!onSucces) onSucces()
     }, (data, jsonOk, xhr) => {
-      console.log(xhr)
+      console.log("xhr:", xhr)
       isBlocked = false
+      if (blocksEachUrl === true && !isWebsocket) {
+        delete urlBlocks[url]
+      }
       console.error("Hypergen post error occured", data)
       if (debug !== true) {
         if (xhr.getResponseHeader("Content-Type") === "text/plain") {
@@ -215,7 +246,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
         }
         document.getElementsByTagName("html")[0].innerHTML = data
       }
-    }, params, headers)
+    }, params, headers, {timeout})
   }
   const postItWebsocket = function() {
     console.log("WEBSOCKET", url, args, debounce)
@@ -242,7 +273,7 @@ export const callback = function(url, args, {debounce=0, confirm_=false, blocks=
     
   }
 
-  const func = (url.startsWith("ws://") || url.startsWith("wss://")) ? postItWebsocket : postIt
+  const func = isWebsocket ? postItWebsocket : postIt
   
   if (debounce === 0) {
     if (confirm_ === false) func()
@@ -498,10 +529,12 @@ function addParams(url, params) {
   else return url + "?" + ret.join('&')
 }
 
-const post = function(url, formData, onSuccess, onError, params, headers) {
+const post = function(url, formData, onSuccess, onError, params, headers, {timeout=20000}={}) {
   url = addParams(url, params)
   
   const xhr = new XMLHttpRequest()
+  xhr.timeout = timeout
+
   const progressBar = document.getElementById("hypergen-upload-progress-bar")
 
   if (progressBar !== null) {
@@ -539,18 +572,30 @@ const post = function(url, formData, onSuccess, onError, params, headers) {
       jsonOk = false
     }
     if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 302)) {
+      window.dispatchEvent(new CustomEvent('hypergen.post.after'))
       onSuccess(data, xhr)
     } else {
+      window.dispatchEvent(new CustomEvent('hypergen.post.after'))
       onError(data, jsonOk, xhr);
     }
   }
 
   xhr.onerror = () => {
+    console.error('xhr onerror')
+    window.dispatchEvent(new CustomEvent('hypergen.post.after'))
     onError()
   }
 
   xhr.onabort = () => {
-    console.error('xhr aborted')
+    console.error('xhr onabort')
+    window.dispatchEvent(new CustomEvent('hypergen.post.after'))
+    onError()
+  }
+
+  xhr.ontimeout = () => {
+    console.error('xhr ontimeout')
+    window.dispatchEvent(new CustomEvent('hypergen.post.after'))
+    onError()
   }
 
   xhr.open('POST', url)
@@ -563,6 +608,7 @@ const post = function(url, formData, onSuccess, onError, params, headers) {
       xhr.setRequestHeader(k, headers[k]);
     }
   }
+  window.dispatchEvent(new CustomEvent('hypergen.post.before'))
   xhr.send(formData)
 }
 

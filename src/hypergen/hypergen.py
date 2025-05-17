@@ -179,15 +179,17 @@ def autourl_register(func, base_template=None, path=None, re_path=None):
         _URLS[module] = set()
 
     if (path, re_path) == (None, None):
-        tmp = (re_path_, func, r"^{}/$".format(func.__name__))
+        _URLS[module].add((re_path_, func, r"^{}/$".format(func.__name__)))
     elif path:
-        tmp = (path_, func, path)
+        paths = path if type(path) is list else [path]
+        for path in paths:
+            _URLS[module].add((path_, func, path))
     elif re_path:
-        if re_path == "":
-            raise Exception('Use "^$" for an empty re_path in {}.{}'.format(module, func.__name__))
-        tmp = (re_path_, func, re_path)
-
-    _URLS[module].add(tmp)
+        re_paths = re_path if type(re_path) is list else [re_path]
+        for re_path in re_paths:
+            if re_path == "":
+                raise Exception('Use "^$" for an empty re_path in {}.{}'.format(module, func.__name__))
+            _URLS[module].add((re_path_, func, re_path))
 
     return func
 
@@ -213,10 +215,13 @@ def plugins_method_call(method_name, *args, **kwargs):
         if method:
             method(*args, **kwargs)
 
-def plugins_pipeline(method_name, data):
+def plugins_pipeline(method_name, data, kwargs=None):
+    if kwargs is None:
+        kwargs = {}
+
     for plugin in context.hypergen.plugins:
         method = getattr(plugin, method_name, None)
         if method:
-            data = method(data)
+            data = method(data, **kwargs)
 
     return data

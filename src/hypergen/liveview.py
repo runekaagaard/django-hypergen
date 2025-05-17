@@ -202,7 +202,7 @@ def command(javascript_func_path, *args, **kwargs):
         c.hypergen.commands.append(item)
 
 def callback(url, *cb_args, debounce=0, confirm_=False, confirm=False, blocks=False, upload_files=False, clear=False,
-    headers=None, meta=None, when=None):
+    headers=None, meta=None, when=None, each_url_blocks=True, timeout=20000):
     if meta is None:
         meta = {}
     if headers is None:
@@ -223,7 +223,8 @@ def callback(url, *cb_args, debounce=0, confirm_=False, confirm=False, blocks=Fa
         cmd = command(
             "hypergen.callback", url, [fix_this(x) for x in cb_args],
             d(debounce=debounce, confirm_=confirm_, blocks=blocks, uploadFiles=upload_files, clear=clear,
-            elementId=element.attrs["id_"], debug=settings.DEBUG, meta=meta, headers=headers), return_=True)
+            elementId=element.attrs["id_"], debug=settings.DEBUG, meta=meta, headers=headers,
+            eachUrlBlocks=each_url_blocks, timeout=timeout), return_=True)
         cmd_id = "{}__{}".format(element.attrs["id_"], k)
 
         c.hypergen.event_handler_callbacks[cmd_id] = cmd
@@ -233,7 +234,7 @@ def callback(url, *cb_args, debounce=0, confirm_=False, confirm=False, blocks=Fa
 
     signature = {
         k: v for k, v in d(debounce=debounce, confirm_=confirm_, blocks=blocks, upload_files=upload_files,
-        clear=clear, meta=meta, when=when).items() if v}
+        clear=clear, meta=meta, when=when, eachUrlBlocks=each_url_blocks, timeout=timeout).items() if v}
     to_html.hypergen_callback_signature = "callback", (url,) + cb_args, signature
 
     return to_html
@@ -284,8 +285,9 @@ def liveview(func, path=None, re_path=None, base_template=None, perm=None, any_p
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
                 liveview_resolver_match=liveview_resolver_match()):
                 full = hypergen(
-                    func, request, *args, **kwargs, settings=d(action=True, returns=FULL, target_id=target_id,
-                    appstate=appstate, namespace=_.reverse.hypergen_namespace, prepend_commands=False))
+                    func, request, *args, **kwargs,
+                    settings=d(action=True, returns=FULL, target_id=target_id, appstate=appstate,
+                    namespace=_.reverse.hypergen_namespace, prepend_commands=False, user_plugins=user_plugins))
 
                 if isinstance(full["template_result"], HttpResponseRedirect):
                     # Allow to return a redirect response directly from partial view.
