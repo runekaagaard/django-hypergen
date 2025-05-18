@@ -8,14 +8,13 @@ version: '3.8'
 services:
   web:
     entrypoint: /entrypoint.sh
-    pull_policy: build # required to get portainer rebuilding the image on succesive deploys. ZZZ.
+    pull_policy: build
     build:
-      context: /home/r/ws/django-hypergen
+      context: ../../
       dockerfile: docker-compose/hypergen_examples/Dockerfile
     working_dir: /code/examples
     volumes:
       - static_volume:/static
-      - /home/r/ws/django-hypergen:/code/local-source
     depends_on:
       - redis
     environment:
@@ -25,9 +24,9 @@ services:
 
   # serve static files.
   nginx:
-    pull_policy: build # required to get portainer rebuilding the image on succesive deploys. ZZZ.
+    pull_policy: build
     build:
-      context: /home/r/ws/django-hypergen
+      context: ../../
       dockerfile: docker-compose/hypergen_examples/DockerfileNginx
     volumes:
       - static_volume:/usr/share/nginx/html/static
