@@ -10,44 +10,32 @@ services:
     entrypoint: /entrypoint.sh
     pull_policy: build # required to get portainer rebuilding the image on succesive deploys. ZZZ.
     build:
-      context: ../../
+      context: /home/r/ws/django-hypergen
       dockerfile: docker-compose/hypergen_examples/Dockerfile
     working_dir: /code/examples
     volumes:
       - static_volume:/static
+      - /home/r/ws/django-hypergen:/code/local-source
     depends_on:
       - redis
     environment:
       PROD: true
-    networks:
-      - nginx-uptime-proxy_default
-      - hypergen_default
-
+    ports:
+      - "9876:8000"  # Expose Django on port 9876
 
   # serve static files.
   nginx:
     pull_policy: build # required to get portainer rebuilding the image on succesive deploys. ZZZ.
     build:
-      context: ../../
+      context: /home/r/ws/django-hypergen
       dockerfile: docker-compose/hypergen_examples/DockerfileNginx
     volumes:
       - static_volume:/usr/share/nginx/html/static
     depends_on:
       - web
-    networks:
-      - nginx-uptime-proxy_default
-      - hypergen_default
 
   redis:
     image: "redis:alpine"
     
-networks:
-  # Nginx proxy manager network.
-  nginx-uptime-proxy_default:
-    external: true
-  # Network for hypergen stack.
-  hypergen_default:
-    external: true
-      
 volumes:
   static_volume:
