@@ -19,7 +19,7 @@ services:
     depends_on:
       - redis
     environment:
-      PROD: true
+      PROD: "true"
     ports:
       - "9876:8000"  # Expose Django on port 9876
 
