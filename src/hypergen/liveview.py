@@ -89,6 +89,18 @@ class LiveviewPluginBase:
                 JS_VALUE_FUNCS.get(attrs.get("type_", "text"), "hypergen.read.value"))
             if not element.js_coerce_func:
                 element.js_coerce_func = JS_COERCE_FUNCS.get(attrs.get("type_", "text"), None)
+        elif isinstance(element, select):
+            if attrs.get("multiple") is True:
+                element.js_value_func = attrs.pop("js_value_func", "hypergen.read.selectMultiple")
+                if coerce_to is str:
+                    pass
+                elif coerce_to is int:
+                    # TODO: Avoid duplicating coerce functions for iterables.
+                    element.js_coerce_func = "hypergen.coerce.intlist"
+                else:
+                    raise Exception(f"coerce_to={coerce_to} not yet implemented for multiple selects")
+            else:
+                element.js_value_func = attrs.pop("js_value_func", "hypergen.read.value")
         else:
             # Default coerce and value func.
             if attrs.get("contenteditable", False) is True:

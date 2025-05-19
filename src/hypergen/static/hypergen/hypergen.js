@@ -408,6 +408,9 @@ coerce.int = function(value) {
   if (isNaN(value)) return null
   else return value
 }
+coerce.intlist = function(value) {
+  return value.map(x => parseInt(x))
+}
 coerce.float = function(value) {
   if (value === "") return null
   value = parseFloat(value)
@@ -462,6 +465,20 @@ read.radio = function(id) { // radio button. Uses name attribute for value.
   const checked = document.querySelector("input[type=radio][name=" + el.name + "]:checked")
   return checked === null ? null : checked.value
 }
+read.contenteditable = function(id) { // contenteditable attribute enabled
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  return el.innerHTML
+}
+read.selectMultiple = function(id) { // select, multiple support
+  const el = document.getElementById(id)
+  if (el === null) {
+    throw MISSING_ELEMENT_EXCEPTION
+  }
+  return Array.from(el.selectedOptions).map(option => option.value)
+}
 read.file = function(id, formData) { // file upload
   const el = document.getElementById(id)
   if (el === null) {
@@ -470,13 +487,6 @@ read.file = function(id, formData) { // file upload
   if (el.files.length !== 1) return null
   if (hypergen.hypergenUploadFiles === true) formData.append(id, el.files[0])
   return el.files[0].name
-}
-read.contenteditable = function(id, formData) { // file upload
-  const el = document.getElementById(id)
-  if (el === null) {
-    throw MISSING_ELEMENT_EXCEPTION
-  }
-  return el.innerHTML
 }
 
 // When functions
