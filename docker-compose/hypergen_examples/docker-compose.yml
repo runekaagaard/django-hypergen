@@ -32,6 +32,8 @@ services:
       - static_volume:/usr/share/nginx/html/static
     depends_on:
       - web
+    ports:
+      - "9877:80"  # Expose inner nginx on port 9877
 
   redis:
     image: "redis:alpine"
