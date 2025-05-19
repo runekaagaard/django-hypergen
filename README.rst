@@ -27,6 +27,8 @@
       <a href="https://github.com/runekaagaard/django-hypergen/issues/" rel="nofollow">Support</a>
     </p>
 
+**2025-05-19 Status:** The website is up again :)
+    
 **2025-05-17 Status:** The website is currently down, we are working on getting it back up.
     
 **2025-05-17 Status:** Hypergen Core (this project) has reached maturity with a stable codebase. It currently serves as the production foundation for our company's healthcare platform, supporting 50,000+ unique healthcare clients annually. While the core continues to power all new feature development, it has reached a maintenance phase where updates primarily consist of targeted bug fixes and optimizations.
