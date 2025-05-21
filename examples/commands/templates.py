@@ -102,6 +102,47 @@ def my_view_or_callback(request):
     fn("hide", "Takes an id and hides it.", hide)
     button("run", id_="hide", onclick=callback(hide))
     span("Still displayed", id_="hide-me")
+    
+    fn("display", "Takes an id and displays it by setting display to 'block' or a custom value.", display)
+    button("run", id_="display", onclick=callback(display))
+    span("I was hidden", id_="display-me", style={"display": "none"})
+    
+    fn("visible", "Takes an id and makes it visible by setting visibility to 'visible'.", visible)
+    button("run", id_="visible", onclick=callback(visible))
+    span("I was invisible", id_="visible-me", style={"visibility": "hidden"})
+    
+    fn("hidden", "Takes an id and makes it invisible by setting visibility to 'hidden'.", hidden)
+    button("run", id_="hidden", onclick=callback(hidden))
+    span("Soon to be invisible", id_="hidden-me")
+    
+    fn("append", "Takes an id and appends HTML to it.", append)
+    button("run", id_="append-btn", onclick=callback(append))
+    div("Original content", id_="append-me")
+    
+    fn("prepend", "Takes an id and prepends HTML to it.", prepend)
+    button("run", id_="prepend-btn", onclick=callback(prepend))
+    div("Original content", id_="prepend-me")
 
     fn("redirect", "Takes an url and redirects to it.", redirect)
     button("run", id_="redirect", onclick=callback(redirect))
+    
+    fn("setClientState", "Sets a value in the client-side state that persists between requests.", set_client_state)
+    button("Store theme preference", id_="set-state-btn", onclick=callback(set_client_state))
+    p("Open browser console to see the state")
+    
+    h3("State Management Example")
+    p("Client state can be accessed from JavaScript with hypergen.clientState:")
+    script("""
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if we have a stored theme preference
+        if (hypergen.clientState && hypergen.clientState.preferences) {
+            console.log('Found stored theme:', hypergen.clientState.preferences.theme);
+            // Apply the theme
+            document.getElementById('theme-indicator').textContent = 
+                'Current theme: ' + hypergen.clientState.preferences.theme;
+        }
+    });
+    """)
+    p("Theme preference:", span("none set", id_="theme-indicator"))
+    button("Set Dark Theme", id_="dark-theme", onclick=callback(set_dark_theme))
+    button("Set Light Theme", id_="light-theme", onclick=callback(set_light_theme))
