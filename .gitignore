@@ -149,4 +149,5 @@ node_modules
 *.save
 .vscode
 
-repomix-output.txt
+.repomixignore
+repomix-output.md
