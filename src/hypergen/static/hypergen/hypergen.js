@@ -67,7 +67,7 @@ export const morph = function(id, html) {
 
 export const remove = function(id) {
   let el = document.getElementById(id);
-  el.parentNode.removeChild(el)
+  if (!!el) el.parentNode.removeChild(el)
 }
 
 export const hide = function(id) {
