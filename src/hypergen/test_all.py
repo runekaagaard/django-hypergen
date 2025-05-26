@@ -326,7 +326,7 @@ def test_eventhandler_cache():
 
         assert dumps(
             ehc
-        ) == '{"0":["hypergen.callback","/path/to/cb/",[["_","element_value",["hypergen.read.value",null,"tec"]]],{"debounce":0,"confirm_":false,"blocks":false,"uploadFiles":false,"clear":false,"elementId":"tec","debug":false,"meta":{},"headers":{}}]}'
+        ) == '{"0":["hypergen.callback","/path/to/cb/",[["_","element_value",["hypergen.read.value",null,"tec"]]],{"debounce":0,"confirm_":false,"blocks":false,"uploadFiles":false,"clear":false,"elementId":"tec","debug":false,"meta":{},"headers":{},"eachUrlBlocks":true,"timeout":20000}]}'
 
     hypergen(template, settings=d(liveview=True, target_id="foo"))
     hypergen(template, settings=d(action=True, target_id="foo"))
@@ -349,7 +349,9 @@ def test_repr():
     with context(is_test=True, at="hypergen", **hypergen_context()):
         el1 = input_(id_="el1")
         el2 = input_(onclick=cb("alert", el1), id_="el2")
-        assert repr(el2) == 'input_(onclick=callback("alert", input_(id_="el1")), id_="el2")'
+        assert repr(
+            el2
+        ) == 'input_(onclick=callback("alert", input_(id_="el1"), eachUrlBlocks=True, timeout=20000), id_="el2")'
 
 def test_serialization():
     x = {

@@ -59,11 +59,11 @@ jobs:
           - python-version: 3.8
             django-version: Django==4.1.12
           - python-version: 3.8
-            django-version: Django==4.2.6
+            django-version: Django==4.2.21
           - python-version: "3.10"
             django-version: Django==4.1.12
           - python-version: "3.10"
-            django-version: Django==4.2.6
+            django-version: Django==4.2.21
           - python-version: 3.8
             django-version: Django==1.11.29
           - python-version: 3.9
@@ -83,11 +83,11 @@ jobs:
           - python-version: 3.9
             django-version: Django==4.1.12
           - python-version: 3.9
-            django-version: Django==4.2.6
+            django-version: Django==4.2.21
           - python-version: "3.10"
             django-version: Django==4.1.12
           - python-version: "3.10"
-            django-version: Django==4.2.6
+            django-version: Django==4.2.21
           - python-version: "3.10"
             django-version: Django==3.2.22
           - python-version: "3.10"
@@ -95,15 +95,37 @@ jobs:
           - python-version: "3.10"
             django-version: Django==4.1.12
           - python-version: "3.10"
-            django-version: Django==4.2.6
+            django-version: Django==4.2.21
           - python-version: "3.11"
             django-version: Django==4.1.12
           - python-version: "3.11"
-            django-version: Django==4.2.6
+            django-version: Django==4.2.21
           - python-version: "3.12"
             django-version: Django==4.1.12
           - python-version: "3.12"
-            django-version: Django==4.2.6
+            django-version: Django==4.2.21
+          - python-version: "3.10"
+            django-version: Django==5.0.14
+          - python-version: "3.11"
+            django-version: Django==5.0.14
+          - python-version: "3.12"
+            django-version: Django==5.0.14
+          - python-version: "3.10"
+            django-version: Django==5.1.9
+          - python-version: "3.11"
+            django-version: Django==5.1.9
+          - python-version: "3.12"
+            django-version: Django==5.1.9
+          - python-version: "3.13"
+            django-version: Django==5.1.9
+          - python-version: "3.10"
+            django-version: Django==5.2.2
+          - python-version: "3.11"
+            django-version: Django==5.2.2
+          - python-version: "3.12"
+            django-version: Django==5.2.2
+          - python-version: "3.13"
+            django-version: Django==5.2.2
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
