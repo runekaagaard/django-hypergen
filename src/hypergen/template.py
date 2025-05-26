@@ -69,9 +69,8 @@ def add_class(a, b):
 
 def on_url(url, value_on_url=True, value_not_on_url=False):
     # Great for "active" classes on menu items.
-    a, b = urlparse(url), urlparse(context.request.build_absolute_uri())
-
-    return value_on_url if a.path == b.path else value_not_on_url
+    from hypergen.liveview import url_is_active
+    return value_on_url if url_is_active(url) else value_not_on_url
 
 ### template itself is a plugin to hypergen ###
 
