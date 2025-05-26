@@ -13,7 +13,8 @@ channels-redis<=4.1.0
 Cython==3.0a6
 contextlib2==0.6.0.post1
 cymem==2.0.8
-numpy<=1.26.0
+# numpy<=1.26.0
+numpy
 pyprof2calltree<=1.4.5
 docutils<=0.20.1
 django-render-block<=0.9.2
