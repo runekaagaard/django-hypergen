@@ -543,3 +543,4 @@ def svg_demo(request):
             use(href="#star", x="100", y="0", transform="scale(0.5)")
             use(href="#star", x="200", y="0", transform="scale(0.75)")
             use(href="#star", x="300", y="0", transform="scale(0.6)")
+ 
