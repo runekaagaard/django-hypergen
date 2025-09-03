@@ -380,3 +380,166 @@ def commands_ordering(request):
 def action_ordering(request):
     p("HEJ", onclick=callback(action_ordering), id="ofof")
     command("yo")
+
+@liveview(perm=NO_PERM_REQUIRED)
+def svg_demo(request):
+    from misc.svg import (g, defs, circle, ellipse, line, path, polygon, polyline, rect, text, tspan, linearGradient,
+        radialGradient, stop, use, pattern, mask, filter_, feGaussianBlur, clipPath, marker, animate,
+        animateTransform, desc, set_)
+
+    doctype()
+    with html(), body():
+        h1("SVG Elements Demo")
+        p("Demonstrating all common SVG elements using hypergen")
+
+        # Basic shapes demo
+        h2("Basic Shapes")
+        with svg(width="400", height="200", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            # Circle
+            circle(cx="50", cy="50", r="40", fill="lightblue", stroke="navy", stroke_width="2")
+
+            # Ellipse
+            ellipse(cx="150", cy="50", rx="60", ry="30", fill="lightgreen", stroke="darkgreen", stroke_width="2")
+
+            # Rectangle
+            rect(x="220", y="20", width="80", height="60", fill="lightyellow", stroke="orange", stroke_width="2",
+                rx="5", ry="5")
+
+            # Line
+            line(x1="320", y1="10", x2="380", y2="90", stroke="red", stroke_width="3")
+
+            # Polyline
+            polyline(points="30,120 60,140 90,120 120,160 150,130", fill="none", stroke="purple", stroke_width="2")
+
+            # Polygon
+            polygon(points="250,120 280,160 310,160 330,130 310,100 280,100", fill="lightpink", stroke="darkred",
+                stroke_width="2")
+
+        # Text elements demo
+        h2("Text Elements")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            text("Hello SVG!", x="20", y="40", font_size="24", fill="black")
+            with text(x="20", y="70", font_size="16", fill="blue"):
+                write("Text with ")
+                tspan("colored", fill="red", font_weight="bold")
+                write(" span")
+
+        # Gradients demo
+        h2("Gradients")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            with defs():
+                # Linear gradient
+                with linearGradient(id_="linearGrad", x1="0%", y1="0%", x2="100%", y2="0%"):
+                    stop(offset="0%", style="stop-color:rgb(255,255,0);stop-opacity:1")
+                    stop(offset="100%", style="stop-color:rgb(255,0,0);stop-opacity:1")
+
+                # Radial gradient
+                with radialGradient(id_="radialGrad"):
+                    stop(offset="0%", style="stop-color:white;stop-opacity:1")
+                    stop(offset="100%", style="stop-color:blue;stop-opacity:1")
+
+            rect(x="10", y="10", width="180", height="80", fill="url(#linearGrad)")
+            circle(cx="290", cy="50", r="40", fill="url(#radialGrad)")
+
+        # Patterns demo
+        h2("Patterns")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            with defs():
+                with pattern(id_="patternChecker", x="0", y="0", width="20", height="20",
+                    patternUnits="userSpaceOnUse"):
+                    rect(x="0", y="0", width="10", height="10", fill="lightgray")
+                    rect(x="10", y="10", width="10", height="10", fill="lightgray")
+
+            rect(x="10", y="10", width="380", height="80", fill="url(#patternChecker)", stroke="black")
+
+        # Paths demo
+        h2("Paths")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            # Simple path
+            path(d="M10,30 Q50,10 90,30 T170,30", fill="none", stroke="blue", stroke_width="2")
+
+            # Complex path with curves
+            path(d="M200,50 C200,10 250,10 250,50 S300,90 300,50", fill="lightgreen", stroke="darkgreen",
+                stroke_width="2")
+
+        # Groups and transformations demo
+        h2("Groups and Transformations")
+        with svg(width="400", height="150", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            # Group with transform
+            with g(transform="translate(50,50)"):
+                rect(x="-20", y="-20", width="40", height="40", fill="orange")
+                circle(cx="0", cy="0", r="5", fill="red")
+
+            # Rotated group
+            with g(transform="translate(150,50) rotate(45)"):
+                rect(x="-25", y="-25", width="50", height="50", fill="lightblue", stroke="blue")
+
+            # Scaled group
+            with g(transform="translate(250,50) scale(1.5,0.75)"):
+                ellipse(cx="0", cy="0", rx="30", ry="30", fill="yellow", stroke="orange", stroke_width="2")
+
+        # Clipping and masking demo
+        h2("Clipping and Masking")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            with defs():
+                with clipPath(id_="clipCircle"):
+                    circle(cx="50", cy="50", r="40")
+
+                with mask(id_="maskGradient"):
+                    rect(x="150", y="10", width="100", height="80", fill="url(#linearGrad)")
+
+            # Clipped rectangle
+            rect(x="10", y="10", width="80", height="80", fill="purple", clip_path="url(#clipCircle)")
+
+            # Masked circle
+            circle(cx="200", cy="50", r="40", fill="green", mask="url(#maskGradient)")
+
+        # Markers demo
+        h2("Markers (Arrowheads)")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            with defs():
+                with marker(id_="arrowhead", markerWidth="10", markerHeight="7", refX="10", refY="3.5",
+                    orient="auto"):
+                    polygon(points="0,0 10,3.5 0,7", fill="red")
+
+            line(x1="20", y1="50", x2="180", y2="50", stroke="black", stroke_width="2", marker_end="url(#arrowhead)")
+            path(d="M220,50 Q270,20 320,50 T380,50", fill="none", stroke="blue", stroke_width="2",
+                marker_end="url(#arrowhead)")
+
+        # Filters demo
+        h2("Filters")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            with defs():
+                with filter_(id_="blurFilter"):
+                    feGaussianBlur(in_="SourceGraphic", stdDeviation="3")
+
+            # Normal circle
+            circle(cx="100", cy="50", r="35", fill="orange")
+            # Blurred circle
+            circle(cx="250", cy="50", r="35", fill="orange", filter="url(#blurFilter)")
+
+        # Animation demo
+        h2("Animations")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            # Moving circle
+            with circle(cx="50", cy="50", r="20", fill="red"):
+                animate(attributeName="cx", from_="50", to="350", dur="3s", repeatCount="indefinite")
+
+            # Rotating rectangle
+            with g(transform="translate(200,50)"):
+                with rect(x="-20", y="-20", width="40", height="40", fill="blue"):
+                    animateTransform(attributeName="transform", type_="rotate", from_="0 0 0", to="360 0 0", dur="2s",
+                        repeatCount="indefinite")
+
+        # Use element demo (reusing defined elements)
+        h2("Reusing Elements with 'use'")
+        with svg(width="400", height="100", xmlns="http://www.w3.org/2000/svg", style=d(border="1px solid #ccc")):
+            with defs():
+                with g(id_="star"):
+                    polygon(points="50,10 61,35 87,35 66,50 76,75 50,55 24,75 34,50 13,35 39,35", fill="gold",
+                        stroke="orange", stroke_width="2")
+
+            use(href="#star", x="0", y="0")
+            use(href="#star", x="100", y="0", transform="scale(0.5)")
+            use(href="#star", x="200", y="0", transform="scale(0.75)")
+            use(href="#star", x="300", y="0", transform="scale(0.6)")
