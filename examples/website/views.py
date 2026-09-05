@@ -26,6 +26,7 @@ from gettingstarted.views import begin
 from apptemplate.views import my_view
 from coredocs.views import template, liveviews
 from website.minidemoes.shoot_em_up import shoot_em_up
+from website.minidemoes.memory_match import memory_match
 from websockets.views import chat
 
 from features import templates as features_templates
@@ -153,6 +154,7 @@ def documentation(request):
         li(a("TodoMVC", href=todomvc.reverse(ALL)))
         li(a("Hypergen App template", href=my_view.reverse()))
         li(a("Shoot 'Em Duck", href=shoot_em_up.reverse()))
+        li(a("Memory Match", href=memory_match.reverse()))
         li(a("Chat app using websockets", href=chat.reverse()), sep=" ")
 
     h2("Other template implementations")
