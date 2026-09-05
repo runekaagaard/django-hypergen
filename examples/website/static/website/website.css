@@ -32,7 +32,8 @@ table input, table textarea, table select {
 }
 
 dl {
-  background-color: #f5f7ff;
+  /* Use simple.css vars so dark mode gets readable colors too (#29) */
+  background-color: var(--accent-bg, #f5f7ff);
   padding: 16px;
 }
 dt {
@@ -41,7 +42,7 @@ dt {
 
 dl em {
   font-size: 110%;
-  color: black;
+  color: var(--text, black);
 }
 
 button {
@@ -124,7 +125,7 @@ code, tt {
   font-size: 85%;
   background-color: rgba(175,184,193,0.2);
   border-radius: 6px;
-  color: rgb(36, 41, 47);
+  color: var(--text, rgb(36, 41, 47));
 }
 
 pre code.hljs {
@@ -137,7 +138,7 @@ pre code.hljs {
 
 pre {
   padding: 16px;
-  background-color: #f3f3f3;
+  background-color: var(--accent-bg, #f3f3f3);
   border: none;
 }
 

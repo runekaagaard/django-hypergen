@@ -84,14 +84,19 @@ def template(n):
      )
     pre(code("""pip install django-hypergen"""))
 
-    p("Further more we need to add the middleware class that keeps track of the hypergen context, add 'hypergen.context.context_middleware', to MIDDLEWARE in settings.py, so it looks like this:"
-     )
+    p("Further more we need to make two additions to settings.py. Add 'hypergen' to INSTALLED_APPS - it serves "
+        "the hypergen.js client - and add the middleware class that keeps track of the hypergen context, "
+        "'hypergen.context.context_middleware', to MIDDLEWARE, so it looks like this:")
     pre(
         code("""
+        INSTALLED_APPS = [
+            ...
+            'hypergen',
+        ]
+
         MIDDLEWARE = [
             ...
             'hypergen.context.context_middleware',
-            ...
         ]
         """))
 
@@ -262,7 +267,7 @@ def template(n):
         from contextlib import contextmanager
 
         ...
-        
+
         @contextmanager
         def base_template():
             doctype()
@@ -270,17 +275,24 @@ def template(n):
                 with head():
                     link(href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css")
                 with body():
-                    yield
-        
+                    with div(id_="content"):
+                        yield
+
+        # Tells hypergen which element to re-render into on actions and partial page loads.
+        base_template.target_id = "content"
+
         @liveview(perm=NO_PERM_REQUIRED)
         def step4(request):
             template4()
-        
+
         def template4():
             with base_template():
                 h1("Step 4: Now using a base template")
                 p("Our code is much simpler now")
         """))
+    p("Note the div with the id 'content' and the target_id attribute we set on the base template function. "
+        "When a liveview reuses a base template (as we'll do in step 5), hypergen only re-renders the content "
+        "inside the target element, so it needs to know its id.")
 
     h2("Step 5: Reusing the base template")
     p("""Now that we have created a new base template, we can add our new base template as a keyword argument to the liveview decorator so that we can avoid all the boilerplate and concentrate on the content part of our template"""
@@ -333,6 +345,9 @@ def template(n):
         def on_click(request, num_clicks=0):
             template6(num_clicks)
         """))
+    p("The target_id='content' matches the id of the div in our base template - that is the element the "
+        "action re-renders. hypergen.js sends Django's CSRF token automatically, so the default "
+        "CsrfViewMiddleware works out of the box.")
     p("Visit localhost:8000/myapp/step6")
     p("The page is now dynamic! When you click the button it calls the on_click action view, and the page updates automatically."
      )

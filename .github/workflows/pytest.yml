@@ -126,6 +126,10 @@ jobs:
             django-version: Django==5.2.1
           # - python-version: "3.13"
           #   django-version: Django==5.2.1
+          - python-version: "3.12"
+            django-version: Django==6.0.6
+          - python-version: "3.12"
+            django-version: Django==6.1.1
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}

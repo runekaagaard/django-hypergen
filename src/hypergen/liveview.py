@@ -13,6 +13,7 @@ from contextlib import contextmanager
 from functools import wraps
 
 from django.http.response import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.middleware.csrf import get_token
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.conf import settings
 from django.templatetags.static import static
@@ -309,6 +310,10 @@ def liveview(func, path=None, re_path=None, base_template=None, perm=None, any_p
                     return HttpResponse(dumps(full["context"].hypergen.commands), status=200,
                         content_type='application/json')
         else:
+            # Ensure the csrftoken cookie is set on full page loads, so hypergen.js can send the
+            # X-CSRFToken header on action requests when django.middleware.csrf.CsrfViewMiddleware is
+            # enabled. Django only sets the cookie when get_token() is called for the request.
+            get_token(request)
             with c(at="hypergen", matched_perms=matched_perms, partial_base_template=partial_base_template,
                 liveview_resolver_match=liveview_resolver_match()):
                 full = hypergen(
